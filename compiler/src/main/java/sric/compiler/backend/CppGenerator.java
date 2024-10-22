@@ -460,15 +460,15 @@ public class CppGenerator extends BaseGenerator {
             return;
         }
         
-        if (type.resolvedAlias != null) {
-            if (type.id.resolvedDef instanceof GenericParamDef) {
-                //ok
-            }
-            else {
-                printType(type.resolvedAlias, isRoot);
-                return;
-            }
-        }
+//        if (type.resolvedAlias != null) {
+//            if (type.id.resolvedDef instanceof GenericParamDef) {
+//                //ok
+//            }
+//            else {
+//                printType(type.resolvedAlias, isRoot);
+//                return;
+//            }
+//        }
         
         if (type.isImmutable && !type.id.name.equals(Buildin.pointerTypeName)) {
             print("const ");
@@ -597,6 +597,15 @@ public class CppGenerator extends BaseGenerator {
         else {
             print(id.name);
         }
+    }
+    
+    @Override
+    public void visitTypeAlias(AstNode.TypeAlias v) {
+        print("typedef ");
+        printType(v.type);
+        print(v.name);
+        print(";");
+        newLine();
     }
 
     @Override

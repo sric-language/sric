@@ -483,7 +483,11 @@ public class Type extends AstNode {
         
         if (isArray()) {
             ArrayInfo info = (ArrayInfo)this.detail;
-            sb.append("[").append(info.sizeExpr).append("]");
+            sb.append("[");
+            if (info.sizeExpr != null) {
+                sb.append(info.sizeExpr);
+            }
+            sb.append("]");
             sb.append(this.genericArgs.get(0).toString());
             return sb.toString();
         }
@@ -507,6 +511,7 @@ public class Type extends AstNode {
             return sb.toString();
         }
         else if (isFuncType()) {
+            sb.append("func");
             sb.append(((FuncInfo)this.detail).prototype.toString());
             return sb.toString();
         }

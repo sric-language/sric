@@ -38,6 +38,7 @@ public class ParserTest {
         assertTrue(log.errors.size() == 0);
         
         ScLibGenerator generator = new ScLibGenerator(log, System.out);
+        generator.isPrintAll = true;
         unit.walkChildren(generator);
         //System.out.println(file);
     }
@@ -64,7 +65,7 @@ public class ParserTest {
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             ScLibGenerator generator = new ScLibGenerator(log, new PrintStream(stream));
-            //generator.headMode = true;
+            generator.isPrintAll = true;
             unit.walkChildren(generator);
             
             String str = stream.toString("UTF-8");

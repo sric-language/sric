@@ -6,8 +6,10 @@ package sric.compiler.backend;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import sric.compiler.CompilerLog;
 import sric.compiler.ast.AstNode;
+import sric.compiler.ast.AstNode.StructDef;
 import sric.compiler.ast.Expr;
 import sric.compiler.ast.Expr.ClosureExpr;
 import sric.compiler.ast.FConst;
@@ -20,6 +22,8 @@ import sric.compiler.ast.Type;
  * @author yangjiandong
  */
 public class ScLibGenerator extends BaseGenerator {
+    public boolean isPrintAll = false;
+    
     public ScLibGenerator(CompilerLog log, String file) throws IOException {
         super(log, file);
     }
@@ -133,7 +137,20 @@ public class ScLibGenerator extends BaseGenerator {
             print(ns);
             print("::");
         }
+        if (id.name.equals(".")) {
+            return;
+        }
         print(id.name);
+    }
+    
+    @Override
+    public void visitTypeAlias(AstNode.TypeAlias v) {
+        print("typealias ");
+        print(v.name);
+        print(" = ");
+        printType(v.type);
+        print(";");
+        newLine();
     }
 
     @Override
@@ -165,7 +182,12 @@ public class ScLibGenerator extends BaseGenerator {
     
     @Override
     public void visitFunc(AstNode.FuncDef v) {
-        boolean inlined = (v.flags & FConst.Inline) != 0 || v.generiParamDefs != null;
+        boolean inlined = isPrintAll || (v.flags & FConst.Inline) != 0 || v.generiParamDefs != null;
+        if (!inlined && v.parent instanceof StructDef sd) {
+            if (sd.generiParamDefs != null) {
+                inlined = true;
+            }
+        }
         
         if (!inlined) {
             if ((v.flags & FConst.Private) != 0) {
@@ -177,16 +199,7 @@ public class ScLibGenerator extends BaseGenerator {
         print("fun ");
         print(v.name);
         
-        if (v.generiParamDefs != null) {
-            print("$<");
-            int i = 0;
-            for (var gp : v.generiParamDefs) {
-                if (i > 0) print(", ");
-                print(gp.name);
-                ++i;
-            }
-            print(">");
-        }
+        printGenericParamDefs(v.generiParamDefs);
 
         printFuncPrototype(v.prototype);
 
@@ -226,6 +239,23 @@ public class ScLibGenerator extends BaseGenerator {
             }
         }
     }
+    
+    private void printGenericParamDefs(ArrayList<AstNode.GenericParamDef> generiParamDefs) {
+        if (generiParamDefs != null) {
+            print("$<");
+            int i = 0;
+            for (var gp : generiParamDefs) {
+                if (i > 0) print(", ");
+                print(gp.name);
+                if (gp.bound != null && !gp.bound.isVoid()) {
+                    print(" = ");
+                    printType(gp.bound);
+                }
+                ++i;
+            }
+            print(">");
+        }
+    }
 
     @Override
     public void visitTypeDef(AstNode.TypeDef v) {
@@ -260,16 +290,7 @@ public class ScLibGenerator extends BaseGenerator {
         print(v.name);
         
         if (v instanceof AstNode.StructDef sd) {
-            if (sd.generiParamDefs != null) {
-                print("$<");
-                int i = 0;
-                for (var gp : sd.generiParamDefs) {
-                    if (i > 0) print(", ");
-                    print(gp.name);
-                    ++i;
-                }
-                print(">");
-            }
+            printGenericParamDefs(sd.generiParamDefs);
             
             if (sd.inheritances != null) {
                 int i = 0;
@@ -361,8 +382,8 @@ public class ScLibGenerator extends BaseGenerator {
                 
                 this.visit(cb.block);
                 
-                if (!cb.fallthrough) {
-                    print("break;").newLine();
+                if (cb.fallthrough) {
+                    print("fallthrough;").newLine();
                 }
             }
             
@@ -384,7 +405,7 @@ public class ScLibGenerator extends BaseGenerator {
             print(jumps.opToken.symbol).print(";").newLine();
         }
         else if (v instanceof Stmt.UnsafeBlock bs) {
-            print("/*unsafe*/ ");
+            print("unsafe ");
             this.visit(bs.block);
         }
         else if (v instanceof Stmt.ReturnStmt rets) {
@@ -404,9 +425,11 @@ public class ScLibGenerator extends BaseGenerator {
 
     @Override
     public void visitExpr(Expr v) {
-        boolean isPrimitive = false;
-        if (v.isStmt || v instanceof Expr.IdExpr || v instanceof Expr.LiteralExpr || v instanceof Expr.CallExpr) {
-            isPrimitive = true;
+        boolean parentheses = true;
+        if (v.isStmt || v instanceof Expr.IdExpr || v instanceof Expr.LiteralExpr || v instanceof Expr.CallExpr || v instanceof Expr.GenericInstance 
+                || v instanceof Expr.AccessExpr || v instanceof Expr.NonNullableExpr || v instanceof Expr.WithBlockExpr || v instanceof Expr.ArrayBlockExpr
+                || v instanceof Expr.TypeExpr || v instanceof ClosureExpr) {
+            parentheses = false;
         }
         else {
             print("(");
@@ -425,7 +448,9 @@ public class ScLibGenerator extends BaseGenerator {
         }
         else if (v instanceof Expr.BinaryExpr e) {
             this.visit(e.lhs);
+            print(" ");
             print(e.opToken.symbol);
+            print(" ");
             this.visit(e.rhs);
         }
         else if (v instanceof Expr.CallExpr e) {
@@ -443,6 +468,9 @@ public class ScLibGenerator extends BaseGenerator {
         }
         else if (v instanceof Expr.UnaryExpr e) {
             print(e.opToken.symbol);
+            if (e.opToken.keyword) {
+                print(" ");
+            }
             this.visit(e.operand);
         }
         else if (v instanceof Expr.TypeExpr e) {
@@ -456,11 +484,11 @@ public class ScLibGenerator extends BaseGenerator {
         }
         else if (v instanceof Expr.GenericInstance e) {
             this.visit(e.target);
-            print("<");
+            print("$<");
             int i = 0;
             for (Type t : e.genericArgs) {
                 if (i > 0) print(", ");
-                this.visit(t);
+                this.printType(t);
                 ++i;
             }
             print(" >");
@@ -488,7 +516,7 @@ public class ScLibGenerator extends BaseGenerator {
             err("Unkown expr:"+v, v.loc);
         }
         
-        if (!isPrimitive) {
+        if (parentheses) {
             print(")");
         }
     }
@@ -578,4 +606,5 @@ public class ScLibGenerator extends BaseGenerator {
         
         this.visit(expr.code);
     }
+
 }
