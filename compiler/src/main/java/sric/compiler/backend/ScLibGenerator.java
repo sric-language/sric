@@ -245,7 +245,6 @@ public class ScLibGenerator extends BaseGenerator {
                 if (f.initExpr != null) {
                     print(" = ");
                     this.visit(f.initExpr);
-                    print(";");
                 }
                 ++i;
             }

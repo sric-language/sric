@@ -5,7 +5,7 @@ trait NT {
 
 struct A$<T = NT> {
     var i: T ;
-    fun foo(): ref* T {
+    fun foo(): raw* T {
        return &i;
     }
 
@@ -14,9 +14,15 @@ struct A$<T = NT> {
     }
 }
 
+fun gf$<T>(v: T): T {
+    return v;
+}
+
 fun main()
 {
     var a = A$<Int>{};
     a.i = 2;
-    var b : ref* Int = a.foo();
+    var b : raw* Int = a.foo();
+
+    var i: Int = gf$<Int>(1);
 }

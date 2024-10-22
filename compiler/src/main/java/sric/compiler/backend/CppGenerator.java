@@ -215,7 +215,7 @@ public class CppGenerator extends BaseGenerator {
         print(varName).print(".name = \"").print(node.name).print("\";").newLine();
         if (node.comment != null) {
             for (var c : node.comment.comments) {
-                if (c.type == TokenKind.cmdComment) {
+                if (c.type != TokenKind.cmdComment) {
                 }
                 
                 print("{sric::Comment comment;");

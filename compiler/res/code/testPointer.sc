@@ -16,7 +16,7 @@ fun foo2(c: own* Int) {
 fun main()
 {
     var i = 1;
-    var p: ref* Int = &i;
+    var p: ref*? Int;
     foo(p);
 
     var p2: own* Int = alloc$<Int>();

@@ -1014,7 +1014,7 @@ public class ErrorChecker extends CompilePass {
                             }
                         }
                         else {
-                            if (e.lhs.resolvedType.isNum() && e.lhs.resolvedType.isRawPointerType()) {
+                            if (e.lhs.resolvedType.isNum() || e.lhs.resolvedType.isRawPointerType()) {
                                 if (!e.lhs.resolvedType.equals(e.rhs.resolvedType)) {
                                     err("Type mismatch", e.loc);
                                 }

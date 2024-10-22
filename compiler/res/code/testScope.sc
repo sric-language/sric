@@ -2,12 +2,12 @@
 fun main1()
 {
     var i = 1;
-    var p: ref* Int = &i;
+    var p: raw* Int = &i;
 }
 
 fun main2()
 {
-    var p: ref*? Int;
+    var p: raw*? Int;
     if (true) {
         var a : Int = 1;
         p = &a;
