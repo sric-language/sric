@@ -424,7 +424,7 @@ public class Tokenizer {
                     }
                     continue;
                 }
-                if (cur == '\\') {
+                if (cur == '\\' && !triple) {
                     s.append((char) escape());
                 } else {
                     s.append((char) cur);
@@ -569,17 +569,17 @@ public class Tokenizer {
                 return '\\';
         }
 
-//     check for uxxxx
-//    if (cur == 'u')
-//    {
-//      consume();
-//      int n3 = cur.fromDigit(16); consume();
-//      int n2 = cur.fromDigit(16); consume();
-//      int n1 = cur.fromDigit(16); consume();
-//      int n0 = cur.fromDigit(16); consume();
-//      if (n3 == null || n2 == null || n1 == null || n0 == null) throw err("Invalid hex value for \\uxxxx");
-//      return n3.shiftl(12).or(n2.shiftl(8)).or(n1.shiftl(4)).or(n0);
-//    }
+        //check for uxxxx
+        if (cur == 'u')
+        {
+          consume();
+          int n3 = fromDigit(cur); consume();
+          int n2 = fromDigit(cur); consume();
+          int n1 = fromDigit(cur); consume();
+          int n0 = fromDigit(cur); consume();
+          if (n3 == -1 || n2 == -1 || n1 == -1 || n0 == -1) throw err("Invalid hex value for \\uxxxx");
+          return (n3 << 12) | (n2 << 8) | (n1 << 4) | n0;
+        }
         throw err("Invalid escape sequence");
     }
 
