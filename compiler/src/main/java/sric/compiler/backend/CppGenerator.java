@@ -1543,7 +1543,7 @@ public class CppGenerator extends BaseGenerator {
     }
     
     void printClosureExpr(ClosureExpr expr) {
-        print("[");
+        print("[=");
         
 //        int i = 0;
 //        if (expr.defaultCapture != null) {
