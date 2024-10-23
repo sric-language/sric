@@ -871,6 +871,12 @@ public class Parser {
                 return imutableType();
             case lbracket:
                 return arrayType();
+            case refableKeyword:
+                consume();
+                Type stype = typeRef();
+                type = Type.refableType(loc, stype);
+                endLoc(type, loc);
+                return type;
             default:
                 break;
         }

@@ -17,10 +17,18 @@ fun testA(a: ref* A) {
     printf("%d\n", a.i);
 }
 
-fun testPtr() {
-    var a: A;
+fun testRefable() {
+    var i: refable Int = 1;
+    var a: refable A;
+    a.i = i + 1;
     testA(&a);
+    var b: A = a;
+    var c: refable A = b;
+    a = c;
+    b = a;
+}
 
+fun testPtr() {
     var p: own* A = alloc$<A>();
     testA(p);
 

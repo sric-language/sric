@@ -8,22 +8,22 @@
 namespace sric
 {
 
-class Refable;
+class HeapRefable;
 
 class WeakRefBlock {
-    friend class Refable;
+    friend class HeapRefable;
 #if NO_THREAD_SAFE
     unsigned int _weakRefCount;
 #else
     std::atomic<unsigned int> _weakRefCount;
 #endif
 
-    Refable* _pointer;
+    HeapRefable* _pointer;
 public:
     WeakRefBlock();
     ~WeakRefBlock();
 
-    Refable* lock();
+    HeapRefable* lock();
 
     void addRef();
     void release();
@@ -39,7 +39,7 @@ public:
  * keep track of object ownership and having to worry about when to
  * safely delete such objects.
  */
-class Refable
+class HeapRefable
 {
 public:
 
@@ -78,38 +78,40 @@ public:
     /**
      * Constructor.
      */
-    Refable();
+    HeapRefable();
 
     /**
      * Copy constructor.
      * 
-     * @param copy The Refable object to copy.
+     * @param copy The HeapRefable object to copy.
      */
-    //Refable(const Refable& copy);
+    //HeapRefable(const HeapRefable& copy);
 
     /**
      * Destructor.
      */
-    virtual ~Refable();
+    virtual ~HeapRefable();
 
 private:
     void disposeWeakRef();
 
     uint32_t _checkCode;
+    bool _isUnique;
+
 #if NO_THREAD_SAFE
     unsigned int _refCount;
 #else
     std::atomic<unsigned int> _refCount;
 #endif
-    bool _isUnique;
+
     WeakRefBlock* _weakRefBlock;
 
     // Memory leak diagnostic data (only included when GP_USE_MEM_LEAK_DETECTION is defined)
 #ifdef GP_USE_REF_TRACE
-    friend void* trackRef(Refable* ref);
-    friend void untrackRef(Refable* ref);
-    Refable* _next;
-    Refable* _prev;
+    friend void* trackRef(HeapRefable* ref);
+    friend void untrackRef(HeapRefable* ref);
+    HeapRefable* _next;
+    HeapRefable* _prev;
 public:
     static void printLeaks();
 #endif

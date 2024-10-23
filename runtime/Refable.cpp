@@ -7,24 +7,28 @@ namespace sric
 {
 std::mutex traceLock;
 #ifdef GP_USE_REF_TRACE
-void* trackRef(Refable* ref);
-void untrackRef(Refable* ref);
+void* trackRef(HeapRefable* ref);
+void untrackRef(HeapRefable* ref);
 #endif
 
 uint32_t checkCodeCount = 0;
 
-Refable::Refable() :
-    _refCount(1), _isUnique(true), _weakRefBlock(NULL)
-{
+uint32_t generateCheckCode() {
     std::hash<std::thread::id> hasher;
     size_t tid = hasher(std::this_thread::get_id());
-    _checkCode = (tid << 24) | (++checkCodeCount);
+    return (tid << 24) | (++checkCodeCount);
+}
+
+HeapRefable::HeapRefable() :
+    _refCount(1), _isUnique(true), _weakRefBlock(NULL)
+{
+    _checkCode = generateCheckCode();
 #ifdef GP_USE_REF_TRACE
     trackRef(this);
 #endif
 }
 
-//Refable::Refable(const Refable& copy) :
+//HeapRefable::HeapRefable(const HeapRefable& copy) :
 //    _refCount(1)
 //{
 //#ifdef GP_USE_REF_TRACE
@@ -32,7 +36,7 @@ Refable::Refable() :
 //#endif
 //}
 
-Refable::~Refable()
+HeapRefable::~HeapRefable()
 {
     if (!_isUnique) {
         sc_assert(_refCount == 0, "ref count error");
@@ -44,14 +48,14 @@ Refable::~Refable()
 #endif
 }
 
-void Refable::addRef()
+void HeapRefable::addRef()
 {
     _isUnique = false;
     sc_assert(_refCount > 0 && _refCount < 1000000, "ref count error");
     ++_refCount;
 }
 
-void Refable::disposeWeakRef() {
+void HeapRefable::disposeWeakRef() {
     if (_weakRefBlock) {
         std::lock_guard<std::mutex> guard(traceLock);
         if (_weakRefBlock->_weakRefCount == 0) {
@@ -63,12 +67,12 @@ void Refable::disposeWeakRef() {
     }
 }
 
-bool Refable::release()
+bool HeapRefable::release()
 {
     if (_isUnique) {
         disposeWeakRef();
         //delete this;
-        this->~Refable();
+        this->~HeapRefable();
         return true;
     }
 
@@ -77,24 +81,24 @@ bool Refable::release()
     {
         disposeWeakRef();
         //delete this;
-        this->~Refable();
+        this->~HeapRefable();
         return true;
     }
     return false;
 }
 
-void Refable::_setRefCount(int rc) {
+void HeapRefable::_setRefCount(int rc) {
     _refCount = rc;
 }
 
-unsigned int Refable::getRefCount() const
+unsigned int HeapRefable::getRefCount() const
 {
     return _refCount;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-WeakRefBlock* Refable::getWeakRefBlock() {
+WeakRefBlock* HeapRefable::getWeakRefBlock() {
     if (_weakRefBlock) return _weakRefBlock;
     std::lock_guard<std::mutex> guard(traceLock);
     if (!_weakRefBlock) {
@@ -129,7 +133,7 @@ void WeakRefBlock::release() {
     }
 }
 
-Refable* WeakRefBlock::lock() {
+HeapRefable* WeakRefBlock::lock() {
     std::lock_guard<std::mutex> guard(traceLock);
     if (_pointer) {
         _pointer->addRef();
@@ -142,37 +146,37 @@ Refable* WeakRefBlock::lock() {
 
 #ifdef GP_USE_REF_TRACE
 
-Refable* __refAllocations = 0;
+HeapRefable* __refAllocations = 0;
 int __refAllocationCount = 0;
 
-void Refable::printLeaks()
+void HeapRefable::printLeaks()
 {
     std::lock_guard<std::mutex> guard(traceLock);
-    // Dump Refable object memory leaks
+    // Dump HeapRefable object memory leaks
     if (__refAllocationCount == 0)
     {
-        print("[memory] All Refable objects successfully cleaned up (no leaks detected).\n");
+        print("[memory] All HeapRefable objects successfully cleaned up (no leaks detected).\n");
     }
     else
     {
-        print("[memory] WARNING: %d Refable objects still active in memory.\n", __refAllocationCount);
-        for (Refable* rec = __refAllocations; rec != NULL; rec = rec->_next)
+        print("[memory] WARNING: %d HeapRefable objects still active in memory.\n", __refAllocationCount);
+        for (HeapRefable* rec = __refAllocations; rec != NULL; rec = rec->_next)
         {
-            Refable* ref = rec;
+            HeapRefable* ref = rec;
             GP_ASSERT(ref);
             const char* type = typeid(*ref).name();
-            print("[memory] LEAK: Refable object '%s' still active with reference count %d.\n", (type ? type : ""), ref->getRefCount());
+            print("[memory] LEAK: HeapRefable object '%s' still active with reference count %d.\n", (type ? type : ""), ref->getRefCount());
         }
     }
 }
 
-void* trackRef(Refable* ref)
+void* trackRef(HeapRefable* ref)
 {
     std::lock_guard<std::mutex> guard(traceLock);
     GP_ASSERT(ref);
 
     // Create memory allocation record.
-    Refable* rec = ref;
+    HeapRefable* rec = ref;
     rec->_next = __refAllocations;
     rec->_prev = NULL;
 
@@ -184,10 +188,10 @@ void* trackRef(Refable* ref)
     return rec;
 }
 
-void untrackRef(Refable* ref)
+void untrackRef(HeapRefable* ref)
 {
     std::lock_guard<std::mutex> guard(traceLock);
-    Refable* rec = ref;
+    HeapRefable* rec = ref;
 
     // Link this item out.
     if (__refAllocations == rec)

@@ -20,23 +20,23 @@
 namespace sric
 {
 
-class Refable;
+class HeapRefable;
 
 template<typename T>
 class RefPtr;
 
 template<typename U>
-typename std::enable_if<std::is_polymorphic<U>::value, Refable*>::type  getRefable(U* pointer) {
+typename std::enable_if<std::is_polymorphic<U>::value, HeapRefable*>::type  getRefable(U* pointer) {
     void* mostTop = dynamic_cast<void*>(pointer);
-    Refable* p = (Refable*)mostTop;
+    HeapRefable* p = (HeapRefable*)mostTop;
     --p;
     return p;
 }
 
 template<typename U>
-typename std::enable_if<!std::is_polymorphic<U>::value, Refable*>::type  getRefable(U* pointer) {
+typename std::enable_if<!std::is_polymorphic<U>::value, HeapRefable*>::type  getRefable(U* pointer) {
     void* mostTop = pointer;
-    Refable* p = (Refable*)mostTop;
+    HeapRefable* p = (HeapRefable*)mostTop;
     --p;
     return p;
 }
@@ -123,7 +123,7 @@ public:
 
 private:
     void doFree(T* pointer) {
-        Refable* p = getRefable(pointer);
+        HeapRefable* p = getRefable(pointer);
         if (p->release()) {
             pointer->~T();
             ::operator delete(p);
@@ -165,8 +165,8 @@ public:
 
 template<typename T>
 OwnPtr<T> alloc() {
-    Refable* p = (Refable*)::operator new(sizeof(Refable) + sizeof(T));
-    new (p) Refable();
+    HeapRefable* p = (HeapRefable*)::operator new(sizeof(HeapRefable) + sizeof(T));
+    new (p) HeapRefable();
     void* m = (p + 1);
     T* t = new(m) T();
     return OwnPtr<T>(t);
@@ -184,12 +184,51 @@ OwnPtr<T> rawToOwn(T* ptr) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
+uint32_t generateCheckCode();
+
+template<typename T>
+struct StackRefable {
+    int32_t checkCode;
+    T value;
+
+    StackRefable(): checkCode(generateCheckCode()) {}
+
+    StackRefable(const T& v): value(v), checkCode(generateCheckCode()) {
+    }
+
+    ~StackRefable() {
+        checkCode = 0;
+    }
+
+    StackRefable& operator=(const T& v) {
+        value = v;
+    }
+
+    T* operator->() const { return &value; }
+
+    T* operator->() { return &value; }
+
+    T& operator*() { return value; }
+
+    operator T () { return value; }
+
+    RefPtr<T> operator&() { return RefPtr<T>(*this); }
+
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+enum struct RefType
+{
+    HeapRef, RawRef, NullRef, StackRef
+};
 
 template<typename T>
 class RefPtr {
     T* pointer;
     int32_t checkCode;
-    int32_t type;
+
+    RefType type;
 
     template <class U> friend class RefPtr;
 
@@ -197,19 +236,30 @@ class RefPtr {
 private:
     void onDeref() const {
         sc_assert(pointer != nullptr, "try deref null pointer");
-        if (type == 0) {
+        if (type == RefType::HeapRef) {
             sc_assert(checkCode == getRefable(pointer)->getCheckCode(), "try deref error pointer");
+        }
+        else if (type == RefType::StackRef) {
+            if (alignof(T) <= 4) {
+                sc_assert(checkCode == *(((int32_t*)pointer) - 1), "try deref error pointer");
+            }
+            else {
+                sc_assert(checkCode == *(((int64_t*)pointer) - 1), "try deref error pointer");
+            }
         }
     }
 public:
-    RefPtr() : pointer(nullptr), checkCode(0), type(2) {
+    RefPtr() : pointer(nullptr), checkCode(0), type(RefType::NullRef) {
     }
 
-    RefPtr(T* p) : pointer(p), checkCode(0), type(1) {
+    RefPtr(T* p) : pointer(p), checkCode(0), type(RefType::RawRef) {
+    }
+
+    RefPtr(StackRefable<T>& p) : pointer(&p.value), checkCode(p.checkCode), type(RefType::StackRef) {
     }
 
     template <class U>
-    RefPtr(OwnPtr<U>& p) : pointer(p.get()), checkCode(getRefable(pointer)->getCheckCode()), type(0) {
+    RefPtr(OwnPtr<U>& p) : pointer(p.get()), checkCode(getRefable(pointer)->getCheckCode()), type(RefType::HeapRef) {
     }
 
     template <class U>
@@ -261,7 +311,7 @@ RefPtr<T> rawToRef(T* ptr) {
 
 template<typename T>
 RefPtr<T> refSafeCheck(RefPtr<T> p) {
-    sric::sc_assert(p.type != 1, "Unsafe ref");
+    sric::sc_assert(p.type == RefPtr::RawRef, "Unsafe ref");
     return p;
 }
 
@@ -276,7 +326,7 @@ public:
     }
 
     WeakPtr(OwnPtr<T>& p) : pointer(NULL) {
-        Refable* refp = dynamic_cast<Refable*>(p.get());
+        HeapRefable* refp = dynamic_cast<HeapRefable*>(p.get());
         if (refp) {
             pointer = refp->getWeakRefBlock();
             pointer->addRef();
@@ -288,7 +338,7 @@ public:
             pointer->release();
         }
 
-        Refable* refp = dynamic_cast<Refable*>(p.get());
+        HeapRefable* refp = dynamic_cast<HeapRefable*>(p.get());
         if (refp) {
             pointer = refp->getWeakRefBlock();
             pointer->addRef();
@@ -297,7 +347,7 @@ public:
 
     WeakPtr(T* other) : pointer(NULL) {
         if (other) {
-            Refable* refp = dynamic_cast<Refable*>(other);
+            HeapRefable* refp = dynamic_cast<HeapRefable*>(other);
             pointer = refp->getWeakRefBlock();
             pointer->addRef();
         }
@@ -328,7 +378,7 @@ public:
         if (!pointer) {
             return OwnPtr<T>();
         }
-        return OwnPtr<Refable>(pointer->lock()).dynamicCastTo<T>();
+        return OwnPtr<HeapRefable>(pointer->lock()).dynamicCastTo<T>();
     }
 
     void clear() {

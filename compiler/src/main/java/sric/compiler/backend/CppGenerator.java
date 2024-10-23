@@ -544,11 +544,20 @@ public class CppGenerator extends BaseGenerator {
                 printType(ft.prototype.returnType);
                 print("(");
                 if (ft.prototype.paramDefs != null) {
+                    int i = 0;
                     for (ParamDef p : ft.prototype.paramDefs) {
+                        if (i > 0) print(", ");
                         printType(p.paramType, false);
+                        ++i;
                     }
                 }
                 print(")>");
+                return;
+            case Buildin.refableTypeName:
+                print("sric::StackRefable");
+                print("<");
+                printType(type.genericArgs.get(0), false);
+                print(">");
                 return;
         }
         
@@ -1158,6 +1167,9 @@ public class CppGenerator extends BaseGenerator {
                 print("::");
             }
             else if (e.target.resolvedType != null && e.target.resolvedType.isPointerType()) {
+                print("->");
+            }
+            else if (e.target.resolvedType != null && e.target.resolvedType.isRefableType()) {
                 print("->");
             }
             else {

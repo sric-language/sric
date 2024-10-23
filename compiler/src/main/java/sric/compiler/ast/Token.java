@@ -155,6 +155,7 @@ public class Token {
         constexprKeyword("constexpr", true),
         operatorKeyword("operator", true),
         noncopyableKeyword("noncopyable", true),
+        refableKeyword("refable", true),
         
         // misc
         eof("eof", false);

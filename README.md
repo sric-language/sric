@@ -17,13 +17,14 @@ A memory safe and compiled systems programming language.
 
 ## Design
 
-### Pointer Type
+### Data Type
 
 ```
+var p: Int             //value type
+var p: refable Int;    //referable value type
 var p: own* Int;       //ownership pointer, both unique and shared
 var p: ref* Int;       //non-ownership pointer, safe check at runtime
 var p: raw* Int;       //unsafe raw pointer
-var p: WeakPtr$<Int>;  //weak pointer
 ```
 
 ### Explicit Copy or Move

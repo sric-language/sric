@@ -401,29 +401,38 @@ public class ExprTypeResolver extends TypeResolver {
             else {
                 resolvedDef = null;
             }
-            if (resolvedDef == null) {
-                return null;
+        }
+        else if (target.resolvedType.isRefableType()) {
+            if (target.resolvedType.genericArgs == null || target.resolvedType.genericArgs.size() > 0) {
+                Type type = target.resolvedType.genericArgs.get(0);
+                resolvedDef = type.id.resolvedDef;
+            }
+            else {
+                resolvedDef = null;
             }
         }
         
-        if (resolvedDef != null) {
-            if (resolvedDef instanceof TypeDef t) {
-                Scope scope = t.getScope();
-                AstNode def = scope.get(name, loc, log);
-                if (def == null) {
-                    if (t instanceof StructDef sd) {
-                        if (sd.inheritances != null) {
-                            Scope inhScopes = sd.getInheriteScope();
-                            def = inhScopes.get(name, loc, log);
-                        }
+        if (resolvedDef == null) {
+            return null;
+        }
+
+        if (resolvedDef instanceof TypeDef t) {
+            Scope scope = t.getScope();
+            AstNode def = scope.get(name, loc, log);
+            if (def == null) {
+                if (t instanceof StructDef sd) {
+                    if (sd.inheritances != null) {
+                        Scope inhScopes = sd.getInheriteScope();
+                        def = inhScopes.get(name, loc, log);
                     }
                 }
-                if (def == null) {
-                    err("Unkown name:"+name, loc);
-                }
-                return def;
             }
+            if (def == null) {
+                err("Unkown name:"+name, loc);
+            }
+            return def;
         }
+
         return null;
     }
 
@@ -514,7 +523,13 @@ public class ExprTypeResolver extends TypeResolver {
                         if (e.operand.resolvedType.isArray()) {
                             elmentType = e.operand.resolvedType.genericArgs.get(0);
                         }
-                        e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.raw, false);
+                        
+                        if (e.operand.resolvedType.isRefableType()) {
+                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                        }
+                        else {
+                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.raw, false);
+                        }
                         break;
                     case awaitKeyword:
                         e.resolvedType = e.operand.resolvedType;
@@ -872,19 +887,27 @@ public class ExprTypeResolver extends TypeResolver {
                 case minus:
                 case star:
                 case slash:
-                    if (e.lhs.resolvedType.isInt() && e.rhs.resolvedType.isInt()) {
-                        e.resolvedType = e.lhs.resolvedType;
+                    Type lt = e.lhs.resolvedType;
+                    Type rt = e.rhs.resolvedType;
+                    if (lt.isRefableType()) {
+                        lt = lt.genericArgs.get(0);
                     }
-                    else if (e.lhs.resolvedType.isFloat() && e.rhs.resolvedType.isFloat()) {
-                        e.resolvedType = e.lhs.resolvedType;
+                    if (rt.isRefableType()) {
+                        rt = rt.genericArgs.get(0);
                     }
-                    else if ((e.lhs.resolvedType.isFloat() && e.rhs.resolvedType.isInt()) ||
-                            (e.lhs.resolvedType.isInt() && e.rhs.resolvedType.isFloat())) {
+                    if (lt.isInt() && rt.isInt()) {
+                        e.resolvedType = lt;
+                    }
+                    else if (lt.isFloat() && rt.isFloat()) {
+                        e.resolvedType = lt;
+                    }
+                    else if ((lt.isFloat() && rt.isInt()) ||
+                            (lt.isInt() && rt.isFloat())) {
                         e.resolvedType = Type.floatType(e.loc);
                     }
                     //pointer arithmetic: +,-
-                    else if ((curt == plus || curt == minus) && e.lhs.resolvedType.isRawPointerType() && e.rhs.resolvedType.isInt()) {
-                        e.resolvedType = e.lhs.resolvedType;
+                    else if ((curt == plus || curt == minus) && lt.isRawPointerType() && rt.isInt()) {
+                        e.resolvedType = lt;
                     }
                     else {
                         resolveMathOperator(curt, e);

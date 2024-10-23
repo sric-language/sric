@@ -24,6 +24,7 @@ public class Buildin {
     public static final String pointerTypeName = "*";
     public static final String varargTypeName = "...";
     public static final String metaTypeTypeName = "Type";
+    public static final String refableTypeName = "Refable";
 
     private static TypeDef makeBuildinType(Scope scope, String name) {
         return makeBuildinType(scope, name, null);
@@ -115,6 +116,13 @@ public class Buildin {
             makeBuildinType(scope, "Void");
             makeBuildinType(scope, varargTypeName);//varargs
             makeBuildinType(scope, funcTypeName);//func
+            
+            ArrayList<GenericParamDef> gps3 = new ArrayList<GenericParamDef>();
+            GenericParamDef gp3 = new GenericParamDef();
+            gp3.name = "T";
+            gp3.loc = loc;
+            gps3.add(gp3);
+            makeBuildinType(scope, refableTypeName, gps3);
             
             buildinScope = scope;
             
