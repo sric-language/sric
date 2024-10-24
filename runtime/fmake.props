@@ -1,7 +1,7 @@
-name = sricTest
-summary = test
-outType = exe
-version = 2.0
-srcDirs = ./,../compiler/res/output/
+name = sric
+summary = sric std library
+outType = lib
+version = 1.0
+srcDirs = ./,../compiler/res/output/sric.cpp
 incDir = ./
 extIncDirs = ../compiler/res/output/

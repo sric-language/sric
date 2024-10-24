@@ -15,10 +15,28 @@ import sric.lsp.LanguageServer;
  */
 public class Main {
     
+    static private void printHelp() {
+        System.out.println("Sric compiler");
+        System.out.println("Usage:");
+        System.out.println("  sric [options] <filename>");
+        System.out.println("Options:");
+        System.out.println("  -help,-? \tprint help");
+        System.out.println("  -lib \t\tlibrary path");
+        System.out.println("  -lsp \t\tstart LanguageServer");
+        System.out.println("  -r \t\trecursively build depends");
+        System.out.println("  -version \tprint version");
+    }
+    
+    static private void printVersion() {
+        System.out.println("Sric version 1.9");
+        System.out.println("Copyright (c) 2022-2024, chunquedong");
+        System.out.println("Licensed under the Academic Free License version 3.0");
+    }
+    
     public static void main(String[] args) throws IOException {
-        String sourcePath = "../library/test/module.scm";
+        String sourcePath = null;
         String libPath = "res/lib";
-        boolean recursion = true;
+        boolean recursion = false;
         boolean lsp = false;
         for (int i = 1; i<args.length; ++i) {
             if (args[i].equals("-lib")) {
@@ -31,6 +49,14 @@ public class Main {
             else if (args[i].equals("-r")) {
                 recursion = true;
             }
+            else if (args[i].equals("-?") || args[i].equals("-help")) {
+                printHelp();
+                return;
+            }
+            else if (args[i].equals("-version")) {
+                printVersion();
+                return;
+            }
             else {
                 sourcePath = args[i];
             }
@@ -39,6 +65,11 @@ public class Main {
         if (lsp) {
             LanguageServer ls = new LanguageServer(libPath);
             ls.start();
+            return;
+        }
+        
+        if (sourcePath == null) {
+            printHelp();
             return;
         }
         

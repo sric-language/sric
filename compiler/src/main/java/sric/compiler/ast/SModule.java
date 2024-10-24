@@ -28,6 +28,7 @@ public class SModule extends AstNode {
     public String name;
     public String version;
     public HashMap<String, String> metaProps = null;
+    public String outType;
     
     public ArrayList<FileUnit> fileUnits = new ArrayList<>();
     public Scope scope = null;
@@ -58,6 +59,10 @@ public class SModule extends AstNode {
         if (dependsStr == null) {
             throw new RuntimeException("Unknow depends");
         }
+        m.outType = props.get("outType");
+        if (m.outType == null) {
+            throw new RuntimeException("Unknow outType");
+        }
         
         if (dependsStr.length() > 0) {
             var dependsA = dependsStr.split(",");
@@ -83,6 +88,8 @@ public class SModule extends AstNode {
         map.put("name", name);
         map.put("version", version);
         map.put("sourcePath", sourcePath);
+        map.put("outType", outType);
+        map.put("buildTime", ""+System.currentTimeMillis());
         
         StringBuilder sb = new StringBuilder();
         for (var d : depends) {

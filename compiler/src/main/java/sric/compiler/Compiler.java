@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,6 +70,7 @@ public class Compiler {
         module.name = Util.getBaseName(sourceDir.getName());
         module.version = "1.0";
         module.sourcePath = sourcePath;
+        module.outType = "exe";
         File libDir = new File(libPath);
         module.depends= listDepends(libDir);
         return new Compiler(module, sourceDir, libPath, libDir.getParent()+"/output/");
@@ -203,7 +206,49 @@ public class Compiler {
         
         CppGenerator generator2 = new CppGenerator(log, outputFile+".cpp", false);
         generator2.run(module);
+        
+        genFmake();
+    }
 
+    private void genFmake() throws IOException {
+        
+        String fmakeFile = outputDir + "/" + this.module.name + ".fmake";
+        
+        StringBuilder depends = new StringBuilder();
+        StringBuilder src = new StringBuilder();
+        
+        if (module.outType.equals("exe")) {
+            for (Depend dp : module.depends) {
+                if (dp.name.equals("sric")) {
+                    depends.append("sric 1.0");
+                    continue;
+                }
+                src.append(", ");
+                src.append(dp.name).append(".cpp");
+            }
+        }
+        else {
+            for (Depend dp : module.depends) {
+                if (depends.length() > 0) {
+                    depends.append(", ");
+                }
+                depends.append(dp.toString());
+            }
+        }
+        
+        src.append(", ");
+        src.append(module.name).append(".cpp");
+
+        String fmake = "name = test\n" +
+                "summary = test\n" +
+                "outType = "+module.outType+"\n" +
+                "version = 1.0\n" +
+                "depends = "+depends.toString()+"\n" +
+                "srcDirs = ../../../runtime/"+src.toString()+"\n" +
+                "incDir = ./\n" +
+                "extIncDirs = ../../../runtime/\n";
+        
+        Files.writeString(Path.of(fmakeFile), fmake, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
     
 }
