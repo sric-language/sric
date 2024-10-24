@@ -13,7 +13,7 @@ struct CP {
     var p: own*? Int;
 }
 
-fun testA(a: ref* A) {
+fun testA(a: * A) {
     printf("%d\n", a.i);
 }
 

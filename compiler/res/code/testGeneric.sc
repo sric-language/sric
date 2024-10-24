@@ -3,7 +3,7 @@ trait NT {
     abstract operator fun plus(that: ref* NT): ref* NT;
 }
 
-struct A$<T = NT> {
+struct A$<T : NT> {
     var i: T ;
     fun foo(): raw* T {
        return &i;

@@ -248,7 +248,7 @@ public class ScLibGenerator extends BaseGenerator {
                 if (i > 0) print(", ");
                 print(gp.name);
                 if (gp.bound != null && !gp.bound.isVoid()) {
-                    print(" = ");
+                    print(" : ");
                     printType(gp.bound);
                 }
                 ++i;

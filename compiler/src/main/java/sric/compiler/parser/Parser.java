@@ -235,7 +235,7 @@ public class Parser {
                 param.parent = parent;
                 param.index = gparams.size();
                 
-                if (curt == TokenKind.assign) {
+                if (curt == TokenKind.colon) {
                     consume();
                     param.bound = this.typeRef();
                 }
@@ -863,8 +863,8 @@ public class Parser {
 //            case weakKeyword:
 //                consume();
 //                return pointerType(Type.PointerAttr.weak);
-//            case star:
-//                return pointerType(Type.PointerAttr.ref);
+            case star:
+                return pointerType(Type.PointerAttr.ref);
             case constKeyword:
                 return imutableType();
             case mutKeyword:

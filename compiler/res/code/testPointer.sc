@@ -7,7 +7,7 @@ struct A {
     var d: WeakPtr$<Int>;
 }
 
-fun foo(c: ref* Int) {
+fun foo(c: * Int) {
 }
 
 fun foo2(c: own* Int) {
