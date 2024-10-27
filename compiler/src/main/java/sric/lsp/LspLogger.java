@@ -17,7 +17,7 @@ public class LspLogger {
         try {
             this.enableLog = enableLog;
             if(enableLog) {
-                this.log = new RandomAccessFile(new File("./sc2-lsp.log"), "rw");
+                this.log = new RandomAccessFile(new File("./sric-lsp.log"), "rw");
                 this.log.setLength(0);
             }
         }

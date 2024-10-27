@@ -40,7 +40,7 @@
 					"type": "boolean",
 					"default": "",
 					"description": "Prevents the server from being restarted after it has crashed"
-				},				
+				},		
 				"sric.languageServerLog": {
 					"type": "boolean",
 					"default": "false",

@@ -398,6 +398,54 @@ public class JsonRpc {
         public String query;
     }
     
+    public static class DocumentSymbol {
+
+	public String name;
+
+	/**
+	 * More detail for this symbol, e.g the signature of a function.
+	 */
+	public String detail;
+
+	/**
+	 * The kind of this symbol.
+	 */
+	public int kind;
+
+	/**
+	 * Tags for this document symbol.
+	 *
+	 * @since 3.16.0
+	 */
+	public ArrayList<String> tags;
+
+	/**
+	 * Indicates if this symbol is deprecated.
+	 *
+	 * @deprecated Use tags instead
+	 */
+	public boolean deprecated;
+
+	/**
+	 * The range enclosing this symbol not including leading/trailing whitespace
+	 * but everything else like comments. This information is typically used to
+	 * determine if the clients cursor is inside the symbol to reveal in the
+	 * symbol in the UI.
+	 */
+	public Range range;
+
+	/**
+	 * The range that should be selected and revealed when this symbol is being
+	 * picked, e.g. the name of a function. Must be contained by the `range`.
+	 */
+	public Range selectionRange;
+
+	/**
+	 * Children of this symbol, e.g. properties of a class.
+	 */
+	public ArrayList<DocumentSymbol> children;
+    }
+    
     public static class SymbolInformation {
         public String name;
         public int kind;

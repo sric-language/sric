@@ -9,6 +9,7 @@ import sric.compiler.ast.AstNode;
 import sric.compiler.ast.AstNode.FileUnit;
 import sric.compiler.ast.Expr;
 import sric.compiler.ast.Expr.*;
+import sric.compiler.ast.Type;
 import sric.compiler.resolve.ErrorChecker;
 import sric.lsp.JsonRpc.*;
 
@@ -38,9 +39,14 @@ public class Document {
         textBuffer.setText(text);
     }
     
+    public void updateFile() {
+        ast = compiler.updateFile(ast.file, textBuffer.getText());
+    }
+    
     private AstNode getAstNodeAt(Position pos) {
         AstFinder sta = new AstFinder(null);
         int index = textBuffer.getPosIndex(pos);
+        index--;//before it
         return sta.findSourceNode(ast, index);
     }
     
@@ -51,12 +57,17 @@ public class Document {
         }
         if (node instanceof Expr e) {
             AstNode def = ErrorChecker.idResolvedDef(e);
-            if(def == null) {
-                return null;
+            if(def != null) {
+                return LspUtil.locationFromNode(def);
             }
-            return LspUtil.locationFromNode(def);
         }
-        return null;
+        else if (node instanceof Type t) {
+            if (t.id.resolvedDef != null) {
+                return LspUtil.locationFromNode(t.id.resolvedDef);
+            }
+        }
+        
+        return LspUtil.locationFromNode(node);
     }
     
     public List<Location> getReferences(Position pos) {
@@ -88,6 +99,7 @@ public class Document {
     
     private String findIdentifier(int index) {
         StringBuilder sb = new StringBuilder();
+        index--;
         while(index > -1) {
             char c = textBuffer.buffer.charAt(index);
 
@@ -105,25 +117,25 @@ public class Document {
         return name;
     }
     
-    public List<SymbolInformation> getSymbols() {
+    public List<DocumentSymbol> getSymbols() {
 
         FileUnit module = ast;
         if(module == null) {
             return null;
         }
         
-        ArrayList<SymbolInformation> list = new ArrayList<SymbolInformation>();
+        ArrayList<DocumentSymbol> list = new ArrayList<DocumentSymbol>();
         for (AstNode.TypeAlias typeAlias : module.typeAlias) {
-            list.add(LspUtil.toSymbolInfo(typeAlias));
+            list.add(LspUtil.toDocumentSymbol(typeAlias));
         }
         for (AstNode.TypeDef typeDef : module.typeDefs) {
-            list.add(LspUtil.toSymbolInfo(typeDef));
+            list.add(LspUtil.toDocumentSymbol(typeDef));
         }
         for (AstNode.FieldDef field : module.fieldDefs) {
-            list.add(LspUtil.toSymbolInfo(field));
+            list.add(LspUtil.toDocumentSymbol(field));
         }
         for (AstNode.FuncDef func : module.funcDefs) {
-            list.add(LspUtil.toSymbolInfo(func));
+            list.add(LspUtil.toDocumentSymbol(func));
         }
         
         return list;

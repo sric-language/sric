@@ -121,30 +121,36 @@ public class Compiler {
         return true;
     }
     
-    public boolean updateFile(String file, String src) throws IOException {
+    public AstNode.FileUnit updateFile(String file, String src) {
+        this.log.removeByFile(file);
+        
         AstNode.FileUnit funit = new AstNode.FileUnit(file);
         DeepParser parser = new DeepParser(log, src, funit);
         parser.parse();
         funit.module = module;
         
         for (FileUnit f : module.fileUnits) {
-            if (f.name.endsWith(funit.name)) {
+            if (f.file.endsWith(funit.file)) {
                 module.fileUnits.remove(f);
+                break;
             }
         }
         module.fileUnits.add(funit);
 
-        if (log.printError()) {
-            return false;
+//        if (log.printError()) {
+//            return false;
+//        }
+        try {
+            typeCheck();
         }
-        
-        typeCheck();
-        
-        if (log.printError()) {
-            return false;
+        catch (Exception e) {
+            e.printStackTrace();
         }
+//        if (log.printError()) {
+//            return false;
+//        }
 
-        return true;
+        return funit;
     }
     
     public SModule importModule(String moduleName, String version) {
@@ -184,7 +190,7 @@ public class Compiler {
     public AstNode.FileUnit parse(File file) throws IOException {
         String src = Files.readString(file.toPath());
         
-        AstNode.FileUnit unit = new AstNode.FileUnit(file.getPath());
+        AstNode.FileUnit unit = new AstNode.FileUnit(file.getCanonicalPath());
         DeepParser parser = new DeepParser(log, src, unit);
         parser.parse();
         return unit;

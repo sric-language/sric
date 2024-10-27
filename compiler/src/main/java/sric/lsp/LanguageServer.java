@@ -25,7 +25,7 @@ public class LanguageServer {
         this.isInitialized = false;
         
         this.gson = new GsonBuilder()
-                .serializeNulls()
+                //.serializeNulls()
                 .create();
         
         this.log = new LspLogger(true);

@@ -11,7 +11,10 @@ import sric.compiler.ast.AstNode.FieldDef;
 import sric.compiler.ast.AstNode.FileUnit;
 import sric.compiler.ast.Buildin;
 import sric.compiler.ast.Expr;
+import sric.compiler.ast.Expr.IdExpr;
 import sric.compiler.ast.Scope;
+import sric.compiler.ast.Type;
+import sric.compiler.resolve.ErrorChecker;
 
 /**
  *
@@ -26,12 +29,36 @@ public class CompletionFinder {
     public ArrayList<AstNode> findSugs(FileUnit funit, AstNode node, String text) {
         defs.clear();
         this.target = node;
-        this.target = null;
         this.text = text;
         
         
         if (this.target instanceof Expr e) {
-            AstNode resolvedDef = e.resolvedType.id.resolvedDef;
+            AstNode resolvedDef = null;
+            if (e.resolvedType != null) {
+                resolvedDef = e.resolvedType.id.resolvedDef;
+                if (e.resolvedType.isPointerType()) {
+                    if (e.resolvedType.genericArgs == null || e.resolvedType.genericArgs.size() > 0) {
+                        Type type = e.resolvedType.genericArgs.get(0);
+                        resolvedDef = type.id.resolvedDef;
+                    }
+                    else {
+                        resolvedDef = null;
+                    }
+                }
+                else if (e.resolvedType.isRefableType()) {
+                    if (e.resolvedType.genericArgs == null || e.resolvedType.genericArgs.size() > 0) {
+                        Type type = e.resolvedType.genericArgs.get(0);
+                        resolvedDef = type.id.resolvedDef;
+                    }
+                    else {
+                        resolvedDef = null;
+                    }
+                }
+            }
+            if (resolvedDef == null) {
+                resolvedDef = ErrorChecker.idResolvedDef(e);
+            }
+            
             if (resolvedDef != null) {
                 if (resolvedDef instanceof AstNode.TypeDef t) {
                     Scope scope = t.getScope();

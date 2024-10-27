@@ -26,7 +26,7 @@ public class Workspace {
     
     private LspLogger log;
     
-    private Map<String, sric.compiler.Compiler> moduleList;
+    private Map<String, sric.compiler.Compiler> moduleList = new HashMap<>();
 
     
     public Workspace(String libPath, LspLogger log) {        
@@ -40,7 +40,11 @@ public class Workspace {
     }
 
     private String canonicalPath(String docUri) {
-        return new File(URI.create(docUri)).toString();
+        try {
+            return new File(URI.create(docUri)).getCanonicalPath();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
     
     private sric.compiler.Compiler build(String file, boolean force) throws IOException {
@@ -100,11 +104,7 @@ public class Workspace {
         }
         
         if (document.compiler != null) {
-            try {
-                document.compiler.updateFile(document.ast.name, document.textBuffer.getText());
-            } catch (IOException ex) {
-                log.log("ERROR:"+ex.getMessage());
-            }
+            document.updateFile();
         }
     }
    

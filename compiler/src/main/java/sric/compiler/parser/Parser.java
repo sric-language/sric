@@ -41,7 +41,7 @@ public class Parser {
     public Parser(CompilerLog log, String code, FileUnit unit) {
         this.log = log;
         this.unit = unit;
-        Tokenizer toker = new Tokenizer(log, unit.name, code);
+        Tokenizer toker = new Tokenizer(log, unit.file, code);
         tokens = toker.tokenize();
         
         this.numTokens = tokens.size();

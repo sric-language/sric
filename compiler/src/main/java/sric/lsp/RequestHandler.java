@@ -105,7 +105,7 @@ public class RequestHandler {
     
     public void handleTextDocumentDocumentSymbol(RpcRequest rpc, DocumentSymbolParams params) {
         Document doc = this.workspace.getDocument(params.textDocument.uri);
-        List<SymbolInformation> symbols = Collections.emptyList();
+        List<DocumentSymbol> symbols = Collections.emptyList();
         if(doc != null) {
             symbols = doc.getSymbols();
         }

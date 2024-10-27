@@ -243,6 +243,8 @@ public class AstNode {
             StructDef nt = new StructDef(this.comment, this.flags, this.name);
             nt.parent = this.parent;
             nt.genericFrom = this;
+            nt.loc = this.loc;
+            nt.len = this.len;
             for (FieldDef f : fieldDefs) {
                 nt.addSlot(f.parameterize(typeGenericArgs));
             }
@@ -421,7 +423,7 @@ public class AstNode {
 
     
     public static class FileUnit extends AstNode {
-        public String name;
+        public String file;
         public ArrayList<TypeDef> typeDefs = new ArrayList<TypeDef>();
         public ArrayList<FieldDef> fieldDefs = new ArrayList<FieldDef>();
         public ArrayList<FuncDef> funcDefs = new ArrayList<FuncDef>();
@@ -432,7 +434,7 @@ public class AstNode {
         public Scope importScope = null;
         
         public FileUnit(String file) {
-            name = file;
+            this.file = file;
         }
         
         public void addDef(TopLevelDef node) {

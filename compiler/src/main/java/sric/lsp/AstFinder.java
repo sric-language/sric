@@ -81,6 +81,9 @@ public class AstFinder extends CompilePass {
                 }
             }
         }
+        if (prototype.returnType != null) {
+            visitType(prototype.returnType);
+        }
     }
 
     @Override

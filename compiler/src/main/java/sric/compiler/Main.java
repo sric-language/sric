@@ -38,7 +38,7 @@ public class Main {
         String libPath = "res/lib";
         boolean recursion = false;
         boolean lsp = false;
-        for (int i = 1; i<args.length; ++i) {
+        for (int i = 0; i<args.length; ++i) {
             if (args[i].equals("-lib")) {
                 ++i;
                 libPath = args[i];

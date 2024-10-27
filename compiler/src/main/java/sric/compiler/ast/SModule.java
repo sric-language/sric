@@ -38,7 +38,7 @@ public class SModule extends AstNode {
     
     public FileUnit findFileUnit(String file) {
         for (FileUnit v : fileUnits) {
-            if (v.name.equals(file)) {
+            if (v.file.equals(file)) {
                 return v;
             }
         }

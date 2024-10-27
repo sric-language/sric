@@ -33,25 +33,28 @@ function activate(context) {
         vscode.window.showErrorMessage("Could not start Sric language server due to missing setting: sric.languageServerArguments");
         return;
     }
+    args = args.split(" ");
+
+    binaryPath = "java -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=5005 -cp C:/workspace/code/safeC/bin/gson-2.8.6.jar;C:/workspace/code/safeC/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main -lsp -lib C:/workspace/code/safeC/compiler/res/lib";
     
-    var debugLog = config.get("languageServerLog");
-    if (debugLog) {
-        args += " -verbose";
-    }
+    // var debugLog = config.get("languageServerLog");
+    // if (debugLog) {
+    //     args += " -verbose";
+    // }
     
-    var libraryPath = config.get("libraryPath");
-    if (libraryPath) {
-        args += " -lib \"" + libraryPath + "\"";
-    }
+    // var libraryPath = config.get("libraryPath");
+    // if (libraryPath) {
+    //     args += " -lib \"" + libraryPath + "\"";
+    // }
 
     var failFast = (!!config.get("failFast")) || false; 
-    var clearOnRun = (!!config.get("clearTestOutput")) || true;
+    // var clearOnRun = (!!config.get("clearTestOutput")) || true;
     
-    var testOutputPath = config.get("testOutputPath");
+    // var testOutputPath = config.get("testOutputPath");
 
     var serverOptions = {
         command: binaryPath,
-        args: [ args ],
+        //args: [ args ],
         options: { shell: true },
     };
 
@@ -63,35 +66,37 @@ function activate(context) {
     // register custom commands
     
     // Test Current File
-    context.subscriptions.push(vscode.commands.registerCommand('sric.runTestsInCurrentFile', function(args) {
-        var docName = vscode.window.activeTextEditor.document.uri.fsPath;
-        if(docName == null) {
-            return;
-        }
+    // context.subscriptions.push(vscode.commands.registerCommand('sric.runTestsInCurrentFile', function(args) {
+    //     var docName = vscode.window.activeTextEditor.document.uri.fsPath;
+    //     if(docName == null) {
+    //         return;
+    //     }
         
-        console.log("Running test command for '" + docName + "'");
-        if(clearOnRun) {
-            getOutputChannel().clear()
-        }
+    //     console.log("Running test command for '" + docName + "'");
+    //     if(clearOnRun) {
+    //         getOutputChannel().clear()
+    //     }
     
-		var args = "";
-		if(testOutputPath) {
-			args += " -outputDir \"" + testOutputPath + "\"";
-		}
+	// 	var args = "";
+	// 	if(testOutputPath) {
+	// 		args += " -outputDir \"" + testOutputPath + "\"";
+	// 	}
 	
-        var cmd = binaryPath
-        if(libraryPath) {
-            cmd += " -lib " + libraryPath
-        }
-        cmd += " -testFile -run " + args + " " + docName
+    //     var cmd = binaryPath
+    //     if(libraryPath) {
+    //         cmd += " -lib " + libraryPath
+    //     }
+    //     cmd += " -testFile -run " + args + " " + docName
         
-        exec(cmd);
-    }));
+    //     exec(cmd);
+    // }));
 
     console.log("Running Sric Language server...");
 
-    var client = new vscode_languageclient.LanguageClient("scLanguageServer", "Sric language server", serverOptions, clientOptions);
+    var debug = true;
+    var client = new vscode_languageclient.LanguageClient("SricLanguageServer", "SricLanguageServer", serverOptions, clientOptions, debug);
     client.start(); 
+    //context.subscriptions.push(client.start());
 }
 
 function exec(cmd) {

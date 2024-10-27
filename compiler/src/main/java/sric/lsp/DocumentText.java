@@ -1,5 +1,6 @@
 package sric.lsp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,7 +8,7 @@ import java.util.List;
  * @author yangjiandong
  */
 public class DocumentText {
-    private List<Integer> lineMap;
+    private List<Integer> lineMap = new ArrayList<>();
     public StringBuilder buffer;
     
     public int getLineStart(int lineNumber) {
