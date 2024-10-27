@@ -2,6 +2,7 @@
   "name": "sric-language",
   "displayName": "sric-language",
   "description": "sric language",
+  "publisher" : "sric-language",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.92.0"
@@ -49,10 +50,6 @@
 			}
 		},
 		"commands": [
-			{
-				"command": "sric.runTestsInCurrentFile",
-				"title": "Sric: Run tests in current file"
-			}
 		]
   },
   "dependencies": {

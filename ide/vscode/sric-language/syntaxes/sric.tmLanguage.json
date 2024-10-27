@@ -49,7 +49,7 @@
 		"patterns": [
 		  {
 			"name": "support.type.builtin.sric",
-			"match": "\\b(Void|Bool|Int|Float|String)\\b"
+			"match": "\\b(Void|Bool|Int|Float|String|Int8|Int16|Int32|Int64|UInt8|UInt16|UInt32|UInt64|Float32|Float64)\\b"
 		  }
 		]
 	  },
@@ -120,7 +120,7 @@
 		"patterns": [
 		  {
 			"name": "storage.modifier.sric",
-			"match": "\\b(fun|var|mut|constexpr|operator|reflect|typealias|unsafe|raw|weak|move|ref|own|uninit|await|yield|async|extension|throws|abstract|const|final|internal|native|once|override|private|protected|public|readonly|static|virtual|volatile)\\b"
+			"match": "\\b(fun|var|mut|constexpr|operator|reflect|typealias|unsafe|raw|weak|move|ref|own|uninit|await|yield|async|extension|throws|abstract|const|final|internal|native|once|override|private|protected|public|readonly|static|virtual|volatile|reflect|packed|noncopyable|refable)\\b"
 		  },
 		  {
 			"name": "storage.modifier.global.sric",
@@ -246,6 +246,27 @@
 			  {
 				"include": "#interpolation"
 			  }
+			]
+		  },
+		  {
+			"name": "string.quoted.triple.sric",
+			"begin": "\"\"\"",
+			"beginCaptures": {
+			  "0": {
+				"name": "punctuation.definition.string.triple.begin.sric"
+			  }
+			},
+			"end": "\"\"\"",
+			"endCaptures": {
+			  "0": {
+				"name": "punctuation.definition.string.triple.end.sric"
+			  }
+			},
+			"patterns": [
+				{
+					"name": "constant.character.escape.sric",
+					"match": "\\\\."
+				}
 			]
 		  }
 		]
