@@ -21,14 +21,14 @@ public class LanguageServer {
     private RequestHandler handler;
     private MessageSender sender;
     
-    public LanguageServer(String libPath) {        
+    public LanguageServer(String libPath, boolean debug) {        
         this.isInitialized = false;
         
         this.gson = new GsonBuilder()
                 //.serializeNulls()
                 .create();
         
-        this.log = new LspLogger(true);
+        this.log = new LspLogger(debug);
         
         this.sender = new MessageSender(this.gson, this.log);
         this.handler = new RequestHandler(new Workspace(libPath, log), sender, this.log);

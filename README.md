@@ -14,6 +14,7 @@ A memory safe and compiled systems programming language.
 - Non-nullable pointer
 - Reflection
 - Generic Template, Closure, Operator Overloading
+- VSCode plugin and LSP support
 
 ## Design
 
@@ -29,7 +30,7 @@ var p: raw* Int;       //unsafe raw pointer
 
 ### Explicit Copy or Move
 
-Explicit move or share ownership pointer
+Move or share ownership pointer
 ```
 var p: own* Int = ...;
 var p1 = p; //compiler error;
@@ -37,7 +38,7 @@ var p2 = move p;
 var p3 = share(p2);
 ```
 
-Explicit move or copy if the struct has ownership pointer:
+Move or copy if the struct has ownership pointer:
 ```
 struct A {
     var i: own* Int;

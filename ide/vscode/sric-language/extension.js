@@ -30,31 +30,21 @@ function activate(context) {
 
     var args = config.get("languageServerArguments");
     if (!args) {
-        vscode.window.showErrorMessage("Could not start Sric language server due to missing setting: sric.languageServerArguments");
-        return;
+        args = "";
     }
-    args = args.split(" ");
 
-    binaryPath = "java -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=5005 -cp C:/workspace/code/safeC/bin/gson-2.8.6.jar;C:/workspace/code/safeC/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main -lsp -lib C:/workspace/code/safeC/compiler/res/lib";
-    
-    // var debugLog = config.get("languageServerLog");
-    // if (debugLog) {
-    //     args += " -verbose";
-    // }
-    
-    // var libraryPath = config.get("libraryPath");
-    // if (libraryPath) {
-    //     args += " -lib \"" + libraryPath + "\"";
-    // }
+    var debugLog = config.get("languageServerLog");
+    if (debugLog) {
+        args += " -verbose";
+    }
 
     var failFast = (!!config.get("failFast")) || false; 
     // var clearOnRun = (!!config.get("clearTestOutput")) || true;
-    
     // var testOutputPath = config.get("testOutputPath");
 
     var serverOptions = {
         command: binaryPath,
-        //args: [ args ],
+        args: [ args ],
         options: { shell: true },
     };
 
@@ -93,10 +83,8 @@ function activate(context) {
 
     console.log("Running Sric Language server...");
 
-    var debug = true;
-    var client = new vscode_languageclient.LanguageClient("SricLanguageServer", "SricLanguageServer", serverOptions, clientOptions, debug);
+    var client = new vscode_languageclient.LanguageClient("SricLanguageServer", "SricLanguageServer", serverOptions, clientOptions);
     client.start(); 
-    //context.subscriptions.push(client.start());
 }
 
 function exec(cmd) {

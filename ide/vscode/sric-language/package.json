@@ -29,37 +29,22 @@
 				"sric.languageServerPath": {
 					"type": "string",
 					"default": "",
-					"description": "Path of the Sric language server binary (e.g. \"C:/sric-lsp.exe\")"
+					"description": "Path of the Sric language server binary (e.g. \"java -cp C:/workspace/code/safeC/bin/gson-2.8.6.jar;C:/workspace/code/safeC/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main\")"
 				},
 				"sric.languageServerArguments": {
 					"type": "string",
-					"default": "-languageServer",
-					"description": "Command line arguments for the Sric language server"
+					"default": "",
+					"description": "Command line arguments for the Sric language server (e.g. \"-lib C:/workspace/code/safeC/compiler/res/lib -lsp\")"
 				},
 				"sric.failFast": {
 					"type": "boolean",
 					"default": "",
 					"description": "Prevents the server from being restarted after it has crashed"
-				},		
+				},
 				"sric.languageServerLog": {
 					"type": "boolean",
 					"default": "false",
 					"description": "Outputs a log file for debuging the Sric Language Server"
-				},
-				"sric.libraryPath": {
-					"type": "string",
-					"default": "",
-					"description": "The path to the Sric library, this should be your sric/lib directory"
-				},
-				"sric.testOutputPath": {
-					"type": "string",
-					"default": "",
-					"description": "The path to write out test output files"
-				},
-				"sric.clearTestOutput": {
-					"type": "boolean",
-					"default": "true",
-					"description": "Clears the output before each test run"
 				}
 			}
 		},
