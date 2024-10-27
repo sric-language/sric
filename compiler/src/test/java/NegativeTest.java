@@ -18,7 +18,7 @@ public class NegativeTest {
     
     @Test
     public void test() throws IOException {
-        String libPath = "res/lib";
+        String libPath = "../lib";
         File file = new File("res/negative/const.sc");
 
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file.getPath(), libPath);
@@ -33,7 +33,7 @@ public class NegativeTest {
     
     @Test
     public void testAll() throws IOException {
-        String libPath = "res/lib";
+        String libPath = "../lib";
         File[] list = new File("res/negative").listFiles();
         for (File file : list) {
             if (!file.getName().endsWith(".sc")) {

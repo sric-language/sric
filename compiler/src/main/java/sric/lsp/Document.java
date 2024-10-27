@@ -22,10 +22,12 @@ public class Document {
     public FileUnit ast;
     public sric.compiler.Compiler compiler;
     private LspLogger log;
+    public String file;
     
     public Document(TextDocument document, LspLogger log, sric.compiler.Compiler compiler, String file) {
         this.log = log;
         this.compiler = compiler;
+        this.file = file;
         this.ast = compiler.module.findFileUnit(file);
         textBuffer = new DocumentText();
         textBuffer.setText(document.text);
@@ -40,7 +42,7 @@ public class Document {
     }
     
     public void updateFile() {
-        ast = compiler.updateFile(ast.file, textBuffer.getText());
+        ast = compiler.updateFile(file, textBuffer.getText());
     }
     
     private AstNode getAstNodeAt(Position pos) {

@@ -11,10 +11,11 @@ import org.junit.jupiter.api.Test;
  * @author yangjiandong
  */
 public class MiscTest {
+    String libPath = "../lib";
+    
     @Test
     public void testEnum() throws IOException {
         String file = "res/code/testEnum.sc";
-        String libPath = "res/lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);
         compiler.genCode = false;
@@ -25,7 +26,6 @@ public class MiscTest {
     @Test
     public void testTypealias() throws IOException {
         String file = "res/code/testTypealias.sc";
-        String libPath = "res/lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);
         compiler.genCode = false;
@@ -36,7 +36,6 @@ public class MiscTest {
     @Test
     public void testParam() throws IOException {
         String file = "res/code/testParam.sc";
-        String libPath = "res/lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);
         compiler.genCode = false;
@@ -47,7 +46,6 @@ public class MiscTest {
     @Test
     public void testArray() throws IOException {
         String file = "res/code/testArray.sc";
-        String libPath = "res/lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);
         compiler.genCode = false;
@@ -58,7 +56,6 @@ public class MiscTest {
     @Test
     public void testOperator() throws IOException {
         String file = "res/code/testOperator.sc";
-        String libPath = "res/lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);
         compiler.genCode = false;
@@ -69,7 +66,6 @@ public class MiscTest {
     @Test
     public void testClosure() throws IOException {
         String file = "res/code/testClosure.sc";
-        String libPath = "res/lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);
         compiler.genCode = false;

@@ -14,7 +14,7 @@ public class GenericTest {
     @Test
     public void test() throws IOException {
         String file = "res/code/testGeneric.sc";
-        String libPath = "res/lib";
+        String libPath = "../lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);
         compiler.genCode = false;

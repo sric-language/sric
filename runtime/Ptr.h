@@ -297,7 +297,7 @@ public:
 
 template <class T>
 OwnPtr<T> refToOwn(RefPtr<T> ptr) {
-    if (ptr.type != 0) {
+    if (ptr.type != RefType::HeapRef) {
         return OwnPtr<T>();
     }
     getRefable(ptr.get())->addRef();

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Operating system
+cygwin=false;
+darwin=false;
+linux=false;
+case "`uname`" in
+    CYGWIN*)
+      cygwin=true
+      ;;
+    Darwin*)
+      darwin=true
+      ;;
+    Linux*)
+      linux=true
+      ;;
+esac
+
+SRIC_HOME=$(dirname $(cd `dirname $0`; pwd))
+
+# On Cygwin, convert paths to Windows-style (as expected by a JVM running on Windows)
+if $cygwin; then
+  SRIC_HOME=`cygpath --windows $SRIC_HOME`
+fi
+
+#echo $SRIC_HOME
+
+java -cp $SRIC_HOME/bin/gson-2.8.6.jar:$SRIC_HOME/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main -lib $SRIC_HOME/lib "$@"
