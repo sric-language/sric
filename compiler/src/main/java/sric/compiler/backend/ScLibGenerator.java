@@ -201,7 +201,7 @@ public class ScLibGenerator extends BaseGenerator {
         
         printGenericParamDefs(v.generiParamDefs);
 
-        printFuncPrototype(v.prototype);
+        printFuncPrototype(v.prototype, false, v.isStatic());
 
         
         if (inlined && v.code != null) {
@@ -212,7 +212,7 @@ public class ScLibGenerator extends BaseGenerator {
         }
     }
     
-    private void printFuncPrototype(AstNode.FuncPrototype prototype) {
+    private void printFuncPrototype(AstNode.FuncPrototype prototype, boolean isLambda, boolean isStatic) {
         print("(");
         if (prototype != null && prototype.paramDefs != null) {
             int i = 0;
@@ -231,6 +231,10 @@ public class ScLibGenerator extends BaseGenerator {
             }
         }
         print(")");
+        
+        if (!isLambda && !isStatic && (prototype.postFlags & FConst.Mutable) != 0) {
+            print(" mut ");
+        }
         
         if (prototype != null) {
             if (prototype.returnType != null && !prototype.returnType.isVoid()) {
@@ -602,7 +606,7 @@ public class ScLibGenerator extends BaseGenerator {
 //        }
 //        print("]");
         
-        this.printFuncPrototype(expr.prototype);
+        this.printFuncPrototype(expr.prototype, true, false);
         
         this.visit(expr.code);
     }

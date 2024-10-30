@@ -109,6 +109,7 @@ public abstract class Expr extends AstNode {
         public String name;
         
         public AstNode resolvedDef;
+        public boolean implicitThis;
         
         public IdExpr(String name) {
             this.name = name;

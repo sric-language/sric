@@ -5,7 +5,7 @@ trait NT {
 
 struct A$<T : NT> {
     var i: T ;
-    fun foo(): raw* T {
+    fun foo() mut : raw* T {
        return &i;
     }
 

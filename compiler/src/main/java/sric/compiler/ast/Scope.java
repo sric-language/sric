@@ -43,7 +43,7 @@ public class Scope extends AstNode {
             return null;
         }
         if (nodes.size() > 1) {
-            log.err("Mulit define " + nodes.get(0).loc + "," + nodes.get(1).loc, loc);
+            log.err("Mulit definition " + nodes.get(0).loc + "," + nodes.get(1).loc, loc);
         }
         return nodes.get(0);
     }

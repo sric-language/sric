@@ -188,8 +188,11 @@ public class Type extends AstNode {
         if (equals(target)) {
             return true;
         }
-        if (this.isNullType() && target.isPointerType()) {
-            return true;
+        if (this.isNullType() && target.detail instanceof PointerInfo a) {
+            if (a.isNullable) {
+                return true;
+            }
+            return false;
         }
         
         if (this.isRefableType() && this.genericArgs != null) {
@@ -201,20 +204,13 @@ public class Type extends AstNode {
         
         //pointer fit
         if (this.detail instanceof PointerInfo e && target.detail instanceof PointerInfo a) {
-            
-            if (this.isImmutable && !target.isImmutable) {
+
+            if (e.isNullable && !a.isNullable) {
+                //error to nonnullable
                 return false;
             }
-                    
-            if ((e.pointerAttr == a.pointerAttr) && (a.isNullable == a.isNullable)) {
-                //ok
-            }
-            else {
-                if (e.isNullable && !a.isNullable) {
-                    //error to nonnullable
-                    return false;
-                }
 
+            if ((e.pointerAttr != a.pointerAttr)) {
                 if (e.pointerAttr == PointerAttr.own && (a.pointerAttr == PointerAttr.ref || a.pointerAttr == PointerAttr.raw)) {
                     //ok
                 }
@@ -225,7 +221,6 @@ public class Type extends AstNode {
                     return false;
                 }
             }
-
             
             if (target.genericArgs != null && target.genericArgs.get(0).isVoid()) {
                 //ok
@@ -272,7 +267,7 @@ public class Type extends AstNode {
         
         if (this.isPointerType()) {
             if (this.detail instanceof PointerInfo e && target.detail instanceof PointerInfo a) {
-                if ( (e.pointerAttr != a.pointerAttr) || (e.isNullable == a.isNullable))  {
+                if ( (e.pointerAttr != a.pointerAttr) || (e.isNullable != a.isNullable))  {
                     return false;
                 }
             }
@@ -346,6 +341,10 @@ public class Type extends AstNode {
                 boolean ok = false;
                 if (from.fit(to)) {
                     ok = true;
+                }
+                
+                if (from.isImmutable && !to.isImmutable) {
+                    return false;
                 }
                 
                 if (from.id.resolvedDef instanceof StructDef sd && to.id.resolvedDef instanceof TypeDef ttd) {
@@ -433,6 +432,7 @@ public class Type extends AstNode {
     
     public static Type nullType(Loc loc) {
         Type type = new Type(loc, Buildin.pointerTypeName);
+        type.isImmutable = true;
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, type.loc, null);
         return type;
     }
@@ -528,9 +528,16 @@ public class Type extends AstNode {
             return sb.toString();
         }
         else if (isPointerType()) {
-            PointerInfo info = (PointerInfo)this.detail;
-            sb.append(info.pointerAttr).append("* ");
-            sb.append(this.genericArgs.get(0).toString());
+            if (this.isNullType()) {
+                sb.append("null");
+            }
+            else {
+                PointerInfo info = (PointerInfo)this.detail;
+                sb.append(info.pointerAttr).append("*");
+                if (info.isNullable) sb.append("?");
+                sb.append(" ");
+                sb.append(this.genericArgs.get(0).toString());
+            }
             return sb.toString();
         }
         else if (isFuncType()) {
@@ -561,7 +568,7 @@ public class Type extends AstNode {
         return sb.toString();
     }
 
-    public Type parameterize(ArrayList<Type> typeGenericArgs) {
+    public Type templateInstantiate(ArrayList<Type> typeGenericArgs) {
         if (!(this.id.resolvedDef instanceof GenericParamDef g) && this.genericArgs == null) {
             return this;
         }
@@ -570,7 +577,7 @@ public class Type extends AstNode {
         if (this.genericArgs != null) {
             nt.genericArgs = new ArrayList<Type>();
             for (int i=0; i<this.genericArgs.size(); ++i) {
-                Type t = this.genericArgs.get(i).parameterize(typeGenericArgs);
+                Type t = this.genericArgs.get(i).templateInstantiate(typeGenericArgs);
                 nt.genericArgs.add(t);
             }
         }
@@ -610,4 +617,18 @@ public class Type extends AstNode {
         return type;
     }
     
+    public Type toImmutable() {
+        if (this.isImmutable) {
+            return this;
+        }
+        
+        //shadow copy
+        Type type = new Type(this.id);
+        type.genericArgs = this.genericArgs;
+        type.resolvedAlias = this.resolvedAlias;
+        type.explicitImmutable = this.explicitImmutable;
+        type.isImmutable = true;
+        type.detail = this.detail;
+        return type;
+    }
 }

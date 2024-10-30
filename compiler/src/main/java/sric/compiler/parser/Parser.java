@@ -501,9 +501,9 @@ public class Parser {
         for (boolean done = false; !done;) {
             int oldFlags = flags;
             switch (curt) {
-                case constKeyword:
-                    flags = flags | (FConst.Const);
-                    break;
+//                case constKeyword:
+//                    flags = flags | (FConst.Const);
+//                    break;
                 case mutKeyword:
                     flags = flags | (FConst.Mutable);
                     break;
@@ -828,6 +828,13 @@ public class Parser {
         //param type default to const
         if (!param.paramType.explicitImmutable) {
             param.paramType.isImmutable = true;
+            if (param.paramType.isPointerType()) {
+                if (param.paramType.genericArgs != null) {
+                    if (!param.paramType.genericArgs.get(0).explicitImmutable) {
+                        param.paramType.genericArgs.get(0).isImmutable = true;
+                    }
+                }
+            }
         }
         
         if (curt == TokenKind.assign) {

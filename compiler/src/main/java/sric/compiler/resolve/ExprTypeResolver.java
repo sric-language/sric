@@ -112,6 +112,19 @@ public class ExprTypeResolver extends TypeResolver {
             }
         }
         super.resolveId(idExpr);
+        
+        if (idExpr.resolvedDef != null && idExpr.namespace == null) {
+            if (idExpr.resolvedDef instanceof FieldDef f) {
+                if (f.parent instanceof TypeDef) {
+                    idExpr.implicitThis = true;
+                }
+            }
+            else if (idExpr.resolvedDef instanceof FuncDef f) {
+                if (f.parent instanceof TypeDef) {
+                    idExpr.implicitThis = true;
+                }
+            }
+        }
     }
 
     @Override
@@ -357,7 +370,8 @@ public class ExprTypeResolver extends TypeResolver {
                         prototype = f.prototype;
                     }
                     if (!rets.expr.resolvedType.fit(prototype.returnType)) {
-                        err("Return type not fit function", rets.expr.loc);
+                        rets.expr.resolvedType.fit(prototype.returnType);
+                        err("Return type not fit function: "+rets.expr.resolvedType+"=>"+prototype.returnType, rets.expr.loc);
                     }
                 }
             }
@@ -367,11 +381,22 @@ public class ExprTypeResolver extends TypeResolver {
         }
     }
     
-    private Type getSlotType(AstNode resolvedDef) {
+    private Type getSlotType(AstNode resolvedDef, boolean targetImmutable, Loc loc) {
         if (resolvedDef instanceof FieldDef f) {
+            if (targetImmutable) {
+                if (f.fieldType == null) {
+                    return null;
+                }
+                return f.fieldType.toImmutable();
+            }
             return f.fieldType;
         }
         else if (resolvedDef instanceof FuncDef f) {
+            if (targetImmutable) {
+                if ((f.prototype.postFlags & FConst.Mutable) != 0) {
+                    err("Immutable function", loc);
+                }
+            }
             return Type.funcType(f);
         }
         else if (resolvedDef instanceof TypeAlias f) {
@@ -440,15 +465,28 @@ public class ExprTypeResolver extends TypeResolver {
     public void visitExpr(Expr v) {
         if (v instanceof Expr.IdExpr e) {
             resolveId(e);
-            if (e.resolvedDef != null) {
-                e.resolvedType = getSlotType(e.resolvedDef);
+            if (e.resolvedDef != null && e.resolvedType == null) {
+                boolean targetImmutable = false;
+                if (e.implicitThis) {
+                    AstNode func = this.funcs.peek();
+                    if (func instanceof FuncDef ef) {
+                        if ((ef.prototype.postFlags & FConst.Mutable) == 0) {
+                            targetImmutable = true;
+                        }
+                    }
+                }
+                e.resolvedType = getSlotType(e.resolvedDef, targetImmutable, e.loc);
             }
         }
         else if (v instanceof Expr.AccessExpr e) {
             this.visit(e.target);
             e.resolvedDef = resoveOnTarget(e.target, e.name, e.loc, true);
             if (e.resolvedDef != null) {
-                e.resolvedType = getSlotType(e.resolvedDef);
+                boolean targetImmutable = e.target.resolvedType.isImmutable;
+                if (e.target.resolvedType.isPointerType() && e.target.resolvedType.genericArgs != null) {
+                    targetImmutable = e.target.resolvedType.genericArgs.get(0).isImmutable;
+                }
+                e.resolvedType = getSlotType(e.resolvedDef, targetImmutable, e.loc);
             }
             else {
                 if (e.target.resolvedType != null && e.target.resolvedType.isMetaType()) {
@@ -762,8 +800,8 @@ public class ExprTypeResolver extends TypeResolver {
             if (idExpr.resolvedDef instanceof StructDef sd) {
                 if (sd.generiParamDefs != null) {
                     if (e.genericArgs.size() == sd.generiParamDefs.size()) {
-                        e.resolvedDef = sd.parameterize(e.genericArgs);
-                        e.resolvedType = getSlotType(e.resolvedDef);
+                        e.resolvedDef = sd.makeInstance(e.genericArgs).templateInstantiate();
+                        e.resolvedType = getSlotType(e.resolvedDef, false, e.loc);
                         genericOk = true;
                     }
                 }
@@ -771,8 +809,8 @@ public class ExprTypeResolver extends TypeResolver {
             else if (idExpr.resolvedDef instanceof FuncDef sd) {
                 if (sd.generiParamDefs != null) {
                     if (e.genericArgs.size() == sd.generiParamDefs.size()) {
-                        e.resolvedDef = sd.parameterize(e.genericArgs);
-                        e.resolvedType = getSlotType(e.resolvedDef);
+                        e.resolvedDef = sd.templateInstantiate(e.genericArgs);
+                        e.resolvedType = getSlotType(e.resolvedDef, false, e.loc);
                         genericOk = true;
                     }
                 }

@@ -19,7 +19,7 @@ struct LinkedList$<T: Linkable> {
         return length;
     }
 
-    fun add(elem: own* T) {
+    fun add(elem: mut own* T) mut {
         if (tail == null) {
             insert(move elem);
             return;
@@ -32,7 +32,7 @@ struct LinkedList$<T: Linkable> {
         ++length;
     }
 
-    fun insert(elem: own* T) {
+    fun insert(elem: mut own* T) mut {
         elem.next = move head;
         elem.previous = null;
 
@@ -46,7 +46,7 @@ struct LinkedList$<T: Linkable> {
         ++length;
     }
 
-    fun insertBefore(elem: own* T, pos: *T) {
+    fun insertBefore(elem: mut own* T, pos: * mut T) mut {
         if (pos.previous == null) {
             insert(elem);
             return;
@@ -58,17 +58,20 @@ struct LinkedList$<T: Linkable> {
         ++length;
     }
 
-    fun remove(elem: *? T): Bool {
+    fun remove(elem: *? mut T) mut: Bool {
         if (elem == null) return false;
-        if (elem.previous != null) {
-            elem.previous.next = move elem.next;
-        }
+        
         if (elem.next != null) {
             elem.next.previous = elem.previous;
         }
+
         if (head == elem) {
             head = move elem.next;
         }
+        if (elem.previous != null) {
+            elem.previous.next = move elem.next;
+        }
+
         if (tail == elem) {
             tail = elem.previous;
         }
@@ -82,15 +85,15 @@ struct LinkedList$<T: Linkable> {
         return length == 0;
     }
 
-    fun first(): *T {
+    fun first(): *?T {
         return head;
     }
 
-    fun last(): *T {
+    fun last(): *?T {
         return tail;
     }
 
-    fun end(): *T {
+    fun end(): *?T {
         return null;
     }
 }

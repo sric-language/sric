@@ -85,7 +85,7 @@ public class AstNode {
             this.name = name;
         }
         
-        public FieldDef parameterize(ArrayList<Type> typeGenericArgs) {
+        public FieldDef templateInstantiate(ArrayList<Type> typeGenericArgs) {
             FieldDef nf = new FieldDef(this.comment, this.name);
             nf.loc = this.loc;
             nf.len = this.len;
@@ -93,7 +93,7 @@ public class AstNode {
             nf.parent = this.parent;
             nf.initExpr = this.initExpr;
             nf.isLocalVar = this.isLocalVar;
-            nf.fieldType = this.fieldType.parameterize(typeGenericArgs);
+            nf.fieldType = this.fieldType.templateInstantiate(typeGenericArgs);
             return nf;
         }
         
@@ -116,7 +116,9 @@ public class AstNode {
         
         private Scope inheritScopes = null;
         StructDef genericFrom = null;
-        private HashMap<String, StructDef> parameterizeCache;
+        private ArrayList<Type> typeGenericArgs;
+        private boolean genericInited = false;
+//        private HashMap<String, StructDef> parameterizeCache;
         
         public StructDef(Comments comment, int flags, String name) {
             this.comment = comment;
@@ -167,6 +169,7 @@ public class AstNode {
         
         public Scope getScope() {
             if (scope == null) {
+                templateInstantiate();
                 scope = new Scope();
                 if (this.generiParamDefs != null) {
                     for (GenericParamDef gp : this.generiParamDefs) {
@@ -209,6 +212,7 @@ public class AstNode {
         }
         
         private void getScopeNoPrivate(Scope scope) {
+            templateInstantiate();
             for (FieldDef f : fieldDefs) {
                 if ((f.flags & FConst.Private) != 0) {
                     continue;
@@ -223,36 +227,29 @@ public class AstNode {
             }
         }
         
-        public StructDef parameterize(ArrayList<Type> typeGenericArgs) {
-            if (parameterizeCache == null) {
-                parameterizeCache = new HashMap<String, StructDef>();
-            }
-            StringBuilder keySb = new StringBuilder();
-            for (Type t : typeGenericArgs) {
-                if (!keySb.isEmpty()) {
-                    keySb.append(',');
-                }
-                keySb.append(t.toString());
-            }
-            String key = keySb.toString();
-            StructDef gt = parameterizeCache.get(key);
-            if (gt != null) {
-                return gt;
-            }
-            
+        public StructDef makeInstance(ArrayList<Type> typeGenericArgs) {
             StructDef nt = new StructDef(this.comment, this.flags, this.name);
             nt.parent = this.parent;
             nt.genericFrom = this;
             nt.loc = this.loc;
             nt.len = this.len;
-            for (FieldDef f : fieldDefs) {
-                nt.addSlot(f.parameterize(typeGenericArgs));
-            }
-            for (FuncDef f : funcDefs) {
-                nt.addSlot(f.parameterize(typeGenericArgs));
-            }
-            parameterizeCache.put(key, nt);
+
+            nt.typeGenericArgs = typeGenericArgs;
             return nt;
+        }
+        
+        public StructDef templateInstantiate() {
+            if (this.genericFrom == null) return this;
+            if (genericInited) return this;
+            genericInited = true;
+            
+            for (FieldDef f : this.genericFrom.fieldDefs) {
+                this.addSlot(f.templateInstantiate(typeGenericArgs));
+            }
+            for (FuncDef f : this.genericFrom.funcDefs) {
+                this.addSlot(f.templateInstantiate(typeGenericArgs));
+            }
+            return this;
         }
         
         public boolean isInheriteFrom(TypeDef parent) {
@@ -383,7 +380,7 @@ public class AstNode {
         public Block code;            // code block
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
-        public FuncDef parameterize(ArrayList<Type> typeGenericArgs) {
+        public FuncDef templateInstantiate(ArrayList<Type> typeGenericArgs) {
             FuncDef nf = new FuncDef();
             nf.comment = this.comment;
             nf.flags = this.flags;
@@ -393,7 +390,7 @@ public class AstNode {
             nf.code = this.code;
             nf.parent = this.parent;
             nf.prototype = new FuncPrototype();
-            nf.prototype.returnType = this.prototype.returnType.parameterize(typeGenericArgs);
+            nf.prototype.returnType = this.prototype.returnType.templateInstantiate(typeGenericArgs);
             nf.prototype.postFlags = this.prototype.postFlags;
             if (this.prototype.paramDefs != null) {
                 nf.prototype.paramDefs = new ArrayList<ParamDef>();
@@ -403,7 +400,7 @@ public class AstNode {
                     np.defualtValue = p.defualtValue;
                     np.loc = p.loc;
                     np.len = p.len;
-                    np.paramType = p.paramType.parameterize(typeGenericArgs);
+                    np.paramType = p.paramType.templateInstantiate(typeGenericArgs);
                     nf.prototype.paramDefs.add(np);
                 }
             }

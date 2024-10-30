@@ -87,8 +87,8 @@ public class ErrorChecker extends CompilePass {
                 }
             }
             if (!allowUnsafeCast) {
-                err("Type mismatch:" + from.toString() + " => " + to.toString() , loc);
-                //from.fit(to);
+                err("Type mismatch: " + from.toString() + " => " + to.toString() , loc);
+                from.fit(to);
                 return;
             }
         }
@@ -500,32 +500,27 @@ public class ErrorChecker extends CompilePass {
         }
     }
     
-    private void verifyAccess(Expr target, AstNode resolvedSlotDef, Loc loc) {
-//        if (target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
-//            if (pinfo.isNullable) {
-//                err("Maybe null", target.loc);
+//    private void verifyAccess(Expr target, AstNode resolvedSlotDef, Loc loc) {
+////        if (target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
+////            if (pinfo.isNullable) {
+////                err("Maybe null", target.loc);
+////            }
+////        }
+//        if (target.resolvedType == null) {
+//            return;
+//        }
+//        
+//        boolean isImutable = target.resolvedType.isImmutable;
+//        if (target.resolvedType.isPointerType() && target.resolvedType.genericArgs != null) {
+//            isImutable = target.resolvedType.genericArgs.get(0).isImmutable;
+//        }
+//        
+//        if (resolvedSlotDef instanceof AstNode.FuncDef f) {
+//            if (isImutable && (f.prototype.postFlags & FConst.Mutable) != 0) {
+//                err("Const error", loc);
 //            }
 //        }
-        if (target.resolvedType == null) {
-            return;
-        }
-        
-        boolean isImutable = target.resolvedType.isImmutable;
-        if (target.resolvedType.isPointerType() && target.resolvedType.genericArgs != null) {
-            isImutable = target.resolvedType.genericArgs.get(0).isImmutable;
-        }
-        
-        if (resolvedSlotDef instanceof AstNode.FieldDef f) {
-            if (isImutable && (f.flags & FConst.Const) == 0) {
-                err("Const error", loc);
-            }
-        }
-        else if (resolvedSlotDef instanceof AstNode.FuncDef f) {
-            if (isImutable && (f.prototype.postFlags & FConst.Mutable) != 0) {
-                err("Const error", loc);
-            }
-        }
-    }
+//    }
     
     private void verifyUnsafe(Expr target) {
         if (target instanceof IdExpr id) {
@@ -578,7 +573,7 @@ public class ErrorChecker extends CompilePass {
         else if (v instanceof Expr.AccessExpr e) {
             this.visit(e.target);
             verifyUnsafe(e.target);
-            verifyAccess(e.target, e.resolvedDef, e.loc);
+            //verifyAccess(e.target, e.resolvedDef, e.loc);
             if (e.resolvedDef != null) {                
                 if (e.resolvedDef instanceof AstNode.FieldDef f) {
                     checkProtection(f, f.parent, v.loc, e.inLeftSide);
@@ -623,6 +618,9 @@ public class ErrorChecker extends CompilePass {
                     case increment:
                     case decrement:
                         verifyInt(e.operand);
+                        if (e.operand.resolvedType.isImmutable) {
+                            err("Const error", e.loc);
+                        }
                         break;
                     //&
                     case amp:
@@ -646,6 +644,9 @@ public class ErrorChecker extends CompilePass {
                         }
                         else {
                             err("Invalid move", e.loc);
+                        }
+                        if (e.operand.resolvedType.isImmutable) {
+                            err("Const error", e.loc);
                         }
                         break;
                     default:
@@ -924,7 +925,12 @@ public class ErrorChecker extends CompilePass {
                         }
                         else if (e.lhs.resolvedType.detail instanceof Type.PointerInfo p1 && e.rhs.resolvedType.detail instanceof Type.PointerInfo p2) {
                             if (p1.pointerAttr != p2.pointerAttr) {
-                                err("Cant compare different type", e.loc);
+                                if (p1.pointerAttr.ordinal() > p2.pointerAttr.ordinal()) {
+                                    verifyTypeFit(e.rhs, e.lhs.resolvedType, e.rhs.loc, true);
+                                }
+                                else {
+                                    verifyTypeFit(e.lhs, e.rhs.resolvedType, e.lhs.loc, true);
+                                }
                             }
                         }
                     }

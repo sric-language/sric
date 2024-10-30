@@ -815,7 +815,7 @@ public class CppGenerator extends BaseGenerator {
             print(getSymbolName(v));
         }
         
-        printFuncPrototype(v.prototype, false);
+        printFuncPrototype(v.prototype, false, v.isStatic());
         
         if (v.code == null) {
             if ((v.flags & FConst.Abstract) != 0) {
@@ -849,7 +849,7 @@ public class CppGenerator extends BaseGenerator {
         }
     }
     
-    private void printFuncPrototype(FuncPrototype prototype, boolean isLambda) {
+    private void printFuncPrototype(FuncPrototype prototype, boolean isLambda, boolean isStatic) {
         print("(");
         if (prototype != null && prototype.paramDefs != null) {
             int i = 0;
@@ -873,6 +873,10 @@ public class CppGenerator extends BaseGenerator {
             }
         }
         print(")");
+        
+        if (!isLambda && !isStatic && (prototype.postFlags & FConst.Mutable) == 0) {
+            print(" const ");
+        }
         
         if (isLambda && prototype != null) {
             if (prototype.returnType != null && !prototype.returnType.isVoid()) {
@@ -1558,7 +1562,7 @@ public class CppGenerator extends BaseGenerator {
 //        }
         print("]");
         
-        this.printFuncPrototype(expr.prototype, true);
+        this.printFuncPrototype(expr.prototype, true, false);
         
         this.visit(expr.code);
     }

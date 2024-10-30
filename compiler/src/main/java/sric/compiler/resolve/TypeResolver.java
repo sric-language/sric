@@ -153,7 +153,7 @@ public abstract class TypeResolver  extends CompilePass {
             if (type.id.resolvedDef instanceof StructDef sd) {
                 if (sd.generiParamDefs != null) {
                     if (type.genericArgs.size() == sd.generiParamDefs.size()) {
-                        type.id.resolvedDef = sd.parameterize(type.genericArgs);
+                        type.id.resolvedDef = sd.makeInstance(type.genericArgs);
                         genericOk = true;
                     }
                 }
