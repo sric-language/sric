@@ -806,7 +806,10 @@ public class ExprTypeResolver extends TypeResolver {
                             typeGenericArgs.put(sd.generiParamDefs.get(i), e.genericArgs.get(i));
                         }
                         e.resolvedDef = sd.makeInstance(typeGenericArgs).templateInstantiate();
-                        e.resolvedType = getSlotType(e.resolvedDef, false, e.loc);
+                        Type type = new Type(e.loc, sd.name);
+                        type.genericArgs = e.genericArgs;
+                        type.id.resolvedDef = e.resolvedDef;
+                        e.resolvedType = Type.metaType(e.loc, type);;
                         genericOk = true;
                     }
                 }

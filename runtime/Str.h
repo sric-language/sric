@@ -10,6 +10,7 @@ namespace sric
 class String {
     std::string str;
 public:
+    String() {};
     String(const char* c) : str(c) {}
     String(const std::string& c) : str(c) {}
 
@@ -29,7 +30,9 @@ public:
         return get(i);
     }
 
-    int hashCode();
+    int hashCode() const;
+    int compare(RefPtr<String> other) const;
+
     bool iequals(RefPtr<String> other);
     bool contains(RefPtr<String> s);
     bool startsWith(RefPtr<String> s);

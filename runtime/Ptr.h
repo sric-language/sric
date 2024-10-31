@@ -311,7 +311,7 @@ RefPtr<T> rawToRef(T* ptr) {
 
 template<typename T>
 RefPtr<T> refSafeCheck(RefPtr<T> p) {
-    sric::sc_assert(p.type == RefPtr::RawRef, "Unsafe ref");
+    sric::sc_assert(p.type == RefType::RawRef, "Unsafe ref");
     return p;
 }
 

@@ -628,6 +628,7 @@ public class CppGenerator extends BaseGenerator {
             if (printLocalFieldDefAsExpr(v)) {
                 print(";").newLine();
             }
+            return;
         }
         
         if (headMode && v.parent instanceof FileUnit) {

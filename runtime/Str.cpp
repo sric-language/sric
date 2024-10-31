@@ -9,9 +9,13 @@
 using namespace sric;
 #define BUF_SIZE 1024
 
-int String::hashCode() {
+int String::hashCode() const {
     std::hash<std::string> hash_fn;
     return hash_fn(cpp_str());
+}
+
+int String::compare(RefPtr<String> other) const {
+    return strcmp(c_str(), other->c_str());
 }
 
 int String::find(RefPtr<String> s, int start) {

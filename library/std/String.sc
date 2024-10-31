@@ -5,7 +5,6 @@ extern noncopyable struct String {
     fun size(): Int;
 
     operator fun get(i: Int): Int8;
-    fun hashCode(): Int;
 
     fun iequals(other: ref* String) : Bool;
     fun contains(other: ref* String) : Bool;
@@ -33,6 +32,9 @@ extern noncopyable struct String {
     fun toLong(): Int64;
     fun toFloat(): Float32;
     fun toDouble(): Float64;
+
+    fun hashCode(): Int;
+    operator fun compare(p: *String): Int;
 }
 
 extern fun String_fromInt(i: Int32): String;

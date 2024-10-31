@@ -1,5 +1,5 @@
 trait Hashable {
-    abstract fun hash(): Int;
+    abstract fun hashCode(): Int;
     abstract operator fun compare(p: *Hashable): Int;
 }
 
@@ -17,10 +17,14 @@ private struct MapEntryList$<K:Hashable, V> {
 struct HashMap$<K:Hashable, V> {
     private var table: DArray$<MapEntryList$<K,V>>;
     var defValue: V;
-    private var length: Int;
+    private var length: Int = 0;
+
+    fun init(size: Int = 2) {
+        table.resize(2);
+    }
     
     private fun getEntryList(k: K): *MapEntryList$<K,V> {
-        var h = k.hash();
+        var h = k.hashCode();
         h %= table.size();
         return table[h];
     }
