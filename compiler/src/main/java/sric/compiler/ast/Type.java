@@ -78,6 +78,13 @@ public class Type extends AstNode {
         return id.name.equals("Void");
     }
     
+    public boolean isEmptyType() {
+        if (id.namespace != null) {
+            return false;
+        }
+        return id.name.equals(Buildin.emptyTypeName);
+    }
+    
     public boolean isBool() {
         if (id.namespace != null) {
             return false;

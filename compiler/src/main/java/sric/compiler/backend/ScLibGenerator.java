@@ -251,7 +251,7 @@ public class ScLibGenerator extends BaseGenerator {
             for (var gp : generiParamDefs) {
                 if (i > 0) print(", ");
                 print(gp.name);
-                if (gp.bound != null && !gp.bound.isVoid()) {
+                if (gp.bound != null && !gp.bound.isEmptyType()) {
                     print(" : ");
                     printType(gp.bound);
                 }
