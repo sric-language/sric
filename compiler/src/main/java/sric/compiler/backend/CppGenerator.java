@@ -908,6 +908,12 @@ public class CppGenerator extends BaseGenerator {
                     for (Type t : sd.inheritances) {
                         if (t.id.resolvedDef != null && t.id.resolvedDef instanceof TypeDef td) {
                             if (td.parent != null && ((FileUnit)td.parent).module == this.module) {
+                                if (td instanceof StructDef tds) {
+                                    if (tds.originGenericTemplate != null) {
+                                        this.visitTypeDef(tds.originGenericTemplate);
+                                        continue;
+                                    }
+                                }
                                 this.visitTypeDef(td);
                             }
                         }
@@ -917,6 +923,12 @@ public class CppGenerator extends BaseGenerator {
                     if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof TypeDef td) {
                         if (td.parent != null && td.parent instanceof FileUnit unit) {
                             if (unit.module == this.module) {
+                                if (td instanceof StructDef tds) {
+                                    if (tds.originGenericTemplate != null) {
+                                        this.visitTypeDef(tds.originGenericTemplate);
+                                        continue;
+                                    }
+                                }
                                 this.visitTypeDef(td);
                             }
                         }

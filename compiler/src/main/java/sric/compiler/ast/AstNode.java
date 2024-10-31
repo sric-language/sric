@@ -116,7 +116,7 @@ public class AstNode {
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
         private Scope inheritScopes = null;
-        StructDef originGenericTemplate = null;
+        public StructDef originGenericTemplate = null;
         private Map<GenericParamDef, Type> typeGenericArgs;
         private boolean genericInited = false;
         private StructDef genericTemplate = null;

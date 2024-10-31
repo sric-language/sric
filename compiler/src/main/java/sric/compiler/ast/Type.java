@@ -408,6 +408,12 @@ public class Type extends AstNode {
         return type;
     }
     
+    public static Type emptyType(Loc loc) {
+        Type type = new Type(loc, Buildin.emptyTypeName);
+        type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, loc, null);
+        return type;
+    }
+    
     public static Type boolType(Loc loc) {
         Type type = new Type(loc, "Bool");
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, loc, null);

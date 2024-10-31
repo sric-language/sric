@@ -40,6 +40,12 @@ public class TopoSorter {
                 for (Type t : sd.inheritances) {
                     if (t.id.resolvedDef != null && t.id.resolvedDef instanceof AstNode.TypeDef td) {
                         if (td.parent != null && ((AstNode.FileUnit)td.parent).module == this.module) {
+                            if (td instanceof AstNode.StructDef tds) {
+                                if (tds.originGenericTemplate != null) {
+                                    this.visitTypeDef(tds.originGenericTemplate);
+                                    continue;
+                                }
+                            }
                             this.visitTypeDef(td);
                         }
                     }
@@ -49,6 +55,12 @@ public class TopoSorter {
                 if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof AstNode.TypeDef td) {
                     if (td.parent != null && td.parent instanceof AstNode.FileUnit unit) {
                         if (unit.module == this.module) {
+                            if (td instanceof AstNode.StructDef tds) {
+                                if (tds.originGenericTemplate != null) {
+                                    this.visitTypeDef(tds.originGenericTemplate);
+                                    continue;
+                                }
+                            }
                             this.visitTypeDef(td);
                         }
                     }
