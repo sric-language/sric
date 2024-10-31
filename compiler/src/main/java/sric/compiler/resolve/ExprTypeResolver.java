@@ -8,6 +8,7 @@ import java.util.ArrayDeque;
 import sric.compiler.ast.Scope;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import sric.compiler.CompilePass;
 import sric.compiler.CompilerLog;
 import sric.compiler.ast.AstNode;
@@ -800,7 +801,11 @@ public class ExprTypeResolver extends TypeResolver {
             if (idExpr.resolvedDef instanceof StructDef sd) {
                 if (sd.generiParamDefs != null) {
                     if (e.genericArgs.size() == sd.generiParamDefs.size()) {
-                        e.resolvedDef = sd.makeInstance(e.genericArgs).templateInstantiate();
+                        Map<GenericParamDef, Type> typeGenericArgs = new HashMap<>();
+                        for (int i=0; i<e.genericArgs.size(); ++i) {
+                            typeGenericArgs.put(sd.generiParamDefs.get(i), e.genericArgs.get(i));
+                        }
+                        e.resolvedDef = sd.makeInstance(typeGenericArgs).templateInstantiate();
                         e.resolvedType = getSlotType(e.resolvedDef, false, e.loc);
                         genericOk = true;
                     }
@@ -809,7 +814,11 @@ public class ExprTypeResolver extends TypeResolver {
             else if (idExpr.resolvedDef instanceof FuncDef sd) {
                 if (sd.generiParamDefs != null) {
                     if (e.genericArgs.size() == sd.generiParamDefs.size()) {
-                        e.resolvedDef = sd.templateInstantiate(e.genericArgs);
+                        Map<GenericParamDef, Type> typeGenericArgs = new HashMap<>();
+                        for (int i=0; i<e.genericArgs.size(); ++i) {
+                            typeGenericArgs.put(sd.generiParamDefs.get(i), e.genericArgs.get(i));
+                        }
+                        e.resolvedDef = sd.templateInstantiate(typeGenericArgs);
                         e.resolvedType = getSlotType(e.resolvedDef, false, e.loc);
                         genericOk = true;
                     }

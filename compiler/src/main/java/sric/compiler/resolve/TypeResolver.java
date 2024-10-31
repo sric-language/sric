@@ -6,6 +6,7 @@ package sric.compiler.resolve;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import sric.compiler.CompilePass;
 import sric.compiler.CompilerLog;
 import sric.compiler.Compiler;
@@ -120,6 +121,9 @@ public abstract class TypeResolver  extends CompilePass {
         }
         
         if (type.isFuncType()) {
+            for (int i=0; i<type.genericArgs.size(); ++i) {
+                resolveType(type.genericArgs.get(i), asExpr);
+            }
             return;
         }
         
@@ -153,7 +157,11 @@ public abstract class TypeResolver  extends CompilePass {
             if (type.id.resolvedDef instanceof StructDef sd) {
                 if (sd.generiParamDefs != null) {
                     if (type.genericArgs.size() == sd.generiParamDefs.size()) {
-                        type.id.resolvedDef = sd.makeInstance(type.genericArgs);
+                        Map<GenericParamDef, Type> typeGenericArgs = new HashMap<>();
+                        for (int i=0; i<type.genericArgs.size(); ++i) {
+                            typeGenericArgs.put(sd.generiParamDefs.get(i), type.genericArgs.get(i));
+                        }
+                        type.id.resolvedDef = sd.makeInstance(typeGenericArgs);
                         genericOk = true;
                     }
                 }

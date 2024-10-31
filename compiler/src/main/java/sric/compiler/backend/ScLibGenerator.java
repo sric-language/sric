@@ -526,7 +526,10 @@ public class ScLibGenerator extends BaseGenerator {
     }
     
     void printLiteral(Expr.LiteralExpr e) {
-        if (e.value instanceof Long li) {
+        if (e.value == null) {
+            print("null");
+        }
+        else if (e.value instanceof Long li) {
             print(li.toString());
         }
         else if (e.value instanceof Double li) {

@@ -170,7 +170,7 @@ public class CppGenerator extends BaseGenerator {
             
             this.unindent();
             newLine();
-            print("} //ns").newLine();
+            print("}").newLine();
 
             /////////////////////////////////////////////////////////////
             print("namespace ");

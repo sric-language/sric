@@ -29,14 +29,14 @@ fun testRefable() {
 }
 
 fun testPtr() {
-    var p: own* A = alloc$<A>();
-    testA(p);
+    var p: own*? A = alloc$<A>();
+    testA(p!);
 
     if (p != null) {
         printf("%d\n", p.i);
     }
 
-    var rp: ref* A = p;
+    var rp: ref* A = p!;
     p = null;
     //printf("%d\n", rp.i);
 }

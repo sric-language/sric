@@ -6,6 +6,7 @@ package sric.compiler.ast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import sric.compiler.ast.Expr.IdExpr;
 import sric.compiler.ast.Token.TokenKind;
 
@@ -85,7 +86,7 @@ public class AstNode {
             this.name = name;
         }
         
-        public FieldDef templateInstantiate(ArrayList<Type> typeGenericArgs) {
+        public FieldDef templateInstantiate(Map<GenericParamDef, Type> typeGenericArgs) {
             FieldDef nf = new FieldDef(this.comment, this.name);
             nf.loc = this.loc;
             nf.len = this.len;
@@ -115,9 +116,10 @@ public class AstNode {
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
         private Scope inheritScopes = null;
-        StructDef genericFrom = null;
-        private ArrayList<Type> typeGenericArgs;
+        StructDef originGenericTemplate = null;
+        private Map<GenericParamDef, Type> typeGenericArgs;
         private boolean genericInited = false;
+        private StructDef genericTemplate = null;
 //        private HashMap<String, StructDef> parameterizeCache;
         
         public StructDef(Comments comment, int flags, String name) {
@@ -227,28 +229,38 @@ public class AstNode {
             }
         }
         
-        public StructDef makeInstance(ArrayList<Type> typeGenericArgs) {
+        public StructDef makeInstance(Map<GenericParamDef, Type> typeGenericArgs) {
             StructDef nt = new StructDef(this.comment, this.flags, this.name);
             nt.parent = this.parent;
-            nt.genericFrom = this;
             nt.loc = this.loc;
             nt.len = this.len;
+            nt.genericTemplate = this;
+            
+            if (this.originGenericTemplate != null) {
+                nt.originGenericTemplate = this.originGenericTemplate;
+            }
+            else {
+                nt.originGenericTemplate = this;
+            }
 
             nt.typeGenericArgs = typeGenericArgs;
             return nt;
         }
         
         public StructDef templateInstantiate() {
-            if (this.genericFrom == null) return this;
+            if (this.genericTemplate == null) return this;
             if (genericInited) return this;
             genericInited = true;
             
-            for (FieldDef f : this.genericFrom.fieldDefs) {
+            this.genericTemplate.templateInstantiate();
+            
+            for (FieldDef f : this.genericTemplate.fieldDefs) {
                 this.addSlot(f.templateInstantiate(typeGenericArgs));
             }
-            for (FuncDef f : this.genericFrom.funcDefs) {
+            for (FuncDef f : this.genericTemplate.funcDefs) {
                 this.addSlot(f.templateInstantiate(typeGenericArgs));
             }
+            
             return this;
         }
         
@@ -367,7 +379,7 @@ public class AstNode {
             }
             sb.append(")");
 
-            if (returnType != null && returnType.isVoid()) {
+            if (returnType != null && !returnType.isVoid()) {
                 sb.append(":");
                 sb.append(returnType);
             }
@@ -380,7 +392,7 @@ public class AstNode {
         public Block code;            // code block
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
-        public FuncDef templateInstantiate(ArrayList<Type> typeGenericArgs) {
+        public FuncDef templateInstantiate(Map<GenericParamDef, Type> typeGenericArgs) {
             FuncDef nf = new FuncDef();
             nf.comment = this.comment;
             nf.flags = this.flags;
@@ -487,7 +499,7 @@ public class AstNode {
     
     public static class GenericParamDef extends TypeDef {
         public Type bound;
-        public int index;
+        //public int index;
 
         @Override
         public Scope getScope() {

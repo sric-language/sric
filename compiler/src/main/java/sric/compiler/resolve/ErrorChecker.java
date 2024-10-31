@@ -762,10 +762,20 @@ public class ErrorChecker extends CompilePass {
                     for (Stmt t : e.block.stmts) {
                         if (t instanceof ExprStmt exprStmt) {
                             if (exprStmt.expr instanceof BinaryExpr bexpr) {
-                                if (bexpr.opToken == TokenKind.assign && bexpr.lhs instanceof IdExpr idExpr) {
-                                    if (idExpr.resolvedDef == f) {
-                                        found = true;
-                                        break;
+                                if (bexpr.opToken == TokenKind.assign) {
+                                    if (bexpr.lhs instanceof IdExpr idExpr) {
+                                        if (idExpr.resolvedDef == f) {
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    else if (bexpr.lhs instanceof AccessExpr accExpr) {
+                                        if (accExpr.resolvedDef == f && accExpr.target instanceof IdExpr iexpr) {
+                                            if (iexpr.name.equals(".")) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
                                     }
                                 }
                             }

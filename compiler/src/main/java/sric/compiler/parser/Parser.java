@@ -233,7 +233,7 @@ public class Parser {
                 GenericParamDef param = new GenericParamDef();
                 param.name = paramName;
                 param.parent = parent;
-                param.index = gparams.size();
+                //param.index = gparams.size();
                 
                 if (curt == TokenKind.colon) {
                     consume();
@@ -828,13 +828,6 @@ public class Parser {
         //param type default to const
         if (!param.paramType.explicitImmutable) {
             param.paramType.isImmutable = true;
-            if (param.paramType.isPointerType()) {
-                if (param.paramType.genericArgs != null) {
-                    if (!param.paramType.genericArgs.get(0).explicitImmutable) {
-                        param.paramType.genericArgs.get(0).isImmutable = true;
-                    }
-                }
-            }
         }
         
         if (curt == TokenKind.assign) {

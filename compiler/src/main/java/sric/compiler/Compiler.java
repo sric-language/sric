@@ -229,7 +229,7 @@ public class Compiler {
                     depends.append("sric 1.0");
                     continue;
                 }
-                src.append(", ");
+                if (src.length() > 0) src.append(", ");
                 src.append(dp.name).append(".cpp");
             }
         }
@@ -242,17 +242,21 @@ public class Compiler {
             }
         }
         
-        src.append(", ");
+        if (src.length() > 0) src.append(", ");
         src.append(module.name).append(".cpp");
+        
+        if (this.module.name.equals("sric")) {
+            src.insert(0, "../runtime/, ");
+        }
 
-        String fmake = "name = test\n" +
-                "summary = test\n" +
+        String fmake = "name = "+this.module.name+"\n" +
+                "summary = "+this.module.name+"\n" +
                 "outType = "+module.outType+"\n" +
                 "version = 1.0\n" +
                 "depends = "+depends.toString()+"\n" +
-                "srcDirs = ../../../runtime/"+src.toString()+"\n" +
+                "srcDirs = "+src.toString()+"\n" +
                 "incDir = ./\n" +
-                "extIncDirs = ../../../runtime/\n";
+                "extIncDirs = ../runtime/\n";
         
         Files.writeString(Path.of(fmakeFile), fmake, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }

@@ -7,6 +7,7 @@ package sric.compiler.ast;
 import sric.compiler.ast.AstNode.TypeDef;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import sric.compiler.ast.Expr.ClosureExpr;
 import sric.compiler.ast.Expr.IdExpr;
 
@@ -175,10 +176,14 @@ public class Type extends AstNode {
     
     public boolean fit(Type target) {
         if (this.resolvedAlias != null) {
-            return this.resolvedAlias.fit(target);
+            if (this.resolvedAlias.fit(target)) {
+                return true;
+            }
         }
         if (target.resolvedAlias != null) {
-            return this.fit(target.resolvedAlias);
+            if (this.fit(target.resolvedAlias)) {
+                return true;
+            }
         }
         
         if (target.isVarArgType()) {
@@ -236,7 +241,7 @@ public class Type extends AstNode {
 
             if (this.id.resolvedDef != null && target.id.resolvedDef != null) {
                 if (this.id.resolvedDef instanceof StructDef sd && target.id.resolvedDef instanceof StructDef td) {
-                    if (sd.genericFrom == td.genericFrom || sd == td.genericFrom || sd.genericFrom == td) {
+                    if (sd.originGenericTemplate == td.originGenericTemplate || sd == td.originGenericTemplate || sd.originGenericTemplate == td) {
                         return true;
                     }
 
@@ -255,10 +260,14 @@ public class Type extends AstNode {
         }
         
         if (this.resolvedAlias != null) {
-            return this.resolvedAlias.equals(target);
+            if (this.resolvedAlias.equals(target)) {
+                return true;
+            }
         }
         if (target.resolvedAlias != null) {
-            return this.equals(target.resolvedAlias);
+            if (this.equals(target.resolvedAlias)) {
+                return true;
+            }
         }
         
         if (!genericArgsEquals(target)) {
@@ -302,7 +311,7 @@ public class Type extends AstNode {
         
         if (this.id.resolvedDef != null && target.id.resolvedDef != null) {
             if (this.id.resolvedDef instanceof StructDef sd && target.id.resolvedDef instanceof StructDef td) {
-                if (sd.genericFrom == td.genericFrom) {
+                if (sd.originGenericTemplate == td.originGenericTemplate) {
                     return true;
                 }
             }
@@ -349,7 +358,7 @@ public class Type extends AstNode {
                 
                 if (from.id.resolvedDef instanceof StructDef sd && to.id.resolvedDef instanceof TypeDef ttd) {
                     if (ttd instanceof StructDef td) {
-                        if (sd.genericFrom == td.genericFrom || sd == td.genericFrom || sd.genericFrom == td) {
+                        if (sd.originGenericTemplate == td.originGenericTemplate || sd == td.originGenericTemplate || sd.originGenericTemplate == td) {
                             ok = true;
                         }
                     }
@@ -503,6 +512,9 @@ public class Type extends AstNode {
         if (this.isImmutable) {
             sb.append("const ");
         }
+        else {
+            sb.append("mut ");
+        }
         
         if (isArray()) {
             ArrayInfo info = (ArrayInfo)this.detail;
@@ -541,7 +553,7 @@ public class Type extends AstNode {
             return sb.toString();
         }
         else if (isFuncType()) {
-            sb.append("func");
+            sb.append("fun");
             sb.append(((FuncInfo)this.detail).prototype.toString());
             return sb.toString();
         }
@@ -568,7 +580,7 @@ public class Type extends AstNode {
         return sb.toString();
     }
 
-    public Type templateInstantiate(ArrayList<Type> typeGenericArgs) {
+    public Type templateInstantiate(Map<GenericParamDef, Type> typeGenericArgs) {
         if (!(this.id.resolvedDef instanceof GenericParamDef g) && this.genericArgs == null) {
             return this;
         }
@@ -583,16 +595,20 @@ public class Type extends AstNode {
         }
         nt.detail = this.detail;
         if (this.id.resolvedDef instanceof GenericParamDef g) {
-            if (g.index < typeGenericArgs.size()) {
-                Type at = typeGenericArgs.get(g.index);
+            if (typeGenericArgs.containsKey(g)) {
+                Type at = typeGenericArgs.get(g);
                 if (at != null) {
                     nt.id = at.id;
                     nt.detail = at.detail;
+                    nt.genericArgs = at.genericArgs;
                     if (at.isImmutable) {
                         nt.isImmutable = true;
                     }
                 }
             }
+        }
+        else if (this.id.resolvedDef instanceof StructDef sd) {
+            this.id.resolvedDef = sd.makeInstance(typeGenericArgs);
         }
         return nt;
     }
