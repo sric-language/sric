@@ -837,7 +837,7 @@ public class CppGenerator extends BaseGenerator {
     
     @Override
     public void visitFunc(AstNode.FuncDef v) {
-        if ((v.flags & FConst.ExternC) != 0) {
+        if ((v.flags & FConst.ExternC) != 0 || (v.flags & FConst.Extern) != 0) {
             return;
         }
         if (isEntryPoint(v) && headMode) {
@@ -1507,10 +1507,14 @@ public class CppGenerator extends BaseGenerator {
             }
         }
 
-        if (e._storeVar != null) {
+        if (e._storeVar != null && e._storeVar.isLocalVar) {
             if (!e._isType) {
                 print(" = ");
                 this.visit(e.target);
+            }
+            else if (e.block.stmts.size() == 0) {
+                print(" = {}");
+                return;
             }
             print(";");
             
@@ -1521,6 +1525,10 @@ public class CppGenerator extends BaseGenerator {
         }
         else if (e.target.isResolved()) {
             if (e._storeVar != null) {
+                if (e.block.stmts.size() == 0) {
+                    print(" = {}");
+                    return;
+                }
                 print(" = ");
             }
             //[&]()->T{ T __t = alloc(); __t.name =1; return __t; }()
@@ -1529,8 +1537,11 @@ public class CppGenerator extends BaseGenerator {
             print("{");
             
             printType(e.resolvedType);
-            print(" __t");
+            print(" __t = ");
             this.visit(e.target);
+            if (e._isType) {
+                print("()");
+            }
             print(";");
             
             printItBlockArgs(e, "__t");

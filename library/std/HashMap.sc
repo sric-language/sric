@@ -1,30 +1,22 @@
-private abstract struct Hashable$<T> {
-    abstract fun hashCode() const : Int;
-    abstract operator fun compare(p: *T) const : Int;
-}
 
-private struct MapEntry$<K:Hashable$<K>, V> {
+private struct MapEntry$<K, V> {
     var k: K;
     var v: V;
     var next: own*? MapEntry$<K, V>;
     var previous: *? MapEntry$<K, V>;
 }
 
-private struct MapEntryList$<K:Hashable$<K>, V> {
+private struct MapEntryList$<K, V> {
     var list: LinkedList$<MapEntry$<K,V>>;
 }
 
-struct HashMap$<K:Hashable$<K>, V> {
-    private var table: DArray$<MapEntryList$<K,V>> = DArray$<MapEntryList$<K,V>>{};
+struct HashMap$<K, V> {
+    private var table: DArray$<MapEntryList$<K,V>> = DArray$<MapEntryList$<K,V>>{ .resize(4); };
     var defValue: V;
     private var length: Int = 0;
-
-    fun init(size: Int = 2) {
-        table.resize(2);
-    }
     
     private fun getEntryList(k: K): *MapEntryList$<K,V> {
-        var h = k.hashCode();
+        var h = hashCode$<K>(k);
         h %= table.size();
         return table[h];
     }
@@ -32,7 +24,7 @@ struct HashMap$<K:Hashable$<K>, V> {
     fun get(k: K): V {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
-            if (itr.k == &k) {
+            if (compare$<K>(itr.k, k) == 0) {
                 return itr.v;
             }
         }
@@ -42,7 +34,7 @@ struct HashMap$<K:Hashable$<K>, V> {
     fun set(k: K, v: V) : Bool {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
-            if (itr.k == &k) {
+            if (compare$<K>(itr.k, k) == 0) {
                 itr.v = v;
                 return false;
             }
@@ -60,7 +52,7 @@ struct HashMap$<K:Hashable$<K>, V> {
     fun remove(k: K) : Bool {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
-            if (itr.k == &k) {
+            if (compare$<K>(itr.k, k) == 0) {
                 list.list.remove(itr);
                 return true;
             }
@@ -71,7 +63,7 @@ struct HashMap$<K:Hashable$<K>, V> {
     fun contains(k: K): Bool {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
-            if (itr.k == &k) {
+            if (compare$<K>(itr.k, k) == 0) {
                 return true;
             }
         }

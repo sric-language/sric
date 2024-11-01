@@ -259,7 +259,17 @@ public:
     }
 
     template <class U>
-    RefPtr(OwnPtr<U>& p) : pointer(p.get()), checkCode(getRefable(pointer)->getCheckCode()), type(RefType::HeapRef) {
+    RefPtr(OwnPtr<U>& p) {
+        if (p.isNull()) {
+            pointer = nullptr;
+            type = RefType::NullRef;
+            checkCode = 0;
+        }
+        else {
+            pointer = p.get();
+            type = RefType::HeapRef;
+            checkCode = getRefable(pointer)->getCheckCode();
+        }
     }
 
     template <class U>

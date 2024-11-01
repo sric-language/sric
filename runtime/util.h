@@ -45,6 +45,36 @@ namespace sric {
 		sric::sc_assert(!p.isNull(), "Non-Nullable");
 		return p;
 	}
+
+	template<typename T>
+	int hashCode(const T& p) {
+		return p.hashCode();
+	}
+
+	template<typename T>
+	int hashCode(const RefPtr<T> p) {
+		return p->hashCode();
+	}
+
+	template<typename T>
+	int hashCode(int p) {
+		return p;
+	}
+
+	template<typename T>
+	int compare(const T& a, const T& b) {
+		return a.compare(RefPtr<T>(const_cast<T*>(&b)));
+	}
+
+	template<typename T>
+	int compare(const RefPtr<T> a, const RefPtr<T> b) {
+		return a->compare(b);
+	}
+
+	template<typename T>
+	int compare(int a, int b) {
+		return a - b;
+	}
 }
 //
 //inline bool isNull(void* p) {

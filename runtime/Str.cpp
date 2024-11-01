@@ -14,7 +14,7 @@ int String::hashCode() const {
     return hash_fn(cpp_str());
 }
 
-int String::compare(RefPtr<String> other) const {
+int String::compare(const RefPtr<String> other) const {
     return strcmp(c_str(), other->c_str());
 }
 

@@ -31,7 +31,7 @@ public:
     }
 
     int hashCode() const;
-    int compare(RefPtr<String> other) const;
+    int compare(const RefPtr<String> other) const;
 
     bool iequals(RefPtr<String> other);
     bool contains(RefPtr<String> s);

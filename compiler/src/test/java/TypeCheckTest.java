@@ -35,7 +35,7 @@ public class TypeCheckTest {
         
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         CppGenerator generator = new CppGenerator(compiler.log, new PrintStream(stream));
-        generator.headMode = true;
+        generator.headMode = file.getName().contains("Generic");
         compiler.module.walkChildren(generator);
 
         String str = stream.toString("UTF-8");
@@ -60,7 +60,7 @@ public class TypeCheckTest {
             
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             CppGenerator generator = new CppGenerator(compiler.log, new PrintStream(stream));
-            generator.headMode = false;
+            generator.headMode = file.getName().contains("Generic");
             compiler.module.walkChildren(generator);
 
             String str = stream.toString("UTF-8");

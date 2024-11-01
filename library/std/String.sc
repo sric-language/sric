@@ -1,6 +1,6 @@
 //@#include "Str.h"
 
-extern noncopyable struct String {
+extern struct String {
     fun c_str(): raw* Int8;
     fun size() const: Int;
 
@@ -37,7 +37,6 @@ extern noncopyable struct String {
     operator fun compare(p: *String) const : Int;
 }
 
-//@extern symbol:sric::String::fromInt
 extern fun String_fromInt(i: Int32): String;
 extern fun String_fromLong(i: Int64): String;
 extern fun String_fromDouble(f: Float64): String;

@@ -55,8 +55,8 @@ public class ExprTypeResolver extends TypeResolver {
     protected void resolveId(Expr.IdExpr idExpr) {
         if (idExpr.namespace == null) {
             if (idExpr.name.equals(TokenKind.dot.symbol)) {
-                AstNode func = this.funcs.peek();
-                if (func instanceof FuncDef f) {
+//                AstNode func = this.funcs.peek();
+//                if (func instanceof FuncDef f) {
                     if (curItBlock == null) {
                         err("Invalid '.' call", idExpr.loc);
                         return;
@@ -66,11 +66,11 @@ public class ExprTypeResolver extends TypeResolver {
 
                     idExpr.resolvedType = curItBlock.resolvedType;
                     return;
-                }
-                else {
-                    err("Use '.' out of struct", idExpr.loc);
-                }
-                return;
+//                }
+//                else {
+//                    err("Use '.' out of struct", idExpr.loc);
+//                }
+//                return;
             }
             else if (idExpr.name.equals(TokenKind.thisKeyword.symbol) || 
                     idExpr.name.equals(TokenKind.superKeyword.symbol) ) {

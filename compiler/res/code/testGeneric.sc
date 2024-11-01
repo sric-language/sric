@@ -1,9 +1,9 @@
 
-trait NT {
-    abstract operator fun plus(that: ref* NT): ref* NT;
+private abstract struct NT$<T> {
+    abstract operator fun plus(that: ref* T): ref* T;
 }
 
-struct A$<T : NT> {
+struct A$<T : NT$<T>> {
     var i: T ;
     fun foo() mut : raw* T {
        return &i;

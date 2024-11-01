@@ -18,3 +18,5 @@ extern fun refToOwn$<T>(p: ref* T): own*? T;
 
 extern unsafe fun rawToRef$<T>(p: raw* T): ref* T;
 
+extern fun hashCode$<T>(p: T): UInt32;
+extern fun compare$<T>(a: T, b: T): Int;

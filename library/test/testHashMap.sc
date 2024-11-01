@@ -1,7 +1,7 @@
 import sric::*;
 
 fun testHashMap() {
-    var map = HashMap$<String, Int>{ .defValue = 0; .init(); };
+    var map = HashMap$<String, Int>{ .defValue = 0; };
     map.set(asStr("1"), 1);
     map.set(asStr("2"), 2);
 

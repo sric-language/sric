@@ -87,8 +87,8 @@ public class ErrorChecker extends CompilePass {
                 }
             }
             if (!allowUnsafeCast) {
-                err("Type mismatch: " + from.toString() + " => " + to.toString() , loc);
                 from.fit(to);
+                err("Type mismatch: " + from.toString() + " => " + to.toString() , loc);
                 return;
             }
         }
@@ -1031,9 +1031,10 @@ public class ErrorChecker extends CompilePass {
                         }
                         else {
                             if (e.lhs.resolvedType.isNum() || e.lhs.resolvedType.isRawPointerType()) {
-                                if (!e.lhs.resolvedType.equals(e.rhs.resolvedType)) {
-                                    err("Type mismatch", e.loc);
-                                }
+//                                if (!e.lhs.resolvedType.equals(e.rhs.resolvedType)) {
+//                                    err("Type mismatch", e.loc);
+//                                }
+                                this.verifyTypeFit(e.rhs, e.lhs.resolvedType, e.rhs.loc);
                             }
                             else {
                                 err("Unsupport operator", e.loc);

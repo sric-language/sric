@@ -258,6 +258,17 @@ public class Type extends AstNode {
                 }
             }
         }
+        
+        //number fit
+        if (this.detail instanceof NumInfo n1 && target.detail instanceof NumInfo n2) {
+            if (this.isFloat() && target.isInt()) {
+                return false;
+            }
+            if (n1.size > n2.size) {
+                return false;
+            }
+            return true;
+        }
         return false;
     }
     
