@@ -19,7 +19,7 @@ public class NegativeTest {
     @Test
     public void test() throws IOException {
         String libPath = "../lib";
-        File file = new File("res/negative/name.sc");
+        File file = new File("res/negative/name.sric");
 
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file.getPath(), libPath);
         compiler.genCode = false;
@@ -36,7 +36,7 @@ public class NegativeTest {
         String libPath = "../lib";
         File[] list = new File("res/negative").listFiles();
         for (File file : list) {
-            if (!file.getName().endsWith(".sc")) {
+            if (!file.getName().endsWith(".sric")) {
                 continue;
             }
 

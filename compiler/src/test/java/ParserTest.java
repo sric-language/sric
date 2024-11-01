@@ -28,7 +28,7 @@ import sric.compiler.parser.Tokenizer;
 public class ParserTest {
     @Test
     public void test() throws IOException {
-        String file = "res/code/testStruct.sc";
+        String file = "res/code/testStruct.sric";
         String src = Files.readString(Path.of(file));
         
         CompilerLog log = new CompilerLog();
@@ -47,7 +47,7 @@ public class ParserTest {
     public void testAll() throws IOException {
         File[] list = new File("res/code").listFiles();
         for (File file : list) {
-            if (!file.getName().endsWith(".sc")) {
+            if (!file.getName().endsWith(".sric")) {
                 continue;
             }
             String src = Files.readString(file.toPath());
@@ -59,7 +59,7 @@ public class ParserTest {
             
             if (log.hasError()) {
                 String name = Util.getBaseName(file.getName());
-                GoldenTest.verifyGolden(log.toString(), "parser", name+".sc");
+                GoldenTest.verifyGolden(log.toString(), "parser", name+".sric");
                 continue;
             }
 
@@ -70,7 +70,7 @@ public class ParserTest {
             
             String str = stream.toString("UTF-8");
             String name = file.getName().substring(0, file.getName().lastIndexOf("."));
-            GoldenTest.verifyGolden(str, "parser", name+".sc");
+            GoldenTest.verifyGolden(str, "parser", name+".sric");
         }
     }
 }

@@ -2,8 +2,8 @@
   "name": "sric-language",
   "displayName": "sric-language",
   "description": "sric language",
-  "publisher" : "sric-language",
-  "version": "0.0.1",
+  "publisher": "sric-language",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.92.0"
   },
@@ -12,50 +12,56 @@
   ],
   "main": "./extension.js",
   "contributes": {
-    "languages": [{
-      "id": "sric",
-      "aliases": ["sric"],
-      "extensions": ["sc"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
+    "languages": [
+      {
+        "id": "sric",
+        "aliases": [
+          "sric"
+        ],
+        "extensions": [
+          "sric"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
         "language": "sric",
         "scopeName": "source.sric",
         "path": "./syntaxes/sric.tmLanguage.json"
       }
     ],
     "configuration": {
-			"title": "Sric",
-			"properties": {
-				"sric.languageServerPath": {
-					"type": "string",
-					"default": "",
-					"description": "Path of the Sric language server binary (e.g. \"java -cp C:/workspace/code/safeC/bin/gson-2.8.6.jar;C:/workspace/code/safeC/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main\")"
-				},
-				"sric.languageServerArguments": {
-					"type": "string",
-					"default": "",
-					"description": "Command line arguments for the Sric language server (e.g. \"-lib C:/workspace/code/safeC/compiler/res/lib -lsp\")"
-				},
-				"sric.failFast": {
-					"type": "boolean",
-					"default": "",
-					"description": "Prevents the server from being restarted after it has crashed"
-				},
-				"sric.languageServerLog": {
-					"type": "boolean",
-					"default": "false",
-					"description": "Outputs a log file for debuging the Sric Language Server"
-				}
-			}
-		},
-		"commands": [
-		]
+      "title": "Sric",
+      "properties": {
+        "sric.languageServerPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path of the Sric language server binary (e.g. \"java -cp C:/workspace/code/sric/bin/gson-2.8.6.jar;C:/workspace/code/sric/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main\")"
+        },
+        "sric.languageServerArguments": {
+          "type": "string",
+          "default": "",
+          "description": "Command line arguments for the Sric language server (e.g. \"-lib C:/workspace/code/sric/lib -lsp\")"
+        },
+        "sric.failFast": {
+          "type": "boolean",
+          "default": "",
+          "description": "Prevents the server from being restarted after it has crashed"
+        },
+        "sric.languageServerLog": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Outputs a log file for debuging the Sric Language Server"
+        }
+      }
+    },
+    "commands": []
   },
   "dependencies": {
-      "vscode-languageclient": "^7.0.0"
+    "vscode-languageclient": "^7.0.0"
   },
   "devDependencies": {
-	  "@types/vscode": "^1.52.0"
+    "@types/vscode": "^1.52.0"
   }
 }

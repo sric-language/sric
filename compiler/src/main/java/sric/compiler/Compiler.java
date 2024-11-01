@@ -157,7 +157,7 @@ public class Compiler {
     public SModule importModule(String moduleName, String version) {
         String libFile = libPath + "/" + moduleName;
         try {
-            Compiler compiler = Compiler.fromProps(libFile+".meta", libPath, libFile+".sc");
+            Compiler compiler = Compiler.fromProps(libFile+".meta", libPath, libFile+".sric");
             compiler.genCode = false;
         
             compiler.run();
@@ -199,7 +199,7 @@ public class Compiler {
     
     public void genOutput() throws IOException {
         String libFile = libPath + "/" + this.module.name;
-        ScLibGenerator scGenerator = new ScLibGenerator(log, libFile + ".sc");
+        ScLibGenerator scGenerator = new ScLibGenerator(log, libFile + ".sric");
         scGenerator.run(module);
         
         var props = this.module.toMetaProps();

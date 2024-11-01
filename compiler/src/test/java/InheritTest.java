@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class InheritTest {
     @Test
     public void test() throws IOException {
-        String file = "res/code/testInherit.sc";
+        String file = "res/code/testInherit.sric";
         String libPath = "../lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);

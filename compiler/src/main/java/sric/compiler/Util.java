@@ -30,7 +30,7 @@ public class Util {
     
     public static ArrayList<File> listFile(File file) {
         ArrayList<File> list = new ArrayList<File>();
-        doListFile(file, list, ".sc");
+        doListFile(file, list, ".sric");
         return list;
     }
     

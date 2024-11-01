@@ -169,7 +169,7 @@ Function params are const by default
 ```
 struct Bar {
     var i: Int = 0;
-    fun set(a: mut Int) mut : Int {
+    fun set(a: mut Int) const : Int {
         i = a;
     }
 }

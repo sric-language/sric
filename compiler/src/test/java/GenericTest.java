@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class GenericTest {
     @Test
     public void test() throws IOException {
-        String file = "res/code/testGeneric.sc";
+        String file = "res/code/testGeneric.sric";
         String libPath = "../lib";
         
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file, libPath);
