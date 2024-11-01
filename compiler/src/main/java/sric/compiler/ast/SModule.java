@@ -35,6 +35,7 @@ public class SModule extends AstNode {
     public ArrayList<Depend> depends = new ArrayList<>();
     
     public String sourcePath;
+    public boolean scriptMode = false;
     
     public FileUnit findFileUnit(String file) {
         for (FileUnit v : fileUnits) {

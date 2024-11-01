@@ -2,9 +2,9 @@
 
 extern noncopyable struct String {
     fun c_str(): raw* Int8;
-    fun size(): Int;
+    fun size() const: Int;
 
-    operator fun get(i: Int): Int8;
+    operator fun get(i: Int) const: Int8;
 
     fun iequals(other: ref* String) : Bool;
     fun contains(other: ref* String) : Bool;
@@ -13,17 +13,17 @@ extern noncopyable struct String {
 
     fun find(other: ref* String, start: Int = 0): Int;
 
-    fun replace(src: ref* String, dst: ref* String) mut;
+    fun replace(src: ref* String, dst: ref* String);
     fun split(sep: ref* String): DArray$<String>;
     fun substr(pos:Int, len:Int = -1): String;
 
-    operator fun plus(other: ref* String) mut : String;
-    fun add(cstr: raw*const Int8) mut;
+    operator fun plus(other: ref* String) : String;
+    fun add(cstr: raw*const Int8);
 
-    fun trimEnd() mut;
-    fun trimStart() mut;
-    fun trim() mut { trimStart(); trimEnd(); }
-    fun removeLastChar() mut;
+    fun trimEnd();
+    fun trimStart();
+    fun trim() { trimStart(); trimEnd(); }
+    fun removeLastChar();
 
     fun toLower(): String;
     fun toUpper(): String;
@@ -33,10 +33,11 @@ extern noncopyable struct String {
     fun toFloat(): Float32;
     fun toDouble(): Float64;
 
-    fun hashCode(): Int;
-    operator fun compare(p: *String): Int;
+    fun hashCode() const: Int;
+    operator fun compare(p: *String) const : Int;
 }
 
+//@extern symbol:sric::String::fromInt
 extern fun String_fromInt(i: Int32): String;
 extern fun String_fromLong(i: Int64): String;
 extern fun String_fromDouble(f: Float64): String;

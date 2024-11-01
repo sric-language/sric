@@ -361,6 +361,10 @@ public class AstNode {
         public ArrayList<ParamDef> paramDefs = null;   // parameter definitions
         public int postFlags = 0;
         
+        public boolean isThisImmutable() {
+            return (postFlags & FConst.Const) != 0;
+        }
+        
         @java.lang.Override
         public String toString() {
             StringBuilder sb = new StringBuilder();

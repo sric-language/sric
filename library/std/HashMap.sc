@@ -1,21 +1,21 @@
-trait Hashable {
-    abstract fun hashCode(): Int;
-    abstract operator fun compare(p: *Hashable): Int;
+private abstract struct Hashable$<T> {
+    abstract fun hashCode() const : Int;
+    abstract operator fun compare(p: *T) const : Int;
 }
 
-private struct MapEntry$<K:Hashable, V> {
+private struct MapEntry$<K:Hashable$<K>, V> {
     var k: K;
     var v: V;
     var next: own*? MapEntry$<K, V>;
     var previous: *? MapEntry$<K, V>;
 }
 
-private struct MapEntryList$<K:Hashable, V> {
+private struct MapEntryList$<K:Hashable$<K>, V> {
     var list: LinkedList$<MapEntry$<K,V>>;
 }
 
-struct HashMap$<K:Hashable, V> {
-    private var table: DArray$<MapEntryList$<K,V>>;
+struct HashMap$<K:Hashable$<K>, V> {
+    private var table: DArray$<MapEntryList$<K,V>> = DArray$<MapEntryList$<K,V>>{};
     var defValue: V;
     private var length: Int = 0;
 
@@ -39,7 +39,7 @@ struct HashMap$<K:Hashable, V> {
         return defValue;
     }
     
-    fun set(k: K, v: V) mut : Bool {
+    fun set(k: K, v: V) : Bool {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (itr.k == &k) {
@@ -57,7 +57,7 @@ struct HashMap$<K:Hashable, V> {
         return length;
     }
     
-    fun remove(k: K) mut : Bool {
+    fun remove(k: K) : Bool {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (itr.k == &k) {

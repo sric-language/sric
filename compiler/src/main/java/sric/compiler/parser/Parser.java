@@ -501,9 +501,9 @@ public class Parser {
         for (boolean done = false; !done;) {
             int oldFlags = flags;
             switch (curt) {
-//                case constKeyword:
-//                    flags = flags | (FConst.Const);
-//                    break;
+                case constKeyword:
+                    flags = flags | (FConst.Const);
+                    break;
                 case mutKeyword:
                     flags = flags | (FConst.Mutable);
                     break;
@@ -796,9 +796,7 @@ public class Parser {
         }
         consume(TokenKind.rparen);
         
-        if (curt == TokenKind.mutKeyword) {
-            prototype.postFlags = funcPostFlags();
-        }
+        prototype.postFlags = funcPostFlags();
         
         if (curt == TokenKind.colon) {
             consume();

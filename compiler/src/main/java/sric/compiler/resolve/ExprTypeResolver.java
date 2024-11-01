@@ -394,8 +394,8 @@ public class ExprTypeResolver extends TypeResolver {
         }
         else if (resolvedDef instanceof FuncDef f) {
             if (targetImmutable) {
-                if ((f.prototype.postFlags & FConst.Mutable) != 0) {
-                    err("Immutable function", loc);
+                if (!f.prototype.isThisImmutable()) {
+                    err("Mutable function", loc);
                 }
             }
             return Type.funcType(f);
@@ -471,7 +471,7 @@ public class ExprTypeResolver extends TypeResolver {
                 if (e.implicitThis) {
                     AstNode func = this.funcs.peek();
                     if (func instanceof FuncDef ef) {
-                        if ((ef.prototype.postFlags & FConst.Mutable) == 0) {
+                        if (ef.prototype.isThisImmutable()) {
                             targetImmutable = true;
                         }
                     }

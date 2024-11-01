@@ -232,8 +232,8 @@ public class ScLibGenerator extends BaseGenerator {
         }
         print(")");
         
-        if (!isLambda && !isStatic && (prototype.postFlags & FConst.Mutable) != 0) {
-            print(" mut ");
+        if (!isLambda && !isStatic && prototype.isThisImmutable()) {
+            print(" const ");
         }
         
         if (prototype != null) {

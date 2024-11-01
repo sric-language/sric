@@ -71,6 +71,7 @@ public class Compiler {
         module.version = "1.0";
         module.sourcePath = sourcePath;
         module.outType = "exe";
+        module.scriptMode = true;
         File libDir = new File(libPath);
         module.depends= listDepends(libDir);
         return new Compiler(module, sourceDir, libPath, libDir.getParent()+"/output/");
@@ -217,6 +218,9 @@ public class Compiler {
     }
 
     private void genFmake() throws IOException {
+        if (this.module.scriptMode) {
+            return;
+        }
         
         String fmakeFile = outputDir + "/" + this.module.name + ".fmake";
         

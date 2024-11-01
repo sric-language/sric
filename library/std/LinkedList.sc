@@ -1,25 +1,25 @@
 
-abstract struct Linkable {
-    var next: own*? Linkable;
-    var previous: *? Linkable;
+abstract struct Linkable$<T> {
+    var next: own*? T;
+    var previous: *? T;
 }
 
-struct LinkedList$<T: Linkable> {
+struct LinkedList$<T: Linkable$<T>> {
     private var head: own*? T = null;
     private var tail: *? T = null;
     private var length: Int = 0;
 
-    fun clear() mut {
+    fun clear() {
         head = null;
         tail = null;
         length = 0;
     }
 
-    fun size(): Int {
+    fun size() const : Int {
         return length;
     }
 
-    fun add(elem: mut own* T) mut {
+    fun add(elem: mut own* T) {
         if (tail == null) {
             insert(move elem);
             return;
@@ -32,7 +32,7 @@ struct LinkedList$<T: Linkable> {
         ++length;
     }
 
-    fun insert(elem: mut own* T) mut {
+    fun insert(elem: mut own* T) {
         elem.next = move head;
         elem.previous = null;
 
@@ -46,7 +46,7 @@ struct LinkedList$<T: Linkable> {
         ++length;
     }
 
-    fun insertBefore(elem: mut own* T, pos: * mut T) mut {
+    fun insertBefore(elem: mut own* T, pos: * mut T) {
         if (pos.previous == null) {
             insert(elem);
             return;
@@ -58,7 +58,7 @@ struct LinkedList$<T: Linkable> {
         ++length;
     }
 
-    fun remove(elem: *? mut T) mut: Bool {
+    fun remove(elem: *? mut T) : Bool {
         if (elem == null) return false;
         
         if (elem.next != null) {
@@ -81,7 +81,7 @@ struct LinkedList$<T: Linkable> {
         return true;
     }
 
-    fun isEmpty(): Bool {
+    fun isEmpty() const : Bool {
         return length == 0;
     }
 

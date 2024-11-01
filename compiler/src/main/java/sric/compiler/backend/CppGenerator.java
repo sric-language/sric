@@ -875,7 +875,7 @@ public class CppGenerator extends BaseGenerator {
         }
         print(")");
         
-        if (!isLambda && !isStatic && (prototype.postFlags & FConst.Mutable) == 0) {
+        if (!isLambda && !isStatic && prototype.isThisImmutable()) {
             print(" const ");
         }
         

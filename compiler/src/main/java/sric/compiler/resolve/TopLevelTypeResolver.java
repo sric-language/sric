@@ -156,14 +156,15 @@ public class TopLevelTypeResolver extends TypeResolver {
         Scope gpScope = null;
         if (v instanceof StructDef sd) {
             if (sd.generiParamDefs != null) {
-                for (GenericParamDef gp : sd.generiParamDefs) {
-                    resolveTopLevelType(gp.bound, gp.loc);
-                }
                 gpScope = new Scope();
                 for (GenericParamDef gp : sd.generiParamDefs) {
                     gpScope.put(gp.name, gp);
                 }
                 this.scopes.add(gpScope);
+                
+                for (GenericParamDef gp : sd.generiParamDefs) {
+                    resolveTopLevelType(gp.bound, gp.loc);
+                }
             }
             if (sd.inheritances != null) {
                 for (Type inh : sd.inheritances) {
