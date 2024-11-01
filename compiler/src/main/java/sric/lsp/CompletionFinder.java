@@ -61,7 +61,7 @@ public class CompletionFinder {
             
             if (resolvedDef != null) {
                 if (resolvedDef instanceof AstNode.TypeDef t) {
-                    Scope scope = t.getScope();
+                    Scope scope = t.getScope(null);
                     addScope(scope, text);
                     if (defs.size() == 0) {
                         addScope(scope, null);
@@ -75,7 +75,7 @@ public class CompletionFinder {
         }
         
         addScope(funit.importScope, text);
-        addScope(funit.module.getScope(), text);
+        addScope(funit.module.getScope(null), text);
         addScope(Buildin.getBuildinScope(), text);
         
         return defs;

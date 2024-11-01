@@ -51,7 +51,7 @@ public class TopLevelTypeResolver extends TypeResolver {
         }
 
         if (idExpr.namespace.resolvedDef instanceof SModule m) {
-            AstNode node = m.getScope().get(idExpr.name, idExpr.loc, log);
+            AstNode node = m.getScope(log).get(idExpr.name, idExpr.loc, log);
             if (node == null) {
                 err("Unknow symbol "+idExpr.name, idExpr.loc);
             }
@@ -59,7 +59,7 @@ public class TopLevelTypeResolver extends TypeResolver {
             return;
         }
         else if (idExpr.namespace.resolvedDef instanceof TypeDef m) {
-            AstNode node = m.getScope().get(idExpr.name, idExpr.loc, log);
+            AstNode node = m.getScope(log).get(idExpr.name, idExpr.loc, log);
             if (node == null) {
                 err("Unknow symbol "+idExpr.name, idExpr.loc);
             }
@@ -81,11 +81,11 @@ public class TopLevelTypeResolver extends TypeResolver {
             }
             else {
                 if (i.id.resolvedDef instanceof SModule m) {
-                    Scope mcope = m.getScope();
+                    Scope mcope = m.getScope(log);
                     importScope.addAll(mcope);
                 }
                 else if (i.id.resolvedDef instanceof StructDef c) {
-                    Scope mcope = c.getScope();
+                    Scope mcope = c.getScope(log);
                     importScope.addAll(mcope);
                 }
                 else {
@@ -105,7 +105,7 @@ public class TopLevelTypeResolver extends TypeResolver {
         }
         this.scopes.add(v.importScope);
         
-        Scope scope2 = module.getScope();
+        Scope scope2 = module.getScope(log);
         this.scopes.add(scope2);
         
         this.scopes.add(Buildin.getBuildinScope());

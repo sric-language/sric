@@ -19,7 +19,7 @@ public class NegativeTest {
     @Test
     public void test() throws IOException {
         String libPath = "../lib";
-        File file = new File("res/negative/const.sc");
+        File file = new File("res/negative/name.sc");
 
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file.getPath(), libPath);
         compiler.genCode = false;
@@ -28,7 +28,7 @@ public class NegativeTest {
 
         String str = compiler.log.toString();
         String name = file.getName().substring(0, file.getName().lastIndexOf("."));
-        GoldenTest.verifyGolden(str, "negative", name+".cpp");
+        GoldenTest.verifyGolden(str, "negative", name+".txt");
     }
     
     @Test
@@ -47,7 +47,7 @@ public class NegativeTest {
 
             String str = compiler.log.toString();
             String name = file.getName().substring(0, file.getName().lastIndexOf("."));
-            GoldenTest.verifyGolden(str, "negative", name+".cpp");
+            GoldenTest.verifyGolden(str, "negative", name+".txt");
         }
     }
 }

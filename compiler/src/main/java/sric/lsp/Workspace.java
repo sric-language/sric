@@ -134,7 +134,7 @@ public class Workspace {
         
         ArrayList<SymbolInformation> list = new ArrayList<SymbolInformation>();
         for (var sm : moduleList.entrySet()) {
-            Scope scope = sm.getValue().module.getScope();
+            Scope scope = sm.getValue().module.getScope(null);
             for (HashMap.Entry<String, ArrayList<AstNode>> entry : scope.symbolTable.entrySet()) {
                 String name = entry.getKey();
                 

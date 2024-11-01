@@ -7,6 +7,7 @@ package sric.compiler.ast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import sric.compiler.CompilerLog;
 import sric.compiler.ast.Expr.IdExpr;
 import sric.compiler.ast.Token.TokenKind;
 
@@ -71,7 +72,7 @@ public class AstNode {
     
     public static abstract class TypeDef extends TopLevelDef {
         protected Scope scope = null;
-        public abstract Scope getScope();
+        public abstract Scope getScope(CompilerLog log);
     }
     
     public static class FieldDef extends TopLevelDef {
@@ -169,20 +170,26 @@ public class AstNode {
             }
         }
         
-        public Scope getScope() {
+        @Override public Scope getScope(CompilerLog log) {
             if (scope == null) {
                 templateInstantiate();
                 scope = new Scope();
                 if (this.generiParamDefs != null) {
                     for (GenericParamDef gp : this.generiParamDefs) {
-                        scope.put(gp.name, gp);
+                        if (!scope.put(gp.name, gp)) {
+                            if (log != null) log.err("Duplicate name: " + gp.name, gp.loc);
+                        }
                     }
                 }
                 for (FieldDef f : fieldDefs) {
-                    scope.put(f.name, f);
+                    if (!scope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
                 }
                 for (FuncDef f : funcDefs) {
-                    scope.put(f.name, f);
+                    if (!scope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
                 }
             }
             return scope;
@@ -297,12 +304,14 @@ public class AstNode {
             enumDefs.add(node);
         }
         
-        public Scope getScope() {
+        @Override public Scope getScope(CompilerLog log) {
             if (scope == null) {
                 scope = new Scope();
                 
                 for (FieldDef f : enumDefs) {
-                    scope.put(f.name, f);
+                    if (!scope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
                 }
             }
             return scope;
@@ -329,12 +338,14 @@ public class AstNode {
             funcDefs.add(node);
         }
         
-        public Scope getScope() {
+        @Override public Scope getScope(CompilerLog log) {
             if (scope == null) {
                 scope = new Scope();
 
                 for (FuncDef f : funcDefs) {
-                    scope.put(f.name, f);
+                    if (!scope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
                 }
             }
             return scope;
@@ -506,8 +517,8 @@ public class AstNode {
         //public int index;
 
         @Override
-        public Scope getScope() {
-            return ((TypeDef)bound.id.resolvedDef).getScope();
+        public Scope getScope(CompilerLog log) {
+            return ((TypeDef)bound.id.resolvedDef).getScope(log);
         }
     }
     

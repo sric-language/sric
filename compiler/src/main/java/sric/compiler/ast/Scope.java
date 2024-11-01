@@ -19,7 +19,7 @@ public class Scope extends AstNode {
     
     public HashMap<String, ArrayList<AstNode>> symbolTable = new HashMap<>();
 
-    public void put(String name, AstNode node) {
+    public boolean put(String name, AstNode node) {
         ArrayList<AstNode> nodes = symbolTable.get(name);
         if (nodes == null) {
             nodes = new ArrayList<AstNode>();
@@ -27,10 +27,11 @@ public class Scope extends AstNode {
         }
         for (AstNode anode : nodes) {
             if (anode == node) {
-                return;
+                return nodes.size() == 1;
             }
         }
         nodes.add(node);
+        return nodes.size() == 1;
     }
     
     public boolean contains(String name) {
@@ -43,7 +44,7 @@ public class Scope extends AstNode {
             return null;
         }
         if (nodes.size() > 1) {
-            log.err("Mulit definition " + nodes.get(0).loc + "," + nodes.get(1).loc, loc);
+            log.err("Duplicate definition: " + name + " at " + nodes.get(0).loc + "," + nodes.get(1).loc, loc);
         }
         return nodes.get(0);
     }

@@ -741,7 +741,7 @@ public class ErrorChecker extends CompilePass {
                 err("It's abstract", e.target.loc);
             }
             
-            if (e.block != null && !hasFuncCall) {
+            if (e.block != null) {
                 
                 HashMap<String,FieldDef> fields = new HashMap<>();
                 sd.getAllFields(fields);

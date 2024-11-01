@@ -131,7 +131,9 @@ public class ExprTypeResolver extends TypeResolver {
     @Override
     public void visitUnit(FileUnit v) {
         scopes.add(v.importScope);
-        scopes.add(module.getScope());
+        Scope moduleScope = module.getScope(log);
+    
+        scopes.add(moduleScope);
         this.scopes.add(Buildin.getBuildinScope());
         
         v.walkChildren(this);
@@ -265,7 +267,8 @@ public class ExprTypeResolver extends TypeResolver {
                 ++enumValue;
             }
         }
-        Scope scope = v.getScope();
+        Scope scope = v.getScope(log);
+        
         this.scopes.add(scope);
         v.walkChildren(this);
         
@@ -443,7 +446,7 @@ public class ExprTypeResolver extends TypeResolver {
         }
 
         if (resolvedDef instanceof TypeDef t) {
-            Scope scope = t.getScope();
+            Scope scope = t.getScope(log);
             AstNode def = scope.get(name, loc, log);
             if (def == null) {
                 if (t instanceof StructDef sd) {

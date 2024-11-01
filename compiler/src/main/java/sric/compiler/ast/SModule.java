@@ -7,6 +7,7 @@ package sric.compiler.ast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import sric.compiler.CompilerLog;
 import sric.compiler.Util;
 
 /**
@@ -108,21 +109,29 @@ public class SModule extends AstNode {
         return map;
     }
 
-    public Scope getScope() {
+    public Scope getScope(CompilerLog log) {
         if (scope == null) {
             scope = new Scope();
             for (FileUnit v : fileUnits) {
                 for (FieldDef f : v.fieldDefs) {
-                    scope.put(f.name, f);
+                    if (!scope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
                 }
                 for (FuncDef f : v.funcDefs) {
-                    scope.put(f.name, f);
+                    if (!scope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
                 }
                 for (TypeDef f : v.typeDefs) {
-                    scope.put(f.name, f);
+                    if (!scope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
                 }
                 for (TypeAlias f : v.typeAlias) {
-                    scope.put(f.name, f);
+                    if (!scope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
                 }
             }
         }
