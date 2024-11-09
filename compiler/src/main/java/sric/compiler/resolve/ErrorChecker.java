@@ -23,7 +23,7 @@ import sric.compiler.ast.*;
 public class ErrorChecker extends CompilePass {
     
     private SModule module;
-    private AstNode.StructDef curStruct = null;
+    private TypeDef curStruct = null;
     private int inUnsafe = 0;
     private FileUnit curUnit = null;
     private WithBlockExpr curItBlock = null;
@@ -56,13 +56,20 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
-        if (type.id.resolvedDef instanceof StructDef sd) {
-            if ((sd.flags & FConst.Noncopyable) != 0) {
+        AstNode resolvedDef = type.id.resolvedDef;
+        if (type.id.resolvedDef instanceof GenericParamDef td) {
+            resolvedDef = td.bound.id.resolvedDef;
+        }
+        
+        if (resolvedDef instanceof TopLevelDef td) {
+            if ((td.flags & FConst.Noncopyable) != 0) {
                 return false;
             }
-            for (FieldDef f : sd.fieldDefs) {
-                if (!isCopyable(f.fieldType)) {
-                    return false;
+            if (resolvedDef instanceof TypeDef sd && sd.isStruct()) {
+                for (FieldDef f : sd.fieldDefs) {
+                    if (!isCopyable(f.fieldType)) {
+                        return false;
+                    }
                 }
             }
             return true;
@@ -186,10 +193,14 @@ public class ErrorChecker extends CompilePass {
         }
         
         if (v.initExpr != null && v.fieldType != null) {
-            if (v.parent instanceof EnumDef) {
+            boolean ok = false;
+            if (v.parent instanceof TypeDef td) {
                 //already checked in ExprTypeResolver
+                if (td.isEnum()) {
+                    ok = true;
+                }
             }
-            else {
+            if (!ok) {
                 verifyTypeFit(v.initExpr, v.fieldType, v.loc);
             }
         }
@@ -197,7 +208,7 @@ public class ErrorChecker extends CompilePass {
         //check nullable
         if (v.initExpr == null && v.fieldType != null && v.fieldType.detail instanceof Type.PointerInfo pt) {
             if (!pt.isNullable) {
-                if (v.parent instanceof AstNode.StructDef) {
+                if (v.parent instanceof AstNode.TypeDef) {
                     //OK
                 }
                 else {
@@ -220,31 +231,33 @@ public class ErrorChecker extends CompilePass {
 
     @Override
     public void visitFunc(AstNode.FuncDef v) {
-        if (v.parent instanceof StructDef sd) {
-            if ((v.flags & FConst.Virtual) != 0) {
-                if ((sd.flags & FConst.Virtual) != 0 || (sd.flags & FConst.Abstract) != 0) {
-                    //ok
+        if (v.parent instanceof TypeDef sd) {
+            if (sd.isStruct()) {
+                if ((v.flags & FConst.Virtual) != 0) {
+                    if ((sd.flags & FConst.Virtual) != 0 || (sd.flags & FConst.Abstract) != 0) {
+                        //ok
+                    }
+                    else {
+                        err("Struct must be virtual or abstract", v.loc);
+                    }
                 }
-                else {
-                    err("Struct must be virtual or abstract", v.loc);
+                else if ((v.flags & FConst.Abstract) != 0) {
+                    if ((sd.flags & FConst.Abstract) != 0) {
+                        //ok
+                    }
+                    else {
+                        err("Struct must be abstract", v.loc);
+                    }
+                    if (v.code != null) {
+                        err("abstract method must no code", v.loc);
+                    }
                 }
             }
-            else if ((v.flags & FConst.Abstract) != 0) {
-                if ((sd.flags & FConst.Abstract) != 0) {
-                    //ok
-                }
-                else {
-                    err("Struct must be abstract", v.loc);
-                }
-                if (v.code != null) {
-                    err("abstract method must no code", v.loc);
-                }
-            }
-        }
-        else if (v.parent instanceof TraitDef tt) {
-            if ((v.flags & FConst.Abstract) != 0) {
-                if (v.code != null) {
-                    err("abstract method must no code", v.loc);
+            else if (sd.isTrait()) {
+                if ((v.flags & FConst.Abstract) != 0) {
+                    if (v.code != null) {
+                        err("abstract method must no code", v.loc);
+                    }
                 }
             }
         }
@@ -271,14 +284,14 @@ public class ErrorChecker extends CompilePass {
         if (v.prototype.paramDefs != null) {
             boolean hasDefaultValue = false;
             boolean hasVararg = false;
-            for (ParamDef p : v.prototype.paramDefs) {
-                if (p.defualtValue != null) {
+            for (FieldDef p : v.prototype.paramDefs) {
+                if (p.initExpr != null) {
                     if (hasDefaultValue) {
                         err("Default param must at last", p.loc);
                     }
                     hasDefaultValue = true;
                 }
-                if (p.paramType.isVarArgType()) {
+                if (p.fieldType.isVarArgType()) {
                     if (hasVararg) {
                         err("Vararg must at last", p.loc);
                     }
@@ -319,14 +332,15 @@ public class ErrorChecker extends CompilePass {
     @Override
     public void visitTypeDef(AstNode.TypeDef v) {
 
-        if (v instanceof StructDef sd) {
-            curStruct = sd;
-            
-            if (sd.inheritances != null) {
-                int i = 0;
-                for (Type inh : sd.inheritances) {
-                    if (i == 0) {
-                        if (inh.id.resolvedDef instanceof StructDef superSd) {
+        //if (v instanceof StructDef sd) {
+        curStruct = v;
+
+        if (v.inheritances != null) {
+            int i = 0;
+            for (Type inh : v.inheritances) {
+                if (i == 0) {
+                    if (inh.id.resolvedDef instanceof TypeDef superSd) {
+                        if (superSd.isStruct()) {
                             if ((superSd.flags & FConst.Abstract) != 0 || (superSd.flags & FConst.Virtual) != 0) {
                                 //ok
                             }
@@ -334,30 +348,36 @@ public class ErrorChecker extends CompilePass {
                                 err("Base struct must be abstract or virutal", inh.loc);
                             }
                         }
-                        else if (inh.id.resolvedDef instanceof TraitDef) {
+                        else if (superSd.isTrait()) {
                             //ok
                         }
                         else {
                             err("Invalid inheritance", inh.loc);
                         }
                     }
-                    if (i > 0) {
-                        if (inh.id.resolvedDef != null) {
-                            if (!(inh.id.resolvedDef instanceof TraitDef)) {
+                    else {
+                        err("Invalid inheritance", inh.loc);
+                    }
+                }
+                if (i > 0) {
+                    if (inh.id.resolvedDef != null) {
+                        if (inh.id.resolvedDef instanceof TypeDef superSd) {
+                            if (!superSd.isTrait()) {
                                 err("Unsupport multi struct inheritance", inh.loc);
                             }
                         }
                     }
-                    ++i;
                 }
-            }
-            
-            if ((v.flags & FConst.Reflect) != 0 ) {
-                if (sd.generiParamDefs != null) {
-                    err("Unsupport reflection for generic type", v.loc);
-                }
+                ++i;
             }
         }
+
+        if ((v.flags & FConst.Reflect) != 0 ) {
+            if (v.generiParamDefs != null) {
+                err("Unsupport reflection for generic type", v.loc);
+            }
+        }
+        //}
         v.walkChildren(this);
 
         curStruct = null;
@@ -631,12 +651,9 @@ public class ErrorChecker extends CompilePass {
                         AstNode defNode = idResolvedDef(e.operand);
                         if (defNode != null) {
                             if (defNode instanceof AstNode.FieldDef f) {
-                                if (!f.isLocalVar && !f.fieldType.isNullablePointerType()) {
+                                if (!f.isLocalOrParam() && !f.fieldType.isNullablePointerType()) {
                                     err("Can't move", e.loc);
                                 }
-                            }
-                            else if (defNode instanceof AstNode.ParamDef f) {
-                                //ok
                             }
                             else {
                                 err("Invalid move", e.loc);
@@ -662,7 +679,7 @@ public class ErrorChecker extends CompilePass {
             this.visit(e.index);
             //verifyInt(e.index);
             if (e.resolvedOperator != null) {
-                Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).paramType;
+                Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
                 verifyTypeFit(e.index, paramType, e.index.loc);
             }
         }
@@ -735,7 +752,7 @@ public class ErrorChecker extends CompilePass {
             return;
         }
         
-        AstNode.StructDef sd = e._structDef;
+        AstNode.TypeDef sd = e._structDef;
         if (sd != null) {            
             if (e._isType && (sd.flags & FConst.Abstract) != 0) {
                 err("It's abstract", e.target.loc);
@@ -830,19 +847,25 @@ public class ErrorChecker extends CompilePass {
                                     err("Arg name error", t.loc);
                                 }
                             }
-                            verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).paramType, t.loc, true);
+                            verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).fieldType, t.loc, true);
                             ++i;
                         }
                         if (i < f.prototype.paramDefs.size()) {
-                            if (f.prototype.paramDefs.get(i).defualtValue == null && !f.prototype.paramDefs.get(i).paramType.isVarArgType()) {
+                            if (f.prototype.paramDefs.get(i).initExpr == null && !f.prototype.paramDefs.get(i).fieldType.isVarArgType()) {
                                 err("Arg number error", e.loc);
                             }
                         }
                     }
                 }
                 else if (f.prototype.paramDefs != null) {
-                    if (f.prototype.paramDefs.get(0).defualtValue == null) {
+                    if (f.prototype.paramDefs.get(0).initExpr == null) {
                         err("Arg number error", e.loc);
+                    }
+                }
+                
+                if (f.funcDef != null) {
+                    if (f.funcDef.generiParamDefs != null && !(e.target instanceof GenericInstance)) {
+                        err("Miss generic args", e.target.loc);
                     }
                 }
             }
@@ -945,7 +968,7 @@ public class ErrorChecker extends CompilePass {
                         }
                     }
                     else if (e.resolvedOperator != null) {
-                        Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).paramType;
+                        Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
                         verifyTypeFit(e.rhs, paramType, e.rhs.loc, true);
                     }
                     else if (!e.lhs.resolvedType.equals(e.rhs.resolvedType)) {
@@ -971,7 +994,7 @@ public class ErrorChecker extends CompilePass {
                 case star:
                 case slash:
                     if (e.resolvedOperator != null) {
-                        Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).paramType;
+                        Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
                         verifyTypeFit(e.rhs, paramType, e.rhs.loc, true);
                     }
                     verifyUnsafe(e.lhs);
@@ -995,7 +1018,7 @@ public class ErrorChecker extends CompilePass {
                     }
                     else if (e.lhs instanceof Expr.IndexExpr indexExpr) {
                         if (indexExpr.resolvedOperator != null && indexExpr.resolvedOperator.prototype.paramDefs.size() > 1) {
-                            Type paramType = indexExpr.resolvedOperator.prototype.paramDefs.get(1).paramType;
+                            Type paramType = indexExpr.resolvedOperator.prototype.paramDefs.get(1).fieldType;
                             verifyTypeFit(e.rhs, paramType, e.rhs.loc);
                         }
                         assignable = true;

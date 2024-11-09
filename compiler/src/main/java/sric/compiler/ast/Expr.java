@@ -162,7 +162,7 @@ public abstract class Expr extends AstNode {
         public Block block;
         
         public FieldDef _storeVar;
-        public StructDef _structDef;
+        public TypeDef _structDef;
         public boolean _isType = false;
     }
     

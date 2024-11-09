@@ -77,7 +77,7 @@ public class AstFinder extends CompilePass {
             for (var p : prototype.paramDefs) {
                 if (isContains(p)) {
                     found = v;
-                    visitType(p.paramType);
+                    visitType(p.fieldType);
                 }
             }
         }
@@ -107,21 +107,21 @@ public class AstFinder extends CompilePass {
         }
         found = v;
         
-        if (v instanceof AstNode.StructDef sd) {
-            if (sd.generiParamDefs != null) {
-                for (var p: sd.generiParamDefs) {
+        //if (v instanceof AstNode.StructDef sd) {
+            if (v.generiParamDefs != null) {
+                for (var p: v.generiParamDefs) {
                     if (isContains(p)) {
                         found = v;
                     }
                 }
             }
             
-            if (sd.inheritances != null) {
-                for (Type inh : sd.inheritances) {
+            if (v.inheritances != null) {
+                for (Type inh : v.inheritances) {
                     visitType(inh);
                 }
             }
-        }
+        //}
         
         v.walkChildren(this);
     }

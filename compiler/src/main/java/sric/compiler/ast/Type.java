@@ -247,7 +247,7 @@ public class Type extends AstNode {
             }
 
             if (this.id.resolvedDef != null && target.id.resolvedDef != null) {
-                if (this.id.resolvedDef instanceof StructDef sd && target.id.resolvedDef instanceof StructDef td) {
+                if (this.id.resolvedDef instanceof TypeDef sd && target.id.resolvedDef instanceof TypeDef td) {
                     if (sd.originGenericTemplate == td.originGenericTemplate || sd == td.originGenericTemplate || sd.originGenericTemplate == td) {
                         return true;
                     }
@@ -328,7 +328,7 @@ public class Type extends AstNode {
         }
         
         if (this.id.resolvedDef != null && target.id.resolvedDef != null) {
-            if (this.id.resolvedDef instanceof StructDef sd && target.id.resolvedDef instanceof StructDef td) {
+            if (this.id.resolvedDef instanceof TypeDef sd && target.id.resolvedDef instanceof TypeDef td) {
                 if (sd.originGenericTemplate == td.originGenericTemplate) {
                     return true;
                 }
@@ -374,14 +374,14 @@ public class Type extends AstNode {
                     return false;
                 }
                 
-                if (from.id.resolvedDef instanceof StructDef sd && to.id.resolvedDef instanceof TypeDef ttd) {
-                    if (ttd instanceof StructDef td) {
+                if (from.id.resolvedDef instanceof TypeDef sd && to.id.resolvedDef instanceof TypeDef td) {
+                    //if (ttd instanceof TypeDef td) {
                         if (sd.originGenericTemplate == td.originGenericTemplate || sd == td.originGenericTemplate || sd.originGenericTemplate == td) {
                             ok = true;
                         }
-                    }
+                    //}
 
-                    if (sd.isInheriteFrom(ttd)) {
+                    if (sd.isInheriteFrom(td)) {
                         ok = true;
                     }
                 }
@@ -401,8 +401,8 @@ public class Type extends AstNode {
         type.genericArgs = new ArrayList<>();
         type.genericArgs.add(prototype.returnType);
         if (prototype.paramDefs != null) {
-            for (ParamDef p : prototype.paramDefs) {
-                type.genericArgs.add(p.paramType);
+            for (FieldDef p : prototype.paramDefs) {
+                type.genericArgs.add(p.fieldType);
             }
         }
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, type.loc, null);
@@ -631,7 +631,7 @@ public class Type extends AstNode {
                 }
             }
         }
-        else if (this.id.resolvedDef instanceof StructDef sd) {
+        else if (this.id.resolvedDef instanceof TypeDef sd) {
             this.id.resolvedDef = sd.makeInstance(typeGenericArgs);
         }
         return nt;

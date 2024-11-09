@@ -9,7 +9,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import sric.compiler.CompilerLog;
 import sric.compiler.ast.AstNode;
-import sric.compiler.ast.AstNode.StructDef;
+import sric.compiler.ast.AstNode.FieldDef;
+import sric.compiler.ast.AstNode.TypeDef;
 import sric.compiler.ast.Expr;
 import sric.compiler.ast.Expr.ClosureExpr;
 import sric.compiler.ast.FConst;
@@ -183,7 +184,7 @@ public class ScLibGenerator extends BaseGenerator {
     @Override
     public void visitFunc(AstNode.FuncDef v) {
         boolean inlined = isPrintAll || (v.flags & FConst.Inline) != 0 || v.generiParamDefs != null;
-        if (!inlined && v.parent instanceof StructDef sd) {
+        if (!inlined && v.parent instanceof TypeDef sd) {
             if (sd.generiParamDefs != null) {
                 inlined = true;
             }
@@ -216,16 +217,16 @@ public class ScLibGenerator extends BaseGenerator {
         print("(");
         if (prototype != null && prototype.paramDefs != null) {
             int i = 0;
-            for (AstNode.ParamDef p : prototype.paramDefs) {
+            for (FieldDef p : prototype.paramDefs) {
                 if (i > 0) {
                     print(", ");
                 }
                 print(p.name);
                 print(" : ");
-                printType(p.paramType);
-                if (p.defualtValue != null) {
+                printType(p.fieldType);
+                if (p.initExpr != null) {
                     print(" = ");
-                    this.visit(p.defualtValue);
+                    this.visit(p.initExpr);
                 }
                 ++i;
             }
@@ -263,7 +264,7 @@ public class ScLibGenerator extends BaseGenerator {
 
     @Override
     public void visitTypeDef(AstNode.TypeDef v) {
-        if (v instanceof AstNode.EnumDef edef) {
+        if (v.isEnum()) {
             printFlags(v.flags);
             print("enum class ");
             print(v.name);
@@ -271,7 +272,7 @@ public class ScLibGenerator extends BaseGenerator {
             indent();
 
             int i = 0;
-            for (AstNode.FieldDef f : edef.enumDefs) {
+            for (AstNode.FieldDef f : v.fieldDefs) {
                 if (i > 0) {
                     print(",").newLine();
                 }
@@ -293,19 +294,19 @@ public class ScLibGenerator extends BaseGenerator {
         print("struct ");
         print(v.name);
         
-        if (v instanceof AstNode.StructDef sd) {
-            printGenericParamDefs(sd.generiParamDefs);
+        //if (v instanceof AstNode.StructDef sd) {
+            printGenericParamDefs(v.generiParamDefs);
             
-            if (sd.inheritances != null) {
+            if (v.inheritances != null) {
                 int i = 0;
-                for (Type inh : sd.inheritances) {
+                for (Type inh : v.inheritances) {
                     if (i == 0) print(" : ");
                     else print(", ");
                     printType(inh);
                     ++i;
                 }
             }
-        }
+        //}
         
         print(" {").newLine();
         indent();

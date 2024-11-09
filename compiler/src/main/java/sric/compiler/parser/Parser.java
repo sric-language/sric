@@ -222,7 +222,7 @@ public class Parser {
 // TypeDef
 //////////////////////////////////////////////////////////////////////////
     
-    private ArrayList<GenericParamDef> tryGenericParamDef(AstNode parent) {
+    private ArrayList<GenericParamDef> tryGenericParamDef() {
         if (curt == TokenKind.dollar && !peek.whitespace && peekt == TokenKind.lt) {
             consume();
             consume();
@@ -232,7 +232,7 @@ public class Parser {
                 String paramName = consumeId();
                 GenericParamDef param = new GenericParamDef();
                 param.name = paramName;
-                param.parent = parent;
+                //param.parent = parent;
                 //param.index = gparams.size();
                 
                 if (curt == TokenKind.colon) {
@@ -283,22 +283,21 @@ public class Parser {
         boolean isEnum = false;
 
         TypeDef typeDef = null;
-        StructDef structDef = null;
-        TraitDef traitDef = null;
         // mixin
         if (curt == TokenKind.traitKeyword) {
             if ((flags & FConst.Abstract) != 0) {
                 err("The 'abstract' modifier is implied on trait");
             }
-            flags = flags | FConst.Mixin | FConst.Abstract;
+            //flags = flags | FConst.Mixin | FConst.Abstract;
+            flags = flags | FConst.Abstract;
             isMixin = true;
             consume();
             
             // name
             String name = consumeId();
             // lookup TypeDef
-            traitDef = new TraitDef(doc, flags, name);
-            typeDef = traitDef;
+            typeDef = new TypeDef(doc, flags, name);
+            typeDef.kind = TypeDef.Kind.Tarit;
         }
         else if (curt == TokenKind.enumKeyword) {
             if ((flags & FConst.Const) != 0) {
@@ -307,43 +306,43 @@ public class Parser {
             if ((flags & FConst.Abstract) != 0) {
                 err("Cannot use 'abstract' modifier on enum");
             }
-            flags = flags | FConst.Enum;
+            //flags = flags | FConst.Enum;
             isEnum = true;
             consume();
             
             // name
             String name = consumeId();
             // lookup TypeDef
-            EnumDef def = new EnumDef(doc, flags, name);
-            typeDef = def;
+            typeDef = new TypeDef(doc, flags, name);
+            typeDef.kind = TypeDef.Kind.Enum;
         } // class
         else {
             consume(TokenKind.structKeyword);
-            
+            //flags = flags | FConst.Struct;
             // name
             String name = consumeId();
             // lookup TypeDef
-            structDef = new StructDef(doc, flags, name);
-            typeDef = structDef;
+            typeDef = new TypeDef(doc, flags, name);
             
             //GenericType Param
-            structDef.generiParamDefs = tryGenericParamDef(structDef);
+            typeDef.generiParamDefs = tryGenericParamDef();
+            typeDef.kind = TypeDef.Kind.Struct;
         }
 
 
-        if (structDef != null) {
+        if (!isMixin && !isEnum) {
             // inheritance
             if (curt == TokenKind.colon) {
                 // first inheritance type can be extends or mixin
                 consume();
                 Type first = inheritType();
-                structDef.inheritances = new ArrayList<Type>();
-                structDef.inheritances.add(first);
+                typeDef.inheritances = new ArrayList<Type>();
+                typeDef.inheritances.add(first);
 
                 // additional mixins
                 while (curt == TokenKind.comma) {
                     consume();
-                    structDef.inheritances.add(inheritType());
+                    typeDef.inheritances.add(inheritType());
                 }
             }
         }
@@ -353,8 +352,7 @@ public class Parser {
 
         // if enum, parse values
         if (isEnum) {
-            EnumDef enumDef = (EnumDef)typeDef;
-            enumDefs(enumDef);
+            enumDefs(typeDef);
         }
         else {
             // slots
@@ -366,7 +364,7 @@ public class Parser {
                 AstNode slot = slotDef(sdoc);
                 if (isMixin) {
                     if (slot instanceof FuncDef) {
-                        traitDef.addSlot((FuncDef)slot);
+                        typeDef.addSlot((FuncDef)slot);
                     }
                     else {
                         err("Can't define field in trait");
@@ -374,11 +372,11 @@ public class Parser {
                 }
                 else {
                     if (slot instanceof FieldDef) {
-                        if (structDef.funcDefs.size() > 0) {
+                        if (typeDef.funcDefs.size() > 0) {
                             err("Field should come before methods");
                         }
                     }
-                    structDef.addSlot(slot);
+                    typeDef.addSlot(slot);
                 }
             }
         }
@@ -531,7 +529,7 @@ public class Parser {
      ** Enum definition list:
      **   <enumDefs> :=  <enumDef> ("," <enumDef>)* <eos>
      */
-    private void enumDefs(EnumDef def) {
+    private void enumDefs(TypeDef def) {
         // parse each enum def
         int ordinal = 0;
         def.addSlot(enumSlotDef(ordinal++));
@@ -762,7 +760,7 @@ public class Parser {
         method.flags = flags;
         method.prototype.returnType = ret;
         method.name = name;
-        method.generiParamDefs = tryGenericParamDef(method);
+        method.generiParamDefs = tryGenericParamDef();
         
         funcPrototype(method.prototype);
 
@@ -784,9 +782,9 @@ public class Parser {
     protected void funcPrototype(FuncPrototype prototype) {
         consume(TokenKind.lparen);
         if (curt != TokenKind.rparen) {
-            prototype.paramDefs = new ArrayList<ParamDef>();
+            prototype.paramDefs = new ArrayList<FieldDef>();
             while (true) {
-                ParamDef newParam = paramDef();
+                FieldDef newParam = paramDef();
                 prototype.paramDefs.add(newParam);
                 if (curt == TokenKind.rparen) {
                     break;
@@ -807,31 +805,31 @@ public class Parser {
         }
     }
 
-    private ParamDef paramDef() {
+    private FieldDef paramDef() {
         Loc loc = curLoc();
 
-        ParamDef param = new ParamDef();
-        param.name = consumeId();
+        FieldDef param = new FieldDef(consumeId(), null);
+        param.isParamDef = true;
         
         consume(TokenKind.colon);
         
         if (curt == TokenKind.dotDotDot) {
-            param.paramType = Type.varArgType(cur.loc);
+            param.fieldType = Type.varArgType(cur.loc);
             consume();
         }
         else {
-            param.paramType = typeRef();
+            param.fieldType = typeRef();
         }
         
         //param type default to const
-        if (!param.paramType.explicitImmutable) {
-            param.paramType.isImmutable = true;
+        if (!param.fieldType.explicitImmutable) {
+            param.fieldType.isImmutable = true;
         }
         
         if (curt == TokenKind.assign) {
             //if (curt === TokenKind.assign) err("Must use := for parameter default");
             consume();
-            param.defualtValue = expr();
+            param.initExpr = expr();
         }
         endLoc(param, loc);
         return param;

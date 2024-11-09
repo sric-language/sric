@@ -422,7 +422,6 @@ public class JsonRpc {
 	/**
 	 * Indicates if this symbol is deprecated.
 	 *
-	 * @deprecated Use tags instead
 	 */
 	public boolean deprecated;
 

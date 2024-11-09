@@ -84,7 +84,7 @@ public class TopLevelTypeResolver extends TypeResolver {
                     Scope mcope = m.getScope(log);
                     importScope.addAll(mcope);
                 }
-                else if (i.id.resolvedDef instanceof StructDef c) {
+                else if (i.id.resolvedDef instanceof TypeDef c) {
                     Scope mcope = c.getScope(log);
                     importScope.addAll(mcope);
                 }
@@ -117,7 +117,7 @@ public class TopLevelTypeResolver extends TypeResolver {
 
     @Override
     public void visitField(AstNode.FieldDef v) {
-        if (v.parent instanceof EnumDef d) {
+        if (v.parent instanceof TypeDef d && d.isEnum()) {
             Type self = new Type(d.loc, d.name);
             self.id.resolvedDef = d;
             v.fieldType = self;
@@ -141,8 +141,8 @@ public class TopLevelTypeResolver extends TypeResolver {
         
         resolveTopLevelType(v.prototype.returnType, v.loc);
         if (v.prototype.paramDefs != null) {
-            for (AstNode.ParamDef p : v.prototype.paramDefs) {
-                resolveTopLevelType(p.paramType, p.loc);
+            for (AstNode.FieldDef p : v.prototype.paramDefs) {
+                resolveTopLevelType(p.fieldType, p.loc);
             }
         }
         
@@ -154,24 +154,24 @@ public class TopLevelTypeResolver extends TypeResolver {
     @Override
     public void visitTypeDef(AstNode.TypeDef v) {
         Scope gpScope = null;
-        if (v instanceof StructDef sd) {
-            if (sd.generiParamDefs != null) {
-                gpScope = new Scope();
-                for (GenericParamDef gp : sd.generiParamDefs) {
-                    gpScope.put(gp.name, gp);
-                }
-                this.scopes.add(gpScope);
-                
-                for (GenericParamDef gp : sd.generiParamDefs) {
-                    resolveTopLevelType(gp.bound, gp.loc);
-                }
+        //if (v instanceof StructDef sd) {
+        if (v.generiParamDefs != null) {
+            gpScope = new Scope();
+            for (GenericParamDef gp : v.generiParamDefs) {
+                gpScope.put(gp.name, gp);
             }
-            if (sd.inheritances != null) {
-                for (Type inh : sd.inheritances) {
-                    this.resolveTopLevelType(inh, inh.loc);
-                }
+            this.scopes.add(gpScope);
+
+            for (GenericParamDef gp : v.generiParamDefs) {
+                resolveTopLevelType(gp.bound, gp.loc);
             }
         }
+        if (v.inheritances != null) {
+            for (Type inh : v.inheritances) {
+                this.resolveTopLevelType(inh, inh.loc);
+            }
+        }
+        //}
         v.walkChildren(this);
         
         if (gpScope != null) {

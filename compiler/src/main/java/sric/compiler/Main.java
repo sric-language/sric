@@ -98,6 +98,10 @@ public class Main {
                 var props = Util.readProps(propsPath);
                 String sourcePath2 = props.get("sourcePath");
                 if (sourcePath2 != null) {
+                    if(!new File(sourcePath2).exists()) {
+                        System.out.println("file not found: "+sourcePath2);
+                        continue;
+                    }
                     if (!compile(sourcePath2, libPath, recursion)) {
                         System.out.println("ERROR");
                         return false;

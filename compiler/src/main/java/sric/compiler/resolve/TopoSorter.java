@@ -35,38 +35,38 @@ public class TopoSorter {
             return;
         }
         this.emitState.put(v, 1);
-        if (v instanceof AstNode.StructDef sd) {
-            if (sd.inheritances != null) {
-                for (Type t : sd.inheritances) {
-                    if (t.id.resolvedDef != null && t.id.resolvedDef instanceof AstNode.TypeDef td) {
-                        if (td.parent != null && ((AstNode.FileUnit)td.parent).module == this.module) {
-                            if (td instanceof AstNode.StructDef tds) {
-                                if (tds.originGenericTemplate != null) {
-                                    this.visitTypeDef(tds.originGenericTemplate);
-                                    continue;
-                                }
+        //if (v instanceof AstNode.StructDef sd) {
+        if (v.inheritances != null) {
+            for (Type t : v.inheritances) {
+                if (t.id.resolvedDef != null && t.id.resolvedDef instanceof AstNode.TypeDef td) {
+                    if (td.parent != null && ((AstNode.FileUnit)td.parent).module == this.module) {
+                        //if (td instanceof AstNode.StructDef tds) {
+                            if (td.originGenericTemplate != null) {
+                                this.visitTypeDef(td.originGenericTemplate);
+                                continue;
                             }
-                            this.visitTypeDef(td);
-                        }
-                    }
-                }
-            }
-            for (AstNode.FieldDef f : sd.fieldDefs) {
-                if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof AstNode.TypeDef td) {
-                    if (td.parent != null && td.parent instanceof AstNode.FileUnit unit) {
-                        if (unit.module == this.module) {
-                            if (td instanceof AstNode.StructDef tds) {
-                                if (tds.originGenericTemplate != null) {
-                                    this.visitTypeDef(tds.originGenericTemplate);
-                                    continue;
-                                }
-                            }
-                            this.visitTypeDef(td);
-                        }
+                        //}
+                        this.visitTypeDef(td);
                     }
                 }
             }
         }
+        for (AstNode.FieldDef f : v.fieldDefs) {
+            if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof AstNode.TypeDef td) {
+                if (td.parent != null && td.parent instanceof AstNode.FileUnit unit) {
+                    if (unit.module == this.module) {
+                        //if (td instanceof AstNode.StructDef tds) {
+                            if (td.originGenericTemplate != null) {
+                                this.visitTypeDef(td.originGenericTemplate);
+                                continue;
+                            }
+                        //}
+                        this.visitTypeDef(td);
+                    }
+                }
+            }
+        }
+        //}
         this.emitState.put(v, 2);
     }
 }

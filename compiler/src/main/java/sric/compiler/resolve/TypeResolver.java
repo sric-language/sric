@@ -100,16 +100,16 @@ public abstract class TypeResolver  extends CompilePass {
                 }
                 //type.resolvedAlias = gpd.bound;
             }
+            else if (type.id.resolvedDef instanceof TypeAlias ta) {
+                type.id.resolvedDef = ta.type.id.resolvedDef;
+                type.id.resolvedType = Type.metaType(type.loc, type);
+                type.resolvedAlias = ta.type;
+            }
             else if (type.id.resolvedDef instanceof TypeDef) {
                 //ok
                 if (asExpr) {
                     type.id.resolvedType = Type.metaType(type.loc, type);
                 }
-            }
-            else if (type.id.resolvedDef instanceof TypeAlias ta) {
-                type.id.resolvedDef = ta.type.id.resolvedDef;
-                type.id.resolvedType = Type.metaType(type.loc, type);
-                type.resolvedAlias = ta.type;
             }
             else {
                 type.id.resolvedDef = null;
@@ -154,7 +154,7 @@ public abstract class TypeResolver  extends CompilePass {
             }
 
             boolean genericOk = false;
-            if (type.id.resolvedDef instanceof StructDef sd) {
+            if (type.id.resolvedDef instanceof TypeDef sd) {
                 if (sd.generiParamDefs != null) {
                     if (type.genericArgs.size() == sd.generiParamDefs.size()) {
                         Map<GenericParamDef, Type> typeGenericArgs = new HashMap<>();
@@ -170,7 +170,7 @@ public abstract class TypeResolver  extends CompilePass {
                 err("Generic args mismatch", type.loc);
             }
         }
-        else if (type.id.resolvedDef instanceof StructDef sd) {
+        else if (type.id.resolvedDef instanceof TypeDef sd) {
             if (sd.generiParamDefs != null) {
                 err("Miss generic args", type.loc);
             }

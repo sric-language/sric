@@ -48,7 +48,7 @@ struct LinkedList$<T: Linkable$<T>> {
 
     fun insertBefore(elem: mut own* T, pos: * mut T) {
         if (pos.previous == null) {
-            insert(elem);
+            insert(move elem);
             return;
         }
         elem.next = move pos.previous.next;

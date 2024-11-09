@@ -70,20 +70,25 @@ public class AstNode {
         }
     }
     
-    public static abstract class TypeDef extends TopLevelDef {
-        protected Scope scope = null;
-        public abstract Scope getScope(CompilerLog log);
-    }
-    
     public static class FieldDef extends TopLevelDef {
         public Type fieldType;        // field type
         public Expr initExpr;         // init expression or null
         public boolean isLocalVar = false;
+        public boolean isParamDef = false;
         
         public int _enumValue = -1;
         
+        public boolean isLocalOrParam() {
+            return isLocalVar || isParamDef;
+        }
+        
         public FieldDef(Comments comment, String name) {
             this.comment = comment;
+            this.name = name;
+        }
+        
+        public FieldDef(String name, Type type) {
+            this.fieldType = type;
             this.name = name;
         }
         
@@ -110,23 +115,39 @@ public class AstNode {
         }
     }
     
-    public static class StructDef extends TypeDef {
+    public static class TypeDef extends TopLevelDef {
         public ArrayList<Type> inheritances = null;
         public ArrayList<FieldDef> fieldDefs = new ArrayList<FieldDef>();
         public ArrayList<FuncDef> funcDefs = new ArrayList<FuncDef>();
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
+        private Scope scope = null;
         private Scope inheritScopes = null;
-        public StructDef originGenericTemplate = null;
+        public TypeDef originGenericTemplate = null;
         private Map<GenericParamDef, Type> typeGenericArgs;
         private boolean genericInited = false;
-        private StructDef genericTemplate = null;
+        private TypeDef genericTemplate = null;
 //        private HashMap<String, StructDef> parameterizeCache;
         
-        public StructDef(Comments comment, int flags, String name) {
+        public enum Kind {
+            Struct, Enum, Tarit
+        }
+        public Kind kind = Kind.Struct;
+        
+        public TypeDef(Comments comment, int flags, String name) {
             this.comment = comment;
             this.flags = flags;
             this.name = name;
+        }
+
+        public boolean isTrait() {
+            return kind == Kind.Tarit;
+        }
+        public boolean isEnum() {
+            return kind == Kind.Enum;
+        }
+        public boolean isStruct() {
+            return kind == Kind.Struct;
         }
         
         public void addSlot(AstNode node) {
@@ -162,7 +183,7 @@ public class AstNode {
             if (this.inheritances != null) {
                 for (Type inh : this.inheritances) {
                     if (inh.id.resolvedDef != null) {
-                        if (inh.id.resolvedDef instanceof StructDef inhSd) {
+                        if (inh.id.resolvedDef instanceof TypeDef inhSd) {
                             inhSd.getAllFields(fields);
                         }
                     }
@@ -170,7 +191,7 @@ public class AstNode {
             }
         }
         
-        @Override public Scope getScope(CompilerLog log) {
+        public Scope getScope(CompilerLog log) {
             if (scope == null) {
                 templateInstantiate();
                 scope = new Scope();
@@ -203,15 +224,12 @@ public class AstNode {
                 Scope s = new Scope();
                 for (Type inh : this.inheritances) {
                     if (inh.id.resolvedDef != null) {
-                        if (inh.id.resolvedDef instanceof StructDef inhSd) {
+                        if (inh.id.resolvedDef instanceof TypeDef inhSd) {
                             inhSd.getScopeNoPrivate(s);
                             Scope inhScope2 = inhSd.getInheriteScope();
                             if (inhScope2 != null) {
                                 s.addAll(inhScope2);
                             }
-                        }
-                        else if (inh.id.resolvedDef instanceof TraitDef inhSd) {
-                            inhSd.getScopeNoPrivate(s);
                         }
                     }
                 }
@@ -236,12 +254,13 @@ public class AstNode {
             }
         }
         
-        public StructDef makeInstance(Map<GenericParamDef, Type> typeGenericArgs) {
-            StructDef nt = new StructDef(this.comment, this.flags, this.name);
+        public TypeDef makeInstance(Map<GenericParamDef, Type> typeGenericArgs) {
+            TypeDef nt = new TypeDef(this.comment, this.flags, this.name);
             nt.parent = this.parent;
             nt.loc = this.loc;
             nt.len = this.len;
             nt.genericTemplate = this;
+            nt.kind = this.kind;
             
             if (this.originGenericTemplate != null) {
                 nt.originGenericTemplate = this.originGenericTemplate;
@@ -254,7 +273,7 @@ public class AstNode {
             return nt;
         }
         
-        public StructDef templateInstantiate() {
+        public TypeDef templateInstantiate() {
             if (this.genericTemplate == null) return this;
             if (genericInited) return this;
             genericInited = true;
@@ -279,7 +298,7 @@ public class AstNode {
                 if (t.id.resolvedDef == parent) {
                     return true;
                 }
-                if (t.id.resolvedDef instanceof StructDef sd) {
+                if (t.id.resolvedDef instanceof TypeDef sd) {
                     boolean res = sd.isInheriteFrom(parent);
                     if (res) {
                         return true;
@@ -289,87 +308,10 @@ public class AstNode {
             return false;
         }
     }
-    
-    public static class EnumDef extends TypeDef {
-        public ArrayList<FieldDef> enumDefs = new ArrayList<FieldDef>();
-        
-        public EnumDef(Comments comment, int flags, String name) {
-            this.comment = comment;
-            this.flags = flags;
-            this.name = name;
-        }
-        
-        public void addSlot(FieldDef node) {
-            node.parent = this;
-            enumDefs.add(node);
-        }
-        
-        @Override public Scope getScope(CompilerLog log) {
-            if (scope == null) {
-                scope = new Scope();
-                
-                for (FieldDef f : enumDefs) {
-                    if (!scope.put(f.name, f)) {
-                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
-                    }
-                }
-            }
-            return scope;
-        }
-        
-       @Override public void walkChildren(Visitor visitor) {
-            for (FieldDef field : enumDefs) {
-                visitor.visit(field);
-            }
-        }
-    }
-    
-    public static class TraitDef extends TypeDef {
-        public ArrayList<FuncDef> funcDefs = new ArrayList<FuncDef>();
-        
-        public TraitDef(Comments comment, int flags, String name) {
-            this.comment = comment;
-            this.flags = flags;
-            this.name = name;
-        }
-        
-        public void addSlot(FuncDef node) {
-            node.parent = this;
-            funcDefs.add(node);
-        }
-        
-        @Override public Scope getScope(CompilerLog log) {
-            if (scope == null) {
-                scope = new Scope();
 
-                for (FuncDef f : funcDefs) {
-                    if (!scope.put(f.name, f)) {
-                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
-                    }
-                }
-            }
-            return scope;
-        }
-        
-        public void getScopeNoPrivate(Scope scope) {
-            for (FuncDef f : funcDefs) {
-                if ((f.flags & FConst.Private) != 0) {
-                    continue;
-                }
-                scope.put(f.name, f);
-            }
-        }
-        
-        @Override public void walkChildren(Visitor visitor) {
-            for (FuncDef func : funcDefs) {
-                visitor.visit(func);
-            }
-        }
-    }
-    
     public static class FuncPrototype {
         public Type returnType;       // return type
-        public ArrayList<ParamDef> paramDefs = null;   // parameter definitions
+        public ArrayList<FieldDef> paramDefs = null;   // parameter definitions
         public int postFlags = 0;
         
         public boolean isThisImmutable() {
@@ -382,13 +324,13 @@ public class AstNode {
             sb.append("(");
             if (paramDefs != null) {
                 int i = 0;
-                for (ParamDef p : paramDefs) {
+                for (FieldDef p : paramDefs) {
                     if (i > 0) {
                         sb.append(", ");
                     }
                     sb.append(p.name);
                     sb.append(" : ");
-                    sb.append(p.paramType);
+                    sb.append(p.fieldType);
                     ++i;
                 }
             }
@@ -420,14 +362,14 @@ public class AstNode {
             nf.prototype.returnType = this.prototype.returnType.templateInstantiate(typeGenericArgs);
             nf.prototype.postFlags = this.prototype.postFlags;
             if (this.prototype.paramDefs != null) {
-                nf.prototype.paramDefs = new ArrayList<ParamDef>();
-                for (ParamDef p : this.prototype.paramDefs) {
-                    ParamDef np = new ParamDef();
-                    np.name = p.name;
-                    np.defualtValue = p.defualtValue;
+                nf.prototype.paramDefs = new ArrayList<FieldDef>();
+                for (FieldDef p : this.prototype.paramDefs) {
+                    FieldDef np = new FieldDef(null, p.name);
+                    //np.name = p.name;
+                    np.initExpr = p.initExpr;
                     np.loc = p.loc;
                     np.len = p.len;
-                    np.paramType = p.paramType.templateInstantiate(typeGenericArgs);
+                    np.fieldType = p.fieldType.templateInstantiate(typeGenericArgs);
                     nf.prototype.paramDefs.add(np);
                 }
             }
@@ -512,19 +454,8 @@ public class AstNode {
         }
     }
     
-    public static class GenericParamDef extends TypeDef {
-        public Type bound;
-        //public int index;
-
-        @Override
-        public Scope getScope(CompilerLog log) {
-            return ((TypeDef)bound.id.resolvedDef).getScope(log);
-        }
-    }
-    
-    public static class ParamDef extends AstNode {
-        public Type paramType;
-        public Expr defualtValue;
+    public static class GenericParamDef extends AstNode {
         public String name;
+        public Type bound;
     }
 }

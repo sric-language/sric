@@ -31,7 +31,7 @@ public class ExprTypeResolver extends TypeResolver {
     private ArrayDeque<AstNode> funcs = new ArrayDeque<AstNode>();
     private ArrayDeque<AstNode> loops = new ArrayDeque<AstNode>();
     
-    protected StructDef curStruct = null;
+    protected TypeDef curStruct = null;
     protected WithBlockExpr curItBlock = null;
     protected Scope curItBlockScope = null;
     
@@ -180,10 +180,10 @@ public class ExprTypeResolver extends TypeResolver {
     
     private void visitFuncPrototype(AstNode.FuncPrototype prototype, Scope scope) {
         if (prototype != null && prototype.paramDefs != null) {
-            for (AstNode.ParamDef p : prototype.paramDefs) {
-                this.resolveType(p.paramType, false);
-                if (p.defualtValue != null) {
-                    this.visit(p.defualtValue);
+            for (AstNode.FieldDef p : prototype.paramDefs) {
+                this.resolveType(p.fieldType, false);
+                if (p.initExpr != null) {
+                    this.visit(p.initExpr);
                 }
                 scope.put(p.name, p);
             }
@@ -225,20 +225,20 @@ public class ExprTypeResolver extends TypeResolver {
     @Override
     public void visitTypeDef(TypeDef v) {
         int scopeCount = 1;
-        if (v instanceof StructDef sd) {
-            curStruct = sd;
-            if (sd.inheritances != null) {
-                Scope inhScopes = sd.getInheriteScope();
+        if (v.isStruct()) {
+            curStruct = v;
+            if (v.inheritances != null) {
+                Scope inhScopes = v.getInheriteScope();
                 this.scopes.add(inhScopes);
                 ++scopeCount;
                 
-                for (FieldDef f : sd.fieldDefs) {
+                for (FieldDef f : v.fieldDefs) {
                     if (inhScopes.contains(f.name)) {
                         err("Field name is already exsits"+f.name, f.loc);
                     }
                 }
                 
-                for (FuncDef f : sd.funcDefs) {
+                for (FuncDef f : v.funcDefs) {
                     if (/*(f.flags & FConst.Static) != 0 || */(f.flags | FConst.Override) != 0) {
                         continue;
                     }
@@ -248,9 +248,9 @@ public class ExprTypeResolver extends TypeResolver {
                 }
             }
         }
-        else if (v instanceof EnumDef e) {
+        else if (v.isEnum()) {
             int enumValue = 0;
-            for (FieldDef f : e.enumDefs) {
+            for (FieldDef f : v.fieldDefs) {
                 if (f.initExpr != null) {
                     boolean ok = false;
                     if (f.initExpr instanceof Expr.LiteralExpr li) {
@@ -406,14 +406,19 @@ public class ExprTypeResolver extends TypeResolver {
         else if (resolvedDef instanceof TypeAlias f) {
             return Type.metaType(f.loc, f.type);
         }
+        else if (resolvedDef instanceof GenericParamDef f) {
+            Type type = new Type(f.loc, f.name);
+            type.id.resolvedDef = f;
+            return Type.metaType(f.loc, type);
+        }
         else if (resolvedDef instanceof TypeDef f) {
             Type type = new Type(f.loc, f.name);
             type.id.resolvedDef = f;
             return Type.metaType(f.loc, type);
         }
-        else if (resolvedDef instanceof ParamDef p) {
-            return p.paramType;
-        }
+//        else if (resolvedDef instanceof ParamDef p) {
+//            return p.paramType;
+//        }
         return null;
     }
     
@@ -444,17 +449,21 @@ public class ExprTypeResolver extends TypeResolver {
         if (resolvedDef == null) {
             return null;
         }
+        
+        if (resolvedDef instanceof GenericParamDef t) {
+            resolvedDef = t.bound.id.resolvedDef;
+        }
 
         if (resolvedDef instanceof TypeDef t) {
             Scope scope = t.getScope(log);
             AstNode def = scope.get(name, loc, log);
             if (def == null) {
-                if (t instanceof StructDef sd) {
-                    if (sd.inheritances != null) {
-                        Scope inhScopes = sd.getInheriteScope();
+                //if (t instanceof StructDef sd) {
+                    if (t.inheritances != null) {
+                        Scope inhScopes = t.getInheriteScope();
                         def = inhScopes.get(name, loc, log);
                     }
-                }
+                //}
             }
             if (def == null) {
                 err("Unkown name:"+name, loc);
@@ -681,11 +690,11 @@ public class ExprTypeResolver extends TypeResolver {
         }
     }
     
-    private StructDef getTypeStructDef(Type type) {
+    private TypeDef getTypeStructDef(Type type) {
         if (type.isPointerType() && type.genericArgs != null) {
             type = type.genericArgs.get(0);
         }
-        if (type.id.resolvedDef instanceof StructDef sd) {
+        if (type.id.resolvedDef instanceof TypeDef sd && sd.isStruct()) {
             return sd;
         }
         return null;
@@ -697,14 +706,14 @@ public class ExprTypeResolver extends TypeResolver {
             return;
         }
         
-        StructDef sd = null;
+        TypeDef sd = null;
         if (e.target instanceof IdExpr id) {
-            if (id.resolvedDef instanceof StructDef) {
-                sd = (StructDef)id.resolvedDef;
+            if (id.resolvedDef instanceof TypeDef sd0) {
+                sd = sd0;
                 //e._isType = true;
             }
             else if (id.resolvedDef instanceof FieldDef fd) {
-                if (fd.fieldType.id.resolvedDef instanceof StructDef fieldSF) {
+                if (fd.fieldType.id.resolvedDef instanceof TypeDef fieldSF) {
                     sd = fieldSF;
                 }
             }
@@ -713,8 +722,8 @@ public class ExprTypeResolver extends TypeResolver {
             }
         }
         else if (e.target instanceof GenericInstance gi) {
-            if (gi.resolvedDef instanceof StructDef) {
-                sd = (StructDef)gi.resolvedDef;
+            if (gi.resolvedDef instanceof TypeDef) {
+                sd = (TypeDef)gi.resolvedDef;
                 //e._isType = true;
             }
         }
@@ -722,11 +731,15 @@ public class ExprTypeResolver extends TypeResolver {
             sd = getTypeStructDef(e.target.resolvedType);
         }
         else if (e.target instanceof TypeExpr te) {
-            if (te.type.id.resolvedDef instanceof StructDef) {
-                sd = (StructDef)te.type.id.resolvedDef;
+            if (te.type.id.resolvedDef instanceof TypeDef) {
+                sd = (TypeDef)te.type.id.resolvedDef;
                 //e._isType = true;
             }
             //e._isType = true;
+        }
+        
+        if (sd != null && (!sd.isStruct() || (sd.flags & FConst.Abstract) != 0)) {
+            err("Must non-abstract struct", e.target.loc);
         }
         
         e._structDef = sd;
@@ -801,7 +814,7 @@ public class ExprTypeResolver extends TypeResolver {
         
         if (e.genericArgs != null) {
             boolean genericOk = false;
-            if (idExpr.resolvedDef instanceof StructDef sd) {
+            if (idExpr.resolvedDef instanceof TypeDef sd) {
                 if (sd.generiParamDefs != null) {
                     if (e.genericArgs.size() == sd.generiParamDefs.size()) {
                         Map<GenericParamDef, Type> typeGenericArgs = new HashMap<>();
@@ -834,7 +847,7 @@ public class ExprTypeResolver extends TypeResolver {
                 err("Generic args size not match", e.loc);
             }
         }
-        else if (idExpr.resolvedDef instanceof StructDef sd) {
+        else if (idExpr.resolvedDef instanceof TypeDef sd) {
             if (sd.generiParamDefs != null) {
                 err("Miss generic args", idExpr.loc);
             }

@@ -31,7 +31,7 @@ public class Buildin {
         return makeBuildinType(scope, name, null);
     }
     private static TypeDef makeBuildinType(Scope scope, String name, ArrayList<GenericParamDef> gps) {
-        StructDef typeDef = new AstNode.StructDef(null, 0, name);
+        TypeDef typeDef = new AstNode.TypeDef(null, 0, name);
         typeDef.loc = loc;
         typeDef.generiParamDefs = gps;
         scope.put(name, typeDef);
@@ -43,11 +43,9 @@ public class Buildin {
         f.loc = loc;
         f.name = "isNull";
         f.prototype.returnType = Type.boolType(loc);
-        f.prototype.paramDefs = new ArrayList<ParamDef>();
-        ParamDef param = new ParamDef();
+        f.prototype.paramDefs = new ArrayList<FieldDef>();
+        FieldDef param = new FieldDef("pointer", Type.pointerType(loc, Type.voidType(loc), Type.PointerAttr.raw, true));
         param.loc = loc;
-        param.name = "pointer";
-        param.paramType = Type.pointerType(loc, Type.voidType(loc), Type.PointerAttr.raw, true);
         f.prototype.paramDefs.add(param);
         
         scope.put(f.name, f);
@@ -59,11 +57,10 @@ public class Buildin {
         f.loc = loc;
         f.name = "sizeof";
         f.prototype.returnType = Type.intType(loc);
-        f.prototype.paramDefs = new ArrayList<ParamDef>();
-        ParamDef param = new ParamDef();
+        f.prototype.paramDefs = new ArrayList<FieldDef>();
+        FieldDef param = new FieldDef("type", Type.metaType(loc, Type.voidType(loc)));
         param.loc = loc;
         param.name = "type";
-        param.paramType = Type.metaType(loc, Type.voidType(loc));
         f.prototype.paramDefs.add(param);
         
         scope.put(f.name, f);
@@ -75,17 +72,13 @@ public class Buildin {
         f.loc = loc;
         f.name = "offsetof";
         f.prototype.returnType = Type.intType(loc);
-        f.prototype.paramDefs = new ArrayList<ParamDef>();
-        ParamDef param = new ParamDef();
+        f.prototype.paramDefs = new ArrayList<FieldDef>();
+        FieldDef param = new FieldDef("type",  Type.metaType(loc, Type.voidType(loc)));
         param.loc = loc;
-        param.name = "type";
-        param.paramType = Type.metaType(loc, Type.voidType(loc));
         f.prototype.paramDefs.add(param);
         
-        ParamDef param2 = new ParamDef();
+        FieldDef param2 = new FieldDef("field", Type.metaType(loc, Type.voidType(loc)));
         param2.loc = loc;
-        param2.name = "field";
-        param2.paramType = Type.metaType(loc, Type.voidType(loc));
         f.prototype.paramDefs.add(param2);
         
         scope.put(f.name, f);
@@ -117,7 +110,7 @@ public class Buildin {
             makeBuildinType(scope, "Void");
             makeBuildinType(scope, varargTypeName);//varargs
             makeBuildinType(scope, funcTypeName);//func
-            makeBuildinType(scope, emptyTypeName);
+            makeBuildinType(scope, emptyTypeName).flags = FConst.Noncopyable;
             
             ArrayList<GenericParamDef> gps3 = new ArrayList<GenericParamDef>();
             GenericParamDef gp3 = new GenericParamDef();

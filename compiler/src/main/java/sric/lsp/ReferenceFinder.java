@@ -64,7 +64,7 @@ public class ReferenceFinder extends CompilePass {
     void visitFuncPrototype(AstNode v, AstNode.FuncPrototype prototype) {
         if (prototype.paramDefs != null) {
             for (var p : prototype.paramDefs) {
-                visitType(p.paramType);
+                visitType(p.fieldType);
             }
         }
     }
@@ -82,11 +82,9 @@ public class ReferenceFinder extends CompilePass {
     @Override
     public void visitTypeDef(AstNode.TypeDef v) {
 
-        if (v instanceof AstNode.StructDef sd) {
-            if (sd.inheritances != null) {
-                for (Type inh : sd.inheritances) {
-                    visitType(inh);
-                }
+        if (v.inheritances != null) {
+            for (Type inh : v.inheritances) {
+                visitType(inh);
             }
         }
         

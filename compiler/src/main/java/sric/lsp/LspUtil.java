@@ -75,24 +75,12 @@ public class LspUtil {
             info.deprecated = td.isDeprecated();
         }
         
-        if(sym instanceof AstNode.StructDef sd) {
+        if(sym instanceof AstNode.TypeDef sd) {
             info.children = new ArrayList<DocumentSymbol>();
             for (FieldDef f : sd.fieldDefs) {
                 info.children.add(toDocumentSymbol(f));
             }
             for (FuncDef f : sd.funcDefs) {
-                info.children.add(toDocumentSymbol(f));
-            }
-        }
-        else if(sym instanceof AstNode.TraitDef sd) {
-            info.children = new ArrayList<DocumentSymbol>();
-            for (FuncDef f : sd.funcDefs) {
-                info.children.add(toDocumentSymbol(f));
-            }
-        }
-        else if(sym instanceof AstNode.EnumDef sd) {
-            info.children = new ArrayList<DocumentSymbol>();
-            for (FieldDef f : sd.enumDefs) {
                 info.children.add(toDocumentSymbol(f));
             }
         }
