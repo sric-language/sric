@@ -8,7 +8,7 @@
 namespace sric
 {
 template <typename T>
-class DArray {
+class DArray : public Noncopyable {
     std::vector<T> data;
 public:
     void resize(int size) {

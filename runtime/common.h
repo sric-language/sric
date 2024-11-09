@@ -16,6 +16,15 @@ namespace sric
     }
 #endif // SC_NO_CHECK
 
+
+    class Noncopyable {
+    public:
+        Noncopyable() = default;
+    protected:
+        Noncopyable(const Noncopyable&) = default;
+        Noncopyable& operator=(const Noncopyable&) = default;
+    };
+
 }
 
 #endif

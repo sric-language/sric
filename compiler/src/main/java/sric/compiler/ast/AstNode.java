@@ -361,6 +361,7 @@ public class AstNode {
             nf.prototype = new FuncPrototype();
             nf.prototype.returnType = this.prototype.returnType.templateInstantiate(typeGenericArgs);
             nf.prototype.postFlags = this.prototype.postFlags;
+            
             if (this.prototype.paramDefs != null) {
                 nf.prototype.paramDefs = new ArrayList<FieldDef>();
                 for (FieldDef p : this.prototype.paramDefs) {

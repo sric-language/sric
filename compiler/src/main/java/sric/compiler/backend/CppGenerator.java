@@ -377,7 +377,7 @@ public class CppGenerator extends BaseGenerator {
                 print("{");
                 this.indent();
                 newLine();
-                print("sric::Type s;").newLine();
+                print("sric::TypeDef s;").newLine();
                 reflectionTopLevelDef(type, "s");
                 
 
@@ -880,49 +880,7 @@ public class CppGenerator extends BaseGenerator {
         }
         
         if (headMode) {
-            //Topo sort
-            if (this.emitState.get(v) != null) {
-                int state = this.emitState.get(v);
-                if (state == 2) {
-                    return;
-                }
-                err("Cyclic dependency", v.loc);
-                return;
-            }
-            this.emitState.put(v, 1);
-            //if (v instanceof StructDef sd) {
-                if (v.inheritances != null) {
-                    for (Type t : v.inheritances) {
-                        if (t.id.resolvedDef != null && t.id.resolvedDef instanceof TypeDef td) {
-                            if (td.parent != null && ((FileUnit)td.parent).module == this.module) {
-                                //if (td instanceof StructDef tds) {
-                                    if (td.originGenericTemplate != null) {
-                                        this.visitTypeDef(td.originGenericTemplate);
-                                        continue;
-                                    }
-                                //}
-                                this.visitTypeDef(td);
-                            }
-                        }
-                    }
-                }
-                for (FieldDef f : v.fieldDefs) {
-                    if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof TypeDef td) {
-                        if (td.parent != null && td.parent instanceof FileUnit unit) {
-                            if (unit.module == this.module) {
-                                //if (td instanceof StructDef tds) {
-                                    if (td.originGenericTemplate != null) {
-                                        this.visitTypeDef(td.originGenericTemplate);
-                                        continue;
-                                    }
-                                //}
-                                this.visitTypeDef(td);
-                            }
-                        }
-                    }
-                }
-            //}
-            this.emitState.put(v, 2);
+            if (!topoSort(v)) return;
         }
         
 
@@ -970,16 +928,25 @@ public class CppGenerator extends BaseGenerator {
             print(getSymbolName(v));
 
             //if (v instanceof StructDef sd) {
-                if (v.inheritances != null) {
-                    int i = 0;
-                    for (Type inh : v.inheritances) {
-                        if (i == 0) print(" : ");
-                        else print(", ");
-                        print("public ");
-                        printType(inh);
-                        ++i;
-                    }
+            if (v.inheritances != null) {
+                int i = 0;
+                for (Type inh : v.inheritances) {
+                    if (i == 0) print(" : ");
+                    else print(", ");
+                    print("public ");
+                    printType(inh);
+                    ++i;
                 }
+            }
+            
+            if ((v.flags & FConst.Noncopyable) != 0) {
+                if (v.inheritances != null) {
+                    print(", public Noncopyable");
+                }
+                else {
+                    print(" : public Noncopyable");
+                }
+            }
             //}
 
             print(" {").newLine();
@@ -1001,6 +968,53 @@ public class CppGenerator extends BaseGenerator {
             print("};").newLine();
         
         }
+    }
+
+    private boolean topoSort(TypeDef v) {
+        //Topo sort
+        if (this.emitState.get(v) != null) {
+            int state = this.emitState.get(v);
+            if (state == 2) {
+                return false;
+            }
+            err("Cyclic dependency", v.loc);
+            return false;
+        }
+        this.emitState.put(v, 1);
+        //if (v instanceof StructDef sd) {
+        if (v.inheritances != null) {
+            for (Type t : v.inheritances) {
+                if (t.id.resolvedDef != null && t.id.resolvedDef instanceof TypeDef td) {
+                    if (td.parent != null && ((FileUnit)td.parent).module == this.module) {
+                        //if (td instanceof StructDef tds) {
+                        if (td.originGenericTemplate != null) {
+                            this.visitTypeDef(td.originGenericTemplate);
+                            continue;
+                        }
+                        //}
+                        this.visitTypeDef(td);
+                    }
+                }
+            }
+        }
+        for (FieldDef f : v.fieldDefs) {
+            if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof TypeDef td) {
+                if (td.parent != null && td.parent instanceof FileUnit unit) {
+                    if (unit.module == this.module) {
+                        //if (td instanceof StructDef tds) {
+                        if (td.originGenericTemplate != null) {
+                            this.visitTypeDef(td.originGenericTemplate);
+                            continue;
+                        }
+                        //}
+                        this.visitTypeDef(td);
+                    }
+                }
+            }
+        }
+        //}
+        this.emitState.put(v, 2);
+        return true;
     }
 
     @Override

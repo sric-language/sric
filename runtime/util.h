@@ -47,8 +47,8 @@ namespace sric {
 	}
 
 	template<typename T>
-	int hashCode(const T& p) {
-		return p.hashCode();
+	int hashCode(const T* p) {
+		return p->hashCode();
 	}
 
 	template<typename T>
@@ -57,13 +57,13 @@ namespace sric {
 	}
 
 	template<typename T>
-	int hashCode(int p) {
+	int hashCode(const int* p) {
 		return p;
 	}
 
 	template<typename T>
-	int compare(const T& a, const T& b) {
-		return a.compare(RefPtr<T>(const_cast<T*>(&b)));
+	int compare(const T* a, const T* b) {
+		return a->compare(RefPtr<T>(const_cast<T*>(b)));
 	}
 
 	template<typename T>
@@ -72,8 +72,8 @@ namespace sric {
 	}
 
 	template<typename T>
-	int compare(int a, int b) {
-		return a - b;
+	int compare(const int* a, const int* b) {
+		return *a - *b;
 	}
 }
 //

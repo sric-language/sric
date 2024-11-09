@@ -617,6 +617,7 @@ public class Type extends AstNode {
                 nt.genericArgs.add(t);
             }
         }
+        nt.isImmutable = this.isImmutable;
         nt.detail = this.detail;
         if (this.id.resolvedDef instanceof GenericParamDef g) {
             if (typeGenericArgs.containsKey(g)) {

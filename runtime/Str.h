@@ -7,7 +7,7 @@
 namespace sric
 {
 
-class String {
+class String : public Noncopyable {
     std::string str;
 public:
     String() {};

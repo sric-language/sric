@@ -26,7 +26,7 @@ struct Func {
     readonly var genericParams : DArray$<raw*const Int8>;
 }
 
-struct Type {
+struct TypeDef {
     readonly var flags : Int;
     readonly var comments : DArray$<Comment>;
     readonly var name : raw*const Int8;
@@ -43,7 +43,7 @@ struct Module {
 
     readonly var fields : DArray$<Field>;
     readonly var funcs : DArray$<Func>;
-    readonly var types : DArray$<Type>;
+    readonly var types : DArray$<TypeDef>;
 }
 
 extern fun findModule(name : raw*const Int8) : ref*? Module;
