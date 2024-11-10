@@ -1141,7 +1141,11 @@ public class CppGenerator extends BaseGenerator {
         
         boolean convertParentheses = false;
         if (v.implicitTypeConvertTo != null && !v.implicitTypeConvertTo.isVarArgType()) {
-            if (v.isPointerConvert) {
+            if (v.implicitStringConvert) {
+                print("sric::asStr(");
+                convertParentheses = true;
+            }
+            else if (v.isPointerConvert) {
                 if (v.resolvedType.detail instanceof Type.PointerInfo p1 && v.implicitTypeConvertTo.detail instanceof Type.PointerInfo p2) {
                     if (p1.pointerAttr == Type.PointerAttr.own && p2.pointerAttr == Type.PointerAttr.ref) {
                         print("sric::RefPtr<");

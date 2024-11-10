@@ -86,6 +86,25 @@ public class ErrorChecker extends CompilePass {
             return;
         }
         
+        //implicit convert string
+        //sric::String
+        if (to.id.resolvedDef instanceof TypeDef td) {
+            if (td.name.equals("String") && td.parent instanceof FileUnit funit) {
+                if (funit.module.name.equals("sric")) {
+                    //const char *;
+                    if (from.detail instanceof Type.PointerInfo pinfo && from.genericArgs != null) {
+                        if (pinfo.pointerAttr == Type.PointerAttr.raw && from.genericArgs.get(0).detail instanceof Type.NumInfo ninfo) {
+                            if (ninfo.size == 8) {
+                                target.implicitTypeConvertTo = to;
+                                target.implicitStringConvert = true;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         if (!from.fit(to)) {
             boolean allowUnsafeCast = false;
             if (isCallArg && from.detail instanceof PointerInfo f && to.detail instanceof PointerInfo t) {

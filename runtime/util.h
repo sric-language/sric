@@ -58,7 +58,7 @@ namespace sric {
 
 	template<typename T>
 	int hashCode(const int* p) {
-		return p;
+		return *p;
 	}
 
 	template<typename T>

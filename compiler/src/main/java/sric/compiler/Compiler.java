@@ -69,7 +69,7 @@ public class Compiler {
         SModule module = new SModule();
         module.name = Util.getBaseName(sourceDir.getName());
         module.version = "1.0";
-        module.sourcePath = sourcePath;
+        module.sourcePath = new File(sourcePath).getAbsolutePath();
         module.outType = "exe";
         module.scriptMode = true;
         File libDir = new File(libPath);
@@ -93,7 +93,7 @@ public class Compiler {
                 srcDirs = new File(propsPath).getParent() + "/" + srcDirs;
             }
         }
-        module.sourcePath = propsPath;
+        module.sourcePath = new File(propsPath).getAbsolutePath();
         File sourceDir = new File(srcDirs);
         File libDir = new File(libPath);
         return new Compiler(module, sourceDir, libPath, libDir.getParent()+"/output/");
