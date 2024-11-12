@@ -24,7 +24,6 @@ public class Buildin {
     public static final String pointerTypeName = "*";
     public static final String varargTypeName = "...";
     public static final String metaTypeTypeName = "Type";
-    public static final String refableTypeName = "Refable";
     public static final String emptyTypeName = "Empty"; //for generic param
 
     private static TypeDef makeBuildinType(Scope scope, String name) {
@@ -111,14 +110,7 @@ public class Buildin {
             makeBuildinType(scope, varargTypeName);//varargs
             makeBuildinType(scope, funcTypeName);//func
             makeBuildinType(scope, emptyTypeName).flags = FConst.Noncopyable;
-            
-            ArrayList<GenericParamDef> gps3 = new ArrayList<GenericParamDef>();
-            GenericParamDef gp3 = new GenericParamDef();
-            gp3.name = "T";
-            gp3.loc = loc;
-            gps3.add(gp3);
-            makeBuildinType(scope, refableTypeName, gps3);
-            
+
             buildinScope = scope;
             
             sizeofFunc(scope);

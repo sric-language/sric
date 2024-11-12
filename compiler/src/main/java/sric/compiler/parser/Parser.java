@@ -870,9 +870,9 @@ public class Parser {
             case refableKeyword:
                 consume();
                 Type stype = typeRef();
-                type = Type.refableType(loc, stype);
-                endLoc(type, loc);
-                return type;
+                stype.isRefable = true;
+                endLoc(stype, loc);
+                return stype;
             default:
                 break;
         }

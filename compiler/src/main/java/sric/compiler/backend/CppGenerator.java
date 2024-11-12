@@ -460,10 +460,14 @@ public class CppGenerator extends BaseGenerator {
             print("const ");
         }
         
+        if (type.isRefable) {
+            print("sric::StackRefable<");
+        }
+        
         switch (type.id.name) {
             case "Void":
                 print("void");
-                return;
+                break;
             case "Int":
                 NumInfo intType = (NumInfo)type.detail;
                 if (intType.size == 8 && intType.isUnsigned == false) {
@@ -475,7 +479,7 @@ public class CppGenerator extends BaseGenerator {
                     }
                     print("int"+intType.size+"_t");
                 }
-                return;
+                break;
             case "Float":
                 NumInfo floatType = (NumInfo)type.detail;
                 if (floatType.size == 64) {
@@ -484,18 +488,19 @@ public class CppGenerator extends BaseGenerator {
                 else {
                     print("float");
                 }
-                return;
+                break;
             case "Bool":
                 print("bool");
-                return;
+                break;
             case Buildin.pointerTypeName:
                 PointerInfo pt = (PointerInfo)type.detail;
                 if (pt.pointerAttr == Type.PointerAttr.raw) {
                     printType(type.genericArgs.get(0), false);
-                    print("*");
+                    
                     if (type.isImmutable) {
                         print(" const");
                     }
+                    print("*");
                 }
                 else {
                     if (type.isImmutable) {
@@ -514,7 +519,7 @@ public class CppGenerator extends BaseGenerator {
                     printType(type.genericArgs.get(0), false);
                     print(">");
                 }
-                return;
+                break;
             case Buildin.arrayTypeName:
                 ArrayInfo arrayType = (ArrayInfo)type.detail;
                 printType(type.genericArgs.get(0));
@@ -523,7 +528,7 @@ public class CppGenerator extends BaseGenerator {
                     this.visit(arrayType.sizeExpr);
                     print("]");
                 }
-                return;
+                break;
             case Buildin.funcTypeName:
                 FuncInfo ft = (FuncInfo)type.detail;
                 print("std::function<");
@@ -538,17 +543,12 @@ public class CppGenerator extends BaseGenerator {
                     }
                 }
                 print(")>");
-                return;
-            case Buildin.refableTypeName:
-                print("sric::StackRefable");
-                print("<");
-                printType(type.genericArgs.get(0), false);
-                print(">");
-                return;
+                break;
+            default:
+                printIdExpr(type.id);
+                break;
         }
-        
-        printIdExpr(type.id);
-        
+
         if (type.genericArgs != null) {
             print("<");
             int i= 0;
@@ -559,7 +559,11 @@ public class CppGenerator extends BaseGenerator {
                 printType(p, false);
                 ++i;
             }
-            print(">");
+            print(" >");
+        }
+        
+        if (type.isRefable) {
+            print(" >");
         }
     }
 
@@ -1190,7 +1194,7 @@ public class CppGenerator extends BaseGenerator {
             else if (e.target.resolvedType != null && e.target.resolvedType.isPointerType()) {
                 print("->");
             }
-            else if (e.target.resolvedType != null && e.target.resolvedType.isRefableType()) {
+            else if (e.target.resolvedType != null && e.target.resolvedType.isRefable) {
                 print("->");
             }
             else {

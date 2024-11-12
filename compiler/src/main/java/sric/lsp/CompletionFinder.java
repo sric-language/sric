@@ -45,15 +45,6 @@ public class CompletionFinder {
                         resolvedDef = null;
                     }
                 }
-                else if (e.resolvedType.isRefableType()) {
-                    if (e.resolvedType.genericArgs == null || e.resolvedType.genericArgs.size() > 0) {
-                        Type type = e.resolvedType.genericArgs.get(0);
-                        resolvedDef = type.id.resolvedDef;
-                    }
-                    else {
-                        resolvedDef = null;
-                    }
-                }
             }
             if (resolvedDef == null) {
                 resolvedDef = ErrorChecker.idResolvedDef(e);

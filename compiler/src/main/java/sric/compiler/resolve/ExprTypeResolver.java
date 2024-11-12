@@ -436,15 +436,6 @@ public class ExprTypeResolver extends TypeResolver {
                 resolvedDef = null;
             }
         }
-        else if (target.resolvedType.isRefableType()) {
-            if (target.resolvedType.genericArgs == null || target.resolvedType.genericArgs.size() > 0) {
-                Type type = target.resolvedType.genericArgs.get(0);
-                resolvedDef = type.id.resolvedDef;
-            }
-            else {
-                resolvedDef = null;
-            }
-        }
         
         if (resolvedDef == null) {
             return null;
@@ -575,7 +566,7 @@ public class ExprTypeResolver extends TypeResolver {
                             elmentType = e.operand.resolvedType.genericArgs.get(0);
                         }
                         
-                        if (e.operand.resolvedType.isRefableType()) {
+                        if (e.operand.resolvedType.isRefable) {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
                         }
                         else {
@@ -945,13 +936,6 @@ public class ExprTypeResolver extends TypeResolver {
                 case slash:
                     Type lt = e.lhs.resolvedType;
                     Type rt = e.rhs.resolvedType;
-                    if (lt.isRefableType()) {
-                        lt = lt.genericArgs.get(0);
-                    }
-                    if (rt.isRefableType()) {
-                        rt = rt.genericArgs.get(0);
-                    }
-
                     //pointer arithmetic: +,-
                     if ((curt == plus || curt == minus) && lt.isRawPointerType() && rt.isInt()) {
                         e.resolvedType = lt;
@@ -991,13 +975,6 @@ public class ExprTypeResolver extends TypeResolver {
         
         Type lt = e.lhs.resolvedType;
         Type rt = e.rhs.resolvedType;
-        
-        if (lt.isRefableType()) {
-            lt = lt.genericArgs.get(0);
-        }
-        if (rt.isRefableType()) {
-            rt = rt.genericArgs.get(0);
-        }
         
         if (lt.id.resolvedDef instanceof GenericParamDef gd) {
             lt = gd.bound;

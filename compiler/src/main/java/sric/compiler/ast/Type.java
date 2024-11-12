@@ -26,6 +26,7 @@ public class Type extends AstNode {
     
     public boolean explicitImmutable = false;
     public boolean isImmutable = false;
+    public boolean isRefable = false;
     
     public TypeInfo detail = null;
     
@@ -131,13 +132,6 @@ public class Type extends AstNode {
         return id.name.equals(Buildin.pointerTypeName);
     }
     
-    public boolean isRefableType() {
-        if (id.namespace != null) {
-            return false;
-        }
-        return id.name.equals(Buildin.refableTypeName);
-    }
-    
     public boolean isNullablePointerType() {
         if (!isPointerType()) {
             return false;
@@ -205,13 +199,6 @@ public class Type extends AstNode {
                 return true;
             }
             return false;
-        }
-        
-        if (this.isRefableType() && this.genericArgs != null) {
-            return this.genericArgs.get(0).fit(target);
-        }
-        else if (target.isRefableType() && target.genericArgs != null) {
-            return this.fit(target.genericArgs.get(0));
         }
         
         //pointer fit
@@ -286,6 +273,14 @@ public class Type extends AstNode {
             if (this.equals(target.resolvedAlias)) {
                 return true;
             }
+        }
+        
+        if (this.isImmutable != target.isImmutable) {
+            return false;
+        }
+        
+        if (this.isRefable != target.isRefable) {
+            return false;
         }
         
         if (!genericArgsEquals(target)) {
@@ -492,15 +487,6 @@ public class Type extends AstNode {
         info.pointerAttr = pointerAttr;
         info.isNullable = nullable;
         type.detail = info;
-        
-        type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, type.loc, null);
-        return type;
-    }
-    
-    public static Type refableType(Loc loc, Type elemType) {
-        Type type = new Type(loc, Buildin.refableTypeName);
-        type.genericArgs = new ArrayList<>();
-        type.genericArgs.add(elemType);
         
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, type.loc, null);
         return type;
