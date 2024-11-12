@@ -60,6 +60,9 @@ public:
         data.reserve(capacity);
     }
 
+    void swap(DArray<T>* t) {
+        this->data.swap(t->data);
+    }
 };
 }
 #endif

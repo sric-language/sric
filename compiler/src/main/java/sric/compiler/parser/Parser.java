@@ -240,7 +240,7 @@ public class Parser {
                     param.bound = this.typeRef();
                 }
                 else {
-                    param.bound = Type.emptyType(gloc);
+                    param.bound = Type.genericParamType(gloc);
                 }
                 
                 endLoc(param, gloc);

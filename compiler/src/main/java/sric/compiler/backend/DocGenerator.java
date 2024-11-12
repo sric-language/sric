@@ -305,7 +305,7 @@ public class DocGenerator extends BaseGenerator {
                         print(gp.name);
                         print(" : ");
                     print("</span>");
-                    if (!gp.bound.isEmptyType()) {
+                    if (!gp.bound.isGenericParamType()) {
                         print("<span class=\"type\">");
                             printType(gp.bound);
                         print("</span>");

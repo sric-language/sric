@@ -5,9 +5,9 @@
 #include "Ptr.h"
 
 namespace sric {
-	struct Module;
-	void registModule(Module* m);
-	RefPtr<Module> findModule(const char* name);
+	struct RModule;
+	void registModule(RModule* m);
+	RefPtr<RModule> findModule(const char* name);
 }
 
 #define SC_AUTO_REGIST_MODULE(name) \

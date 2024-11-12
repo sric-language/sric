@@ -1,13 +1,13 @@
 
 
-struct Comment {
+struct RComment {
     readonly var type: Int;
     readonly var content : raw*const Int8;
 }
 
-struct Field {
+struct RField {
     readonly var flags : Int;
-    readonly var comments : DArray$<Comment>;
+    readonly var comments : DArray$<RComment>;
     readonly var name : raw*const Int8;
     readonly var offset : Int;
     readonly var pointer : raw* Void;
@@ -16,34 +16,34 @@ struct Field {
     readonly var enumValue : Int;
 }
 
-struct Func {
+struct RFunc {
     readonly var flags : Int;
-    readonly var comments : DArray$<Comment>;
+    readonly var comments : DArray$<RComment>;
     readonly var name : raw*const Int8;
     readonly var pointer : raw* Void;
     readonly var returnType: raw*const Int8;
-    readonly var params : DArray$<Field>;
+    readonly var params : DArray$<RField>;
     readonly var genericParams : DArray$<raw*const Int8>;
 }
 
-struct TypeDef {
+struct RType {
     readonly var flags : Int;
-    readonly var comments : DArray$<Comment>;
+    readonly var comments : DArray$<RComment>;
     readonly var name : raw*const Int8;
     readonly var kind : Int;
-    readonly var fields : DArray$<Field>;
-    readonly var funcs : DArray$<Func>;
+    readonly var fields : DArray$<RField>;
+    readonly var funcs : DArray$<RFunc>;
     readonly var inheritances : DArray$<raw*const Int8>;
     readonly var genericParams : DArray$<raw*const Int8>;
 }
 
-struct Module {
+struct RModule {
     readonly var name : raw*const Int8;
     readonly var version : raw*const Int8;
 
-    readonly var fields : DArray$<Field>;
-    readonly var funcs : DArray$<Func>;
-    readonly var types : DArray$<TypeDef>;
+    readonly var fields : DArray$<RField>;
+    readonly var funcs : DArray$<RFunc>;
+    readonly var types : DArray$<RType>;
 }
 
-extern fun findModule(name : raw*const Int8) : ref*? Module;
+extern fun findModule(name : raw*const Int8) : ref*? RModule;

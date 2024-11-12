@@ -24,7 +24,7 @@ public class Buildin {
     public static final String pointerTypeName = "*";
     public static final String varargTypeName = "...";
     public static final String metaTypeTypeName = "Type";
-    public static final String emptyTypeName = "Empty"; //for generic param
+    public static final String genericParamTypeName = "GenericParam"; //for generic param
 
     private static TypeDef makeBuildinType(Scope scope, String name) {
         return makeBuildinType(scope, name, null);
@@ -109,7 +109,7 @@ public class Buildin {
             makeBuildinType(scope, "Void");
             makeBuildinType(scope, varargTypeName);//varargs
             makeBuildinType(scope, funcTypeName);//func
-            makeBuildinType(scope, emptyTypeName).flags = FConst.Noncopyable;
+            makeBuildinType(scope, genericParamTypeName).flags = FConst.Noncopyable;
 
             buildinScope = scope;
             

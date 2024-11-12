@@ -79,11 +79,11 @@ public class Type extends AstNode {
         return id.name.equals("Void");
     }
     
-    public boolean isEmptyType() {
+    public boolean isGenericParamType() {
         if (id.namespace != null) {
             return false;
         }
-        return id.name.equals(Buildin.emptyTypeName);
+        return id.name.equals(Buildin.genericParamTypeName);
     }
     
     public boolean isBool() {
@@ -191,9 +191,10 @@ public class Type extends AstNode {
             return true;
         }
 
-        if (equals(target)) {
+        if (equals(target, false)) {
             return true;
         }
+        
         if (this.isNullType() && target.detail instanceof PointerInfo a) {
             if (a.isNullable) {
                 return true;
@@ -260,6 +261,10 @@ public class Type extends AstNode {
     }
     
     public boolean equals(Type target) {
+        return equals(target, true);
+    }
+    
+    private boolean equals(Type target, boolean strict) {
         if (this == target) {
             return true;
         }
@@ -275,12 +280,14 @@ public class Type extends AstNode {
             }
         }
         
-        if (this.isImmutable != target.isImmutable) {
-            return false;
-        }
+        if (strict) {
+//            if (this.isImmutable != target.isImmutable) {
+//                return false;
+//            }
         
-        if (this.isRefable != target.isRefable) {
-            return false;
+            if (this.isRefable != target.isRefable) {
+                return false;
+            }
         }
         
         if (!genericArgsEquals(target)) {
@@ -421,8 +428,8 @@ public class Type extends AstNode {
         return type;
     }
     
-    public static Type emptyType(Loc loc) {
-        Type type = new Type(loc, Buildin.emptyTypeName);
+    public static Type genericParamType(Loc loc) {
+        Type type = new Type(loc, Buildin.genericParamTypeName);
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, loc, null);
         return type;
     }
@@ -518,6 +525,9 @@ public class Type extends AstNode {
         
         StringBuilder sb = new StringBuilder();
 
+        if (this.isRefable) {
+            sb.append("refable ");
+        }
         
         if (this.isImmutable) {
             sb.append("const ");

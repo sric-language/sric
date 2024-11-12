@@ -221,7 +221,7 @@ public class CppGenerator extends BaseGenerator {
                 if (c.type != TokenKind.cmdComment) {
                 }
                 
-                print("{sric::Comment comment;");
+                print("{sric::RComment comment;");
                 print("comment.type = ").print(c.type == TokenKind.cmdComment ? "0" : "1").print(";");
                 print("comment.content = "); printStringLiteral(c.content); print(";");
                 
@@ -233,7 +233,7 @@ public class CppGenerator extends BaseGenerator {
     
     private void reflectParamDef(FieldDef f, String parentName) {
         print("{");
-        print("sric::Field param;");
+        print("sric::RField param;");
         print("param.name = \"").print(f.name).print("\";");
         print("param.fieldType = ");printStringLiteral(f.fieldType.toString());print(";");
         print("param.hasDefaultValue = ").print(f.initExpr == null ? "0" : "1").print(";");
@@ -246,7 +246,7 @@ public class CppGenerator extends BaseGenerator {
         print("{");
         this.indent();
         newLine();
-        print("sric::Field f;").newLine();
+        print("sric::RField f;").newLine();
         reflectionTopLevelDef(f, "f");
         
         String moduleName = this.module.name;
@@ -312,7 +312,7 @@ public class CppGenerator extends BaseGenerator {
         print("{");
         this.indent();
         newLine();
-        print("sric::Func f;").newLine();
+        print("sric::RFunc f;").newLine();
         reflectionTopLevelDef(f, "f");
         
         String moduleName = this.module.name;
@@ -363,7 +363,7 @@ public class CppGenerator extends BaseGenerator {
         print("void registReflection_").print(module.name).print("() {").newLine();
         this.indent();
         
-        print("sric::Module m;").newLine();
+        print("sric::RModule m;").newLine();
         print("m.name = \"").print(module.name).print("\";").newLine();
         print("m.version = \"").print(module.version).print("\";").newLine();
         
@@ -377,7 +377,7 @@ public class CppGenerator extends BaseGenerator {
                 print("{");
                 this.indent();
                 newLine();
-                print("sric::TypeDef s;").newLine();
+                print("sric::RType s;").newLine();
                 reflectionTopLevelDef(type, "s");
                 
 
@@ -464,6 +464,7 @@ public class CppGenerator extends BaseGenerator {
             print("sric::StackRefable<");
         }
         
+        boolean printGenericParam = true;
         switch (type.id.name) {
             case "Void":
                 print("void");
@@ -497,10 +498,10 @@ public class CppGenerator extends BaseGenerator {
                 if (pt.pointerAttr == Type.PointerAttr.raw) {
                     printType(type.genericArgs.get(0), false);
                     
+                    print("*");
                     if (type.isImmutable) {
                         print(" const");
                     }
-                    print("*");
                 }
                 else {
                     if (type.isImmutable) {
@@ -519,6 +520,7 @@ public class CppGenerator extends BaseGenerator {
                     printType(type.genericArgs.get(0), false);
                     print(">");
                 }
+                printGenericParam = false;
                 break;
             case Buildin.arrayTypeName:
                 ArrayInfo arrayType = (ArrayInfo)type.detail;
@@ -528,6 +530,7 @@ public class CppGenerator extends BaseGenerator {
                     this.visit(arrayType.sizeExpr);
                     print("]");
                 }
+                printGenericParam = false;
                 break;
             case Buildin.funcTypeName:
                 FuncInfo ft = (FuncInfo)type.detail;
@@ -543,13 +546,14 @@ public class CppGenerator extends BaseGenerator {
                     }
                 }
                 print(")>");
+                printGenericParam = false;
                 break;
             default:
                 printIdExpr(type.id);
                 break;
         }
 
-        if (type.genericArgs != null) {
+        if (printGenericParam && type.genericArgs != null) {
             print("<");
             int i= 0;
             for (Type p : type.genericArgs) {
