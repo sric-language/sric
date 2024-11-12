@@ -42,11 +42,19 @@ struct HashMap$<K, V> {
         var entry = alloc$<MapEntry$<K,V>>() { .k = move k; .v = move v; };
         list.list.add(move entry);
         ++length;
+        rehash();
         return true;
     }
     
     fun size(): Int {
         return length;
+    }
+
+    fun clear() {
+        for (var i=0; i<table.size(); ++i) {
+            table[i].list.clear();
+        }
+        length = 0;
     }
     
     fun remove(k: K) : Bool {
@@ -54,6 +62,7 @@ struct HashMap$<K, V> {
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(&itr.k, &k) == 0) {
                 list.list.remove(itr);
+                ++length;
                 return true;
             }
         }
@@ -77,6 +86,23 @@ struct HashMap$<K, V> {
                 if (!f(&itr.v, &itr.k)) {
                     return;
                 }
+            }
+        }
+    }
+
+    private fun rehash() {
+        if (length < table.size()) {
+            return;
+        }
+        var newSize = length < 256 ? length*2+8 : (length*1.5) as Int;
+        var otable = DArray$<MapEntryList$<K,V>>{ .resize(newSize); };
+        otable.swap(&this.table);
+        length = 0;
+
+        for (var i = 0; i<otable.size(); ++i) {
+            var list = otable.get(i);
+            for (var itr = list.list.first(); itr != null; itr = itr.next) {
+                set(move itr.k, move itr.v);
             }
         }
     }

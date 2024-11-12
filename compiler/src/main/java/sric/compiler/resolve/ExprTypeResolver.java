@@ -919,21 +919,11 @@ public class ExprTypeResolver extends TypeResolver {
                     if (e.lhs.resolvedType.isNum() && e.rhs.resolvedType.isNum()) {
                         //OK
                     }
-                    else if (e.lhs.resolvedType.isPointerType()&& e.rhs.resolvedType.isPointerType()) {
+                    else if (e.lhs.resolvedType.isPointerType() && e.rhs.resolvedType.isPointerType()) {
                         //OK
                     }
                     else {
-                        String operatorName = Buildin.operatorToName(TokenKind.cmp);
-                        AstNode rdef = resoveOnTarget(e.lhs, operatorName, e.loc, false);
-                        if (rdef == null) {
-                            err("Unknow operator:"+curt, e.loc);
-                        }
-                        else if (rdef instanceof FuncDef f) {
-                            e.resolvedOperator = f;
-                        }
-                        else {
-                            err("Invalid operator:"+curt, e.loc);
-                        }
+                        resolveMathOperator(TokenKind.cmp, e);
                     }
                     e.resolvedType = Type.boolType(e.loc);
                     break;
@@ -961,18 +951,9 @@ public class ExprTypeResolver extends TypeResolver {
                     if (rt.isRefableType()) {
                         rt = rt.genericArgs.get(0);
                     }
-                    if (lt.isInt() && rt.isInt()) {
-                        e.resolvedType = lt;
-                    }
-                    else if (lt.isFloat() && rt.isFloat()) {
-                        e.resolvedType = lt;
-                    }
-                    else if ((lt.isFloat() && rt.isInt()) ||
-                            (lt.isInt() && rt.isFloat())) {
-                        e.resolvedType = Type.floatType(e.loc);
-                    }
+
                     //pointer arithmetic: +,-
-                    else if ((curt == plus || curt == minus) && lt.isRawPointerType() && rt.isInt()) {
+                    if ((curt == plus || curt == minus) && lt.isRawPointerType() && rt.isInt()) {
                         e.resolvedType = lt;
                     }
                     else {
@@ -1007,6 +988,39 @@ public class ExprTypeResolver extends TypeResolver {
         if (operatorName == null) {
             err("Unknow operator:"+curt, e.loc);
         }
+        
+        Type lt = e.lhs.resolvedType;
+        Type rt = e.rhs.resolvedType;
+        
+        if (lt.isRefableType()) {
+            lt = lt.genericArgs.get(0);
+        }
+        if (rt.isRefableType()) {
+            rt = rt.genericArgs.get(0);
+        }
+        
+        if (lt.id.resolvedDef instanceof GenericParamDef gd) {
+            lt = gd.bound;
+        }
+        if (rt.id.resolvedDef instanceof GenericParamDef gd) {
+            rt = gd.bound;
+        }
+        
+        if (lt.isNum() && rt.isNum()) {
+            if (curt != TokenKind.cmp) {
+                if (lt.isFloat()) {
+                    e.resolvedType = lt;
+                }
+                else if (rt.isFloat()) {
+                    e.resolvedType = rt;
+                }
+                else {
+                    e.resolvedType = lt;
+                }
+            }
+            return;
+        }
+        
         AstNode rdef = resoveOnTarget(e.lhs, operatorName, e.loc, false);
         if (rdef == null) {
             err("Unknow operator:"+curt, e.loc);

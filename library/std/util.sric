@@ -20,3 +20,5 @@ extern unsafe fun rawToRef$<T>(p: raw* T): ref* T;
 
 extern fun hashCode$<T>(p: raw* const T): UInt32;
 extern fun compare$<T>(a: raw* const T, b: raw* const T): Int;
+
+extern fun init$<T>(p: raw* Void, destructor: fun(p: raw* Void)): own* T;

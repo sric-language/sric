@@ -77,6 +77,37 @@ public class ErrorChecker extends CompilePass {
         return true;
     }
     
+    private boolean isMoveable(Type type) {
+        if (type.id.resolvedDef == null) {
+            return false;
+        }
+        
+        if (type.isImmutable) {
+            return false;
+        }
+        
+        if (type.isPointerType() && !type.isNullablePointerType()) {
+            return false;
+        }
+        
+        AstNode resolvedDef = type.id.resolvedDef;
+        if (type.id.resolvedDef instanceof GenericParamDef td) {
+            resolvedDef = td.bound.id.resolvedDef;
+        }
+        
+        if (resolvedDef instanceof TopLevelDef td) {
+            if (resolvedDef instanceof TypeDef sd && sd.isStruct()) {
+                for (FieldDef f : sd.fieldDefs) {
+                    if (!isMoveable(f.fieldType)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return true;
+    }
+    
     private void verifyTypeFit(Expr target, Type to, Loc loc) {
         verifyTypeFit(target, to, loc, false);
     }
@@ -670,8 +701,10 @@ public class ErrorChecker extends CompilePass {
                         AstNode defNode = idResolvedDef(e.operand);
                         if (defNode != null) {
                             if (defNode instanceof AstNode.FieldDef f) {
-                                if (!f.isLocalOrParam() && !f.fieldType.isNullablePointerType()) {
-                                    err("Can't move", e.loc);
+                                if (!f.isLocalOrParam()) {
+                                    if (!isMoveable(f.fieldType)) {
+                                        err("Can't move", e.loc);
+                                    }
                                 }
                             }
                             else {

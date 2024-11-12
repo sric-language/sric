@@ -68,6 +68,18 @@ public class AstNode {
             }
             return false;
         }
+        
+        public boolean isPublic() {
+            if ((flags & FConst.Private) != 0) {
+                return false;
+            }
+            if ((flags & FConst.Protected) != 0) {
+                if (parent instanceof FileUnit) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
     
     public static class FieldDef extends TopLevelDef {
