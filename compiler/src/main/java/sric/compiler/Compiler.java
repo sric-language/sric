@@ -19,6 +19,7 @@ import sric.compiler.ast.AstNode.FileUnit;
 import sric.compiler.ast.SModule;
 import sric.compiler.ast.SModule.Depend;
 import sric.compiler.backend.CppGenerator;
+import sric.compiler.backend.DocGenerator;
 import sric.compiler.backend.ScLibGenerator;
 import sric.compiler.parser.DeepParser;
 import sric.compiler.resolve.ErrorChecker;
@@ -213,6 +214,9 @@ public class Compiler {
         
         CppGenerator generator2 = new CppGenerator(log, outputFile+".cpp", false);
         generator2.run(module);
+        
+        DocGenerator docGenerator = new DocGenerator(log, outputFile+".html");
+        docGenerator.run(module);
         
         genFmake();
     }
