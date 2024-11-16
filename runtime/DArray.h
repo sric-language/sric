@@ -30,7 +30,7 @@ public:
         return RefPtr<T>(&data[i]);
     }
 
-    const sric::RefPtr<const T> get(int i) const {
+    const sric::RefPtr<const T> constGet(int i) const {
         sric::sc_assert(i >= 0 && i < data.size(), "index out of array");
         return RefPtr<const T>(&data[i]);
     }

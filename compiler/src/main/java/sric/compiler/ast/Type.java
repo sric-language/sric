@@ -191,7 +191,7 @@ public class Type extends AstNode {
             return true;
         }
 
-        if (equals(target, false)) {
+        if (equals(target, false, false)) {
             return true;
         }
         
@@ -261,10 +261,10 @@ public class Type extends AstNode {
     }
     
     public boolean equals(Type target) {
-        return equals(target, true);
+        return equals(target, true, false);
     }
     
-    private boolean equals(Type target, boolean strict) {
+    private boolean equals(Type target, boolean checkRefable, boolean isGenericParam) {
         if (this == target) {
             return true;
         }
@@ -280,11 +280,13 @@ public class Type extends AstNode {
             }
         }
         
-        if (strict) {
-//            if (this.isImmutable != target.isImmutable) {
-//                return false;
-//            }
+        if (isGenericParam) {
+            if (this.isImmutable != target.isImmutable) {
+                return false;
+            }
+        }
         
+        if (checkRefable | isGenericParam) {
             if (this.isRefable != target.isRefable) {
                 return false;
             }
@@ -354,7 +356,7 @@ public class Type extends AstNode {
                 return false;
             }
             for (int i=0; i<this.genericArgs.size(); ++i) {
-                if (!this.genericArgs.get(i).equals(target.genericArgs.get(i))) {
+                if (!this.genericArgs.get(i).equals(target.genericArgs.get(i), true, true)) {
                     return false;
                 }
             }
@@ -538,7 +540,7 @@ public class Type extends AstNode {
         if (this.isImmutable) {
             sb.append("const ");
         }
-        else {
+        else if (this.explicitImmutable) {
             sb.append("mut ");
         }
         

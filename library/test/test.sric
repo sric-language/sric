@@ -47,12 +47,16 @@ fun testString() {
 }
 
 fun main() {
-    //testDArray();
-    //testString();
+    testDArray();
+    testString();
+    
     testPtr();
     testInherit();
     testCompare();
     testMove();
     testRaw();
     
+    testHashMap();
+    testHashMap2();
+    testHashMap3();
 }

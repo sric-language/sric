@@ -18,7 +18,7 @@ int String::compare(const RefPtr<String> other) const {
     return strcmp(c_str(), other->c_str());
 }
 
-int String::find(RefPtr<String> s, int start) {
+int String::find(RefPtr<String> s, int start) const {
     auto it = str.find(s->str, start);
     if (it == std::string::npos) {
         return -1;
@@ -26,7 +26,7 @@ int String::find(RefPtr<String> s, int start) {
     return it;
 }
 
-bool String::iequals(RefPtr<String> other) {
+bool String::iequals(RefPtr<String> other) const {
     size_t sz = this->size();
     if (other->size() != sz)
         return false;
@@ -36,13 +36,13 @@ bool String::iequals(RefPtr<String> other) {
     return true;
 }
 
-bool String::contains(RefPtr<String> s) {
+bool String::contains(RefPtr<String> s) const {
     return strstr(this->c_str(), s->c_str()) != NULL;
 }
-bool String::startsWith(RefPtr<String> s) {
+bool String::startsWith(RefPtr<String> s) const {
     return strstr(this->c_str(), s->c_str()) == this->c_str();
 }
-bool String::endsWith(RefPtr<String> s) {
+bool String::endsWith(RefPtr<String> s) const {
     return (this->cpp_str()).rfind(s->cpp_str()) == (this->size() - s->size());
 }
 
@@ -64,7 +64,7 @@ void String::replace(RefPtr<String> src, RefPtr<String> dst) {
     }
 }
 
-DArray<String> String::split(RefPtr<String> sep) {
+DArray<String> String::split(RefPtr<String> sep) const {
     DArray<String> tokens;
     if (this->size() == 0)
         return tokens;
@@ -77,7 +77,7 @@ DArray<String> String::split(RefPtr<String> sep) {
     return tokens;
 }
 
-String String::substr(int pos, int len) {
+String String::substr(int pos, int len) const {
     return str.substr(pos, len);
 }
 
@@ -123,7 +123,7 @@ void String::removeLastChar() {
     str.erase(str.length() - 1);
 }
 
-String String::toLower() {
+String String::toLower() const {
     std::string ret;
     char chrTemp;
     size_t i;
@@ -136,7 +136,7 @@ String String::toLower() {
 
     return ret;
 }
-String String::toUpper() {
+String String::toUpper() const {
     std::string ret;
     char chrTemp;
     size_t i;
@@ -150,15 +150,15 @@ String String::toUpper() {
     return ret;
 }
 
-int64_t String::toLong() {
+int64_t String::toLong() const {
     if (str.empty()) return 0;
     int64_t nValue = 0;
     sscanf(str.c_str(), "%lld", &nValue);
     return nValue;
 }
-int String::toInt() { return (int)std::stol(c_str(), NULL, 10); }
-float String::toFloat() { return std::stof(c_str(), NULL); }
-double String::toDouble() { return std::stod(c_str(), NULL); }
+int String::toInt() const { return (int)std::stol(c_str(), NULL, 10); }
+float String::toFloat() const { return std::stof(c_str(), NULL); }
+double String::toDouble() const { return std::stod(c_str(), NULL); }
 
 String String::fromInt(int i) {
     char buf[BUF_SIZE];

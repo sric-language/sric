@@ -36,7 +36,7 @@ typename std::enable_if<std::is_polymorphic<U>::value, HeapRefable*>::type  getR
 
 template<typename U>
 typename std::enable_if<!std::is_polymorphic<U>::value, HeapRefable*>::type  getRefable(U* pointer) {
-    void* mostTop = pointer;
+    void* mostTop = (void*)pointer;
     HeapRefable* p = (HeapRefable*)mostTop;
     --p;
     return p;
@@ -113,7 +113,7 @@ public:
 
     T* get() const { return pointer; }
 
-    bool isNull() { return pointer == nullptr; }
+    bool isNull() const { return pointer == nullptr; }
 
     void clear() {
         if (pointer) {
@@ -274,7 +274,7 @@ public:
     }
 
     template <class U>
-    RefPtr(OwnPtr<U>& p) {
+    RefPtr(const OwnPtr<U>& p) {
         if (p.isNull()) {
             pointer = nullptr;
             type = RefType::NullRef;

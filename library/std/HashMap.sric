@@ -15,15 +15,21 @@ struct HashMap$<K, V> {
     var defValue: V;
     private var length: Int = 0;
     
-    private fun getEntryList(k: raw* const K): *MapEntryList$<K,V> {
+    private fun constGetEntryList(k: raw* const K) const : * const MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
-        return table[h];
+        return table.constGet(h);
+    }
+
+    private fun getEntryList(k: raw* const K) : * MapEntryList$<K,V> {
+        var h = hashCode$<K>(k);
+        h %= table.size();
+        return table.get(h);
     }
 
     fun get(k: K): V {
-        var list = getEntryList(&k);
-        for (var itr = list.list.first(); itr != null; itr = itr.next) {
+        var list = constGetEntryList(&k);
+        for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
             if (compare$<K>(&itr.k, &k) == 0) {
                 return itr.v;
             }
@@ -46,7 +52,7 @@ struct HashMap$<K, V> {
         return true;
     }
     
-    fun size(): Int {
+    fun size() const : Int {
         return length;
     }
 
@@ -69,9 +75,9 @@ struct HashMap$<K, V> {
         return false;
     }
     
-    fun contains(k: K): Bool {
-        var list = getEntryList(&k);
-        for (var itr = list.list.first(); itr != null; itr = itr.next) {
+    fun contains(k: K) const : Bool {
+        var list = constGetEntryList(&k);
+        for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
             if (compare$<K>(&itr.k, &k) == 0) {
                 return true;
             }
@@ -79,10 +85,10 @@ struct HashMap$<K, V> {
         return false;
     }
     
-    fun eachWhile(f: fun(v:raw*V, k:raw*K):Bool) {
+    fun eachWhile(f: fun(v:raw* const V, k:raw* const K):Bool) const {
         for (var i = 0; i<table.size(); ++i) {
-            var list = table.get(i);
-            for (var itr = list.list.first(); itr != null; itr = itr.next) {
+            var list = table.constGet(i);
+            for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
                 if (!f(&itr.v, &itr.k)) {
                     return;
                 }

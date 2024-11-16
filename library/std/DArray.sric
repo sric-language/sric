@@ -11,7 +11,7 @@ extern noncopyable struct DArray$<T> {
 
     operator fun get(i: Int): * T;
 
-    fun getConst(i: Int): * const T;
+    fun constGet(i: Int) const: * const T;
     unsafe fun getUnchecked(i: Int): * T;
 
     operator fun set(i: Int, d: T);

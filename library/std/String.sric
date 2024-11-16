@@ -1,7 +1,7 @@
 //@#include "Str.h"
 
 extern noncopyable struct String {
-    fun c_str(): raw* Int8;
+    fun c_str() const: raw* Int8;
     fun size() const: Int;
 
     operator fun get(i: Int) const: Int8;

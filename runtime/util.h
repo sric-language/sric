@@ -52,6 +52,11 @@ namespace sric {
 	}
 
 	template<typename T>
+	int hashCode(const RefPtr<const T> p) {
+		return p->hashCode();
+	}
+
+	template<typename T>
 	int hashCode(const RefPtr<T> p) {
 		return p->hashCode();
 	}

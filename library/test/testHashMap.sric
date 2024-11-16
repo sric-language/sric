@@ -28,7 +28,7 @@ fun testHashMap3() {
     var t =  map.get("1");
     printf("%d\n", t);
 
-    map.eachWhile(fun(v:raw*Int, k:raw*String): Bool {
+    map.eachWhile(fun(v:raw* const Int, k:raw* const String): Bool {
         unsafe {
             printf("%d:%s\n", *v, k.c_str());
         }

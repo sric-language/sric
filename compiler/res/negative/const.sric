@@ -12,6 +12,9 @@ struct A {
         i = 1;
     }
 
+    fun foo3() const : raw* Int {
+        return &i;
+    }
 }
 
 fun foo3(a: A) {

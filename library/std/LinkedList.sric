@@ -85,6 +85,10 @@ struct LinkedList$<T: Linkable$<T>> {
         return length == 0;
     }
 
+    fun constFirst() const : *? const T {
+        return head;
+    }
+
     fun first(): *?T {
         return head;
     }

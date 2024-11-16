@@ -398,7 +398,7 @@ public class ExprTypeResolver extends TypeResolver {
         else if (resolvedDef instanceof FuncDef f) {
             if (targetImmutable) {
                 if (!f.prototype.isThisImmutable()) {
-                    err("Mutable function", loc);
+                    err("Mutable function: " + f.name, loc);
                 }
             }
             return Type.funcType(f);

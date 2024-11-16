@@ -33,11 +33,11 @@ public:
     int hashCode() const;
     int compare(const RefPtr<String> other) const;
 
-    bool iequals(RefPtr<String> other);
-    bool contains(RefPtr<String> s);
-    bool startsWith(RefPtr<String> s);
-    bool endsWith(RefPtr<String> s);
-    int find(RefPtr<String> s, int start = 0);
+    bool iequals(RefPtr<String> other) const;
+    bool contains(RefPtr<String> s) const;
+    bool startsWith(RefPtr<String> s) const;
+    bool endsWith(RefPtr<String> s) const;
+    int find(RefPtr<String> s, int start = 0) const;
 
     String& operator+(RefPtr<String> other) {
         plus(other);
@@ -46,21 +46,21 @@ public:
     void add(const char* cstr);
 
     void replace(RefPtr<String> src, RefPtr<String> dst);
-    DArray<String> split(RefPtr<String> sep);
-    String substr(int pos, int len = -1);
+    DArray<String> split(RefPtr<String> sep) const;
+    String substr(int pos, int len = -1) const;
 
     void trimEnd();
     void trimStart();
     void trim() { trimStart(); trimEnd(); }
     void removeLastChar();
 
-    String toLower();
-    String toUpper();
+    String toLower() const;
+    String toUpper() const;
 
-    int toInt();
-    int64_t toLong();
-    float toFloat();
-    double toDouble();
+    int toInt() const;
+    int64_t toLong() const;
+    float toFloat() const;
+    double toDouble() const;
 
     static String fromInt(int i);
     static String fromLong(int64_t i);
