@@ -72,7 +72,25 @@ public class CppGenerator extends BaseGenerator {
         }
     }
     
+    private String filterSymbolName(String sym) {
+        if (sym.equals("int")) {
+            return "_int";
+        }
+        else if (sym.equals("float")) {
+            return "_float";
+        }
+        return sym;
+    }
+    
     private String getSymbolName(TopLevelDef type) {
+        String sym = getExternSymbol(type);
+        if (sym != null) {
+            return sym;
+        }
+        return filterSymbolName(type.name);
+    }
+    
+    private String getExternSymbol(TopLevelDef type) {
         if ((type.flags & FConst.Extern) != 0 && type.comment != null) {
             for (Comment comment : type.comment.comments) {
                String key = "extern symbol:";
@@ -81,7 +99,7 @@ public class CppGenerator extends BaseGenerator {
                }
             }
         }
-        return type.name;
+        return null;
     }
     
     public void run(SModule module) {
@@ -446,15 +464,15 @@ public class CppGenerator extends BaseGenerator {
             return;
         }
         
-//        if (type.resolvedAlias != null) {
-//            if (type.id.resolvedDef instanceof GenericParamDef) {
-//                //ok
-//            }
-//            else {
-//                printType(type.resolvedAlias, isRoot);
-//                return;
-//            }
-//        }
+        if (type.resolvedAlias != null) {
+            if (type.id.resolvedDef instanceof GenericParamDef) {
+                //ok
+            }
+            else {
+                printType(type.resolvedAlias, isRoot);
+                return;
+            }
+        }
         
         if (type.isImmutable && !type.id.name.equals(Buildin.pointerTypeName)) {
             print("const ");
@@ -524,12 +542,11 @@ public class CppGenerator extends BaseGenerator {
                 break;
             case Buildin.arrayTypeName:
                 ArrayInfo arrayType = (ArrayInfo)type.detail;
+                print("sric::Array<");
                 printType(type.genericArgs.get(0));
-                if (!isRoot) {
-                    print("[");
-                    this.visit(arrayType.sizeExpr);
-                    print("]");
-                }
+                print(", ");
+                this.visit(arrayType.sizeExpr);
+                print(">");
                 printGenericParam = false;
                 break;
             case Buildin.funcTypeName:
@@ -572,6 +589,14 @@ public class CppGenerator extends BaseGenerator {
     }
 
     private void printIdExpr(IdExpr id) {
+        if (id.resolvedDef instanceof TopLevelDef td) {
+            String symbolName = getExternSymbol(td);
+            if (symbolName != null) {
+                print(symbolName);
+                return;
+            }
+        }
+        
         String ns = id.getNamespaceName();
         if (ns != null) {
             print(ns);
@@ -598,7 +623,7 @@ public class CppGenerator extends BaseGenerator {
             print(getSymbolName(td));
         }
         else {
-            print(id.name);
+            print(filterSymbolName(id.name));
         }
     }
     
@@ -606,7 +631,8 @@ public class CppGenerator extends BaseGenerator {
     public void visitTypeAlias(AstNode.TypeAlias v) {
         print("typedef ");
         printType(v.type);
-        print(v.name);
+        print(" ");
+        print(getSymbolName(v));
         print(";");
         newLine();
     }
@@ -670,12 +696,12 @@ public class CppGenerator extends BaseGenerator {
         }
         print(getSymbolName(v));
         
-        if (v.fieldType.isArray()) {
-            ArrayInfo arrayType = (ArrayInfo)v.fieldType.detail;
-            print("[");
-            this.visit(arrayType.sizeExpr);
-            print("]");
-        }
+//        if (v.fieldType.isArray()) {
+//            ArrayInfo arrayType = (ArrayInfo)v.fieldType.detail;
+//            print("[");
+//            this.visit(arrayType.sizeExpr);
+//            print("]");
+//        }
         
         boolean init = false;
         if (v.isLocalVar) {
@@ -1005,17 +1031,20 @@ public class CppGenerator extends BaseGenerator {
                 }
             }
         }
-        for (FieldDef f : v.fieldDefs) {
-            if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof TypeDef td) {
-                if (td.parent != null && td.parent instanceof FileUnit unit) {
-                    if (unit.module == this.module) {
-                        //if (td instanceof StructDef tds) {
-                        if (td.originGenericTemplate != null) {
-                            this.visitTypeDef(td.originGenericTemplate);
-                            continue;
+        
+        if (!v.isEnum()) {
+            for (FieldDef f : v.fieldDefs) {
+                if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof TypeDef td) {
+                    if (td.parent != null && td.parent instanceof FileUnit unit) {
+                        if (unit.module == this.module) {
+                            //if (td instanceof StructDef tds) {
+                            if (td.originGenericTemplate != null) {
+                                this.visitTypeDef(td.originGenericTemplate);
+                                continue;
+                            }
+                            //}
+                            this.visitTypeDef(td);
                         }
-                        //}
-                        this.visitTypeDef(td);
                     }
                 }
             }
@@ -1566,16 +1595,18 @@ public class CppGenerator extends BaseGenerator {
     
     void printArrayBlockExpr(ArrayBlockExpr e) {
         if (e._storeVar != null) {
-            print(" = ");
+            print(";");
         }
         int i = 0;
         print("{");
         if (e.args != null) {
             for (Expr t : e.args) {
-                if (i > 0) {
-                    print(", ");
-                }
+                print(e._storeVar.name);
+                print("[");
+                print(""+i);
+                print("] = ");
                 this.visit(t);
+                print("; ");
                 ++i;
             }
         }

@@ -106,6 +106,9 @@ private:
 
     WeakRefBlock* _weakRefBlock;
 
+public:
+    void (*freeMemory)(void*) = 0;
+
     // Memory leak diagnostic data (only included when GP_USE_MEM_LEAK_DETECTION is defined)
 #ifdef GP_USE_REF_TRACE
     friend void* trackRef(HeapRefable* ref);

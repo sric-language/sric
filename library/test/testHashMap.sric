@@ -17,3 +17,21 @@ fun testHashMap2() {
     var i =  map.get(1);
     printf("%s\n", i.c_str());
 }
+
+fun testHashMap3() {
+    var map = HashMap$<String, Int>{ .defValue = 0; };
+
+    for (var i=0; i<10; ++i) {
+        map.set(String_fromInt32(i), i);
+    }
+
+    var t =  map.get("1");
+    printf("%d\n", t);
+
+    map.eachWhile(fun(v:raw*Int, k:raw*String): Bool {
+        unsafe {
+            printf("%d:%s\n", *v, k.c_str());
+        }
+        return true;
+    });
+}

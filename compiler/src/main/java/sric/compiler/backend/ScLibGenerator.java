@@ -9,13 +9,16 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import sric.compiler.CompilerLog;
 import sric.compiler.ast.AstNode;
+import sric.compiler.ast.AstNode.Comment;
 import sric.compiler.ast.AstNode.FieldDef;
+import sric.compiler.ast.AstNode.TopLevelDef;
 import sric.compiler.ast.AstNode.TypeDef;
 import sric.compiler.ast.Expr;
 import sric.compiler.ast.Expr.ClosureExpr;
 import sric.compiler.ast.FConst;
 import sric.compiler.ast.SModule;
 import sric.compiler.ast.Stmt;
+import sric.compiler.ast.Token.TokenKind;
 import sric.compiler.ast.Type;
 
 /**
@@ -105,6 +108,18 @@ public class ScLibGenerator extends BaseGenerator {
             print("operator ");
         }
     }
+    
+    private void printCommont(TopLevelDef f) {
+        if (f.comment != null) {
+            for (Comment comment : f.comment.comments) {
+                if (comment.type == TokenKind.cmdComment) {
+                    print("//@");
+                    print(comment.content);
+                    newLine();
+                }
+            }
+        }
+    }
 
     private void printType(Type type) {
         if (type == null) {
@@ -161,6 +176,7 @@ public class ScLibGenerator extends BaseGenerator {
 
     @Override
     public void visitField(AstNode.FieldDef v) {
+        printCommont(v);
         printFlags(v.flags);
         printLocalFieldDefAsExpr(v);
         print(";").newLine();
@@ -196,6 +212,7 @@ public class ScLibGenerator extends BaseGenerator {
             }
         }
         
+        printCommont(v);
         printFlags(v.flags);
         print("fun ");
         print(v.name);
@@ -265,6 +282,7 @@ public class ScLibGenerator extends BaseGenerator {
     @Override
     public void visitTypeDef(AstNode.TypeDef v) {
         if (v.isEnum()) {
+            printCommont(v);
             printFlags(v.flags);
             print("enum class ");
             print(v.name);
@@ -290,6 +308,7 @@ public class ScLibGenerator extends BaseGenerator {
             return;
         }
         
+        printCommont(v);
         printFlags(v.flags);
         print("struct ");
         print(v.name);

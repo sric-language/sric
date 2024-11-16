@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <type_traits>
+#include <functional>
 
 #include "Refable.h"
 #include "common.h"
@@ -126,7 +127,12 @@ private:
         HeapRefable* p = getRefable(pointer);
         if (p->release()) {
             pointer->~T();
-            ::operator delete(p);
+            if (p->freeMemory) {
+                p->freeMemory(p);
+            }
+            else {
+                ::operator delete(p);
+            }
         }
     }
 public:
@@ -172,9 +178,18 @@ OwnPtr<T> alloc() {
     return OwnPtr<T>(t);
 }
 
+template<typename T>
+OwnPtr<T> init(void* p, std::function<void(void*)> freeMemory) {
+    HeapRefable* h = new (p) HeapRefable();
+    h->freeMemory = freeMemory.target<void (*)(void*)>();
+    void* m = ((HeapRefable*)p + 1);
+    T* t = new(m) T();
+    return OwnPtr<T>(t);
+}
+
 template <class T>
-OwnPtr<T> share(OwnPtr<T> p) {
-    return p.share();
+OwnPtr<T> share(OwnPtr<T>* p) {
+    return p->share();
 }
 
 template <class T>

@@ -16,6 +16,8 @@ public:
         sc_assert(i >= 0 && i < n, "index out of array");
         return data[i];
     }
+
+    T* operator&() { return data; }
 };
 }
 #endif

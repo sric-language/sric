@@ -334,6 +334,12 @@ public class Type extends AstNode {
                 if (sd.originGenericTemplate == td.originGenericTemplate) {
                     return true;
                 }
+                if (sd == td.originGenericTemplate) {
+                    return true;
+                }
+                if (sd.originGenericTemplate == td) {
+                    return true;
+                }
             }
         }
         return false;

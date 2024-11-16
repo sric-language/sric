@@ -190,7 +190,7 @@ public class ExprTypeResolver extends TypeResolver {
         }
         
         if (prototype != null) {
-            if (prototype.returnType != null && prototype.returnType.isVoid()) {
+            if (prototype.returnType != null && !prototype.returnType.isVoid()) {
                 this.resolveType(prototype.returnType, false);
             }
         }
@@ -783,6 +783,7 @@ public class ExprTypeResolver extends TypeResolver {
                 this.visit(t);
             }
         }
+
     }
     
     private void resolveGenericInstance(Expr.GenericInstance e) {

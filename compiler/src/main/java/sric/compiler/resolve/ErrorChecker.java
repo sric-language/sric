@@ -874,6 +874,10 @@ public class ErrorChecker extends CompilePass {
         for (Expr t : e.args) {
             this.verifyTypeFit(t, e.type.genericArgs.get(0), t.loc);
         }
+                
+        if (e._storeVar == null) {
+            err("Invalid ArrayBlock", e.loc);
+        }
     }
     
     private void resolveCallExpr(Expr.CallExpr e) {
@@ -894,6 +898,9 @@ public class ErrorChecker extends CompilePass {
                     else {
                         int i = 0;
                         for (Expr.CallArg t : e.args) {
+                            if (i >= f.prototype.paramDefs.size()) {
+                                break;
+                            }
                             if (t.name != null) {
                                 if (!t.name.equals(f.prototype.paramDefs.get(i).name)) {
                                     err("Arg name error", t.loc);
@@ -902,6 +909,12 @@ public class ErrorChecker extends CompilePass {
                             verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).fieldType, t.loc, true);
                             ++i;
                         }
+                        if (i < e.args.size()) {
+                            if (!f.prototype.paramDefs.get(f.prototype.paramDefs.size()-1).fieldType.isVarArgType()) {
+                                err("Arg number error", e.loc);
+                            }
+                        }
+                        
                         if (i < f.prototype.paramDefs.size()) {
                             if (f.prototype.paramDefs.get(i).initExpr == null && !f.prototype.paramDefs.get(i).fieldType.isVarArgType()) {
                                 err("Arg number error", e.loc);

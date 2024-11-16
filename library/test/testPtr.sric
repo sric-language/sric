@@ -41,6 +41,11 @@ fun testPtr() {
     //printf("%d\n", rp.i);
 }
 
+fun testShare() {
+    var p: own* A = alloc$<A>();
+    var p2: own* A = share$<A>(&p);
+}
+
 fun testNullable() {
     var p: ref*? A;
     var i = p.i;
