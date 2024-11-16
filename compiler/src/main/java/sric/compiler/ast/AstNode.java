@@ -85,6 +85,8 @@ public class AstNode {
     public static class FieldDef extends TopLevelDef {
         public Type fieldType;        // field type
         public Expr initExpr;         // init expression or null
+        public boolean uninit = false;
+        
         public boolean isLocalVar = false;
         public boolean isParamDef = false;
         

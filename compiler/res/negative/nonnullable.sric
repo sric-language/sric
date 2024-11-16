@@ -4,7 +4,7 @@ fun foo(p: * Int) {
 }
 
 fun main() {
-    var a : own*? Int;
+    var a : own*? Int = null;
     var b : own* Int;
     
     foo(a);

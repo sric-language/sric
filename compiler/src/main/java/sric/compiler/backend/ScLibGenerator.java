@@ -191,6 +191,10 @@ public class ScLibGenerator extends BaseGenerator {
             printType(v.fieldType);
         }
         
+        if (v.uninit) {
+            print(" = uninit;");
+        }
+        
         if (v.initExpr != null) {
             print(" = ");
             this.visit(v.initExpr);

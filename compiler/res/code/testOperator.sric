@@ -18,8 +18,8 @@ struct Vector {
 }
 
 fun main() {
-    var a : Vector;
-    var b : Vector;
+    var a : Vector = uninit;
+    var b : Vector = uninit;
 
     var c : Vector = a + b;
     var d = c[2];

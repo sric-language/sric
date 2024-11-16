@@ -1,12 +1,12 @@
 fun foo(c: own* Int) {
 }
 
-var p : own*? Int;
+var p : own*? Int = null;
 var p2 : own* Int;
 
 fun main()
 {
-    var x: own*? Int;
+    var x: own*? Int = null;
     foo(x!);
 
     foo(move p);

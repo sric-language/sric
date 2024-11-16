@@ -241,38 +241,37 @@ public class ErrorChecker extends CompilePass {
         if (v.fieldType == null) {
             err("Unkonw field type", v.loc);
         }
-        
-        if (v.initExpr != null && v.fieldType != null) {
-            boolean ok = false;
-            if (v.parent instanceof TypeDef td) {
-                //already checked in ExprTypeResolver
-                if (td.isEnum()) {
-                    ok = true;
+        else {
+            if (v.initExpr != null) {
+                boolean ok = false;
+                if (v.parent instanceof TypeDef td) {
+                    //already checked in ExprTypeResolver
+                    if (td.isEnum()) {
+                        ok = true;
+                    }
+                }
+                if (!ok) {
+                    verifyTypeFit(v.initExpr, v.fieldType, v.loc);
                 }
             }
-            if (!ok) {
-                verifyTypeFit(v.initExpr, v.fieldType, v.loc);
-            }
-        }
-        
-        //check nullable
-        if (v.initExpr == null && v.fieldType != null && v.fieldType.detail instanceof Type.PointerInfo pt) {
-            if (!pt.isNullable) {
-                if (v.parent instanceof AstNode.TypeDef) {
-                    //OK
+
+            //check nullable
+            if (v.initExpr == null) {
+                if (v.parent instanceof TypeDef) {
+
                 }
-                else {
-                    err("Non-nullable pointer must inited", v.loc);
+                else if (!v.uninit) {
+                    err("Variable is not initialized", v.loc);
                 }
             }
-        }
-        
-        //check const is static
-        if (v.fieldType != null && (v.flags & FConst.ConstExpr) == 0) {
-            boolean isStatic = v.isStatic();
-            if (isStatic && !v.fieldType.isImmutable) {
-                if ((v.flags & FConst.Unsafe) == 0) {
-                    err("Static var must be const", v.loc);
+
+            //check const is static
+            if ((v.flags & FConst.ConstExpr) == 0) {
+                boolean isStatic = v.isStatic();
+                if (isStatic && !v.fieldType.isImmutable) {
+                    if ((v.flags & FConst.Unsafe) == 0) {
+                        err("Static var must be const", v.loc);
+                    }
                 }
             }
         }

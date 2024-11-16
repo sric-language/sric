@@ -19,7 +19,7 @@ fun testA(a: * A) {
 
 fun testRefable() {
     var i: refable Int = 1;
-    var a: refable A;
+    var a: refable A = uninit;
     a.i = i + 1;
     testA(&a);
     var b: A = a;
@@ -47,7 +47,7 @@ fun testShare() {
 }
 
 fun testNullable() {
-    var p: *? A;
+    var p: *? A = null;
     var i = p.i;
 }
 
@@ -60,7 +60,7 @@ fun testCompare() {
 }
 
 fun testMove() {
-    var b: CP;
+    var b: CP = uninit;
     var a = move b;
 }
 

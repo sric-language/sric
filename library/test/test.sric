@@ -2,7 +2,7 @@
 import sric::*;
 
 fun testDArray() {
-    var a : DArray$<Int>;
+    var a = DArray$<Int> {};
     a.add(1);
     a.add(2);
 
@@ -34,7 +34,7 @@ fun testArray() {
         }
     }
 
-    var b: [arraySize]Int;
+    var b: [arraySize]Int = uninit;
     b[0] = 1;
 }
 

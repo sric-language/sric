@@ -149,15 +149,17 @@ public class DeepParser extends Parser {
             consume();
             localType = typeRef();
             stmt.fieldType = localType;
-            
-            if (curt == TokenKind.assign) {
+        }
+        
+        if (curt == TokenKind.assign) {
+            consume(TokenKind.assign);
+            if (curt == TokenKind.uninitKeyword) {
+                stmt.uninit = true;
                 consume();
+            }
+            else {
                 stmt.initExpr = expr();
             }
-        }
-        else {
-            consume(TokenKind.assign);
-            stmt.initExpr = expr();
         }
 
         endOfStmt();

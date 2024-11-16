@@ -1,0 +1,11 @@
+var i: const Int;
+
+struct A {
+    var i: Int;
+}
+
+fun foo() {
+    var p1 : * Int;
+    var p2 : A;
+    var p3 : *? Int;
+}
