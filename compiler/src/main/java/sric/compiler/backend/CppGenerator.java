@@ -1179,7 +1179,7 @@ public class CppGenerator extends BaseGenerator {
         boolean convertParentheses = false;
         if (v.implicitTypeConvertTo != null && !v.implicitTypeConvertTo.isVarArgType()) {
             if (v.implicitStringConvert) {
-                print("sric::asStr(");
+                print("sric::strStatic(");
                 convertParentheses = true;
             }
             else if (v.isPointerConvert) {

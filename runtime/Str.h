@@ -78,5 +78,9 @@ inline String asStr(const char* cstr) {
     return String(cstr);
 }
 
+inline String strStatic(const char* cstr) {
+    return String(cstr);
+}
+
 }
 #endif
