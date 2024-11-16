@@ -46,4 +46,4 @@ struct RModule {
     readonly var types : DArray$<RType>;
 }
 
-extern fun findModule(name : raw*const Int8) : ref*? RModule;
+extern fun findModule(name : raw*const Int8) : *? RModule;

@@ -14,9 +14,9 @@ extern fun share$<T>(p: raw* own* T): own* T;
 
 extern unsafe fun rawToOwn$<T>(p: raw* T): own* T;
 
-extern fun refToOwn$<T>(p: ref* T): own*? T;
+extern fun refToOwn$<T>(p: * T): own*? T;
 
-extern unsafe fun rawToRef$<T>(p: raw* T): ref* T;
+extern unsafe fun rawToRef$<T>(p: raw* T): * T;
 
 extern fun hashCode$<T>(p: raw* const T): UInt32;
 extern fun compare$<T>(a: raw* const T, b: raw* const T): Int;

@@ -1,5 +1,5 @@
 
-fun foo(p: ref* Int) {
+fun foo(p: * Int) {
 
 }
 

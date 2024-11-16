@@ -2,7 +2,7 @@ import sric::*;
 
 struct A {
     var a: own* Int;
-    var b: ref* Int;
+    var b: * Int;
     var c: raw* Int;
     var d: WeakPtr$<Int>;
 }
@@ -16,7 +16,7 @@ fun foo2(c: own* Int) {
 fun main()
 {
     var i: refable Int = 1;
-    var p: ref* Int = &i;
+    var p: * Int = &i;
     foo(p);
 
     var p2: own* Int = alloc$<Int>();

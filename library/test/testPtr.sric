@@ -4,7 +4,7 @@ import sric::*;
 struct A {
     var i: Int = 1;
 
-    operator fun compare(b: ref* A) : Int {
+    operator fun compare(b: * A) : Int {
         return i - b.i;
     }
 }
@@ -36,7 +36,7 @@ fun testPtr() {
         printf("%d\n", p.i);
     }
 
-    var rp: ref* A = p!;
+    var rp: * A = p!;
     p = null;
     //printf("%d\n", rp.i);
 }
@@ -47,7 +47,7 @@ fun testShare() {
 }
 
 fun testNullable() {
-    var p: ref*? A;
+    var p: *? A;
     var i = p.i;
 }
 

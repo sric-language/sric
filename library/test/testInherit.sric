@@ -20,14 +20,14 @@ fun testInherit() {
     var x = alloc$<C>();
     x.foo();
 
-    var p1: ref* B = x;
-    var p3: ref* I = p1 as ref* I;
+    var p1: * B = x;
+    var p3: * I = p1 as * I;
     p3.foo();
-    var p4: ref* I = x as ref* I;
+    var p4: * I = x as * I;
     
     p4.foo();
 
-    var b1 = p1 is ref* I;
+    var b1 = p1 is * I;
 
     printf("x is I: %d\n", b1);
 }

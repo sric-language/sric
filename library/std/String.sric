@@ -6,18 +6,18 @@ extern noncopyable struct String {
 
     operator fun get(i: Int) const: Int8;
 
-    fun iequals(other: ref* String) : Bool;
-    fun contains(other: ref* String) : Bool;
-    fun startsWith(other: ref* String) : Bool;
-    fun endsWith(other: ref* String) : Bool;
+    fun iequals(other: * String) : Bool;
+    fun contains(other: * String) : Bool;
+    fun startsWith(other: * String) : Bool;
+    fun endsWith(other: * String) : Bool;
 
-    fun find(other: ref* String, start: Int = 0): Int;
+    fun find(other: * String, start: Int = 0): Int;
 
-    fun replace(src: ref* String, dst: ref* String);
-    fun split(sep: ref* String): DArray$<String>;
+    fun replace(src: * String, dst: * String);
+    fun split(sep: * String): DArray$<String>;
     fun substr(pos:Int, len:Int = -1): String;
 
-    operator fun plus(other: ref* String) : String;
+    operator fun plus(other: * String) : String;
     fun add(cstr: raw*const Int8);
 
     fun trimEnd();
