@@ -1,7 +1,0 @@
-name = sric
-summary = sric std library
-outType = lib
-version = 1.0
-srcDirs = ./,../compiler/res/output/sric.cpp
-incDir = ./
-extIncDirs = ../compiler/res/output/

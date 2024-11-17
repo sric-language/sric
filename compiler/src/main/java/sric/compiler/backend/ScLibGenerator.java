@@ -288,7 +288,7 @@ public class ScLibGenerator extends BaseGenerator {
         if (v.isEnum()) {
             printCommont(v);
             printFlags(v.flags);
-            print("enum class ");
+            print("enum ");
             print(v.name);
             print(" {").newLine();
             indent();
@@ -308,7 +308,7 @@ public class ScLibGenerator extends BaseGenerator {
             newLine();
 
             unindent();
-            print("};").newLine();
+            print("}").newLine();
             return;
         }
         

@@ -1,0 +1,15 @@
+
+import sric::*;
+
+fun testStream() {
+    var stream = FileStream_open("C:/workspace/code/safeC/README.md", "r")!;
+
+    var buf: [128]Int8 = uninit;
+
+    while (true) {
+        var line = stream.readLine(&buf, 128);
+        if (line == null) break;
+
+        printf("%s\n", line);
+    }
+}
