@@ -1,0 +1,93 @@
+
+
+.index a {
+    display: block;
+}
+
+.index {
+    float: left;
+    width: 200px;
+    position:fixed;
+    margin-top: 70px;
+}
+
+.content {
+    margin-left: 200px;
+}
+
+.modulename {
+    font-size: 30px;
+}
+
+.moduleversion {
+    margin: 5px;
+}
+
+.module {
+    position:fixed;
+}
+
+.typealias {
+    padding: 10px;
+    margin: 15px;
+    background-color: aliceblue;
+}
+
+.typedef {
+    padding: 10px;
+    margin: 15px;
+    background-color: aliceblue;
+}
+
+.field {
+    padding: 10px;
+    margin: 15px;
+    background-color: aliceblue;
+}
+
+.func {
+    padding: 10px;
+    margin: 15px;
+    background-color: aliceblue;
+}
+
+.typefunc .func {
+    padding: 0px 10px 0 10px;
+}
+
+.typefield .field {
+    padding: 0px 10px 0 10px;
+}
+
+.typeinfo > .name {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.fieldinfo > .name {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.funcinfo > .name {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.typeinfo {
+    display: flex;
+}
+
+.doc {
+    padding: 20px;
+}
+
+.flags {
+    color: blue;
+    margin-right: 10px;
+}
+
+.kind {
+    color:green;
+    margin-right: 10px;
+}

@@ -92,11 +92,11 @@ void FileStream::close()
     _file = NULL;
 }
 
-size_t FileStream::read(void* ptr, size_t size, size_t count)
+long FileStream::read(void* ptr, size_t size)
 {
     if (!_file)
         return 0;
-    return fread(ptr, size, count, _file);
+    return fread(ptr, 1, size, _file);
 }
 
 char* FileStream::readLine(char* str, int num)
@@ -106,11 +106,11 @@ char* FileStream::readLine(char* str, int num)
     return fgets(str, num, _file);
 }
 
-size_t FileStream::write(const void* ptr, size_t size, size_t count)
+long FileStream::write(const void* ptr, size_t size)
 {
     if (!_file)
         return 0;
-    return fwrite(ptr, size, count, _file);
+    return fwrite(ptr, 1, size, _file);
 }
 
 bool FileStream::eof()
@@ -120,17 +120,17 @@ bool FileStream::eof()
     return ((size_t)position()) >= length();
 }
 
-size_t FileStream::length()
+long FileStream::length()
 {
     size_t len = 0;
     if (canSeek())
     {
         long int pos = position();
-        if (seek(0, SEEK_END))
+        if (fseek(_file, 0, SEEK_END))
         {
             len = position();
         }
-        seek(pos, SEEK_SET);
+        fseek(_file, pos, SEEK_SET);
     }
     return len;
 }
@@ -142,11 +142,11 @@ long int FileStream::position()
     return ftell(_file);
 }
 
-bool FileStream::seek(long int offset, int origin)
+bool FileStream::seek(long int offset)
 {
     if (!_file)
         return false;
-    return fseek(_file, offset, origin) == 0;
+    return fseek(_file, offset, SEEK_SET) == 0;
 }
 
 bool FileStream::rewind()

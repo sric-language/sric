@@ -1,10 +1,11 @@
-import sric::*;
+externc fun printf(format: raw*const Int8, args: ...): Int;
+extern fun alloc$<T>(): own* T;
 
 struct A {
     var a: own* Int;
     var b: * Int;
     var c: raw* Int;
-    var d: WeakPtr$<Int>;
+    //var d: WeakPtr$<Int>;
 }
 
 fun foo(c: * Int) {

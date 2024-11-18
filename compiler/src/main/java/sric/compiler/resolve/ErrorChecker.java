@@ -223,6 +223,10 @@ public class ErrorChecker extends CompilePass {
             this.visit(v.initExpr);
         }
         
+        if ((v.flags & FConst.Static) != 0) {
+            err("Unsupport Static Field", v.loc);
+        }
+        
         //check constexpr
         if ((v.flags & FConst.ConstExpr) != 0) {
             if (v.initExpr == null) {
@@ -353,6 +357,10 @@ public class ErrorChecker extends CompilePass {
             if (v.generiParamDefs != null) {
                 err("Unsupport reflection for generic type", v.loc);
             }
+        }
+        
+        if ((v.flags & FConst.Static) != 0 && v.parent instanceof FileUnit) {
+            err("Invalid static flags", v.loc);
         }
         
         if ((v.flags & FConst.Readonly) != 0) {
@@ -649,6 +657,9 @@ public class ErrorChecker extends CompilePass {
                 }
                 else if (e.resolvedDef instanceof AstNode.FuncDef f) {
                     checkProtection(f, f.parent, v.loc, e.inLeftSide);
+                    if (f.isStatic()) {
+                        err("Access static by '::'", e.loc);
+                    }
                 }
             }
         }

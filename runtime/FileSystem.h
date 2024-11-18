@@ -10,7 +10,7 @@ namespace sric
 /**
  * Defines a set of functions for interacting with the device file system.
  */
-namespace FileSystem
+struct FileSystem
 {
     bool mkdirs(const char* path);
     bool listFiles(const char* dirPath, RefPtr<DArray<String>> files);
@@ -24,8 +24,9 @@ namespace FileSystem
     bool remove(const char* filePath);
 
 
-    bool isAbsolutePath(const char* filePath);
-    String getDirName(const char* path);
+    bool isAbsolute(const char* filePath);
+    String canonicalPath(const char* filePath);
+    String fileName(const char* path);
     String getExtName(const char* path);
     String getBaseName(const char* path);
     String getParentPath(const char* path);

@@ -12,7 +12,7 @@ namespace sric
  * 
  * @script{ignore}
  */
-class FileStream : public Stream
+class FileStream : public IOStream
 {
 public:
     
@@ -21,13 +21,13 @@ public:
     virtual bool canWrite();
     virtual bool canSeek();
     virtual void close();
-    virtual size_t read(void* ptr, size_t size, size_t count);
+    virtual long read(void* ptr, size_t size);
     virtual char* readLine(char* str, int num);
-    virtual size_t write(const void* ptr, size_t size, size_t count);
+    virtual long write(const void* ptr, size_t size);
     virtual bool eof();
-    virtual size_t length();
-    virtual long int position();
-    virtual bool seek(long int offset, int origin = SEEK_SET);
+    virtual long length();
+    virtual long position();
+    virtual bool seek(long int offset);
     virtual bool rewind();
 
     static OwnPtr<FileStream> open(const char* filePath, const char* mode);

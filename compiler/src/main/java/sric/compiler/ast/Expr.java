@@ -116,7 +116,7 @@ public abstract class Expr extends AstNode {
             this.name = name;
         }
         
-        public String getNamespaceName() {
+        private String getNamespaceName() {
             if (this.namespace != null) {
                 return namespace.toString();
             }

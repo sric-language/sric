@@ -150,35 +150,35 @@ String String::toUpper() const {
     return ret;
 }
 
-int64_t String::toLong() const {
+int64_t String::toInt64() const {
     if (str.empty()) return 0;
     int64_t nValue = 0;
     sscanf(str.c_str(), "%lld", &nValue);
     return nValue;
 }
-int String::toInt() const { return (int)std::stol(c_str(), NULL, 10); }
-float String::toFloat() const { return std::stof(c_str(), NULL); }
-double String::toDouble() const { return std::stod(c_str(), NULL); }
+int String::toInt32() const { return (int)std::stol(c_str(), NULL, 10); }
+float String::toFloat32() const { return std::stof(c_str(), NULL); }
+double String::toFloat64() const { return std::stod(c_str(), NULL); }
 
-String String::fromInt(int i) {
+String String::fromInt32(int i) {
     char buf[BUF_SIZE];
     snprintf(buf, sizeof(buf), "%d", i);
 
     return buf;
 }
-String String::fromLong(int64_t i) {
+String String::fromInt64(int64_t i) {
     char buf[BUF_SIZE];
     snprintf(buf, sizeof(buf), "%lld", i);
 
     return buf;
 }
-String String::fromDouble(double f) {
+String String::fromFloat64(double f) {
     char buf[BUF_SIZE];
     snprintf(buf, sizeof(buf), "%f", f);
 
     return buf;
 }
-String String::fromFloat(float f) {
+String String::fromFloat32(float f) {
     char buf[BUF_SIZE];
     snprintf(buf, sizeof(buf), "%f", f);
 

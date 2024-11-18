@@ -2,7 +2,7 @@
 import sric::*;
 
 fun testStream() {
-    var stream = FileStream_open("C:/workspace/code/safeC/README.md", "r")!;
+    var stream = FileStream::open("C:/workspace/code/safeC/README.md", "r")!;
 
     var buf: [128]Int8 = uninit;
 

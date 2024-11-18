@@ -1,4 +1,4 @@
-import sric::*;
+externc fun printf(format: raw*const Int8, args: ...): Int;
 
 fun print(x: Int) {
     printf("%d\n", x);

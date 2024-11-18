@@ -77,9 +77,9 @@ public class ExprTypeResolver extends TypeResolver {
                 
                 AstNode func = this.funcs.peek();
                 if (func instanceof FuncDef f) {
-//                    if ((f.flags & FConst.Static) != 0) {
-//                        err("No this in static", idExpr.loc);
-//                    }
+                    if ((f.flags & FConst.Static) != 0) {
+                        err("No this in static", idExpr.loc);
+                    }
                     if (idExpr.name.equals(TokenKind.superKeyword.symbol)) {
                         if (curStruct == null) {
                             err("Use super out of struct", idExpr.loc);
@@ -114,15 +114,31 @@ public class ExprTypeResolver extends TypeResolver {
         }
         super.resolveId(idExpr);
         
-        if (idExpr.resolvedDef != null && idExpr.namespace == null) {
-            if (idExpr.resolvedDef instanceof FieldDef f) {
-                if (f.parent instanceof TypeDef) {
-                    idExpr.implicitThis = true;
+        if (curStruct != null) {
+            boolean inStaticScope = false;
+            AstNode func = this.funcs.peek();
+            if (func instanceof FuncDef f) {
+                if ((f.flags & FConst.Static) != 0) {
+                    inStaticScope = true;
                 }
             }
-            else if (idExpr.resolvedDef instanceof FuncDef f) {
-                if (f.parent instanceof TypeDef) {
-                    idExpr.implicitThis = true;
+            
+            if (idExpr.resolvedDef != null && idExpr.namespace == null) {
+                if (idExpr.resolvedDef instanceof FieldDef f) {
+                    if (!f.isStatic() && !f.isLocalOrParam()) {
+                        if (inStaticScope) {
+                            err("Can't access from static scope", idExpr.loc);
+                        }
+                        idExpr.implicitThis = true;
+                    }
+                }
+                else if (idExpr.resolvedDef instanceof FuncDef f) {
+                    if (!f.isStatic()) {
+                        if (inStaticScope) {
+                            err("Can't access from static scope", idExpr.loc);
+                        }
+                        idExpr.implicitThis = true;
+                    }
                 }
             }
         }
@@ -239,7 +255,7 @@ public class ExprTypeResolver extends TypeResolver {
                 }
                 
                 for (FuncDef f : v.funcDefs) {
-                    if (/*(f.flags & FConst.Static) != 0 || */(f.flags | FConst.Override) != 0) {
+                    if ((f.flags & FConst.Static) != 0 || (f.flags | FConst.Override) != 0) {
                         continue;
                     }
                     if (inhScopes.contains(f.name)) {

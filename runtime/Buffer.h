@@ -18,18 +18,19 @@ namespace sric
 /**
  * ByteArray is memory buffer
  */
-class Buffer : public Stream {
+class Buffer : public IOStream {
 private:
-  uint8_t* data;
-  size_t _pos;
-  size_t _size;
-  bool owner;
-  
+    uint8_t* data;
+    size_t _pos;
+    size_t _size;
+    bool owner;
 public:
     Buffer();
     Buffer(size_t size);
     Buffer(uint8_t* data, size_t size, bool owner);
     ~Buffer();
+
+    static OwnPtr<Buffer> make(size_t size);
 
     void readSlice(Buffer &out, bool copy);
 
@@ -37,13 +38,11 @@ public:
     unsigned char * readDirect(int len);
     unsigned char *getData() { return data; }
 
-    size_t remaining() { return _size - _pos; }
-
-    virtual size_t read(void* ptr, size_t size, size_t count);
-    virtual size_t write(const void* ptr, size_t size, size_t count);
-    virtual size_t length() { return _size; }
-    virtual long int position() { return _pos; }
-    virtual bool seek(long int offset, int origin = SEEK_SET);
+    virtual long read(void* ptr, size_t size);
+    virtual long write(const void* ptr, size_t size);
+    virtual long length() { return _size; }
+    virtual long position() { return _pos; }
+    virtual bool seek(long int offset);
 };
 
 

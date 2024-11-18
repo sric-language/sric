@@ -71,9 +71,9 @@ public class ScLibGenerator extends BaseGenerator {
         if ((flags & FConst.Public) != 0) {
             print("public ");
         }
-//        if ((flags & FConst.Static) != 0) {
-//            print("static ");
-//        }
+        if ((flags & FConst.Static) != 0) {
+            print("static ");
+        }
         if ((flags & FConst.Virtual) != 0) {
             print("virtual ");
         }
@@ -148,9 +148,8 @@ public class ScLibGenerator extends BaseGenerator {
     }
 
     private void printIdExpr(Expr.IdExpr id) {
-        String ns = id.getNamespaceName();
-        if (ns != null) {
-            print(ns);
+        if (id.namespace != null) {
+            printIdExpr(id.namespace);
             print("::");
         }
         if (id.name.equals(".")) {

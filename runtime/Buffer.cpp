@@ -29,9 +29,16 @@ Buffer::~Buffer() {
   }
 }
 
+OwnPtr<Buffer> Buffer::make(size_t size) {
+    OwnPtr<Buffer> stream = sric::alloc<Buffer>();
+    stream->data = (uint8_t*)malloc(size);
+    stream->_size = size;
+    stream->owner = true;
+    return stream;
+}
 
-size_t Buffer::write(const void* ptr, size_t size, size_t count) {
-  size_t len = size * count;
+long Buffer::write(const void* ptr, size_t size) {
+  size_t len = size;
   if (len > _size - _pos) {
     if (owner) {
       uint8_t *p = (uint8_t*)realloc(data, _pos+ len);
@@ -45,17 +52,17 @@ size_t Buffer::write(const void* ptr, size_t size, size_t count) {
   }
   memcpy(data + _pos, ptr, len);
   _pos += len;
-  return count;
+  return size;
 }
 
-size_t Buffer::read(void* ptr, size_t size, size_t count) {
+long Buffer::read(void* ptr, size_t size) {
   if (size > remaining()) {
     size = remaining();
   }
-  size_t len = size * count;
+  size_t len = size;
   memcpy(ptr, data + _pos, len);
   _pos += len;
-  return count;
+  return size;
 }
 
 unsigned char * Buffer::readDirect(int len) {
@@ -88,7 +95,7 @@ void Buffer::readSlice(Buffer &out, bool copy) {
     }
 }
 
-bool Buffer::seek(long int pos, int origin) {
+bool Buffer::seek(long int pos) {
     if (pos <= _size) {
         this->_pos = pos;
         return true;

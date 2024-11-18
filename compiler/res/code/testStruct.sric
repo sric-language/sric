@@ -8,6 +8,8 @@ struct A {
     fun init() {
         this { .i = 2; .j = 3; };
     }
+
+    static fun make(): Int { return 1; }
 }
 
 fun main()
@@ -17,4 +19,6 @@ fun main()
     var i:Int = a.foo();
 
     var b = A { .init(); };
+
+    var x = A::make();
 }

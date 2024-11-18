@@ -1,0 +1,73 @@
+//@#include "FileStream.h"
+//@#include "Buffer.h"
+//@#include "FileSystem.h"
+
+extern abstract struct IOStream {
+    fun canRead(): Bool;
+    fun canWrite(): Bool;
+    fun canSeek(): Bool;
+
+    abstract fun read(ptr: raw*Void, size: UInt32, count: UInt32): UInt32;
+    abstract fun write(ptr: raw*Void, size: UInt32, count: UInt32): UInt32;
+
+    virtual fun readLine(buf: raw* Int8, bufSize: Int): raw*Int8;
+    virtual fun eof(): Bool;
+    virtual fun rewind(): Bool;
+
+    abstract fun length(): UInt32;
+    abstract fun position(): UInt32;
+    abstract fun seek(offset: UInt32): Bool;
+
+    fun remaining() : UInt32;
+
+    fun setByteOrder(littleEndian: Bool);
+    /**
+    * true if littleEndian
+    */
+    fun getByteOrder(): Bool;
+
+    virtual fun flush();
+
+    virtual fun close();
+
+    virtual fun pipeTo(out: raw* IOStream): Int32;
+
+    fun writeInt8(out: Int8): Int32;
+    fun writeInt16(out: Int16): Int32;
+    fun writeInt32(out: Int32): Int32;
+    fun writeInt64(out: Int64): Int32;
+    fun writeUInt8(out: UInt8): Int32;
+    fun writeUInt16(out: UInt16): Int32;
+    fun writeUInt32(out: UInt32): Int32;
+    fun writeUInt64(out: UInt64): Int32;
+    fun writeFloat32(out: Float32): Int32;
+    fun writeFloat64(out: Float64): Int32;
+
+    fun readUInt8(): UInt8;
+    fun readUInt16(): UInt16;
+    fun readUInt32(): UInt32;
+    fun readUInt64(): UInt64;
+    fun readInt8(): Int8;
+    fun readInt16(): Int16;
+    fun readInt32(): Int32;
+    fun readInt64(): Int64;
+    fun readFloat32(): Float32;
+    fun readFloat64(): Float64;
+
+    fun writeSizedStr(buf: * String);
+    fun readSizedStr(): String;
+    fun writeStr(buf: * String);
+    fun readAllStr(): String;
+
+}
+
+extern struct Buffer : IOStream {
+    fun readDirect(): raw* UInt8;
+    fun getData(): raw* UInt8;
+    static fun make(size: UInt32): own*? Buffer;
+}
+
+extern struct FileStream : IOStream {
+    static fun open(path: const raw* const Int8, mode: const raw* const Int8): own*? FileStream;
+}
+

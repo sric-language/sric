@@ -122,9 +122,9 @@ public class AstNode {
             if (this.parent instanceof FileUnit) {
                 return true;
             }
-//            if ((this.flags & FConst.Static) != 0) {
-//                return true;
-//            }
+            if ((this.flags & FConst.Static) != 0) {
+                return true;
+            }
             return false;
         }
     }
@@ -364,6 +364,10 @@ public class AstNode {
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
         public FuncDef templateInstantiate(Map<GenericParamDef, Type> typeGenericArgs) {
+//            if ("hashCode".equals(this.name)) {
+//                System.out.print("DEBUG");
+//            }
+            
             FuncDef nf = new FuncDef();
             nf.comment = this.comment;
             nf.flags = this.flags;
@@ -395,9 +399,9 @@ public class AstNode {
             if (this.parent instanceof FileUnit) {
                 return true;
             }
-//            if ((this.flags & FConst.Static) != 0) {
-//                return true;
-//            }
+            if ((this.flags & FConst.Static) != 0) {
+                return true;
+            }
             return false;
         }
     }

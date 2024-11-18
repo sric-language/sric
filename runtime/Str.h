@@ -20,6 +20,12 @@ public:
     const char* c_str() const {
         return str.c_str();
     }
+    void resize(int size) {
+        str.resize(size);
+    }
+    char* data() {
+        return (char*)str.data();
+    }
     int size() const {
         return str.size();
     }
@@ -57,15 +63,15 @@ public:
     String toLower() const;
     String toUpper() const;
 
-    int toInt() const;
-    int64_t toLong() const;
-    float toFloat() const;
-    double toDouble() const;
+    int toInt32() const;
+    int64_t toInt64() const;
+    float toFloat32() const;
+    double toFloat64() const;
 
-    static String fromInt(int i);
-    static String fromLong(int64_t i);
-    static String fromDouble(double f);
-    static String fromFloat(float f);
+    static String fromInt32(int i);
+    static String fromInt64(int64_t i);
+    static String fromFloat64(double f);
+    static String fromFloat32(float f);
 
     /**
     * 'printf' style format

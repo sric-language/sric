@@ -122,9 +122,9 @@ public class DocGenerator extends BaseGenerator {
         if ((flags & FConst.Public) != 0) {
             print("public ");
         }
-//        if ((flags & FConst.Static) != 0) {
-//            print("static ");
-//        }
+        if ((flags & FConst.Static) != 0) {
+            print("static ");
+        }
         if ((flags & FConst.Virtual) != 0) {
             print("virtual ");
         }

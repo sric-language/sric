@@ -270,7 +270,12 @@ public class CppGenerator extends BaseGenerator {
         String moduleName = this.module.name;
         if (f.isStatic()) {
             print("f.offset = 0;").newLine();
-            print("f.pointer = &");print(moduleName);print("::").print(this.getSymbolName(f)).print(";").newLine();
+            print("f.pointer = &");print(moduleName);print("::");
+            if (f.parent instanceof TypeDef td) {
+                print(this.getSymbolName(td));
+                print("::");
+            }
+            print(this.getSymbolName(f)).print(";").newLine();
         }
         else if (isEnumSlot) {
             print("f.offset = 0;").newLine();
@@ -596,10 +601,10 @@ public class CppGenerator extends BaseGenerator {
                 return;
             }
         }
+
         
-        String ns = id.getNamespaceName();
-        if (ns != null) {
-            print(ns);
+        if (id.namespace != null) {
+            printIdExpr(id.namespace);
             print("::");
         }
         else {
@@ -777,9 +782,9 @@ public class CppGenerator extends BaseGenerator {
             if ((v.flags & FConst.Virtual) != 0 || (v.flags & FConst.Abstract) != 0) {
                 print("virtual ");
             }
-//            if ((v.flags & FConst.Static) != 0) {
-//                print("static ");
-//            }
+            if ((v.flags & FConst.Static) != 0) {
+                print("static ");
+            }
         }
         
 //        if ((v.flags & FConst.Extern) != 0) {

@@ -22,7 +22,7 @@ fun testHashMap3() {
     var map = HashMap$<String, Int>{ .defValue = 0; };
 
     for (var i=0; i<10; ++i) {
-        map.set(String_fromInt32(i), i);
+        map.set(String::fromInt32(i), i);
     }
 
     var t =  map.get("1");

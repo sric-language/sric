@@ -35,24 +35,17 @@ extern noncopyable struct String {
 
     fun hashCode() const: Int;
     operator fun compare(p: *String) const : Int;
+
+    extern static fun fromInt32(i: Int32): String;
+    extern static fun fromInt64(i: Int64): String;
+    extern static fun fromFloat64(f: Float64): String;
+    extern static fun fromFloat32(f: Float32): String;
+
+    /**
+    * 'printf' style format
+    */
+    extern static fun format(format: raw*const Int8, args: ...): String;
 }
 
-//@extern symbol: sric::String::fromInt
-extern fun String_fromInt32(i: Int32): String;
-
-//@extern symbol: sric::String::fromLong
-extern fun String_fromInt64(i: Int64): String;
-
-//@extern symbol: sric::String::fromDouble
-extern fun String_fromFloat64(f: Float64): String;
-
-//@extern symbol: sric::String::fromFloat
-extern fun String_fromFloat32(f: Float32): String;
-
-/**
-* 'printf' style format
-*/
-//@extern symbol: sric::String::format
-extern fun String_format(format: raw*const Int8, args: ...): String;
 
 extern fun asStr(cstr: raw*const Int8): String;
