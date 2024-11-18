@@ -1,0 +1,7 @@
+//@#include "Atomic.h"
+
+extern struct Atomic$<T> {
+    fun get(): T;
+    fun set(t: T);
+    fun compareAndSwap(expected: T, desired: T);
+}

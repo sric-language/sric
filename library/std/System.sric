@@ -1,0 +1,22 @@
+//@#include "System.h"
+
+/**
+* return the milliseconds from midnight, January 1, 1970 UTC.
+*/
+extern fun currentTimeMillis(): Int64;
+
+/**
+* returns a relative time.
+* Typically it is the number of nanosecond ticks which have elapsed since system startup.
+*/
+extern fun nanoTicks(): Int64;
+    
+/**
+* sleep current thread millitm second
+*/
+extern fun sleep(millitm: Int64);
+
+/**
+* Thread ID
+*/
+extern fun currentThreadId(): UInt64;
