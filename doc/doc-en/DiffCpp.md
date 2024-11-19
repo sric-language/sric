@@ -2,17 +2,17 @@
 
 ## Removed features from C++
 
-- No reference, just pointer
+- No reference
 - No function overload by params;
 - No header file
 - No implicit copying of large objects
-- No static member
+- No static field
 - No new, delete
 - No define multi var per statement
 - No constructor
 - No nested class, nested function
 - No class, just struct
-- No namespace, just module
+- No namespace
 - No macro
 - No forward declarations
 - No three static
@@ -21,7 +21,7 @@
 - No virtual,private inheritance
 - No i++ just ++i
 - No switch auto fallthrough
-- No template overload
+- No template specialization
 - No pointer arithmetic in safe mode
 
 
@@ -32,5 +32,5 @@
 - Modularization
 - With Block
 - Non-nullable pointer
-- Reflection
+- Dynamic Reflection
 
