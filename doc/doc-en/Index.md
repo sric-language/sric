@@ -1,4 +1,4 @@
-## Fanx Programming Language
+## Sric Programming Language
 
 ### Introduction
 - [Quick Start](Start.md)

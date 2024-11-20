@@ -3,7 +3,7 @@
 ## Removed features from C++
 
 - No reference
-- No function overload by params;
+- No function overload by params
 - No header file
 - No implicit copying of large objects
 - No static field
@@ -22,7 +22,6 @@
 - No i++ just ++i
 - No switch auto fallthrough
 - No template specialization
-- No pointer arithmetic in safe mode
 
 
 ## More than C++
@@ -30,7 +29,7 @@
 - Simple and easy
 - Memory safe
 - Modularization
-- With Block
+- With block
 - Non-nullable pointer
-- Dynamic Reflection
-
+- Dynamic reflection
+- Named args

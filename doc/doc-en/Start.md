@@ -23,6 +23,8 @@ Build:
 sric test.scm
 ```
 
+The .scm file is module build script.
+
 The generated C++ code is located in the "sric/output" directory.
 
 

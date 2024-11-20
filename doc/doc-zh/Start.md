@@ -22,6 +22,8 @@
 sric test.scm
 ```
 
+其中.scm文件是模块定义文件，也是构建脚本。
+
 生成的 C++ 代码位置在 "sric/output" 目录。
 
 

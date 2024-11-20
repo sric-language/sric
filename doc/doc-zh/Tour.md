@@ -91,7 +91,7 @@ var a: own* A = alloc$<A>() { .i = 0; };
 
 ### 指针用法
 
-总是通过 '.'来访问
+总是通过`.`来访问
 ```
 var a: A;
 var b: own* A;
@@ -130,7 +130,7 @@ T fun foo$<T>(a: T) {
 var b: Bar$<Int>;
 ```
 
-### 可空性
+### Non-nullable
 
 指针默认是不可以为null的
 ```
