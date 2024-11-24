@@ -930,6 +930,9 @@ public class ExprTypeResolver extends TypeResolver {
                     else if (e.lhs.resolvedType.isPointerType() && e.rhs.resolvedType.isPointerType()) {
                         //OK
                     }
+                    else if (e.lhs.resolvedType.isEnumType() && e.rhs.resolvedType.isEnumType()) {
+                        //OK
+                    }
                     else {
                         resolveMathOperator(TokenKind.cmp, e);
                     }

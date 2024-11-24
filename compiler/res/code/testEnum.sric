@@ -12,4 +12,8 @@ fun foo(c: Color) {
 fun main() {
     var c = Color::Red;
     foo(c);
+
+    if (c == Color::Red) {
+        foo(c);
+    }
 }

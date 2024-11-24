@@ -142,6 +142,15 @@ public class Type extends AstNode {
         return true;
     }
     
+    public boolean isEnumType() {
+        if (this.id.resolvedDef instanceof TypeDef td) {
+            if (td.isEnum()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public boolean isRawPointerType() {
         if (!isPointerType()) {
             return false;
