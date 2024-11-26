@@ -94,6 +94,7 @@ int64_t currentTimeMillis() {
 
 #include <Windows.h>
 #include <time.h>
+#pragma comment(lib, "winmm.lib ")
 
 int64_t nanoTicks() {
   /*

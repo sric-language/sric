@@ -16,37 +16,37 @@ public:
     }
 
     T& operator[](int i) {
-        sric::sc_assert(i >= 0 && i < data.size(), "index out of array");
+        sc_assert(i >= 0 && i < data.size(), "index out of array");
         return data[i];
     }
 
     const T& operator[](int i) const {
-        sric::sc_assert(i >= 0 && i < data.size(), "index out of array");
+        sc_assert(i >= 0 && i < data.size(), "index out of array");
         return data[i];
     }
 
     sric::RefPtr<T> get(int i) {
-        sric::sc_assert(i >= 0 && i < data.size(), "index out of array");
+        sc_assert(i >= 0 && i < data.size(), "index out of array");
         return RefPtr<T>(&data[i]);
     }
 
     const sric::RefPtr<const T> constGet(int i) const {
-        sric::sc_assert(i >= 0 && i < data.size(), "index out of array");
+        sc_assert(i >= 0 && i < data.size(), "index out of array");
         return RefPtr<const T>(&data[i]);
     }
 
     void set(int i, const T& d) {
-        sric::sc_assert(i >= 0 && i < data.size(), "index out of array");
+        sc_assert(i >= 0 && i < data.size(), "index out of array");
         data[i] = d;
     }
 
-    void add(T d) {
-        data.push_back(d);
-    }
-
-    //void add(const T& d) {
+    //void add(T d) {
     //    data.push_back(d);
     //}
+
+    void add(T& d) {
+        data.push_back(std::move(d));
+    }
 
     int size() const {
         return data.size();

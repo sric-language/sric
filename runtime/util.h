@@ -30,25 +30,25 @@ namespace sric {
 
 	template<typename T>
 	T* nonNullable(T* p) {
-		sric::sc_assert(p != nullptr, "Non-Nullable");
+		sc_assert(p != nullptr, "Non-Nullable");
 		return p;
 	}
 
 	template<typename T>
 	OwnPtr<T>& nonNullable(OwnPtr<T>& p) {
-		sric::sc_assert(!p.isNull(), "Non-Nullable");
+		sc_assert(!p.isNull(), "Non-Nullable");
 		return p;
 	}
 
 	template<typename T>
 	OwnPtr<T> nonNullable(OwnPtr<T>&& p) {
-		sric::sc_assert(!p.isNull(), "Non-Nullable");
+		sc_assert(!p.isNull(), "Non-Nullable");
 		return p;
 	}
 
 	template<typename T>
 	RefPtr<T> nonNullable(RefPtr<T> p) {
-		sric::sc_assert(!p.isNull(), "Non-Nullable");
+		sc_assert(!p.isNull(), "Non-Nullable");
 		return p;
 	}
 

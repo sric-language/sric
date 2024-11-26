@@ -249,6 +249,8 @@ class RefPtr {
 
     template<typename T2> friend RefPtr<T2> refSafeCheck(RefPtr<T2> p);
 private:
+#ifdef SC_NO_CHECK
+#else
     void onDeref() const {
         sc_assert(pointer != nullptr, "try deref null pointer");
         if (type == RefType::HeapRef) {
@@ -263,6 +265,7 @@ private:
             }
         }
     }
+#endif
 public:
     RefPtr() : pointer(nullptr), checkCode(0), type(RefType::NullRef) {
     }
@@ -291,11 +294,26 @@ public:
     RefPtr(RefPtr<U>& p) : pointer(p.pointer), checkCode(p.checkCode), type(p.type) {
     }
 
-    T* operator->() const { onDeref(); return pointer; }
+    T* operator->() const {
+#ifndef SC_NO_CHECK
+        onDeref();
+#endif
+        return pointer;
+    }
 
-    T* operator->() { onDeref(); return pointer; }
+    T* operator->() {
+#ifndef SC_NO_CHECK
+        onDeref();
+#endif
+        return pointer;
+    }
 
-    T& operator*() { onDeref(); return *pointer; }
+    T& operator*() { 
+#ifndef SC_NO_CHECK
+        onDeref();
+#endif
+        return *pointer;
+    }
 
     operator T* () { return pointer; }
 
@@ -336,7 +354,7 @@ RefPtr<T> rawToRef(T* ptr) {
 
 template<typename T>
 RefPtr<T> refSafeCheck(RefPtr<T> p) {
-    sric::sc_assert(p.type == RefType::RawRef, "Unsafe ref");
+    sc_assert(p.type == RefType::RawRef, "Unsafe ref");
     return p;
 }
 
