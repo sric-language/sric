@@ -34,3 +34,14 @@ fun main()
         printf("%d", *x);
     }
 }
+
+fun test() {
+    var p: own* Int = alloc$<Int>();
+    var pp: raw* own*Int = &p;
+    unsafe {
+        var p2 = **pp;
+
+        var s = 0;
+        s += **pp;
+    }
+}

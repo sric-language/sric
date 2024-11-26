@@ -227,6 +227,9 @@ public class Compiler {
         }
         
         String fmakeFile = outputDir + "/" + this.module.name + ".fmake";
+        if (Files.exists(Path.of(fmakeFile))) {
+            return;
+        }
         
         StringBuilder depends = new StringBuilder();
         StringBuilder src = new StringBuilder();

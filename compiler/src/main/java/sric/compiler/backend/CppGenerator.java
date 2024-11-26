@@ -162,31 +162,31 @@ public class CppGenerator extends BaseGenerator {
             
             /////////////////////////////////////////////////////////////
             
-            print("extern \"C\" {");
-            this.indent();
-            
-            for (FileUnit funit : module.fileUnits) {
-                for (TypeDef type : funit.typeDefs) {
-                    if ((type.flags & FConst.ExternC) != 0) {
-                        print("struct ");
-                        print(getSymbolName(type)).print(";").newLine();
-                    }
-                }
-                for (FuncDef f : funit.funcDefs) {
-                    if ((f.flags & FConst.ExternC) != 0) {
-                        printFunc(f, false);
-                    }
-                }
-                for (FieldDef f : funit.fieldDefs) {
-                    if ((f.flags & FConst.ExternC) != 0) {
-                        visitField(f);
-                    }
-                }
-            }
-            
-            this.unindent();
-            newLine();
-            print("}").newLine();
+//            print("extern \"C\" {");
+//            this.indent();
+//            
+//            for (FileUnit funit : module.fileUnits) {
+//                for (TypeDef type : funit.typeDefs) {
+//                    if ((type.flags & FConst.ExternC) != 0) {
+//                        print("struct ");
+//                        print(getSymbolName(type)).print(";").newLine();
+//                    }
+//                }
+//                for (FuncDef f : funit.funcDefs) {
+//                    if ((f.flags & FConst.ExternC) != 0) {
+//                        printFunc(f, false);
+//                    }
+//                }
+//                for (FieldDef f : funit.fieldDefs) {
+//                    if ((f.flags & FConst.ExternC) != 0) {
+//                        visitField(f);
+//                    }
+//                }
+//            }
+//            
+//            this.unindent();
+//            newLine();
+//            print("}").newLine();
 
             /////////////////////////////////////////////////////////////
             print("namespace ");

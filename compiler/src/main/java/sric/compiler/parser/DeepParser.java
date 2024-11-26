@@ -669,13 +669,13 @@ public class DeepParser extends Parser {
             {
                 TokenKind tokt = curt;
                 consume();
-                UnaryExpr e = new UnaryExpr(tokt, termExpr());
+                UnaryExpr e = new UnaryExpr(tokt, unaryExpr());
                 endLoc(e, loc);
                 return e;
             }
             case plus: {
                 consume();
-                return termExpr(); // optimize +expr to just expr
+                return unaryExpr(); // optimize +expr to just expr
             }
         }
 

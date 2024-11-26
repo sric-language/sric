@@ -424,9 +424,10 @@ public class Tokenizer {
                     }
                     continue;
                 }
-                if (cur == '\\' && !triple) {
+                if (cur == '\\') {
                     s.append((char) escape());
-                } else {
+                }
+                else {
                     s.append((char) cur);
                     consume();
                 }
