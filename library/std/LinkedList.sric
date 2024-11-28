@@ -1,12 +1,12 @@
 
 abstract struct Linkable$<T> {
     var next: own*? T;
-    var previous: *? T;
+    var previous: ref*? T;
 }
 
 struct LinkedList$<T: Linkable$<T>> {
     private var head: own*? T = null;
-    private var tail: *? T = null;
+    private var tail: ref*? T = null;
     private var length: Int = 0;
 
     fun clear() {
@@ -85,19 +85,19 @@ struct LinkedList$<T: Linkable$<T>> {
         return length == 0;
     }
 
-    fun constFirst() const : *? const T {
+    fun constFirst() const : ref*? const T {
         return head;
     }
 
-    fun first(): *?T {
+    fun first(): ref*?T {
         return head;
     }
 
-    fun last(): *?T {
+    fun last(): ref*?T {
         return tail;
     }
 
-    fun end(): *?T {
+    fun end(): ref*?T {
         return null;
     }
 }

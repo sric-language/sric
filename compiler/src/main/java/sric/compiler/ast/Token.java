@@ -142,7 +142,7 @@ public class Token {
         uninitKeyword("uninit", true),
         funKeyword("fun", true),
         ownKeyword("own", true),
-//        refKeyword("ref", true),
+        refKeyword("ref", true),
         moveKeyword("move", true),
 //        weakKeyword("weak", true),
         rawKeyword("raw", true),

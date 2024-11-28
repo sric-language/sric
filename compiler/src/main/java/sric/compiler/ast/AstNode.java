@@ -80,6 +80,13 @@ public class AstNode {
             }
             return true;
         }
+        
+        public boolean isExtern() {
+            if ((this.flags & FConst.ExternC) != 0 || (this.flags & FConst.Extern) != 0) {
+                return true;
+            }
+            return false;
+        }
     }
     
     public static class FieldDef extends TopLevelDef {

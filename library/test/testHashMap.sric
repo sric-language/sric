@@ -14,8 +14,10 @@ fun testHashMap2() {
     map.set(1, "1");
     map.set(2, "2");
 
-    var i =  map.get(1);
-    printf("%s\n", i.c_str());
+    unsafe {
+        var i =  map.get(1);
+        printf("%s\n", i.c_str());
+    }
 }
 
 fun testHashMap3() {

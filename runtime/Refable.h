@@ -1,9 +1,7 @@
 #ifndef _SRIC_REF_H_
 #define _SRIC_REF_H_
 
-#ifndef NO_THREAD_SAFE
-#include <atomic>
-#endif
+#include <stdint.h>
 
 namespace sric
 {
@@ -12,11 +10,8 @@ class HeapRefable;
 
 class WeakRefBlock {
     friend class HeapRefable;
-#if NO_THREAD_SAFE
-    unsigned int _weakRefCount;
-#else
-    std::atomic<unsigned int> _weakRefCount;
-#endif
+
+    int _weakRefCount;
 
     HeapRefable* _pointer;
 public:
@@ -29,16 +24,7 @@ public:
     void release();
 };
 
-/**
- * Defines the base class for game objects that require lifecycle management.
- *
- * This class provides reference counting support for game objects that
- * contain system resources or data that is normally long lived and
- * referenced from possibly several sources at the same time. The built-in
- * reference counting eliminates the need for programmers to manually
- * keep track of object ownership and having to worry about when to
- * safely delete such objects.
- */
+
 class HeapRefable
 {
 public:
@@ -72,20 +58,12 @@ public:
 
     WeakRefBlock* getWeakRefBlock();
 
-    int32_t getCheckCode() { return _checkCode; }
 public:
 
     /**
      * Constructor.
      */
     HeapRefable();
-
-    /**
-     * Copy constructor.
-     * 
-     * @param copy The HeapRefable object to copy.
-     */
-    //HeapRefable(const HeapRefable& copy);
 
     /**
      * Destructor.
@@ -95,22 +73,29 @@ public:
 private:
     void disposeWeakRef();
 
+private:
+    template<typename T> friend class RefPtr;
+    template <typename T> friend class DArray;
+
     uint32_t _checkCode;
+
+    //valid array content byte size
+    uint32_t _dataSize;
+
+private:
+    //is only one reference
     bool _isUnique;
 
-#if NO_THREAD_SAFE
-    unsigned int _refCount;
-#else
-    std::atomic<unsigned int> _refCount;
-#endif
+    int _refCount;
 
     WeakRefBlock* _weakRefBlock;
 
 public:
-    void (*freeMemory)(void*) = 0;
+    void (*freeMemory)(void*);
 
-    // Memory leak diagnostic data (only included when GP_USE_MEM_LEAK_DETECTION is defined)
-#ifdef GP_USE_REF_TRACE
+private:
+    // Memory leak diagnostic data
+#ifdef SC_USE_REF_TRACE
     friend void* trackRef(HeapRefable* ref);
     friend void untrackRef(HeapRefable* ref);
     HeapRefable* _next;

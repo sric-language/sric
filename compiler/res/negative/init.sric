@@ -5,7 +5,7 @@ struct A {
 }
 
 fun foo() {
-    var p1 : * Int;
+    var p1 : ref* Int;
     var p2 : A;
-    var p3 : *? Int;
+    var p3 : ref*? Int;
 }

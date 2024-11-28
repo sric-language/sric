@@ -379,21 +379,22 @@ public class ExprTypeResolver extends TypeResolver {
         else if (v instanceof Stmt.ReturnStmt rets) {
             if (rets.expr != null) {
                 this.visit(rets.expr);
-                if (rets.expr.resolvedType != null) {
-                    AstNode func = this.funcs.peek();
-                    FuncPrototype prototype;
-                    if (func instanceof FuncDef f) {
-                        prototype = f.prototype;
-                    }
-                    else {
-                        ClosureExpr f = (ClosureExpr)func;
-                        prototype = f.prototype;
-                    }
-                    if (!rets.expr.resolvedType.fit(prototype.returnType)) {
-                        rets.expr.resolvedType.fit(prototype.returnType);
-                        err("Return type not fit function: "+rets.expr.resolvedType+"=>"+prototype.returnType, rets.expr.loc);
-                    }
+            }
+            
+            AstNode func = this.funcs.peek();
+            if (func != null) {
+                FuncPrototype prototype;
+                if (func instanceof FuncDef f) {
+                    prototype = f.prototype;
                 }
+                else {
+                    ClosureExpr f = (ClosureExpr)func;
+                    prototype = f.prototype;
+                }
+                rets._funcReturnType = prototype.returnType;
+            }
+            else {
+                err("Invalid return", v.loc);
             }
         }
         else {
@@ -586,7 +587,7 @@ public class ExprTypeResolver extends TypeResolver {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
                         }
                         else {
-                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.raw, false);
+                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.inst, false);
                         }
                         break;
                     case awaitKeyword:
@@ -905,7 +906,11 @@ public class ExprTypeResolver extends TypeResolver {
                                 e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
                                 e.lhs.isPointerConvert = true;
                             }
-                            else if (p1.pointerAttr != Type.PointerAttr.ref && p2.pointerAttr == Type.PointerAttr.ref) {
+                            else if ((p1.pointerAttr == Type.PointerAttr.own || p1.pointerAttr == Type.PointerAttr.ref) && p2.pointerAttr == Type.PointerAttr.inst) {
+                                e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
+                                e.lhs.isPointerConvert = true;
+                            }
+                            else if (p1.pointerAttr == Type.PointerAttr.own && p2.pointerAttr == Type.PointerAttr.ref) {
                                 e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
                                 e.lhs.isPointerConvert = true;
                             }

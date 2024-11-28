@@ -3,7 +3,7 @@ private struct MapEntry$<K, V> {
     var k: K;
     var v: V;
     var next: own*? MapEntry$<K, V>;
-    var previous: *? MapEntry$<K, V>;
+    var previous: ref*? MapEntry$<K, V>;
 }
 
 private struct MapEntryList$<K, V> {
@@ -15,26 +15,36 @@ struct HashMap$<K, V> {
     var defValue: V;
     private var length: Int = 0;
     
-    private fun constGetEntryList(k: raw* const K) const : * const MapEntryList$<K,V> {
+    private fun constGetEntryList(k: raw* const K) const : ref* const MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
-        return table.constGet(h);
+        return table.constGetRef(h);
     }
 
-    private fun getEntryList(k: raw* const K) : * MapEntryList$<K,V> {
+    private fun getEntryList(k: raw* const K) : ref* MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
-        return table.get(h);
+        return table.getRef(h);
     }
 
-    fun get(k: K): V {
+    fun constGet(k: K): raw* const V {
         var list = constGetEntryList(&k);
         for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
             if (compare$<K>(&itr.k, &k) == 0) {
-                return itr.v;
+                return &itr.v;
             }
         }
-        return defValue;
+        return &defValue;
+    }
+
+    fun get(k: K): raw* V {
+        var list = getEntryList(&k);
+        for (var itr = list.list.first(); itr != null; itr = itr.next) {
+            if (compare$<K>(&itr.k, &k) == 0) {
+                return &itr.v;
+            }
+        }
+        return &defValue;
     }
     
     fun set(k: mut K, v: mut V) : Bool {
@@ -87,7 +97,7 @@ struct HashMap$<K, V> {
     
     fun eachWhile(f: fun(v:raw* const V, k:raw* const K):Bool) const {
         for (var i = 0; i<table.size(); ++i) {
-            var list = table.constGet(i);
+            var list = table.constGetRef(i);
             for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
                 if (!f(&itr.v, &itr.k)) {
                     return;
@@ -106,7 +116,7 @@ struct HashMap$<K, V> {
         length = 0;
 
         for (var i = 0; i<otable.size(); ++i) {
-            var list = otable.get(i);
+            var list = otable.getRef(i);
             for (var itr = list.list.first(); itr != null; itr = itr.next) {
                 set(move itr.k, move itr.v);
             }

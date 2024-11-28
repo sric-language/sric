@@ -5,7 +5,8 @@
 var p: Int             //value type
 var p: refable Int;    //referable value type
 var p: own* Int;       //ownership pointer
-var p: * Int;          //non-owning pointer
+var p: ref* Int;       //non-owning pointer
+var p: * Int;          //instant pointer
 var p: raw* Int;       //unsafe raw pointer
 ```
 
@@ -36,7 +37,7 @@ var c = a.copy();
 Dereference raw pointer in unsafe block
 
 ```
-var p: *Int;
+var p: raw* Int;
 ...
 unsafe {
     var i = *p;

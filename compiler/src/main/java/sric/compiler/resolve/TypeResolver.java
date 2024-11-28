@@ -101,7 +101,7 @@ public abstract class TypeResolver  extends CompilePass {
                 //type.resolvedAlias = gpd.bound;
             }
             else if (type.id.resolvedDef instanceof TypeAlias ta) {
-                type.id.resolvedDef = ta.type.id.resolvedDef;
+                //type.id.resolvedDef = ta.type.id.resolvedDef;
                 type.id.resolvedType = Type.metaType(type.loc, type);
                 type.resolvedAlias = ta.type;
             }

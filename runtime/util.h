@@ -74,7 +74,7 @@ namespace sric {
 
 	template<typename T>
 	int compare(const T* a, const T* b) {
-		return a->compare(RefPtr<T>(const_cast<T*>(b)));
+		return a->compare(b);
 	}
 
 	template<typename T>
@@ -85,6 +85,16 @@ namespace sric {
 	template<typename T>
 	int compare(const int* a, const int* b) {
 		return *a - *b;
+	}
+
+	template<typename T>
+	const T* addressOf(const T& b) {
+		return &b;
+	}
+
+	template<typename T>
+	T* addressOf(T& b) {
+		return &b;
 	}
 }
 //

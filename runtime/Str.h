@@ -14,6 +14,15 @@ public:
     String(const char* c) : str(c) {}
     String(const std::string& c) : str(c) {}
 
+    String(String&& other) {
+        str.swap(other.str);
+    }
+
+    String& operator=(String&& other) {
+        str.swap(other.str);
+        return *this;
+    }
+
     const std::string& cpp_str() const {
         return str;
     }
@@ -37,22 +46,22 @@ public:
     }
 
     int hashCode() const;
-    int compare(const RefPtr<String> other) const;
+    int compare(const String* other) const;
 
-    bool iequals(RefPtr<String> other) const;
-    bool contains(RefPtr<String> s) const;
-    bool startsWith(RefPtr<String> s) const;
-    bool endsWith(RefPtr<String> s) const;
-    int find(RefPtr<String> s, int start = 0) const;
+    bool iequals(const String* other) const;
+    bool contains(const String* s) const;
+    bool startsWith(const String* s) const;
+    bool endsWith(const String* s) const;
+    int find(const String* s, int start = 0) const;
 
-    String& operator+(RefPtr<String> other) {
+    String& operator+(const String* other) {
         plus(other);
     }
-    String& plus(RefPtr<String> other);
+    String& plus(const String* other);
     void add(const char* cstr);
 
-    void replace(RefPtr<String> src, RefPtr<String> dst);
-    DArray<String> split(RefPtr<String> sep) const;
+    void replace(const String* src, const String* dst);
+    DArray<String> split(const String* sep) const;
     String substr(int pos, int len = -1) const;
 
     void trimEnd();

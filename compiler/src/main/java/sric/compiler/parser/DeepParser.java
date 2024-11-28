@@ -369,12 +369,12 @@ public class DeepParser extends Parser {
                 Loc loc2 = cur.loc;
                 c.caseExpr = expr();
                 consume(TokenKind.colon);
+                c.block = switchBlock();
                 if (curt == TokenKind.fallthroughKeyword) {
                     c.fallthrough = true;
                     consume();
                     consume(TokenKind.semicolon);
                 }
-                c.block = switchBlock();
                 endLoc(c, loc2);
                 stmt.cases.add(c);
             } else if (curt == TokenKind.defaultKeyword) {

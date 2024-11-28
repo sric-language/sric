@@ -36,7 +36,7 @@ fun testPtr() {
         printf("%d\n", p.i);
     }
 
-    var rp: * A = p!;
+    var rp: ref* A = p!;
     p = null;
     //printf("%d\n", rp.i);
 }
@@ -47,7 +47,7 @@ fun testShare() {
 }
 
 fun testNullable() {
-    var p: *? A = null;
+    var p: ref*? A = null;
     var i = p.i;
 }
 

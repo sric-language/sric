@@ -3,10 +3,46 @@
 #include "common.h"
 #include <thread>
 
+#if defined(_WIN32)
+#include <Windows.h>
+#define cf_compareAndSwap(ptr, old, newv) (InterlockedCompareExchange((LPLONG)ptr, newv, old) == old)
+#elif defined(__IOS__)
+#include <libkern/OSAtomic.h>
+#define cf_compareAndSwap(ptr, old, newv) OSAtomicCompareAndSwapInt(old, newv, ptr)
+#else
+#define cf_compareAndSwap(ptr, old, newv) __sync_bool_compare_and_swap(ptr, old, newv)
+#endif
+
 namespace sric
 {
+/**
+ * fetch new value and increase
+ */
+inline int increase(volatile int* i) {
+    int n, n2;
+    do {
+        n = *i;
+        n2 = n + 1;
+    } while (!cf_compareAndSwap(i, n, n2));
+    return n2;
+}
+
+/**
+ * fetch new value and decrease
+ */
+inline int decrease(volatile int* i) {
+    int n, n2;
+    do {
+        n = *i;
+        n2 = n - 1;
+    } while (!cf_compareAndSwap(i, n, n2));
+    return n2;
+}
+
+#define SC_REFCOUNT_INVALID 1000000
+
 std::mutex traceLock;
-#ifdef GP_USE_REF_TRACE
+#ifdef SC_USE_REF_TRACE
 void* trackRef(HeapRefable* ref);
 void untrackRef(HeapRefable* ref);
 #endif
@@ -20,21 +56,13 @@ uint32_t generateCheckCode() {
 }
 
 HeapRefable::HeapRefable() :
-    _refCount(1), _isUnique(true), _weakRefBlock(NULL)
+    _refCount(1), _isUnique(true), _dataSize(0), _weakRefBlock(NULL), freeMemory(0)
 {
     _checkCode = generateCheckCode();
-#ifdef GP_USE_REF_TRACE
+#ifdef SC_USE_REF_TRACE
     trackRef(this);
 #endif
 }
-
-//HeapRefable::HeapRefable(const HeapRefable& copy) :
-//    _refCount(1)
-//{
-//#ifdef GP_USE_REF_TRACE
-//    trackRef(this);
-//#endif
-//}
 
 HeapRefable::~HeapRefable()
 {
@@ -42,8 +70,8 @@ HeapRefable::~HeapRefable()
         sc_assert(_refCount == 0, "ref count error");
     }
     _checkCode = 0;
-    _refCount = 1000000;
-#ifdef GP_USE_REF_TRACE
+    _refCount = SC_REFCOUNT_INVALID;
+#ifdef SC_USE_REF_TRACE
     untrackRef(this);
 #endif
 }
@@ -51,8 +79,8 @@ HeapRefable::~HeapRefable()
 void HeapRefable::addRef()
 {
     _isUnique = false;
-    sc_assert(_refCount > 0 && _refCount < 1000000, "ref count error");
-    ++_refCount;
+    sc_assert(_refCount > 0 && _refCount < SC_REFCOUNT_INVALID, "ref count error");
+    increase(&_refCount);
 }
 
 void HeapRefable::disposeWeakRef() {
@@ -76,8 +104,8 @@ bool HeapRefable::release()
         return true;
     }
 
-    sc_assert(_refCount > 0 && _refCount < 1000000, "ref count error");
-    if ((--_refCount) <= 0)
+    sc_assert(_refCount > 0 && _refCount < SC_REFCOUNT_INVALID, "ref count error");
+    if (decrease(&_refCount) <= 0)
     {
         disposeWeakRef();
         //delete this;
@@ -113,18 +141,18 @@ WeakRefBlock::WeakRefBlock() : _weakRefCount(0), _pointer(NULL) {
 }
 WeakRefBlock::~WeakRefBlock() {
     sc_assert(_weakRefCount == 0, "ref count error");
-    _weakRefCount = 1000000;
+    _weakRefCount = SC_REFCOUNT_INVALID;
     _pointer = NULL;
 }
 
 void WeakRefBlock::addRef() {
-    sc_assert(_weakRefCount < 1000000, "ref count error");
-    ++_weakRefCount;
+    sc_assert(_weakRefCount < SC_REFCOUNT_INVALID, "ref count error");
+    increase(&_weakRefCount);
 }
 
 void WeakRefBlock::release() {
-    sc_assert(_weakRefCount > 0 && _weakRefCount < 1000000, "ref count error");
-    if ((--_weakRefCount) <= 0)
+    sc_assert(_weakRefCount > 0 && _weakRefCount < SC_REFCOUNT_INVALID, "ref count error");
+    if (decrease(&_weakRefCount) <= 0)
     {
         std::lock_guard<std::mutex> guard(traceLock);
         if (!_pointer) {
@@ -144,7 +172,7 @@ HeapRefable* WeakRefBlock::lock() {
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef GP_USE_REF_TRACE
+#ifdef SC_USE_REF_TRACE
 
 HeapRefable* __refAllocations = 0;
 int __refAllocationCount = 0;

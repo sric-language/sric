@@ -78,7 +78,7 @@ public class Main {
         }
         
         if ( !compile(sourcePath, libPath, recursion)) {
-            System.out.println("ERROR");
+            System.err.println("Compile Fail");
         }
     }
     
@@ -103,7 +103,7 @@ public class Main {
                         continue;
                     }
                     if (!compile(sourcePath2, libPath, recursion)) {
-                        System.out.println("ERROR");
+                        System.err.println("Compile Fail: "+sourcePath2);
                         return false;
                     }
                 }

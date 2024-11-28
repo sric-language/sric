@@ -14,8 +14,8 @@ struct A$<T : NT$<T>> {
     }
 }
 
-fun gf$<T>(v: T): T {
-    return v;
+fun gf$<T>(v: mut T): T {
+    return move v;
 }
 
 fun main()

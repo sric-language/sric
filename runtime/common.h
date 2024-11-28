@@ -23,8 +23,8 @@ namespace sric
     public:
         Noncopyable() = default;
     protected:
-        Noncopyable(const Noncopyable&) = default;
-        Noncopyable& operator=(const Noncopyable&) = default;
+        Noncopyable(const Noncopyable&) = delete;
+        Noncopyable& operator=(const Noncopyable&) = delete;
     };
 
 }

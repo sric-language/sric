@@ -191,7 +191,7 @@ public class ScLibGenerator extends BaseGenerator {
         }
         
         if (v.uninit) {
-            print(" = uninit;");
+            print(" = uninit");
         }
         
         if (v.initExpr != null) {
@@ -538,6 +538,7 @@ public class ScLibGenerator extends BaseGenerator {
         }
         else if (v instanceof Expr.NonNullableExpr e) {
             this.visit(e.operand);
+            print("!");
         }
         else {
             err("Unkown expr:"+v, v.loc);

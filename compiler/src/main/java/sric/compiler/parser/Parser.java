@@ -853,14 +853,14 @@ public class Parser {
             case rawKeyword:
                 consume();
                 return pointerType(Type.PointerAttr.raw);
-//            case refKeyword:
-//                consume();
-//                return pointerType(Type.PointerAttr.ref);
+            case refKeyword:
+                consume();
+                return pointerType(Type.PointerAttr.ref);
 //            case weakKeyword:
 //                consume();
 //                return pointerType(Type.PointerAttr.weak);
             case star:
-                return pointerType(Type.PointerAttr.ref);
+                return pointerType(Type.PointerAttr.inst);
             case constKeyword:
                 return imutableType();
             case mutKeyword:

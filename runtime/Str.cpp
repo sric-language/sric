@@ -14,11 +14,11 @@ int String::hashCode() const {
     return hash_fn(cpp_str());
 }
 
-int String::compare(const RefPtr<String> other) const {
+int String::compare(const String* other) const {
     return strcmp(c_str(), other->c_str());
 }
 
-int String::find(RefPtr<String> s, int start) const {
+int String::find(const String* s, int start) const {
     auto it = str.find(s->str, start);
     if (it == std::string::npos) {
         return -1;
@@ -26,7 +26,7 @@ int String::find(RefPtr<String> s, int start) const {
     return it;
 }
 
-bool String::iequals(RefPtr<String> other) const {
+bool String::iequals(const String* other) const {
     size_t sz = this->size();
     if (other->size() != sz)
         return false;
@@ -36,17 +36,17 @@ bool String::iequals(RefPtr<String> other) const {
     return true;
 }
 
-bool String::contains(RefPtr<String> s) const {
+bool String::contains(const String* s) const {
     return strstr(this->c_str(), s->c_str()) != NULL;
 }
-bool String::startsWith(RefPtr<String> s) const {
+bool String::startsWith(const String* s) const {
     return strstr(this->c_str(), s->c_str()) == this->c_str();
 }
-bool String::endsWith(RefPtr<String> s) const {
+bool String::endsWith(const String* s) const {
     return (this->cpp_str()).rfind(s->cpp_str()) == (this->size() - s->size());
 }
 
-void String::replace(RefPtr<String> src, RefPtr<String> dst) {
+void String::replace(const String* src, const String* dst) {
     if (strcmp(src->c_str(), dst->c_str()) == 0) {
         return;
     }
@@ -64,16 +64,16 @@ void String::replace(RefPtr<String> src, RefPtr<String> dst) {
     }
 }
 
-DArray<String> String::split(RefPtr<String> sep) const {
+DArray<String> String::split(const String* sep) const {
     DArray<String> tokens;
     if (this->size() == 0)
         return tokens;
     std::size_t start = 0, end = 0;
     while ((end = find(sep, start)) != std::string::npos) {
-        tokens.add(substr(start, end - start));
+        tokens.add(&substr(start, end - start));
         start = end + 1;
     }
-    tokens.add(substr(start));
+    tokens.add(&substr(start));
     return tokens;
 }
 
@@ -81,7 +81,7 @@ String String::substr(int pos, int len) const {
     return str.substr(pos, len);
 }
 
-String& String::plus(RefPtr<String> other) {
+String& String::plus(const String* other) {
     str += other->str;
     return *this;
 }

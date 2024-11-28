@@ -62,7 +62,7 @@ public class CppGenerator extends BaseGenerator {
     }
     
     private void printCommentInclude(TopLevelDef type) {
-        if (((type.flags & FConst.Extern) != 0 || (type.flags & FConst.ExternC) != 0 )&& type.comment != null) {
+        if (type.isExtern() && type.comment != null) {
             for (Comment comment : type.comment.comments) {
                if (comment.content.startsWith("#")) {
                    print(comment.content);
@@ -121,6 +121,9 @@ public class CppGenerator extends BaseGenerator {
             
             /////////////////////////////////////////////////////////////
             for (FileUnit funit : module.fileUnits) {
+                for (TypeAlias type : funit.typeAlias) {
+                    printCommentInclude(type);
+                }
                 for (TypeDef type : funit.typeDefs) {
                     printCommentInclude(type);
                 }
@@ -243,7 +246,7 @@ public class CppGenerator extends BaseGenerator {
                 print("comment.type = ").print(c.type == TokenKind.cmdComment ? "0" : "1").print(";");
                 print("comment.content = "); printStringLiteral(c.content); print(";");
                 
-                print(varName).print(".comments.add(comment);}");
+                print(varName).print(".comments.add(&comment);}");
                 this.newLine();
             }
         }
@@ -255,7 +258,7 @@ public class CppGenerator extends BaseGenerator {
         print("param.name = \"").print(f.name).print("\";");
         print("param.fieldType = ");printStringLiteral(f.fieldType.toString());print(";");
         print("param.hasDefaultValue = ").print(f.initExpr == null ? "0" : "1").print(";");
-        print(parentName).print(".params.add(param);");
+        print(parentName).print(".params.add(&param);");
         print("}");
         this.newLine();
     }
@@ -292,7 +295,7 @@ public class CppGenerator extends BaseGenerator {
         
         print("f.enumValue = ").print(""+f._enumValue).print(";").newLine();
         
-        print(parentName).print(".fields.add(f);").newLine();
+        print(parentName).print(".fields.add(&f);").newLine();
         
         this.unindent();
         print("}");
@@ -362,7 +365,7 @@ public class CppGenerator extends BaseGenerator {
             }
         }
         
-        print(parentName).print(".funcs.add(f);");
+        print(parentName).print(".funcs.add(&f);");
 
         this.unindent();
         newLine();
@@ -473,9 +476,11 @@ public class CppGenerator extends BaseGenerator {
             if (type.id.resolvedDef instanceof GenericParamDef) {
                 //ok
             }
-            else {
-                printType(type.resolvedAlias, isRoot);
-                return;
+            else if (type.id.resolvedDef instanceof TypeAlias ta) {
+                if (!ta.isExtern()) {
+                    printType(type.resolvedAlias, isRoot);
+                    return;
+                }
             }
         }
         
@@ -518,7 +523,7 @@ public class CppGenerator extends BaseGenerator {
                 break;
             case Buildin.pointerTypeName:
                 PointerInfo pt = (PointerInfo)type.detail;
-                if (pt.pointerAttr == Type.PointerAttr.raw) {
+                if (pt.pointerAttr == Type.PointerAttr.raw || pt.pointerAttr == Type.PointerAttr.inst) {
                     printType(type.genericArgs.get(0), false);
                     
                     print("*");
@@ -634,6 +639,9 @@ public class CppGenerator extends BaseGenerator {
     
     @Override
     public void visitTypeAlias(AstNode.TypeAlias v) {
+        if (v.isExtern()) {
+            return;
+        }
         print("typedef ");
         printType(v.type);
         print(" ");
@@ -862,7 +870,7 @@ public class CppGenerator extends BaseGenerator {
     
     @Override
     public void visitFunc(AstNode.FuncDef v) {
-        if ((v.flags & FConst.ExternC) != 0 || (v.flags & FConst.Extern) != 0) {
+        if (v.isExtern()) {
             return;
         }
         if (isEntryPoint(v) && headMode) {
@@ -914,7 +922,7 @@ public class CppGenerator extends BaseGenerator {
 
     @Override
     public void visitTypeDef(TypeDef v) {
-        if ((v.flags & FConst.ExternC) != 0 || (v.flags & FConst.Extern) != 0) {
+        if (v.isExtern()) {
             return;
         }
         
@@ -1172,20 +1180,22 @@ public class CppGenerator extends BaseGenerator {
 
     @Override
     public void visitExpr(Expr v) {
-        boolean parentheses = true;
+        int parentheses = 0;
         if (v.isStmt || v instanceof IdExpr || v instanceof LiteralExpr || v instanceof CallExpr || v instanceof GenericInstance 
                 || v instanceof AccessExpr || v instanceof NonNullableExpr || v instanceof WithBlockExpr || v instanceof ArrayBlockExpr) {
-            parentheses = false;
+            
         }
         else {
             print("(");
+            parentheses++;
         }
         
-        boolean convertParentheses = false;
         if (v.implicitTypeConvertTo != null && !v.implicitTypeConvertTo.isVarArgType()) {
+            boolean ok = false;
             if (v.implicitStringConvert) {
                 print("sric::strStatic(");
-                convertParentheses = true;
+                parentheses++;
+                ok = true;
             }
             else if (v.isPointerConvert) {
                 if (v.resolvedType.detail instanceof Type.PointerInfo p1 && v.implicitTypeConvertTo.detail instanceof Type.PointerInfo p2) {
@@ -1193,22 +1203,31 @@ public class CppGenerator extends BaseGenerator {
                         print("sric::RefPtr<");
                         printType(v.implicitTypeConvertTo.genericArgs.get(0));
                         print(" >(");
-                        convertParentheses = true;
+                        parentheses++;
+                        ok = true;
                     }
-                    else if (p1.pointerAttr == Type.PointerAttr.raw && p2.pointerAttr == Type.PointerAttr.ref) {
-                        print("sric::RefPtr<");
-                        printType(v.implicitTypeConvertTo.genericArgs.get(0));
-                        print(" >(");
-                        convertParentheses = true;
-                    }
+//                    else if (p1.pointerAttr == Type.PointerAttr.raw && p2.pointerAttr == Type.PointerAttr.ref) {
+//                        print("sric::RefPtr<");
+//                        printType(v.implicitTypeConvertTo.genericArgs.get(0));
+//                        print(" >(");
+//                        convertParentheses = true;
+//                    }
                 }
             }
             
-            if (!convertParentheses) {
+            if (!ok) {
                 print("(");
                 printType(v.implicitTypeConvertTo);
                 print(")");
             }
+        }
+
+        if (v.implicitDereference) {
+            print("*");
+        }
+        if (v.implicitGetAddress) {
+            print("sric::addressOf(");
+            parentheses++;
         }
         
         if (v instanceof IdExpr e) {
@@ -1339,12 +1358,9 @@ public class CppGenerator extends BaseGenerator {
             err("Unkown expr:"+v, v.loc);
         }
         
-        if (convertParentheses) {
+        while (parentheses > 0) {
             print(")");
-        }
-        
-        if (parentheses) {
-            print(")");
+            --parentheses;
         }
     }
 
@@ -1423,15 +1439,7 @@ public class CppGenerator extends BaseGenerator {
             }
         }
         else {
-            if (e._refSafeCheck) {
-                this.visit(e.lhs);
-                print(" ");
-                print(e.opToken.symbol);
-                print(" refSafeCheck(");
-                this.visit(e.rhs);
-                print(")");
-            }
-            else if (e.resolvedOperator !=  null) {
+            if (e.resolvedOperator !=  null) {
                 this.visit(e.lhs);
                 print(".").print(e.resolvedOperator.name).print("(");
                 this.visit(e.rhs);
@@ -1470,10 +1478,17 @@ public class CppGenerator extends BaseGenerator {
     
     void printLiteral(LiteralExpr e) {
         if (e.value == null) {
-            if (e.nullPtrType != null) {
-                print("sric::OwnPtr<");
-                printType(e.nullPtrType.genericArgs.get(0));
-                print(">()");
+            if (e.nullPtrType != null && e.nullPtrType.detail instanceof PointerInfo pinfo) {
+                if (pinfo.pointerAttr == Type.PointerAttr.own) {
+                    print("sric::OwnPtr<");
+                    printType(e.nullPtrType.genericArgs.get(0));
+                    print(">()");
+                }
+                else if (pinfo.pointerAttr == Type.PointerAttr.ref) {
+                    print("sric::RefPtr<");
+                    printType(e.nullPtrType.genericArgs.get(0));
+                    print(">()");
+                }
             }
             else {
                 print("nullptr");
