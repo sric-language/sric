@@ -151,6 +151,11 @@ public class ErrorChecker extends CompilePass {
                 target.implicitGetAddress = true;
                 from = Type.pointerType(loc, from, Type.PointerAttr.ref, false);
             }
+            else if (target instanceof AccessExpr aexpr && aexpr.target.resolvedType.isOwnOrRefPointerType() && pinfo.pointerAttr == Type.PointerAttr.ref) {
+                //target.implicitGetAddress = true;
+                aexpr._addressOf = true;
+                from = Type.pointerType(loc, from, Type.PointerAttr.ref, false);
+            }
             else if (pinfo.pointerAttr == Type.PointerAttr.inst) {
                 target.implicitGetAddress = true;
                 from = Type.pointerType(loc, from, Type.PointerAttr.inst, false);

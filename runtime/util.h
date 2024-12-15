@@ -96,6 +96,7 @@ namespace sric {
 	T* addressOf(T& b) {
 		return &b;
 	}
+
 }
 //
 //inline bool isNull(void* p) {

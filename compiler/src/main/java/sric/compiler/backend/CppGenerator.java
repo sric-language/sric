@@ -1234,30 +1234,50 @@ public class CppGenerator extends BaseGenerator {
             this.printIdExpr(e);
         }
         else if (v instanceof AccessExpr e) {
-            boolean isNullable = false;
-            if (e.target.resolvedType != null && e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
-                if (pinfo.isNullable) {
-                    print("nonNullable(");
-                    isNullable = true;
-                }
-            }
-            this.visit(e.target);
-            if (isNullable) {
+            if (e._addressOf && e.target.resolvedType != null && e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
+                print("sric::RefPtr<");
+                this.printType(e.resolvedType);
+                print(">(");
+                this.visit(e.target);
+                print(",");
+                
+//                print("0");
+                print("(int)&(((");
+                this.printType(e.target.resolvedType.genericArgs.get(0));
+                print("*)0)->");
+                print(e.name);
+                print(")");
+                
                 print(")");
             }
-            if (e.target instanceof IdExpr ide && ide.name.equals(TokenKind.superKeyword.symbol)) {
-                print("::");
-            }
-            else if (e.target.resolvedType != null && e.target.resolvedType.isPointerType()) {
-                print("->");
-            }
-            else if (e.target.resolvedType != null && e.target.resolvedType.isRefable) {
-                print("->");
-            }
             else {
-                print(".");
+                boolean isNullable = false;
+                if (e.target.resolvedType != null && e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
+                    if (pinfo.isNullable) {
+                        print("nonNullable(");
+                        isNullable = true;
+                    }
+                }
+
+                this.visit(e.target);
+                if (isNullable) {
+                    print(")");
+                }
+
+                if (e.target instanceof IdExpr ide && ide.name.equals(TokenKind.superKeyword.symbol)) {
+                    print("::");
+                }
+                else if (e.target.resolvedType != null && e.target.resolvedType.isPointerType()) {
+                    print("->");
+                }
+                else if (e.target.resolvedType != null && e.target.resolvedType.isRefable) {
+                    print("->");
+                }
+                else {
+                    print(".");
+                }
+                print(e.name);
             }
-            print(e.name);
         }
         else if (v instanceof LiteralExpr e) {
             printLiteral(e);
@@ -1280,6 +1300,7 @@ public class CppGenerator extends BaseGenerator {
         }
         else if (v instanceof UnaryExpr e) {
             if (e.opToken == TokenKind.amp) {
+                if (!e._addressOfField) {
                 //if (e._isRawAddressOf) {
                     print("&");
                     this.visit(e.operand);
@@ -1289,6 +1310,10 @@ public class CppGenerator extends BaseGenerator {
 //                    this.visit(e.operand);
 //                    print(")");
 //                }
+                }
+                else {
+                    this.visit(e.operand);
+                }
             }
             else if (e.opToken == TokenKind.moveKeyword) {
                 print("std::move(");

@@ -33,6 +33,12 @@ struct StackRefable {
 
     StackRefable& operator=(const T& v) {
         value = v;
+        return *this;
+    }
+
+    StackRefable& operator=(T&& v) {
+        value = std::move(v);
+        return *this;
     }
 
     T* operator->() const { return &value; }
@@ -70,15 +76,18 @@ private:
         sc_assert(pointer != nullptr, "try access null pointer");
         switch (type) {
         case RefType::HeapRef : {
-            sc_assert(checkCode == getRefable(pointer)->_checkCode, "try access invalid pointer");
+            T* first = (T*)(((char*)pointer) - offset);
+            HeapRefable* refable = getRefable(first);
+            sc_assert(checkCode == refable->_checkCode, "try access invalid pointer");
             break;
         }
         case RefType::StackRef: {
+            T* first = (T*)(((char*)pointer) - offset);
             if (alignof(T) <= 4) {
-                sc_assert(checkCode == *(((int32_t*)pointer) - 1), "try access invalid pointer");
+                sc_assert(checkCode == *(((int32_t*)first) - 1), "try access invalid pointer");
             }
             else {
-                sc_assert(checkCode == *(((int64_t*)pointer) - 1), "try access invalid pointer");
+                sc_assert(checkCode == *(((int64_t*)first) - 1), "try access invalid pointer");
             }
             break;
         }
@@ -107,7 +116,7 @@ public:
     }
 
     template <class U>
-    RefPtr(const OwnPtr<U>& p) {
+    RefPtr(const OwnPtr<U>& p) : offset(0) {
         if (p.isNull()) {
             pointer = nullptr;
             type = RefType::RawRef;
@@ -121,7 +130,20 @@ public:
     }
 
     template <class U>
+    RefPtr(const OwnPtr<U>& p, uint32_t offset) : offset(offset), type(RefType::HeapRef) {
+        sc_assert(p.get(), "try access null pointer");
+
+        pointer = (T*)((char*)p.get() + offset);
+        checkCode = getRefable(p.get())->_checkCode;
+    }
+
+    template <class U>
     RefPtr(RefPtr<U>& p) : pointer(p.pointer), checkCode(p.checkCode), offset(p.offset), type(p.type) {
+    }
+
+    template <class U>
+    RefPtr(RefPtr<U>& p, uint32_t offset) : checkCode(p.checkCode), offset(p.offset + offset), type(p.type) {
+        pointer = (T*)((char*)p.pointer + offset);
     }
 
     T* operator->() const {

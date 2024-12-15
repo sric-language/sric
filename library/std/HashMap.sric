@@ -12,7 +12,7 @@ private struct MapEntryList$<K, V> {
 
 struct HashMap$<K, V> {
     private var table: DArray$<MapEntryList$<K,V>> = DArray$<MapEntryList$<K,V>>{ .resize(4); };
-    var defValue: V;
+    var defValue: refable V;
     private var length: Int = 0;
     
     private fun constGetEntryList(k: raw* const K) const : ref* const MapEntryList$<K,V> {
@@ -27,7 +27,7 @@ struct HashMap$<K, V> {
         return table.getRef(h);
     }
 
-    fun constGet(k: K): raw* const V {
+    fun constGet(k: K): ref* const V {
         var list = constGetEntryList(&k);
         for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
             if (compare$<K>(&itr.k, &k) == 0) {
@@ -37,7 +37,7 @@ struct HashMap$<K, V> {
         return &defValue;
     }
 
-    fun get(k: K): raw* V {
+    fun get(k: K): ref* V {
         var list = getEntryList(&k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(&itr.k, &k) == 0) {
@@ -95,7 +95,7 @@ struct HashMap$<K, V> {
         return false;
     }
     
-    fun eachWhile(f: fun(v:raw* const V, k:raw* const K):Bool) const {
+    fun eachWhile(f: fun(v:* const V, k:* const K):Bool) const {
         for (var i = 0; i<table.size(); ++i) {
             var list = table.constGetRef(i);
             for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {

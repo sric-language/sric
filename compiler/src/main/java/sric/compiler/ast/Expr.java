@@ -30,6 +30,8 @@ public abstract class Expr extends AstNode {
     public static class UnaryExpr extends Expr {
         public Token.TokenKind opToken;   // operator token type (Token.bang, etc)
         public Expr operand;    // operand expression
+        
+        public boolean _addressOfField = false;
                 
         public UnaryExpr(TokenKind tok, Expr operand) {
             this.opToken = tok;
@@ -146,6 +148,8 @@ public abstract class Expr extends AstNode {
         public String name;
         public AstNode resolvedDef;
         public Token.TokenKind opToken;
+        
+        public boolean _addressOf = false;
     }
     
     public static class IfExpr extends Expr {
