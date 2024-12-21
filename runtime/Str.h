@@ -15,11 +15,11 @@ public:
     String(const std::string& c) : str(c) {}
 
     String(String&& other) {
-        str.swap(other.str);
+        str = std::move(other.str);
     }
 
     String& operator=(String&& other) {
-        str.swap(other.str);
+        str = std::move(other.str);
         return *this;
     }
 
