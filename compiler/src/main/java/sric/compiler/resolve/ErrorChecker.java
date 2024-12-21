@@ -151,7 +151,9 @@ public class ErrorChecker extends CompilePass {
                 target.implicitGetAddress = true;
                 from = Type.pointerType(loc, from, Type.PointerAttr.ref, false);
             }
-            else if (target instanceof AccessExpr aexpr && aexpr.target.resolvedType.isOwnOrRefPointerType() && pinfo.pointerAttr == Type.PointerAttr.ref) {
+            else if (target instanceof AccessExpr aexpr && 
+                    (aexpr.target.resolvedType.isOwnOrRefPointerType() || aexpr.target.resolvedType.isRefable) && 
+                    pinfo.pointerAttr == Type.PointerAttr.ref) {
                 //target.implicitGetAddress = true;
                 aexpr._addressOf = true;
                 from = Type.pointerType(loc, from, Type.PointerAttr.ref, false);
@@ -212,6 +214,9 @@ public class ErrorChecker extends CompilePass {
         }
         
         if (!from.equals(to)) {
+            if (target instanceof WithBlockExpr wbe) {
+                wbe._storeVar = null;
+            }
             target.implicitTypeConvertTo = to;
         }
     }

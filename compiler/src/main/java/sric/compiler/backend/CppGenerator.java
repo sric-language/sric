@@ -731,7 +731,11 @@ public class CppGenerator extends BaseGenerator {
         }
         
         if (init && v.initExpr != null) {
-            if (v.initExpr instanceof Expr.WithBlockExpr || v.initExpr instanceof Expr.ArrayBlockExpr) {
+            if (v.initExpr instanceof Expr.WithBlockExpr wbe && wbe._storeVar != null) {
+                print(" ");
+                this.visit(v.initExpr);
+            }
+            else if (v.initExpr instanceof Expr.ArrayBlockExpr) {
                 print(" ");
                 this.visit(v.initExpr);
             }
@@ -1234,21 +1238,42 @@ public class CppGenerator extends BaseGenerator {
             this.printIdExpr(e);
         }
         else if (v instanceof AccessExpr e) {
-            if (e._addressOf && e.target.resolvedType != null && e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
-                print("sric::RefPtr<");
-                this.printType(e.resolvedType);
-                print(">(");
-                this.visit(e.target);
-                print(",");
-                
-//                print("0");
-                print("(int)&(((");
-                this.printType(e.target.resolvedType.genericArgs.get(0));
-                print("*)0)->");
-                print(e.name);
-                print(")");
-                
-                print(")");
+            if (e._addressOf && e.target.resolvedType != null) {
+                if (e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
+                    print("sric::RefPtr<");
+                    this.printType(e.resolvedType);
+                    print(">(");
+                    this.visit(e.target);
+                    print(",");
+
+    //                print("0");
+                    print("(int)&(((");
+                    this.printType(e.target.resolvedType.genericArgs.get(0));
+                    print("*)0)->");
+                    print(e.name);
+                    print(")");
+
+                    print(")");
+                }
+                else {
+                    print("sric::RefPtr<");
+                    this.printType(e.resolvedType);
+                    print(">(&");
+                    this.visit(e.target);
+                    print(",");
+
+    //                print("0");
+                    print("(int)&(((");
+                    boolean isRefable = e.target.resolvedType.isRefable;
+                    e.target.resolvedType.isRefable = false;
+                    this.printType(e.target.resolvedType);
+                    e.target.resolvedType.isRefable = isRefable;
+                    print("*)0)->");
+                    print(e.name);
+                    print(")");
+
+                    print(")");
+                }
             }
             else {
                 boolean isNullable = false;
@@ -1607,6 +1632,10 @@ public class CppGenerator extends BaseGenerator {
             printItBlockArgs(e, e._storeVar.name);
         }
         else if (targetId != null) {
+            if (e._isType) {
+                this.visit(e.target);
+                print("();");
+            }
             printItBlockArgs(e, targetId);
         }
         else if (e.target.isResolved()) {

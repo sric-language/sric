@@ -3,6 +3,7 @@ import sric::*;
 
 struct A {
     var i: Int = 1;
+    var k: Int = 2;
 
     operator fun compare(b: * A) : Int {
         return i - b.i;
@@ -19,7 +20,14 @@ fun testA(a: * A) {
 
 fun testDerivativePtr() {
     var p: own*? A = alloc$<A>();
-    var p2: ref* Int = &p.i;
+    var p2: ref* Int = &p.k;
+
+    printf("%d\n", *p2);
+}
+
+fun testDerivativeRefable() {
+    var a: refable A = A{};
+    var p2: ref* Int = a.k;
 
     printf("%d\n", *p2);
 }

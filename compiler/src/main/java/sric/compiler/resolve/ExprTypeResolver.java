@@ -591,6 +591,11 @@ public class ExprTypeResolver extends TypeResolver {
                             aexpr._addressOf = true;
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
                         }
+                        else if (e.operand instanceof AccessExpr aexpr && aexpr.target.resolvedType.isRefable) {
+                            e._addressOfField = true;
+                            aexpr._addressOf = true;
+                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                        }
                         else {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.inst, false);
                         }
