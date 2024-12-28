@@ -130,10 +130,9 @@ public:
     }
 
     template <class U>
-    RefPtr(const OwnPtr<U>& p, uint32_t offset) : offset(offset), type(RefType::HeapRef) {
+    RefPtr(const OwnPtr<U>& p, T* ptr) : pointer(ptr), type(RefType::HeapRef) {
         sc_assert(p.get(), "try access null pointer");
-
-        pointer = (T*)((char*)p.get() + offset);
+        offset = (char*)ptr - (char*)p.get();
         checkCode = getRefable(p.get())->_checkCode;
     }
 
@@ -142,8 +141,8 @@ public:
     }
 
     template <class U>
-    RefPtr(RefPtr<U>& p, uint32_t offset) : checkCode(p.checkCode), offset(p.offset + offset), type(p.type) {
-        pointer = (T*)((char*)p.pointer + offset);
+    RefPtr(RefPtr<U>& p, T* ptr) : checkCode(p.checkCode), pointer(ptr), type(p.type) {
+        offset = (char*)ptr - (char*)p.get();
     }
 
     T* operator->() const {

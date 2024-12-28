@@ -1246,12 +1246,10 @@ public class CppGenerator extends BaseGenerator {
                     this.visit(e.target);
                     print(",");
 
-    //                print("0");
-                    print("(int)&(((");
-                    this.printType(e.target.resolvedType.genericArgs.get(0));
-                    print("*)0)->");
+                    print("&");
+                    this.visit(e.target);
+                    print("->");
                     print(e.name);
-                    print(")");
 
                     print(")");
                 }
@@ -1262,15 +1260,10 @@ public class CppGenerator extends BaseGenerator {
                     this.visit(e.target);
                     print(",");
 
-    //                print("0");
-                    print("(int)&(((");
-                    boolean isRefable = e.target.resolvedType.isRefable;
-                    e.target.resolvedType.isRefable = false;
-                    this.printType(e.target.resolvedType);
-                    e.target.resolvedType.isRefable = isRefable;
-                    print("*)0)->");
+                    print("&");
+                    this.visit(e.target);
+                    print("->");
                     print(e.name);
-                    print(")");
 
                     print(")");
                 }
