@@ -374,7 +374,7 @@ public class Tokenizer {
             consume();
         }
 
-        return new Token(TokenKind.intLiteral, val);
+        return new Token(TokenKind.intLiteral, Long.valueOf(val));
     }
 
 //////////////////////////////////////////////////////////////////////////
@@ -522,7 +522,7 @@ public class Tokenizer {
         }
         consume();
 
-        return new Token(TokenKind.intLiteral, c);
+        return new Token(TokenKind.intLiteral, Long.valueOf(c));
     }
 
     /**

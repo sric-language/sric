@@ -91,7 +91,10 @@ public class Compiler {
                 throw new RuntimeException("Unknow srcDirs");
             }
             else {
-                srcDirs = new File(propsPath).getParent() + "/" + srcDirs;
+                String parent = new File(propsPath).getParent();
+                if (parent != null) {
+                    srcDirs =  parent + "/" + srcDirs;
+                }
             }
         }
         module.sourcePath = new File(propsPath).getAbsolutePath();
@@ -127,30 +130,25 @@ public class Compiler {
         this.log.removeByFile(file);
         
         AstNode.FileUnit funit = new AstNode.FileUnit(file);
-        DeepParser parser = new DeepParser(log, src, funit);
-        parser.parse();
-        funit.module = module;
-        
-        for (FileUnit f : module.fileUnits) {
-            if (f.file.endsWith(funit.file)) {
-                module.fileUnits.remove(f);
-                break;
-            }
-        }
-        module.fileUnits.add(funit);
-
-//        if (log.printError()) {
-//            return false;
-//        }
         try {
+            DeepParser parser = new DeepParser(log, src, funit);
+            parser.parse();
+            funit.module = module;
+
+            for (FileUnit f : module.fileUnits) {
+                if (f.file.endsWith(funit.file)) {
+                    module.fileUnits.remove(f);
+                    break;
+                }
+            }
+            module.fileUnits.add(funit);
+
+
             typeCheck();
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-//        if (log.printError()) {
-//            return false;
-//        }
 
         return funit;
     }

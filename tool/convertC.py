@@ -16,7 +16,7 @@ install:
 input_file = sys.argv[1]
 
 def onSimpleType(t: Type):
-    mapping = {"int":"Int", "float":"Float32", "double":"Float",  "char":"Int8"}
+    mapping = {"int":"Int", "float":"Float32", "double":"Float",  "char":"Int8", "bool": "Bool"}
     name = t.format()
     name = mapping.get(name, name)
     print(name, end='')
@@ -98,7 +98,7 @@ def onMethod(f: Method):
         onType(f.return_type)
 
 def onClass(c: ClassScope):
-    print("extern struct ", end='')
+    print("extern ", end='')
     onName(c.class_decl.typename)
     print(" {")
 
@@ -126,6 +126,21 @@ data = parse_file(input_file, encoding=None, options=options)
 
 # ddata = dataclasses.asdict(data)
 # json.dump(ddata, sys.stdout, indent=2)
+
+
+for ns in data.namespace.namespaces:
+    namespace = data.namespace.namespaces[ns]
+    for v in namespace.variables:
+        onVar(v)
+        print(";\n")
+
+    for f in namespace.functions:
+        onFunc(f)
+        print(";\n")
+
+    for cs in namespace.classes:
+        onClass(cs)
+        print("\n")
 
 for v in data.namespace.variables:
     onVar(v)
