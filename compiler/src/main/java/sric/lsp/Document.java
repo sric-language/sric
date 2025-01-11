@@ -46,10 +46,13 @@ public class Document {
     }
     
     private AstNode getAstNodeAt(Position pos) {
-        AstFinder sta = new AstFinder(null);
+        AstFinder sta = new AstFinder(null, log);
         int index = textBuffer.getPosIndex(pos);
         index--;//before it
-        return sta.findSourceNode(ast, index);
+        AstNode node = sta.findSourceNode(ast, index);
+        
+        log.log("getAstNodeAt: '" + node+ "' at:" + index);
+        return node;
     }
     
     public Location getDefinitionLocation(Position pos) {
@@ -108,14 +111,20 @@ public class Document {
             if ((Character.isAlphabetic(c) || Character.isDigit(c) || c == '_' || c > 256)) {
                 sb.append(c);
             }
+            else if (c == '.' && sb.length() == 0) {
+                //pass
+            }
             else {
+                log.log("find identifier break: '" + c + "' at "+index);
                 break;
             }
+            
             index--;
         }
         
+        sb.reverse();
         String name = sb.toString();
-        log.log("findIdentifier: " + name);
+        log.log("findIdentifier: '" + name+ "' end:" + index);
         return name;
     }
     

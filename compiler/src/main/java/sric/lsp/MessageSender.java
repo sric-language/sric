@@ -7,6 +7,10 @@ import java.util.*;
 
 import com.google.gson.*;
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import sric.compiler.CompilerLog;
 import sric.compiler.CompilerLog.CompilerErr;
 import sric.compiler.ast.Loc;
@@ -29,11 +33,21 @@ public class MessageSender {
     }
 
     public void sendMessage(Object msg) {
-        String message = gson.toJson(msg);
-        String output = String.format("Content-Length: %d\r\n\r\n%s", message.length(), message);        
-        System.out.print(output);
-        System.out.flush();        
-        log.log("Sent: " + output);
+        try {
+            String message = gson.toJson(msg);
+            byte[] buf = message.getBytes("UTF-8");
+            
+            String output = String.format("Content-Length: %d\r\n\r\n", buf.length);
+            System.out.print(output);
+            System.out.write(buf);
+            System.out.flush();
+            
+            log.log("Sent: " + message);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(MessageSender.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MessageSender.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void sendDiagnostics(Workspace workspace, String documentUri) {

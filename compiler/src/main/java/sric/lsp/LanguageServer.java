@@ -25,7 +25,7 @@ public class LanguageServer {
         this.isInitialized = false;
         
         this.gson = new GsonBuilder()
-                //.serializeNulls()
+                .serializeNulls()
                 .create();
         
         this.log = new LspLogger(debug);
@@ -35,30 +35,41 @@ public class LanguageServer {
     }
     
     
-    private String readContents(BufferedReader reader, int contentLength) throws IOException {
-        char[] contents = new char[contentLength];
-        int bytesRead = 0;
-        do {
-            int r = reader.read(contents, bytesRead, contentLength - bytesRead);
-            if(r < 0) {
-                break;
-            }
-            bytesRead += r;
-        } 
-        while(bytesRead < contentLength);
+    private String readContents(BufferedInputStream reader, int contentLength) throws IOException {
+        byte[] contents = new byte[contentLength];
+        reader.read(contents);
         
-        String raw = new String(contents);
+        String raw = new String(contents, 0, contentLength, "UTF-8");
         return raw;
     }
     
+    public String readLine(BufferedInputStream reader, int maxLength) throws IOException {
+        byte[] data = new byte[maxLength];
+        int size = 0;
+        while (true) {
+            int c = reader.read();
+            if (c == -1) break;
+            if (c == '\r') {
+                //read \n
+                reader.read();
+                break;
+            }
+            data[size] = (byte)c;
+            ++size;
+            if (size == maxLength) {
+                break;
+            }
+        }
+        return new String(data, 0, size, "UTF-8");
+    }
     
     public void start() throws IOException {        
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+        try(BufferedInputStream reader = new BufferedInputStream(System.in)) {
             boolean isRunning = true;
             while(isRunning) {      
                 log.log("Waiting for request...");
                 
-                String line = reader.readLine().trim();
+                String line = readLine(reader, 4096).trim();
                 log.log("Received line: " + line);
                 
                 final String prefix = "Content-Length: ";
@@ -74,7 +85,7 @@ public class LanguageServer {
                 }
                 
                 
-                final String emptyLine = reader.readLine().trim();
+                final String emptyLine = readLine(reader, 4096).trim();
                 if(!emptyLine.equals("")) {
                     log.log("Received an invalid message format 'Missing new line'");
                     break;    

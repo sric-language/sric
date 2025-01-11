@@ -20,9 +20,11 @@ public class AstFinder extends CompilePass {
 
     private int pos;
     private AstNode found;
+    private LspLogger lspLog;
 
-    public AstFinder(CompilerLog log) {
+    public AstFinder(CompilerLog log, LspLogger lspLog) {
         super(log);
+        this.lspLog = lspLog;
     }
     
     public AstNode findSourceNode(FileUnit file, int pos) {
@@ -49,6 +51,7 @@ public class AstFinder extends CompilePass {
 
     @Override
     public void visitField(AstNode.FieldDef v) {
+        //lspLog.log("visitField: '" + v.name+ "' pos:" + v.loc + ", offset:" + v.loc.offset + ", len:"+v.len);
         if (isContains(v)) {
             found = v;
             visitType(v.fieldType);
@@ -58,6 +61,7 @@ public class AstFinder extends CompilePass {
     boolean visitType(Type type) {
         if (type == null) 
             return false;
+        
         if (isContains(type)) {
             found = type;
             if (type.genericArgs != null) {
