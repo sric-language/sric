@@ -1,6 +1,6 @@
 
 
-externc fun printf(format: raw*const Int8, args: ...): Int;
+externc fun printf(format: *const Int8, args: ...): Int;
 
 extern fun alloc$<T>(): own* T;
 
@@ -10,15 +10,15 @@ extern struct WeakPtr$<T> {
 }
 
 
-extern fun share$<T>(p: raw* own* T): own* T;
+extern fun share$<T>(p: * own* T): own* T;
 
-extern unsafe fun rawToOwn$<T>(p: raw* T): own* T;
+extern unsafe fun rawToOwn$<T>(p: * T): own* T;
 
 extern fun refToOwn$<T>(p: * T): own*? T;
 
-extern unsafe fun rawToRef$<T>(p: raw* T): * T;
+extern unsafe fun rawToRef$<T>(p: * T): * T;
 
-extern fun hashCode$<T>(p: raw* const T): UInt32;
-extern fun compare$<T>(a: raw* const T, b: raw* const T): Int;
+extern fun hashCode$<T>(p: * const T): UInt32;
+extern fun compare$<T>(a: * const T, b: * const T): Int;
 
-extern fun init$<T>(p: raw* Void, freeMemory: fun(p: raw* Void)): own* T;
+extern fun init$<T>(p: * Void, freeMemory: fun(p: raw* Void)): own* T;

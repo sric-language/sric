@@ -339,6 +339,34 @@ public class AstNode {
             return (postFlags & FConst.Const) != 0;
         }
         
+        public boolean match(FuncPrototype p) {
+            if (!this.returnType.equals(p.returnType)) {
+                return false;
+            }
+            if (this.postFlags != p.postFlags) {
+                return false;
+            }
+            if (this.paramDefs == null && p.paramDefs != null) {
+                return false;
+            }
+            if (this.paramDefs != null && p.paramDefs == null) {
+                return false;
+            }
+            if (this.paramDefs != null && p.paramDefs != null) {
+                if (this.paramDefs.size() != p.paramDefs.size()) {
+                    return false;
+                }
+                for (int i = 0; i< this.paramDefs.size(); ++i) {
+                    if (this.paramDefs.get(i).fieldType != null && p.paramDefs.get(i).fieldType != null) {
+                        if (!this.paramDefs.get(i).fieldType.equals(p.paramDefs.get(i).fieldType)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        
         @java.lang.Override
         public String toString() {
             StringBuilder sb = new StringBuilder();

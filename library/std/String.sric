@@ -18,7 +18,7 @@ extern noncopyable struct String {
     fun substr(pos:Int, len:Int = -1): String;
 
     operator fun plus(other: * String) : String;
-    fun add(cstr: raw*const Int8);
+    fun add(cstr: *const Int8);
 
     fun trimEnd();
     fun trimStart();
@@ -44,8 +44,8 @@ extern noncopyable struct String {
     /**
     * 'printf' style format
     */
-    extern static fun format(format: raw*const Int8, args: ...): String;
+    extern static fun format(format: *const Int8, args: ...): String;
 }
 
 
-extern fun asStr(cstr: raw*const Int8): String;
+extern fun asStr(cstr: *const Int8): String;

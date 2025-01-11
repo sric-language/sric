@@ -43,7 +43,7 @@ public class Scope extends AstNode {
         if (nodes == null) {
             return null;
         }
-        if (nodes.size() > 1) {
+        if (log != null && nodes.size() > 1) {
             log.err("Duplicate definition: " + name + " at " + nodes.get(0).loc + "," + nodes.get(1).loc, loc);
         }
         return nodes.get(0);

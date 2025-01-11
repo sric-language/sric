@@ -255,11 +255,24 @@ public class ExprTypeResolver extends TypeResolver {
                 }
                 
                 for (FuncDef f : v.funcDefs) {
-                    if ((f.flags & FConst.Static) != 0 || (f.flags | FConst.Override) != 0) {
+                    if ((f.flags & FConst.Static) != 0) {
                         continue;
                     }
                     if (inhScopes.contains(f.name)) {
-                        err("Func name is already exsits"+f.name, f.loc);
+                        if ((f.flags | FConst.Override) != 0) {
+                            AstNode old = inhScopes.get(f.name, v.loc, null);
+                            if (old instanceof FuncDef oldF) {
+                                if (!oldF.prototype.match(f.prototype)) {
+                                    err("Invalide override", f.loc);
+                                }
+                            }
+                            else {
+                                err("Invalide override", f.loc);
+                            }
+                        }
+                        else {
+                            err("Expected override keyword"+f.name, f.loc);
+                        }
                     }
                 }
             }

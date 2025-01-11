@@ -27,6 +27,7 @@ public class ErrorChecker extends CompilePass {
     private int inUnsafe = 0;
     private FileUnit curUnit = null;
     private WithBlockExpr curItBlock = null;
+    private boolean hasReturn = false;
     
     public ErrorChecker(CompilerLog log, SModule module) {
         super(log);
@@ -408,7 +409,13 @@ public class ErrorChecker extends CompilePass {
             if ((v.flags & FConst.Unsafe) != 0) {
                 ++inUnsafe;
             }
+            hasReturn = false;
             this.visit(v.code);
+            
+            if (!hasReturn && v.prototype.returnType != null && !v.prototype.returnType.isVoid()) {
+                err("Expect return value", v.loc);
+            }
+            
             if ((v.flags & FConst.Unsafe) != 0) {
                 --inUnsafe;
             }
@@ -543,6 +550,8 @@ public class ErrorChecker extends CompilePass {
             }
             if (rets.expr != null) {
                 this.visit(rets.expr);
+                
+                hasReturn = true;
                 
                 if (rets._funcReturnType.isVoid()) {
                     err("Invalid return", rets.loc);

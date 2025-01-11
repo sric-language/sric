@@ -492,7 +492,7 @@ public class Type extends AstNode {
         Type type = intType(loc);
         ((NumInfo)type.detail).size = 8;
         type.isImmutable = true;
-        return pointerType(loc, type, PointerAttr.raw, false);
+        return pointerType(loc, type, PointerAttr.inst, false);
     }
     
     public static Type nullType(Loc loc) {
