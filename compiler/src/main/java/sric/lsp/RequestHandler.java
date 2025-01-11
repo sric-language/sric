@@ -107,7 +107,10 @@ public class RequestHandler {
         Document doc = this.workspace.getDocument(params.textDocument.uri);
         List<DocumentSymbol> symbols = Collections.emptyList();
         if(doc != null) {
-            symbols = doc.getSymbols();
+            List<DocumentSymbol> symbols_ = doc.getSymbols();
+            if (symbols_ != null) {
+                symbols = symbols_;
+            }
         }
         
         RpcResponse resp = new RpcResponse();

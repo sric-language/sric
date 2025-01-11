@@ -1604,33 +1604,39 @@ public class CppGenerator extends BaseGenerator {
 //            return;
 //        }
         
-        String targetId = null;
-        if (e.target instanceof Expr.IdExpr id) {
-            if (id.namespace == null) {
-                targetId = id.name;
-            }
-        }
+//        String targetId = null;
+//        if (e.target instanceof Expr.IdExpr id) {
+//            if (id.namespace == null) {
+//                targetId = id.name;
+//            }
+//        }
 
+        /*var x = a { ... };
+            =>
+                x = a; { a.xxx = x; }
+                x = {};
+                x; { a.xxx = x; }
+        */
         if (e._storeVar != null && e._storeVar.isLocalVar) {
             if (!e._isType) {
                 print(" = ");
                 this.visit(e.target);
             }
             else if (e.block.stmts.size() == 0) {
-                print(" = {}");
+                //print(" = {}");
                 return;
             }
             print(";");
             
             printItBlockArgs(e, e._storeVar.name);
         }
-        else if (targetId != null) {
-            if (e._isType) {
-                this.visit(e.target);
-                print("();");
-            }
-            printItBlockArgs(e, targetId);
-        }
+//        else if (targetId != null) {
+//            if (e._isType) {
+//                this.visit(e.target);
+//                print("();");
+//            }
+//            printItBlockArgs(e, targetId);
+//        }
         else if (e.target.isResolved()) {
             if (e._storeVar != null) {
                 if (e.block.stmts.size() == 0) {
@@ -1639,16 +1645,16 @@ public class CppGenerator extends BaseGenerator {
                 }
                 print(" = ");
             }
-            //[&]()->T{ T __t = alloc(); __t.name =1; return __t; }()
+            //[&]()->T{ T __t = target(); __t.name =1; return __t; }()
             print("[&]()->");
             printType(e.resolvedType);
             print("{");
             
             printType(e.resolvedType);
-            print(" __t = ");
-            this.visit(e.target);
-            if (e._isType) {
-                print("()");
+            print(" __t");
+            if (!e._isType) {
+                print(" = ");
+                this.visit(e.target);
             }
             print(";");
             

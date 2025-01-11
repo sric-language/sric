@@ -11,7 +11,6 @@
 
 #include <stdio.h>
 
-using namespace sric;
 
 #ifndef _WIN32
 
@@ -29,7 +28,7 @@ using namespace sric;
   #include <sys/time.h>
   #include <sys/sysctl.h>
 
-  int64_t nanoTicks(void) {
+  int64_t sric::nanoTicks(void) {
     //            clock_serv_t cclock;
     //            mach_timespec_t mts;
     //
@@ -59,7 +58,7 @@ using namespace sric;
   #include <sys/timeb.h>
   #include <sys/time.h>
 
-  int64_t nanoTicks(void) {
+  int64_t sric::nanoTicks(void) {
     //  return clock() / (CLOCKS_PER_SECOND * 1000);
     struct timespec ts;
     static time_t startTime;
@@ -77,7 +76,7 @@ using namespace sric;
   }
 #endif
 
-int64_t currentTimeMillis() {
+int64_t sric::currentTimeMillis() {
   //        struct timeb val;
   //        ftime(&val);
   //        return val.time * (int64_t)1000+ val.millitm;
@@ -96,7 +95,7 @@ int64_t currentTimeMillis() {
 #include <time.h>
 #pragma comment(lib, "winmm.lib ")
 
-int64_t nanoTicks() {
+int64_t sric::nanoTicks() {
   /*
    LARGE_INTEGER m_nBeginTime;
    LARGE_INTEGER m_nFreq;
@@ -108,7 +107,7 @@ int64_t nanoTicks() {
   return t * 1000000L;
 }
 
-int64_t currentTimeMillis() {
+int64_t sric::currentTimeMillis() {
     struct timeval tv;
     time_t clock;
     struct tm tm;
@@ -138,11 +137,11 @@ int64_t currentTimeMillis() {
   #include <time.h>
   #include <unistd.h>
 
-  void sleep(MillisTime millitm) {
+  void sric::sleep(MillisTime millitm) {
     usleep(millitm * 1000);
   }
 
-  bool getSelfPath(char *selfname) {
+  bool sric::getSelfPath(char *selfname) {
     const char *sysfile = "/proc/self/exe";
     int  namelen = 256;
     //memset(selfname, 0, 256);
@@ -159,11 +158,11 @@ int64_t currentTimeMillis() {
 
 #include <Windows.h>
 
-  void sleep(MillisTime millitm) {
+  void sric::sleep(MillisTime millitm) {
     Sleep(millitm);
   }
 
-  bool getSelfPath(char *selfname) {
+  bool sric::getSelfPath(char *selfname) {
     //TCHAR szFileName[MAX_PATH];
     GetModuleFileNameA(NULL,selfname,MAX_PATH);
     return true;
@@ -173,7 +172,7 @@ int64_t currentTimeMillis() {
 
 #include <thread>
 
-uint64_t currentThreadId() {
+uint64_t sric::currentThreadId() {
 #ifdef _WIN32
   //unsigned long GetCurrentThreadId(void);
   return GetCurrentThreadId();
