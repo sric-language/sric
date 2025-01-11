@@ -22,7 +22,7 @@ public abstract class Expr extends AstNode {
     public boolean implicitStringConvert = false;
     public boolean implicitDereference = false;
     public boolean implicitGetAddress = false;
-    
+        
     public boolean isResolved() {
         return resolvedType != null;
     }

@@ -84,7 +84,14 @@ public class LanguageServer {
                 final String raw = readContents(reader, contentLength);
                 log.log("Received message: '" + raw + "'");                
                 
-                final RpcRequest msg = gson.fromJson(raw, RpcRequest.class);
+                RpcRequest msg;
+                try {
+                    msg = gson.fromJson(raw, RpcRequest.class);
+                }
+                catch (Exception e) {
+                    log.log("Parse message error: "+raw);
+                    continue;
+                }
                 switch(msg.method) {
                     case "initialize": {
                         InitializationParams init = gson.fromJson(msg.params, InitializationParams.class);

@@ -56,6 +56,9 @@ public class TypeCheckTest {
             sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file.getPath(), libPath);
             compiler.genCode = false;
             boolean res = compiler.run();
+            if (!res) {
+                System.err.println("ERROR:"+file);
+            }
             assertTrue(res);
             
             ByteArrayOutputStream stream = new ByteArrayOutputStream();

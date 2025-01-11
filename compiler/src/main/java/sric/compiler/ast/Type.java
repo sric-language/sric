@@ -678,6 +678,11 @@ public class Type extends AstNode {
         Type type = new Type(loc, "*");
         type.genericArgs = new ArrayList<>();
         type.genericArgs.add(this.genericArgs.get(0));
+        
+        type.resolvedAlias = this.resolvedAlias;
+        type.explicitImmutable = this.explicitImmutable;
+        type.isImmutable = this.isImmutable;
+        
         PointerInfo info = new PointerInfo();
         info.pointerAttr = ((PointerInfo)this.detail).pointerAttr;
         info.isNullable = false;
@@ -699,6 +704,26 @@ public class Type extends AstNode {
         type.explicitImmutable = this.explicitImmutable;
         type.isImmutable = true;
         type.detail = this.detail;
+        return type;
+    }
+    
+    public Type toRawPointer() {
+        if (!(this.detail instanceof PointerInfo)) {
+            return null;
+        }
+        
+        //shadow copy
+        Type type = new Type(this.id);
+        type.genericArgs = this.genericArgs;
+        type.resolvedAlias = this.resolvedAlias;
+        type.explicitImmutable = this.explicitImmutable;
+        type.isImmutable = this.isImmutable;
+        
+        PointerInfo info = new PointerInfo();
+        info.pointerAttr = PointerAttr.raw;
+        info.isNullable = ((PointerInfo)this.detail).isNullable;
+        type.detail = info;
+        
         return type;
     }
 }

@@ -1,5 +1,5 @@
 
-externc fun printf(format: raw*const Int8, args: ...): Int;
+externc fun printf(format: *const Int8, args: ...): Int;
 
 fun foo(a: fun(a:Int, b:Int):Int) {
     var r = a(1, 2);

@@ -185,6 +185,11 @@ public class ExprTypeResolver extends TypeResolver {
             else {
                 //Type inference
                 v.fieldType = v.initExpr.resolvedType;
+                if (v.fieldType.detail instanceof Type.PointerInfo pinfo) {
+                    if (pinfo.pointerAttr == Type.PointerAttr.inst) {
+                        v.fieldType = v.fieldType.toRawPointer();
+                    }
+                }
             }
         }
         

@@ -1604,12 +1604,12 @@ public class CppGenerator extends BaseGenerator {
 //            return;
 //        }
         
-//        String targetId = null;
-//        if (e.target instanceof Expr.IdExpr id) {
-//            if (id.namespace == null) {
-//                targetId = id.name;
-//            }
-//        }
+        String targetId = null;
+        if (e.target instanceof Expr.IdExpr id) {
+            if (id.namespace == null) {
+                targetId = id.name;
+            }
+        }
 
         /*var x = a { ... };
             =>
@@ -1630,13 +1630,14 @@ public class CppGenerator extends BaseGenerator {
             
             printItBlockArgs(e, e._storeVar.name);
         }
-//        else if (targetId != null) {
+        //a { ... }
+        else if (targetId != null && e.isStmt && !e._isType) {
 //            if (e._isType) {
 //                this.visit(e.target);
 //                print("();");
 //            }
-//            printItBlockArgs(e, targetId);
-//        }
+            printItBlockArgs(e, targetId);
+        }
         else if (e.target.isResolved()) {
             if (e._storeVar != null) {
                 if (e.block.stmts.size() == 0) {
