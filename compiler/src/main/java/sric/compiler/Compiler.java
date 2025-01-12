@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import sric.compiler.ast.AstNode;
 import sric.compiler.ast.AstNode.FileUnit;
+import sric.compiler.ast.Loc;
 import sric.compiler.ast.SModule;
 import sric.compiler.ast.SModule.Depend;
 import sric.compiler.backend.CppGenerator;
@@ -153,7 +154,7 @@ public class Compiler {
         return funit;
     }
     
-    public SModule importModule(String moduleName, String version) {
+    public SModule importModule(String moduleName, String version, Loc loc) {
         String libFile = libPath + "/" + moduleName;
         try {
             Compiler compiler = Compiler.fromProps(libFile+".meta", libPath, libFile+".sric");
@@ -162,9 +163,9 @@ public class Compiler {
             compiler.run();
             return compiler.module;
             
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException("Load lib fail:"+libFile+".meta");
+        } catch (Exception ex) {
+            log.err("Load lib fail:"+libFile+".meta", loc);
+            return null;
         }
     }
     
@@ -172,9 +173,9 @@ public class Compiler {
         TopLevelTypeResolver slotResolver = new TopLevelTypeResolver(log, module, this);
         slotResolver.run();
         
-        if (log.hasError()) {
-            return;
-        }
+//        if (log.hasError()) {
+//            return;
+//        }
         
         ExprTypeResolver exprResolver = new ExprTypeResolver(log, module);
         exprResolver.run();
@@ -182,9 +183,6 @@ public class Compiler {
         ErrorChecker errorChecker = new ErrorChecker(log, module);
         errorChecker.run();
         
-        if (log.hasError()) {
-            return;
-        }
     }
     
     public AstNode.FileUnit parse(File file) throws IOException {

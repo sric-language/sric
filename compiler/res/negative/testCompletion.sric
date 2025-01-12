@@ -1,0 +1,9 @@
+
+struct A {
+    var i : Int = 0;
+}
+
+fun main() {
+    var a: A = A{};
+    a.
+}

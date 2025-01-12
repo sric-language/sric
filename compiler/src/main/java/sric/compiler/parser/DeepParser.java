@@ -385,7 +385,8 @@ public class DeepParser extends Parser {
                 consume(TokenKind.colon);
                 stmt.defaultBlock = switchBlock();
             } else {
-                throw err("Expected case or default statement");
+                err("Expected case or default statement");
+                consume();
             }
         }
         consume(TokenKind.rbrace);
@@ -781,7 +782,7 @@ public class DeepParser extends Parser {
         // if it looks like it was expected to be a type we can
         // provide a more meaningful error
         if (curt == TokenKind.pound) {
-            throw err("Unknown type '"+name+"' for type literal" + loc);
+            err("Unknown type '"+name+"' for type literal" + loc);
         }
 
         AccessExpr expr = new AccessExpr();
@@ -1019,10 +1020,14 @@ public class DeepParser extends Parser {
         }
 
         if (cur.kind.keyword) {
-            throw err("Expected expression, not keyword '" + cur + "'");
+            err("Expected expression, not keyword '" + cur + "'");
         } else {
-            throw err("Expected expression, not '" + cur + "'");
+            err("Expected expression, not '" + cur + "'");
         }
+        
+        IdExpr id = new IdExpr("");
+        endLoc(expr, loc);
+        return id;
     }
 
 //////////////////////////////////////////////////////////////////////////

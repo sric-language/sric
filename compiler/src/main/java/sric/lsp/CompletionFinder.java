@@ -11,6 +11,7 @@ import sric.compiler.ast.AstNode.FieldDef;
 import sric.compiler.ast.AstNode.FileUnit;
 import sric.compiler.ast.Buildin;
 import sric.compiler.ast.Expr;
+import sric.compiler.ast.Expr.AccessExpr;
 import sric.compiler.ast.Expr.IdExpr;
 import sric.compiler.ast.Scope;
 import sric.compiler.ast.Type;
@@ -25,12 +26,23 @@ public class CompletionFinder {
     private ArrayList<AstNode> defs = new ArrayList<AstNode>();
     private AstNode target;
     private String text;
+    private LspLogger log;
+    
+    public CompletionFinder(LspLogger log) {
+        this.log = log;
+    }
 
     public ArrayList<AstNode> findSugs(FileUnit funit, AstNode node, String text) {
         defs.clear();
         this.target = node;
         this.text = text;
         
+        //'abc.'
+        if (node instanceof AccessExpr aexpr) {
+            if (aexpr.name.equals("")) {
+                this.target = aexpr.target;
+            }
+        }
         
         if (this.target instanceof Expr e) {
             AstNode resolvedDef = null;
@@ -49,7 +61,7 @@ public class CompletionFinder {
             if (resolvedDef == null) {
                 resolvedDef = ErrorChecker.idResolvedDef(e);
             }
-            
+
             if (resolvedDef != null) {
                 if (resolvedDef instanceof AstNode.TypeDef t) {
                     Scope scope = t.getScope(null);

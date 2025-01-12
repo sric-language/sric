@@ -100,6 +100,11 @@ public class RequestHandler {
         RpcResponse resp = new RpcResponse();
         resp.id = rpc.id;
         resp.result = location;
+        
+        if (location == null) {
+            this.sender.sendMessage(resp, true);
+            return;
+        }
         this.sender.sendMessage(resp);
     }
     

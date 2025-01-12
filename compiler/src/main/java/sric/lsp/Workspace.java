@@ -43,7 +43,8 @@ public class Workspace {
         try {
             return new File(URI.create(docUri)).getCanonicalPath();
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            ex.printStackTrace();
+            return docUri;
         }
     }
     
@@ -81,7 +82,7 @@ public class Workspace {
             String latestDocumentUri = canonicalPath(document.uri);
             sric.compiler.Compiler unit = build(latestDocumentUri, false);
             this.documents.put(latestDocumentUri, new Document(document, this.log, unit, latestDocumentUri));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.log("ERROR:"+ex.getMessage());
         }
     }
@@ -117,7 +118,7 @@ public class Workspace {
             }
             build(latestDocumentUri, true);
             log.log("Saving: " + params.textDocument.uri);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.log("ERROR:"+ex.getMessage());
         }
     }

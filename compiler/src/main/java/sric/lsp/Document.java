@@ -94,7 +94,7 @@ public class Document {
         
         AstNode node = getAstNodeAt(pos);
 
-        CompletionFinder database = new CompletionFinder();
+        CompletionFinder database = new CompletionFinder(log);
         int index = textBuffer.getPosIndex(pos);
         String fields = findIdentifier(index);
         ArrayList<AstNode> refs = database.findSugs(funit, node, fields);
@@ -110,9 +110,6 @@ public class Document {
 
             if ((Character.isAlphabetic(c) || Character.isDigit(c) || c == '_' || c > 256)) {
                 sb.append(c);
-            }
-            else if (c == '.' && sb.length() == 0) {
-                //pass
             }
             else {
                 log.log("find identifier break: '" + c + "' at "+index);

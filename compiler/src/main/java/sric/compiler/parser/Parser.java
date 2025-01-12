@@ -60,7 +60,10 @@ public class Parser {
                 if (defNode != null) {
                     unit.addDef(defNode);
                 }
-            } catch (CompilerErr e) {
+                else {
+                    consume();
+                }
+            } catch (Exception e) {
                 if (!recoverToDef()) {
                     break;
                 }
@@ -164,7 +167,8 @@ public class Parser {
             case typealiasKeyword:
                 return parseTypeAlias(doc, flags);
         }
-        throw err("Expected var,const,fun keyword");
+        err("Expected var,const,fun keyword");
+        return null;
     }
     
     private AstNode slotDef(Comments doc) {
@@ -189,7 +193,8 @@ public class Parser {
                 return fieldDef(loc, doc, flags, null, sname);
             }
         }
-        throw err("Expected var,const,fun keyword");
+        err("Expected var,const,fun keyword");
+        return null;
     }
             
     /**
@@ -252,7 +257,8 @@ public class Parser {
                     consume();
                     break;
                 } else {
-                    throw err("Error token: " + curt);
+                    err("Error token: " + curt);
+                    consume();
                 }
             }
             return gparams;
@@ -362,6 +368,10 @@ public class Parser {
                     break;
                 }
                 AstNode slot = slotDef(sdoc);
+                if (slot == null) {
+                    consume();
+                    continue;
+                }
                 if (isMixin) {
                     if (slot instanceof FuncDef) {
                         typeDef.addSlot((FuncDef)slot);
@@ -1103,9 +1113,9 @@ public class Parser {
      */
     protected String consumeId() {
         if (curt != TokenKind.identifier) {
-            throw err("Expected identifier, not '"+cur+"'");
+            err("Expected identifier, not '"+cur+"'");
             //consume();
-            //return "";
+            return "";
         }
         return (String) consume().val;
     }
@@ -1115,9 +1125,9 @@ public class Parser {
      * consume it.
      *
      */
-    protected void verify(TokenKind kind) {
+    private void verify(TokenKind kind) {
         if (!curt.equals(kind)) {
-            throw err("Expected '"+kind.symbol+"', not '"+cur+"'");
+            err("Expected '"+kind.symbol+"', not '"+cur+"'");
         }
     }
 

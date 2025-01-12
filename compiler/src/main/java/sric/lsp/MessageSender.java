@@ -25,16 +25,31 @@ import sric.lsp.JsonRpc.*;
 public class MessageSender {
 
     private Gson gson;
+    private Gson gsonNull;
     private LspLogger log;
     
     public MessageSender(Gson gson, LspLogger log) {
         this.gson = gson;
         this.log = log;
+        this.gsonNull = new GsonBuilder()
+                .serializeNulls()
+                .create();
+    }
+    
+    public void sendMessage(Object msg) {
+        sendMessage(msg, false);
     }
 
-    public void sendMessage(Object msg) {
+    public void sendMessage(Object msg, boolean serializeNulls) {
         try {
-            String message = gson.toJson(msg);
+            String message;
+            if (serializeNulls) {
+                message = gsonNull.toJson(msg);
+            }
+            else {
+                message = gson.toJson(msg);
+            }
+            
             byte[] buf = message.getBytes("UTF-8");
             
             String output = String.format("Content-Length: %d\r\n\r\n", buf.length);

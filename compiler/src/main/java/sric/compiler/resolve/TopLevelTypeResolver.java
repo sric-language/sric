@@ -36,7 +36,7 @@ public class TopLevelTypeResolver extends TypeResolver {
             for (Depend d : module.depends) {
                 if (idExpr.name.equals(d.name)) {
                     if (d.cache == null) {
-                        d.cache = compiler.importModule(d.name, d.version);
+                        d.cache = compiler.importModule(d.name, d.version, idExpr.loc);
                     }
                     idExpr.resolvedDef = d.cache;
                     return;

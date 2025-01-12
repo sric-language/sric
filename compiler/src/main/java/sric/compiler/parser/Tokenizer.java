@@ -101,7 +101,7 @@ public class Tokenizer {
             // save current line
             curLine = this.line;
             int col = this.col;
-            int offset = pos;
+            int offset = this.pos;
 
             // find next token
             Token tok;
@@ -110,7 +110,10 @@ public class Tokenizer {
                 if (tok == null) {
                     continue;
                 }
-            } catch (CompilerErr e) {
+            } catch (Exception e) {
+                if (this.pos == offset) {
+                    consume();
+                }
                 continue;
             }
 
@@ -266,7 +269,8 @@ public class Tokenizer {
                 consume();
             }
             if (!Character.isDigit(cur)) {
-                throw err("Expected exponent digits");
+                err("Expected exponent digits");
+                consume();
             }
             while (Character.isDigit(cur) || cur == '_') {
                 consume();
@@ -292,8 +296,9 @@ public class Tokenizer {
             // int literal
             long num = Long.parseLong(str);
             return new Token(TokenKind.intLiteral, num);
-        } catch (CompilerErr e) {
-            throw err("Invalid numeric literal '$str'");
+        } catch (Exception e) {
+            err("Invalid numeric literal '"+str+"'");
+            return new Token(TokenKind.intLiteral, 0);
         }
     }
 
@@ -353,7 +358,7 @@ public class Tokenizer {
         // read first hex
         int val = fromDigit(cur);
         if (val == -1) {
-            throw err("Expecting hex number");
+            err("Expecting hex number");
         }
         consume();
         int nibCount = 1;
@@ -368,7 +373,7 @@ public class Tokenizer {
             }
             nibCount++;
             if (nibCount > 16) {
-                throw err("Hex literal too big");
+                err("Hex literal too big");
             }
             val = (val << 4) + nib;
             consume();
@@ -408,7 +413,9 @@ public class Tokenizer {
             // loop until we find end of string
             while (true) {
                 if (cur == 0) {
-                    throw err("Unexpected end of $q");
+                    err("Unexpected end of $q");
+                    consume();
+                    continue;
                 }
 
                 if (endOfQuoted(triple)) {
@@ -518,7 +525,7 @@ public class Tokenizer {
 
         // expecting ' quote
         if (cur != '\'') {
-            throw err("Expecting ' close of char literal");
+            err("Expecting ' close of char literal");
         }
         consume();
 
@@ -532,7 +539,7 @@ public class Tokenizer {
     int escape() {
         // consume slash
         if (cur != '\\') {
-            throw err("Internal error");
+            err("Internal error");
         }
         consume();
 
@@ -578,10 +585,11 @@ public class Tokenizer {
           int n2 = fromDigit(cur); consume();
           int n1 = fromDigit(cur); consume();
           int n0 = fromDigit(cur); consume();
-          if (n3 == -1 || n2 == -1 || n1 == -1 || n0 == -1) throw err("Invalid hex value for \\uxxxx");
+          if (n3 == -1 || n2 == -1 || n1 == -1 || n0 == -1) err("Invalid hex value for \\uxxxx");
           return (n3 << 12) | (n2 << 8) | (n1 << 4) | n0;
         }
-        throw err("Invalid escape sequence");
+        err("Invalid escape sequence");
+        return 0;
     }
 
 //////////////////////////////////////////////////////////////////////////
@@ -685,7 +693,8 @@ public class Tokenizer {
         consume();
         switch (c) {
             case '\r':
-                throw err("Carriage return \\r not allowed in source");
+                err("Carriage return \\r not allowed in source");
+                return null;
             case '!':
                 if (cur == '=') {
                     consume();
@@ -856,7 +865,8 @@ public class Tokenizer {
             return new Token(TokenKind.eof);
         }
 
-        throw err("Unexpected symbol: " + String.valueOf((char) c));
+        err("Unexpected symbol: " + String.valueOf((char) c));
+        return null;
     }
 
 //////////////////////////////////////////////////////////////////////////

@@ -23,7 +23,7 @@ public class LspLogger {
         }
         catch(Exception e) {
             System.err.println("Unable to create litac log file: " + e);
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -36,7 +36,7 @@ public class LspLogger {
             }
         }
         catch(Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }

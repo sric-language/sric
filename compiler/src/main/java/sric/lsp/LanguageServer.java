@@ -25,7 +25,7 @@ public class LanguageServer {
         this.isInitialized = false;
         
         this.gson = new GsonBuilder()
-                .serializeNulls()
+                //.serializeNulls()
                 .create();
         
         this.log = new LspLogger(debug);
@@ -43,7 +43,7 @@ public class LanguageServer {
         return raw;
     }
     
-    public String readLine(BufferedInputStream reader, int maxLength) throws IOException {
+    private String readLine(BufferedInputStream reader, int maxLength) throws IOException {
         byte[] data = new byte[maxLength];
         int size = 0;
         while (true) {
@@ -63,37 +63,52 @@ public class LanguageServer {
         return new String(data, 0, size, "UTF-8");
     }
     
-    public void start() throws IOException {        
+    private String readRequest(BufferedInputStream reader) throws IOException {
+        String line = readLine(reader, 4096).trim();
+        log.log("Received line: " + line);
+
+        final String prefix = "Content-Length: ";
+        if(!line.startsWith(prefix)) {
+            log.log("Received an invalid message '" + line + "'");
+            return null;
+        }
+
+        final int contentLength = Integer.valueOf(line.substring(prefix.length()));
+        if(contentLength < 0) {
+            log.log("Received an invalid content length '" + contentLength + "'");
+            return null;
+        }
+
+
+        final String emptyLine = readLine(reader, 4096).trim();
+        if(!emptyLine.equals("")) {
+            log.log("Received an invalid message format 'Missing new line'");
+            return null;
+        }
+
+
+        final String raw = readContents(reader, contentLength);
+        log.log("Received message: '" + raw + "'");                
+
+        return raw;
+    }
+    
+    public void start() throws IOException {
+        int errorCount = 0;
         try(BufferedInputStream reader = new BufferedInputStream(System.in)) {
             boolean isRunning = true;
             while(isRunning) {      
                 log.log("Waiting for request...");
                 
-                String line = readLine(reader, 4096).trim();
-                log.log("Received line: " + line);
-                
-                final String prefix = "Content-Length: ";
-                if(!line.startsWith(prefix)) {
-                    log.log("Received an invalid message '" + line + "'");
-                    break;
+                final String raw = readRequest(reader);
+                if (raw == null) {
+                    ++errorCount;
+                    if (errorCount > 10) {
+                        throw new RuntimeException("readRequest error");
+                    }
+                    continue;
                 }
-                
-                final int contentLength = Integer.valueOf(line.substring(prefix.length()));
-                if(contentLength < 0) {
-                    log.log("Received an invalid content length '" + contentLength + "'");
-                    break;
-                }
-                
-                
-                final String emptyLine = readLine(reader, 4096).trim();
-                if(!emptyLine.equals("")) {
-                    log.log("Received an invalid message format 'Missing new line'");
-                    break;    
-                }
-                
-                
-                final String raw = readContents(reader, contentLength);
-                log.log("Received message: '" + raw + "'");                
+                errorCount = 0;
                 
                 RpcRequest msg;
                 try {
@@ -103,6 +118,7 @@ public class LanguageServer {
                     log.log("Parse message error: "+raw);
                     continue;
                 }
+
                 switch(msg.method) {
                     case "initialize": {
                         InitializationParams init = gson.fromJson(msg.params, InitializationParams.class);
