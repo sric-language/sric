@@ -71,6 +71,7 @@ public class Workspace {
             compiler = sric.compiler.Compiler.makeDefault(key, libPath);
         }
         compiler.genCode = false;
+        compiler.print = false;
         compiler.run();
         
         moduleList.put(key, compiler);

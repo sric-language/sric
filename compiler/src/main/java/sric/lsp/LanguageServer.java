@@ -28,7 +28,8 @@ public class LanguageServer {
                 //.serializeNulls()
                 .create();
         
-        this.log = new LspLogger(debug);
+        LspLogger.cur().init(debug);
+        this.log = LspLogger.cur();
         
         this.sender = new MessageSender(this.gson, this.log);
         this.handler = new RequestHandler(new Workspace(libPath, log), sender, this.log);

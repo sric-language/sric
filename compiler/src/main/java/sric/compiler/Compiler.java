@@ -41,6 +41,7 @@ public class Compiler {
     public String libPath;
     
     public boolean genCode = true;
+    public boolean print = true;
     
     public Compiler(SModule module, File sourceDir, String libPath, String outputDir) {
         this.module = module;
@@ -111,13 +112,19 @@ public class Compiler {
             module.fileUnits.add(funit);
         }
         
-        if (log.printError()) {
+        if (log.hasError()) {
+            if (print) {
+                log.printError();
+            }
             return false;
         }
         
         typeCheck();
         
-        if (log.printError()) {
+        if (log.hasError()) {
+            if (print) {
+                log.printError();
+            }
             return false;
         }
 

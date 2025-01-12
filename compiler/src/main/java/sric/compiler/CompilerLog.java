@@ -27,9 +27,10 @@ public class CompilerLog {
     public void removeByFile(String file) {
         for (int i=0; i < errors.size(); ++i) {
             CompilerErr e = errors.get(i);
+            
             if (file.endsWith(e.loc.file)) {
                 errors.remove(i);
-                ++i;
+                --i;
             }
         }
     }

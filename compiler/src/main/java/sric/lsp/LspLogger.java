@@ -13,7 +13,9 @@ public class LspLogger {
     private RandomAccessFile log;
     private boolean enableLog;
     
-    public LspLogger(boolean enableLog) {
+    private static LspLogger instance = new LspLogger();
+    
+    public void init(boolean enableLog) {
         try {
             this.enableLog = enableLog;
             if(enableLog) {
@@ -27,6 +29,9 @@ public class LspLogger {
         }
     }
 
+    public static LspLogger cur() {
+        return instance;
+    }
 
     public void log(String message) {
         try {
