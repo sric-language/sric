@@ -351,7 +351,7 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
-        if (v.code == null) {
+        if (v.code == null && (!module.isImported && !module.scriptMode)) {
             if ((v.flags & (FConst.Abstract|FConst.Virtual|FConst.Extern| FConst.ExternC)) == 0) {
                 if (curStruct != null) {
                     if ((curStruct.flags & (FConst.Abstract|FConst.Virtual|FConst.Extern| FConst.ExternC)) == 0) {

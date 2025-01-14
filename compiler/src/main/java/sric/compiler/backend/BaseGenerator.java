@@ -30,7 +30,7 @@ public class BaseGenerator extends CompilePass {
         this.writer = writer;
     }
     
-        protected void indent()
+    protected void indent()
     {
         indentation++;
     }

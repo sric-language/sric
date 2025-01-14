@@ -13,6 +13,7 @@ import sric.compiler.ast.AstNode.Comment;
 import sric.compiler.ast.AstNode.FieldDef;
 import sric.compiler.ast.AstNode.TopLevelDef;
 import sric.compiler.ast.AstNode.TypeDef;
+import sric.compiler.ast.Buildin;
 import sric.compiler.ast.Expr;
 import sric.compiler.ast.Expr.ClosureExpr;
 import sric.compiler.ast.FConst;
@@ -126,25 +127,84 @@ public class ScLibGenerator extends BaseGenerator {
             return;
         }
         
-//        if (type.isImutable) {
-//            print("const ");
-//        }
-//        
-//        printIdExpr(type.id);
-//        
-//        if (type.genericArgs != null) {
-//            print("$<");
-//            int i = 0;
-//            for (Type t : type.genericArgs) {
-//                if (i > 0) {
-//                    print(", ");
-//                }
-//                printType(t);
-//                ++i;
-//            }
-//            print(">");
-//        }
-        print(type.toString());
+        if (type.isVarArgType()) {
+            print(Buildin.varargTypeName);
+            return;
+        }
+        
+        if (type.isRefable) {
+            print("refable ");
+        }
+        if (type.isImmutable) {
+            print("const ");
+        }
+        else if (type.explicitImmutable) {
+            print("mut ");
+        }
+        
+        if (type.isArray()) {
+            Type.ArrayInfo info = (Type.ArrayInfo)type.detail;
+            print("[");
+            if (info.sizeExpr != null) {
+                visit(info.sizeExpr);
+            }
+            print("]");
+            print(type.genericArgs.get(0).toString());
+            return;
+        }
+        else if (type.isNum()) {
+            Type.NumInfo info = (Type.NumInfo)type.detail;
+            if (info.isUnsigned) {
+                print("U");
+            }
+
+            printIdExpr(type.id);
+
+            if (info.size != 0) {
+                print(""+info.size);
+            }
+            return;
+        }
+        else if (type.isPointerType()) {
+            if (type.isNullType()) {
+                print("null");
+            }
+            else {
+                Type.PointerInfo info = (Type.PointerInfo)type.detail;
+                if (info.pointerAttr != Type.PointerAttr.inst) {
+                    print(info.pointerAttr.toString());
+                }
+                print("*");
+                if (info.isNullable) print("?");
+                print(" ");
+                printType(type.genericArgs.get(0));
+            }
+            return;
+        }
+        else if (type.isFuncType()) {
+            print("fun");
+            printFuncPrototype(((Type.FuncInfo)type.detail).prototype, false, true);
+            return;
+        }
+        else if (type.isMetaType()) {
+            printType(((Type.MetaTypeInfo)type.detail).type);
+            return;
+        }
+        
+        printIdExpr(type.id);
+        
+        if (type.genericArgs != null) {
+            print("$<");
+            int i = 0;
+            for (Type t : type.genericArgs) {
+                if (i > 0) {
+                    print(", ");
+                }
+                printType(t);
+                ++i;
+            }
+            print(">");
+        }
     }
 
     private void printIdExpr(Expr.IdExpr id) {
@@ -170,6 +230,17 @@ public class ScLibGenerator extends BaseGenerator {
 
     @Override
     public void visitUnit(AstNode.FileUnit v) {
+        
+        for (AstNode.Import i : v.imports) {
+            print("import ");
+            printIdExpr(i.id);
+            if (i.star) {
+                print("::*");
+            }
+            print(";");
+            newLine();
+        }
+        newLine();
         v.walkChildren(this);
     }
 

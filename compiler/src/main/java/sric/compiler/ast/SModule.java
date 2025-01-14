@@ -37,6 +37,7 @@ public class SModule extends AstNode {
     
     public String sourcePath;
     public boolean scriptMode = false;
+    public boolean isImported = false;
     
     public FileUnit findFileUnit(String file) {
         for (FileUnit v : fileUnits) {
@@ -79,6 +80,10 @@ public class SModule extends AstNode {
                 depend.version = fs[1];
                 m.depends.add(depend);
             }
+        }
+        
+        if (props.get("sourcePath") != null) {
+            m.isImported = true;
         }
         
         m.metaProps = props;
