@@ -37,19 +37,19 @@ public class Buildin {
         return typeDef;
     }
     
-    private static FuncDef isNullFunc(Scope scope) {
-        FuncDef f = new FuncDef();
-        f.loc = loc;
-        f.name = "isNull";
-        f.prototype.returnType = Type.boolType(loc);
-        f.prototype.paramDefs = new ArrayList<FieldDef>();
-        FieldDef param = new FieldDef("pointer", Type.pointerType(loc, Type.voidType(loc), Type.PointerAttr.raw, true));
-        param.loc = loc;
-        f.prototype.paramDefs.add(param);
-        
-        scope.put(f.name, f);
-        return f;
-    }
+//    private static FuncDef isNullFunc(Scope scope) {
+//        FuncDef f = new FuncDef();
+//        f.loc = loc;
+//        f.name = "isNull";
+//        f.prototype.returnType = Type.boolType(loc);
+//        f.prototype.paramDefs = new ArrayList<FieldDef>();
+//        FieldDef param = new FieldDef("pointer", Type.pointerType(loc, Type.voidType(loc), Type.PointerAttr.raw, true));
+//        param.loc = loc;
+//        f.prototype.paramDefs.add(param);
+//        
+//        scope.put(f.name, f);
+//        return f;
+//    }
     
     private static FuncDef sizeofFunc(Scope scope) {
         FuncDef f = new FuncDef();

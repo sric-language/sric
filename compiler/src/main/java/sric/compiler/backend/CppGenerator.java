@@ -523,7 +523,7 @@ public class CppGenerator extends BaseGenerator {
                 break;
             case Buildin.pointerTypeName:
                 PointerInfo pt = (PointerInfo)type.detail;
-                if (pt.pointerAttr == Type.PointerAttr.raw || pt.pointerAttr == Type.PointerAttr.inst) {
+                if (type.isRawOrInstPointerType()) {
                     printType(type.genericArgs.get(0), false);
                     
                     print("*");
@@ -1418,7 +1418,7 @@ public class CppGenerator extends BaseGenerator {
                         print("nonNullable(");
                     }
                     
-                    if (pinfo.pointerAttr != Type.PointerAttr.raw && targetType.genericArgs != null) {
+                    if (!targetType.isRawOrInstPointerType() && targetType.genericArgs != null) {
                         this.visit(e.lhs);
                         print(".dynamicCastTo<");
                         printType(targetType.genericArgs.get(0));

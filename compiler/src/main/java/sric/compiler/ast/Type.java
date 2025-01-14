@@ -161,6 +161,16 @@ public class Type extends AstNode {
         return false;
     }
     
+    public boolean isRawOrInstPointerType() {
+        if (!isPointerType()) {
+            return false;
+        }
+        if (this.detail instanceof PointerInfo pinfo) {
+            return pinfo.pointerAttr == PointerAttr.raw || pinfo.pointerAttr == PointerAttr.inst;
+        }
+        return false;
+    }
+    
     public boolean isOwnOrRefPointerType() {
         if (!isPointerType()) {
             return false;

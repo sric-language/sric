@@ -90,7 +90,7 @@ public class ExprTypeResolver extends TypeResolver {
                             return;
                         }
                         else {
-                            idExpr.resolvedType = Type.pointerType(idExpr.loc, curStruct.inheritances.get(0), Type.PointerAttr.raw, false);
+                            idExpr.resolvedType = Type.pointerType(idExpr.loc, curStruct.inheritances.get(0), Type.PointerAttr.inst, false);
                             idExpr.resolvedType.isImmutable = (f.flags & FConst.Mutable) == 0;
                         }
                     }
@@ -101,7 +101,7 @@ public class ExprTypeResolver extends TypeResolver {
                         }
                         Type self = new Type(curStruct.loc, curStruct.name);
                         self.id.resolvedDef = curStruct;
-                        idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.raw, false);
+                        idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.inst, false);
                         idExpr.resolvedType.isImmutable = (f.flags & FConst.Mutable) == 0;
                     }
                 }

@@ -129,7 +129,7 @@ public class ErrorChecker extends CompilePass {
                 if (funit.module.name.equals("sric")) {
                     //const char *;
                     if (from.detail instanceof Type.PointerInfo pinfo && from.genericArgs != null) {
-                        if (pinfo.pointerAttr == Type.PointerAttr.raw && from.genericArgs.get(0).detail instanceof Type.NumInfo ninfo) {
+                        if (from.isRawOrInstPointerType() && from.genericArgs.get(0).detail instanceof Type.NumInfo ninfo) {
                             if (ninfo.size == 8) {
                                 target.implicitTypeConvertTo = to;
                                 target.implicitStringConvert = true;
