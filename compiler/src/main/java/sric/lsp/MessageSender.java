@@ -85,7 +85,7 @@ public class MessageSender {
             }
         }
         else {
-            params.diagnostics = Collections.emptyList();
+            params.diagnostics = new ArrayList<>();
         }
         
         RpcNotificationMessage notification = new RpcNotificationMessage();

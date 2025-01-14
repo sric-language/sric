@@ -79,9 +79,12 @@ public class RequestHandler {
     
     public void handleTextDocumentCompletion(RpcRequest rpc, CompletionParams params) {
         Document doc = this.workspace.getDocument(params.textDocument.uri);
-        List<CompletionItem> items = Collections.emptyList();
+        List<CompletionItem> items = null;
         if(doc != null) {
             items = doc.getAutoCompletionList(params.position);
+        }
+        if (items == null) {
+            items = new ArrayList<CompletionItem>();
         }
         
         RpcResponse resp = new RpcResponse();
@@ -110,12 +113,16 @@ public class RequestHandler {
     
     public void handleTextDocumentDocumentSymbol(RpcRequest rpc, DocumentSymbolParams params) {
         Document doc = this.workspace.getDocument(params.textDocument.uri);
-        List<DocumentSymbol> symbols = Collections.emptyList();
+        List<DocumentSymbol> symbols = null;
         if(doc != null) {
             List<DocumentSymbol> symbols_ = doc.getSymbols();
             if (symbols_ != null) {
                 symbols = symbols_;
             }
+        }
+        
+        if (symbols == null) {
+            symbols = new ArrayList<DocumentSymbol>();
         }
         
         RpcResponse resp = new RpcResponse();
@@ -126,9 +133,12 @@ public class RequestHandler {
     
     public void handleTextDocumentReferences(RpcRequest rpc, ReferenceParams params) {
         Document doc = this.workspace.getDocument(params.textDocument.uri);
-        List<Location> items = Collections.emptyList();
+        List<Location> items = null;
         if(doc != null) {
             items = doc.getReferences(params.position);
+        }
+        if (items == null) {
+            items = new ArrayList<Location>();
         }
         
         RpcResponse resp = new RpcResponse();

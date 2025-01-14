@@ -80,7 +80,7 @@ public class Document {
         AstNode node = getAstNodeAt(pos);
         if(node == null) {
             log.log("No source location found");
-            return Collections.emptyList();
+            return new ArrayList<Location>();
         }
         
         ReferenceFinder database = new ReferenceFinder(null);

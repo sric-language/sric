@@ -130,6 +130,20 @@ public class LspUtil {
             }
             item.deprecated = td.isDeprecated();
             name = td.name;
+            if (decl instanceof FuncDef fd) {
+                if (fd.prototype.paramDefs != null) {
+                    name += "(";
+                    int i = 0;
+                    for (FieldDef param : fd.prototype.paramDefs) {
+                        if (i > 0) {
+                            name += ", ";
+                        }
+                        name += param.name;
+                        ++i;
+                    }
+                    name += ")";
+                }
+            }
         }
         else if (decl instanceof LocalDefStmt ld) {
             name = ld.fieldDef.name;
