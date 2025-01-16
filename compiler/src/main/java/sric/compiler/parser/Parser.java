@@ -364,7 +364,7 @@ public class Parser {
             // slots
             while (true) {
                 Comments sdoc = this.doc();
-                if (curt == TokenKind.rbrace) {
+                if (curt == TokenKind.rbrace || curt == TokenKind.eof) {
                     break;
                 }
                 AstNode slot = slotDef(sdoc);

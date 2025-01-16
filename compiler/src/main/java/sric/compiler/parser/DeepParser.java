@@ -39,7 +39,7 @@ public class DeepParser extends Parser {
         Block block = new Block();
         Loc loc = cur.loc;
         consume(TokenKind.lbrace);
-        while (curt != TokenKind.rbrace) {
+        while (curt != TokenKind.rbrace && curt != TokenKind.eof) {
             block.stmts.add(stmt());
         }
         consume(TokenKind.rbrace);

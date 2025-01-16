@@ -522,7 +522,16 @@ public class ErrorChecker extends CompilePass {
         }
         else if (v instanceof Stmt.SwitchStmt switchs) {
             this.visit(switchs.condition);
-            verifyInt(switchs.condition);
+            
+            if (switchs.condition.resolvedType != null) {
+                if (switchs.condition.resolvedType.isInt()) {
+                }
+                else if (switchs.condition.resolvedType.isEnumType()) {
+                }
+                else {
+                    err("Must be Int or Enum type", switchs.condition.loc);
+                }
+            }
             
             for (Stmt.CaseBlock cb : switchs.cases) {
                 this.visit(cb.caseExpr);

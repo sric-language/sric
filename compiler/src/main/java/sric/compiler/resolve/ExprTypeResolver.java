@@ -185,7 +185,7 @@ public class ExprTypeResolver extends TypeResolver {
             else {
                 //Type inference
                 v.fieldType = v.initExpr.resolvedType;
-                if (v.fieldType.detail instanceof Type.PointerInfo pinfo) {
+                if (v.fieldType != null && v.fieldType.detail instanceof Type.PointerInfo pinfo) {
                     if (pinfo.pointerAttr == Type.PointerAttr.inst) {
                         v.fieldType = v.fieldType.toRawPointer();
                     }
@@ -957,6 +957,12 @@ public class ExprTypeResolver extends TypeResolver {
                 case gt:
                 case ltEq:
                 case gtEq:
+                    if (curt == eq || curt == notEq) {
+                        if (e.lhs.resolvedType.isFuncType() && e.rhs.resolvedType.isNullType()) {
+                            e.resolvedType = Type.boolType(e.loc);
+                            break;
+                        }
+                    }
                     if (e.lhs.resolvedType.isNum() && e.rhs.resolvedType.isNum()) {
                         //OK
                     }

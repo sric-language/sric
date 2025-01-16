@@ -231,6 +231,10 @@ public class Type extends AstNode {
             return false;
         }
         
+        if (this.isNullType() && target.isFuncType()) {
+            return true;
+        }
+        
         //pointer fit
         if (this.detail instanceof PointerInfo e && target.detail instanceof PointerInfo a) {
 

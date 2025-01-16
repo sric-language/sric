@@ -413,9 +413,8 @@ public class Tokenizer {
             // loop until we find end of string
             while (true) {
                 if (cur == 0) {
-                    err("Unexpected end of $q");
-                    consume();
-                    continue;
+                    err("Unexpected end of file");
+                    break;
                 }
 
                 if (endOfQuoted(triple)) {

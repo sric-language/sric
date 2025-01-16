@@ -117,7 +117,8 @@ public class Workspace {
             if(params.text != null) {
                 document.setText(params.text);
             }
-            build(latestDocumentUri, true);
+            sric.compiler.Compiler unit = build(latestDocumentUri, true);
+            document.setCompileResult(unit);
             log.log("Saving: " + params.textDocument.uri);
         } catch (Exception ex) {
             log.log("ERROR:"+ex.getMessage());

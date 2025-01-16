@@ -32,6 +32,11 @@ public class Document {
         textBuffer = new DocumentText();
         textBuffer.setText(document.text);
     }
+    
+    public void setCompileResult(sric.compiler.Compiler compiler) {
+        this.compiler = compiler;
+        this.ast = compiler.module.findFileUnit(file);
+    }
 
     public void insert(JsonRpc.Range range, String text) {
         textBuffer.insert(range, text);
