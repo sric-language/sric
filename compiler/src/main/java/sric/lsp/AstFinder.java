@@ -132,6 +132,7 @@ public class AstFinder extends CompilePass {
 
     @Override
     public void visitStmt(Stmt v) {
+//        lspLog.log("visitStmt: '" + v+ "' pos:" + v.loc + ", offset:" + v.loc.offset + ", len:"+v.len);
         if (!isContains(v)) {
             return;
         }
@@ -207,6 +208,7 @@ public class AstFinder extends CompilePass {
 
     @Override
     public void visitExpr(Expr v) {
+//        lspLog.log("visitExpr: '" + v+ "' pos:" + v.loc + ", offset:" + v.loc.offset + ", len:"+v.len);
         if (!isContains(v)) {
             return;
         }

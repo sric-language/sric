@@ -37,10 +37,18 @@ public class CompletionFinder {
         this.target = node;
         this.text = text;
         
+        boolean isNamespace = true;
         //'abc.'
         if (node instanceof AccessExpr aexpr) {
             if (aexpr.name.equals("")) {
                 this.target = aexpr.target;
+            }
+        }
+        //'abc::'
+        else if (node instanceof IdExpr aexpr) {
+            if (aexpr.namespace != null && aexpr.name.equals("")) {
+                this.target = aexpr.namespace;
+                isNamespace = true;
             }
         }
         
@@ -61,10 +69,13 @@ public class CompletionFinder {
             if (resolvedDef == null) {
                 resolvedDef = ErrorChecker.idResolvedDef(e);
             }
+            
+            log.log("findSugs resolvedDef: "+resolvedDef);
 
             if (resolvedDef != null) {
                 if (resolvedDef instanceof AstNode.TypeDef t) {
-                    Scope scope = t.getScope(null);
+                    Scope scope = isNamespace ? t.getStaticScope(null) : t.getScope(null);
+                    
                     addScope(scope, text);
                     if (defs.size() == 0) {
                         addScope(scope, null);

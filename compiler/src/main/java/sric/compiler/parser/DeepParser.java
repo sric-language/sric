@@ -201,6 +201,8 @@ public class DeepParser extends Parser {
             consume(TokenKind.elseKeyword);
             stmt.elseBlock = stmtAsBlock();
         }
+        
+        endLoc(stmt, loc);
         return stmt;
     }
 

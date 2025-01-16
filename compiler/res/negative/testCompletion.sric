@@ -1,6 +1,7 @@
 
 struct A {
     var i : Int = 0;
+    static var s: const Int  = 0;
 }
 
 fun main() {

@@ -143,6 +143,7 @@ public class AstNode {
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
         private Scope scope = null;
+        private Scope staticScope = null;
         private Scope inheritScopes = null;
         public TypeDef originGenericTemplate = null;
         private Map<GenericParamDef, Type> typeGenericArgs;
@@ -235,6 +236,24 @@ public class AstNode {
                 }
             }
             return scope;
+        }
+        
+        public Scope getStaticScope(CompilerLog log) {
+            if (staticScope == null) {
+                templateInstantiate();
+                staticScope = new Scope();
+                for (FieldDef f : fieldDefs) {
+                    if ((f.isStatic() || this.isEnum()) && !staticScope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
+                }
+                for (FuncDef f : funcDefs) {
+                    if (f.isStatic() && !staticScope.put(f.name, f)) {
+                        if (log != null) log.err("Duplicate name: " + f.name, f.loc);
+                    }
+                }
+            }
+            return staticScope;
         }
         
         public Scope getInheriteScope() {

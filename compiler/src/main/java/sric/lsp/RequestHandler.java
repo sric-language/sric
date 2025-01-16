@@ -50,7 +50,7 @@ public class RequestHandler {
         capabilities.capabilities.referencesProvider = true;
         capabilities.capabilities.completionProvider = new CompletionOptions();
         capabilities.capabilities.completionProvider.resolveProvider = true;
-        capabilities.capabilities.completionProvider.triggerCharacters = new String[]{"."};
+        capabilities.capabilities.completionProvider.triggerCharacters = new String[]{".",":"};
         
         RpcResponse response = new RpcResponse();
         response.id = rpc.id;

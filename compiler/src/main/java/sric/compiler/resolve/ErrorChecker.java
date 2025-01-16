@@ -245,9 +245,9 @@ public class ErrorChecker extends CompilePass {
             this.visit(v.initExpr);
         }
         
-        if ((v.flags & FConst.Static) != 0) {
-            err("Unsupport Static Field", v.loc);
-        }
+//        if ((v.flags & FConst.Static) != 0) {
+//            err("Unsupport Static Field", v.loc);
+//        }
         
         if (v.fieldType != null && v.fieldType.detail instanceof PointerInfo pinfo) {
             if (pinfo.pointerAttr == Type.PointerAttr.inst) {
