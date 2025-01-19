@@ -71,7 +71,7 @@ public abstract class TypeResolver  extends CompilePass {
             return;
         }
         else if (idExpr.namespace.resolvedDef instanceof TypeDef m) {
-            AstNode node = m.getScope(log).get(idExpr.name, idExpr.loc, log);
+            AstNode node = m.getStaticScope(log).get(idExpr.name, idExpr.loc, log);
             if (node == null) {
                 err("Unknow symbol "+idExpr.name, idExpr.loc);
             }

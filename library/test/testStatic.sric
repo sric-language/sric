@@ -1,0 +1,14 @@
+
+struct StaticTest {
+    var i : Int = 0;
+    static var s: const Int = 0;
+    static fun foo() {
+    }
+    fun foo2() {
+    }
+}
+
+fun testStatic() {
+    var i = StaticTest::s;
+    StaticTest::foo();
+}

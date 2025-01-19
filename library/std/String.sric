@@ -48,4 +48,4 @@ extern noncopyable struct String {
 }
 
 
-extern fun asStr(cstr: *const Int8): String;
+extern fun asStr(cstr: raw*const Int8): String;

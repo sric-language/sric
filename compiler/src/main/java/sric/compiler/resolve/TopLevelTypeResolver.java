@@ -59,7 +59,7 @@ public class TopLevelTypeResolver extends TypeResolver {
             return;
         }
         else if (idExpr.namespace.resolvedDef instanceof TypeDef m) {
-            AstNode node = m.getScope(log).get(idExpr.name, idExpr.loc, log);
+            AstNode node = m.getStaticScope(log).get(idExpr.name, idExpr.loc, log);
             if (node == null) {
                 err("Unknow symbol "+idExpr.name, idExpr.loc);
             }
@@ -85,7 +85,7 @@ public class TopLevelTypeResolver extends TypeResolver {
                     importScope.addAll(mcope);
                 }
                 else if (i.id.resolvedDef instanceof TypeDef c) {
-                    Scope mcope = c.getScope(log);
+                    Scope mcope = c.getStaticScope(log);
                     importScope.addAll(mcope);
                 }
                 else {

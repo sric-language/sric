@@ -1,0 +1,17 @@
+
+struct A {
+    var i : Int = 0;
+    static var s: const Int = 0;
+    static fun foo() {
+        i = s;
+    }
+    fun foo2() {
+        var a = A{};
+        a.s;
+        a.foo();
+    }
+}
+
+fun main() {
+    var i = A::s;
+}

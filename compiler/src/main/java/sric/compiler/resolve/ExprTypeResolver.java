@@ -245,7 +245,7 @@ public class ExprTypeResolver extends TypeResolver {
 
     @Override
     public void visitTypeDef(TypeDef v) {
-        int scopeCount = 1;
+        int scopeCount = 0;
         if (v.isStruct()) {
             curStruct = v;
             if (v.inheritances != null) {
@@ -302,8 +302,13 @@ public class ExprTypeResolver extends TypeResolver {
             }
         }
         Scope scope = v.getScope(log);
-        
         this.scopes.add(scope);
+        ++scopeCount;
+        
+        Scope scope2 = v.getStaticScope(log);
+        this.scopes.add(scope2);
+        ++scopeCount;
+        
         v.walkChildren(this);
         
         for (int i=0; i<scopeCount; ++i) {
@@ -481,7 +486,13 @@ public class ExprTypeResolver extends TypeResolver {
         }
 
         if (resolvedDef instanceof TypeDef t) {
-            Scope scope = t.getScope(log);
+            Scope scope;
+            if (target.resolvedType.isMetaType()) {
+                scope = t.getStaticScope(log);
+            }
+            else {
+                scope = t.getScope(log);
+            }
             AstNode def = scope.get(name, loc, log);
             if (def == null) {
                 //if (t instanceof StructDef sd) {

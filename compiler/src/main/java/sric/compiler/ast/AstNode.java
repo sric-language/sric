@@ -225,12 +225,12 @@ public class AstNode {
                     }
                 }
                 for (FieldDef f : fieldDefs) {
-                    if (!scope.put(f.name, f)) {
+                    if (!f.isStatic() && !this.isEnum() && !scope.put(f.name, f)) {
                         if (log != null) log.err("Duplicate name: " + f.name, f.loc);
                     }
                 }
                 for (FuncDef f : funcDefs) {
-                    if (!scope.put(f.name, f)) {
+                    if (!f.isStatic() && !scope.put(f.name, f)) {
                         if (log != null) log.err("Duplicate name: " + f.name, f.loc);
                     }
                 }

@@ -16,4 +16,6 @@ fun main() {
     testHashMap();
     testHashMap2();
     testHashMap3();
+
+    testStatic();
 }

@@ -695,16 +695,25 @@ public class CppGenerator extends BaseGenerator {
             isConstExpr = true;
         }
         
+        if (isStatic && !isImpl && v.parent instanceof TypeDef) {
+            print("static ");
+        }
+        
         printType(v.fieldType);
         print(" ");
         if (isStatic && isImpl && !v.isLocalVar) {
-            if (v.parent instanceof TypeDef) {
-                print(getSymbolName((TypeDef)v.parent));
-                print("::");
+            if (v.parent instanceof TypeDef t) {
+                if (t.parent instanceof FileUnit fu) {
+                    if (fu.module != null) {
+                        print(fu.module.name).print("::");
+                    }
+                }
+                print(getSymbolName(t)).print("::");
             }
-            else if (v.parent instanceof FileUnit unit) {
-                print(unit.module.name);
-                print("::");
+            else if (v.parent instanceof FileUnit fu) {
+                if (fu.module != null) {
+                    print(fu.module.name).print("::");
+                }
             }
         }
         print(getSymbolName(v));
