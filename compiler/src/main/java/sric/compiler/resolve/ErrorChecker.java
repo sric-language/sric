@@ -236,6 +236,9 @@ public class ErrorChecker extends CompilePass {
         else if (target instanceof Expr.IndexExpr e) {
             return e.resolvedOperator;
         }
+        else if (target instanceof Expr.GenericInstance e) {
+            return e.resolvedDef;
+        }
         return null;
     }
 
@@ -897,6 +900,9 @@ public class ErrorChecker extends CompilePass {
                 for (HashMap.Entry<String,FieldDef> entry : fields.entrySet()) {
                     AstNode.FieldDef f = entry.getValue();
                     if (f.initExpr != null) {
+                        continue;
+                    }
+                    if (f.fieldType == null) {
                         continue;
                     }
                     if (f.fieldType.isNullablePointerType()) {
