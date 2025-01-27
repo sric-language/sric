@@ -22,6 +22,9 @@ public abstract class CompilePass implements Visitor {
     }
     
     protected CompilerLog.CompilerErr err(String msg, Loc loc) {
+        if (log == null) {
+            System.err.println(msg + " at " + loc.toString());
+        }
         return log.err(msg, loc);
     }
     

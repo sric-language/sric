@@ -470,6 +470,9 @@ public class ExprTypeResolver extends TypeResolver {
         if (target.resolvedType.isPointerType() && autoDeref) {
             if (target.resolvedType.genericArgs == null || target.resolvedType.genericArgs.size() > 0) {
                 Type type = target.resolvedType.genericArgs.get(0);
+                if (type.isPointerType() &&  type.genericArgs != null && type.genericArgs.size() > 0) {
+                    type = type.genericArgs.get(0);
+                }
                 resolvedDef = type.id.resolvedDef;
             }
             else {

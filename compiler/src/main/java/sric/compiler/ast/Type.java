@@ -416,7 +416,7 @@ public class Type extends AstNode {
                     ok = true;
                 }
                 
-                if (from.isImmutable && !to.isImmutable) {
+                if (from.isImmutable && !to.isImmutable && !from.isPointerType()) {
                     return false;
                 }
                 

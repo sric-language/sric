@@ -372,16 +372,21 @@ public class ErrorChecker extends CompilePass {
             boolean hasVararg = false;
             for (FieldDef p : v.prototype.paramDefs) {
                 if (p.initExpr != null) {
+                    hasDefaultValue = true;
+                }
+                else {
                     if (hasDefaultValue) {
                         err("Default param must at last", p.loc);
                     }
-                    hasDefaultValue = true;
                 }
+                
                 if (p.fieldType.isVarArgType()) {
+                    hasVararg = true;
+                }
+                else {
                     if (hasVararg) {
                         err("Vararg must at last", p.loc);
                     }
-                    hasVararg = true;
                 }
             }
         }
@@ -672,6 +677,9 @@ public class ErrorChecker extends CompilePass {
 //    }
     
     private void verifyUnsafe(Expr target) {
+        if (isInUnsafe()) {
+            return;
+        }
         if (target instanceof IdExpr id) {
             if (id.name.equals(TokenKind.thisKeyword.symbol) || id.name.equals(TokenKind.superKeyword.symbol)
                     || id.name.equals(TokenKind.dot.symbol)) {
@@ -686,9 +694,7 @@ public class ErrorChecker extends CompilePass {
         
         if (target.resolvedType != null && target.resolvedType.detail instanceof Type.PointerInfo pt) {
             if (pt.pointerAttr == Type.PointerAttr.raw) {
-                if (!isInUnsafe()) {
-                    err("Expect unsafe block", target.loc);
-                }
+                err("Expect unsafe block", target.loc);
             }
         }
         
@@ -1044,8 +1050,10 @@ public class ErrorChecker extends CompilePass {
                 }
 
                 if ((slotFlags & FConst.Protected) != 0) {
-                    if (curStruct == null || !curStruct.isInheriteFrom(tparent)) {
-                        err("It's protected", loc);
+                    if (((AstNode.FileUnit)tparent.parent).module != this.module) {
+                        if (curStruct == null || !curStruct.isInheriteFrom(tparent)) {
+                            err("It's protected", loc);
+                        }
                     }
                 }
             }
@@ -1116,6 +1124,9 @@ public class ErrorChecker extends CompilePass {
                                 }
                             }
                         }
+                    }
+                    else if (e.lhs.resolvedType.isFuncType() && e.rhs.resolvedType.isNullType() && (curt == eq || curt == notEq)) {
+                        //OK
                     }
                     else if (e.resolvedOperator != null) {
                         Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
