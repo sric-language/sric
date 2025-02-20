@@ -297,7 +297,7 @@ public class ErrorChecker extends CompilePass {
                 if (v.parent instanceof TypeDef) {
 
                 }
-                else if (!v.uninit) {
+                else if (v.fieldType != null && v.fieldType.isPointerType() && !v.fieldType.isNullablePointerType()) {
                     err("Variable is not initialized", v.loc);
                 }
             }
@@ -918,40 +918,36 @@ public class ErrorChecker extends CompilePass {
                         continue;
                     }
                     
-                    boolean found = false;
-                    for (Stmt t : e.block.stmts) {
-                        if (t instanceof ExprStmt exprStmt) {
-                            if (exprStmt.expr instanceof BinaryExpr bexpr) {
-                                if (bexpr.opToken == TokenKind.assign) {
-                                    if (bexpr.lhs instanceof IdExpr idExpr) {
-                                        if (idExpr.resolvedDef == f) {
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                    else if (bexpr.lhs instanceof AccessExpr accExpr) {
-                                        if (accExpr.resolvedDef == f && accExpr.target instanceof IdExpr iexpr) {
-                                            if (iexpr.name.equals(".")) {
+                    if (f.fieldType.isPointerType() && !f.fieldType.isNullablePointerType()) {
+                        boolean found = false;
+                        for (Stmt t : e.block.stmts) {
+                            if (t instanceof ExprStmt exprStmt) {
+                                if (exprStmt.expr instanceof BinaryExpr bexpr) {
+                                    if (bexpr.opToken == TokenKind.assign) {
+                                        if (bexpr.lhs instanceof IdExpr idExpr) {
+                                            if (idExpr.resolvedDef == f) {
                                                 found = true;
                                                 break;
+                                            }
+                                        }
+                                        else if (bexpr.lhs instanceof AccessExpr accExpr) {
+                                            if (accExpr.resolvedDef == f && accExpr.target instanceof IdExpr iexpr) {
+                                                if (iexpr.name.equals(".")) {
+                                                    found = true;
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    
-                    if (!found) {
-                        err("Field not init:"+f.name, e.loc);
+
+                        if (!found) {
+                            err("Field not init:"+f.name, e.loc);
+                        }
                     }
                 }
-
-//                for (Expr.CallArg t : e.args) {
-//                    if (!fields.containsKey(t.name)) {
-//                        err("Field not found:"+t.name, t.loc);
-//                    }
-//                }
             }
         }
     }

@@ -739,18 +739,34 @@ public class CppGenerator extends BaseGenerator {
             init = true;
         }
         
-        if (init && v.initExpr != null) {
-            if (v.initExpr instanceof Expr.WithBlockExpr wbe && wbe._storeVar != null) {
-                print(" ");
-                this.visit(v.initExpr);
+        if (init) {
+            if (v.initExpr != null) {
+                if (v.initExpr instanceof Expr.WithBlockExpr wbe && wbe._storeVar != null) {
+                    print(" ");
+                    this.visit(v.initExpr);
+                }
+                else if (v.initExpr instanceof Expr.ArrayBlockExpr) {
+                    print(" ");
+                    this.visit(v.initExpr);
+                }
+                else {
+                    print(" = ");
+                    this.visit(v.initExpr);
+                }
             }
-            else if (v.initExpr instanceof Expr.ArrayBlockExpr) {
-                print(" ");
-                this.visit(v.initExpr);
-            }
-            else {
-                print(" = ");
-                this.visit(v.initExpr);
+            else if (!v.uninit && v.fieldType != null) {
+                if (v.fieldType.isNum()) {
+                    print(" = 0");
+                }
+                else if (v.fieldType.isBool()) {
+                    print(" = false");
+                }
+                else if (v.fieldType.isArray()) {
+                    print(" = {}");
+                }
+                else if (v.fieldType.isRawPointerType()) {
+                    print(" = nullptr");
+                }
             }
         }
         return true;
