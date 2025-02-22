@@ -174,6 +174,7 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
+        //field not moved
         AstNode resolvedDef = idResolvedDef(target);
         if (resolvedDef != null) {
             if (resolvedDef instanceof AstNode.FieldDef) {
@@ -187,6 +188,20 @@ public class ErrorChecker extends CompilePass {
                         err("Miss move keyword", loc);
                     }
                 }
+            }
+        }
+        
+        //fix return reference
+        //foo():&A;
+        //var a: A = foo();
+        if (target.resolvedType.isReference && !isCopyable(target.resolvedType) && !to.isReference) {
+            if (to.detail instanceof Type.PointerInfo p2) {
+                if (p2.pointerAttr == Type.PointerAttr.own) {
+                    err("Miss move keyword", loc);
+                }
+            }
+            else {
+                err("Miss move keyword", loc);
             }
         }
         

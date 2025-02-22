@@ -132,7 +132,7 @@ public class Token {
         whileKeyword("while", true),
         extensionKeyword("extension", true),
         inlineKeyword("inline", true),
-        mutKeyword("mut", true),
+        mutableKeyword("mutable", true),
         asyncKeyword("async", true),
         yieldKeyword("yield", true),
         //lretKeyword("lret", true),

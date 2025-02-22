@@ -24,7 +24,7 @@ public class Type extends AstNode {
         own, ref, raw
     };
     
-    public boolean explicitImmutable = false;
+//    public boolean explicitImmutable = false;
     public boolean isImmutable = false;
     public boolean isRefable = false;
     public boolean isReference = false;
@@ -587,9 +587,6 @@ public class Type extends AstNode {
         if (this.isImmutable) {
             sb.append("const ");
         }
-        else if (this.explicitImmutable) {
-            sb.append("mut ");
-        }
                 
         if (this.isReference) {
             sb.append("&");
@@ -710,7 +707,7 @@ public class Type extends AstNode {
         type.genericArgs.add(this.genericArgs.get(0));
         
         type.resolvedAlias = this.resolvedAlias;
-        type.explicitImmutable = this.explicitImmutable;
+        //type.explicitImmutable = this.explicitImmutable;
         type.isImmutable = this.isImmutable;
         type.isReference = this.isReference;
         
@@ -732,7 +729,7 @@ public class Type extends AstNode {
         Type type = new Type(this.id);
         type.genericArgs = this.genericArgs;
         type.resolvedAlias = this.resolvedAlias;
-        type.explicitImmutable = this.explicitImmutable;
+        //type.explicitImmutable = this.explicitImmutable;
         type.isImmutable = true;
         type.detail = this.detail;
         type.isReference = this.isReference;
@@ -748,7 +745,7 @@ public class Type extends AstNode {
         Type type = new Type(this.id);
         type.genericArgs = this.genericArgs;
         type.resolvedAlias = this.resolvedAlias;
-        type.explicitImmutable = this.explicitImmutable;
+        //type.explicitImmutable = this.explicitImmutable;
         type.isImmutable = false;
         type.detail = this.detail;
         type.isReference = this.isReference;
@@ -764,7 +761,7 @@ public class Type extends AstNode {
         Type type = new Type(this.id);
         type.genericArgs = this.genericArgs;
         type.resolvedAlias = this.resolvedAlias;
-        type.explicitImmutable = this.explicitImmutable;
+        //type.explicitImmutable = this.explicitImmutable;
         type.isImmutable = this.isImmutable;
         
         PointerInfo info = new PointerInfo();

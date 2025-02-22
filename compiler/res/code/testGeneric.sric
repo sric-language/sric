@@ -5,7 +5,7 @@ private abstract struct NT$<T> {
 
 struct A$<T : NT$<T>> {
     var i: T ;
-    fun foo() mut : raw* T {
+    fun foo() : raw* T {
        return &i;
     }
 
@@ -14,7 +14,7 @@ struct A$<T : NT$<T>> {
     }
 }
 
-fun gf$<T>(v: mut T): T {
+fun gf$<T>(v: T): T {
     return move v;
 }
 

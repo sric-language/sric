@@ -6,18 +6,18 @@ extern noncopyable struct String {
 
     operator fun get(i: Int) const: Int8;
 
-    fun iequals(other: & String) : Bool;
-    fun contains(other: & String) : Bool;
-    fun startsWith(other: & String) : Bool;
-    fun endsWith(other: & String) : Bool;
+    fun iequals(other: &const String) const: Bool;
+    fun contains(other: &const String) const: Bool;
+    fun startsWith(other: &const String) const: Bool;
+    fun endsWith(other: &const String) const: Bool;
 
-    fun find(other: & String, start: Int = 0): Int;
+    fun find(other: &const String, start: Int = 0) const: Int;
 
-    fun replace(src: & String, dst: & String);
-    fun split(sep: & String): DArray$<String>;
-    fun substr(pos:Int, len:Int = -1): String;
+    fun replace(src: &const String, dst: &const String);
+    fun split(sep: &const String) const: DArray$<String>;
+    fun substr(pos:Int, len:Int = -1) const: String;
 
-    operator fun plus(other: & String) : String;
+    operator fun plus(other: &const String) const: String;
     fun add(cstr: raw*const Int8);
 
     fun trimEnd();
@@ -25,16 +25,16 @@ extern noncopyable struct String {
     fun trim() { trimStart(); trimEnd(); }
     fun removeLastChar();
 
-    fun toLower(): String;
-    fun toUpper(): String;
+    fun toLower() const: String;
+    fun toUpper() const: String;
 
-    fun toInt(): Int32;
-    fun toLong(): Int64;
-    fun toFloat(): Float32;
-    fun toDouble(): Float64;
+    fun toInt() const: Int32;
+    fun toLong() const: Int64;
+    fun toFloat() const: Float32;
+    fun toDouble() const: Float64;
 
     fun hashCode() const: Int;
-    operator fun compare(p: &String) const : Int;
+    operator fun compare(p: &const String) const : Int;
 
     extern static fun fromInt32(i: Int32): String;
     extern static fun fromInt64(i: Int64): String;

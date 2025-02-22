@@ -4,6 +4,13 @@ fun foo(c: own* Int) {
 var p : own*? Int = null;
 var p2 : own* Int;
 
+fun foo2() : &own*Int {
+    unsafe {
+        var i: own*? Int;
+        return i!;
+    }
+}
+
 fun main()
 {
     var x: own*? Int = null;
@@ -11,4 +18,6 @@ fun main()
 
     foo(move p);
     foo(move p2);
+
+    var y: own*Int = foo2();
 }

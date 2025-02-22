@@ -8,6 +8,7 @@ extern noncopyable struct DArray$<T> {
     fun size() const : Int;
 
     fun add(d: &T);
+    fun constAdd(d: &const T);
 
     operator fun get(i: Int): & T;
 

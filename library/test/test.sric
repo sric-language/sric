@@ -3,6 +3,7 @@
 
 fun main() {
     testDArray();
+    testDArray2();
     testString();
     
     testPtr();

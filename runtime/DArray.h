@@ -154,12 +154,12 @@ private:
     }
 
 public:
-    void add(const T& d) {
+    void constAdd(const T& d) {
         int pos = size();
         tryGrow(pos + 1);
         T* m = (_data+ pos);
         new(m) T();
-        *m = std::move(d);
+        *m = d;
         ++_size;
         getHeader()->_dataSize += sizeof(T);
     }

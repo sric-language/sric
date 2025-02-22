@@ -149,15 +149,6 @@ var p : const raw* Int;
 var p : const raw* const Int;
 ```
 
-Function params are const by default
-```
-struct Bar {
-    var i: Int = 0;
-    fun set(a: mut Int) const : Int {
-        i = a;
-    }
-}
-```
 
 ### Protection
 ```

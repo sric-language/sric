@@ -1,6 +1,6 @@
 # Sric Language
 
-A memory safe and compiled systems programming language.
+Sric programming language is a memory safe subset of C++.
 
 
 ## Features

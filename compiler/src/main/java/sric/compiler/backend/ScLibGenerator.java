@@ -138,9 +138,9 @@ public class ScLibGenerator extends BaseGenerator {
         if (type.isImmutable) {
             print("const ");
         }
-        else if (type.explicitImmutable) {
-            print("mut ");
-        }
+//        else if (type.explicitImmutable) {
+//            print("mut ");
+//        }
         
         if (type.isReference) {
             print("&");

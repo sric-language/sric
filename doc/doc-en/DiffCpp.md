@@ -2,7 +2,6 @@
 
 ## Removed features from C++
 
-- No reference
 - No function overload by params
 - No header file
 - No implicit copying of large objects

@@ -512,9 +512,9 @@ public class Parser {
                 case constKeyword:
                     flags = flags | (FConst.Const);
                     break;
-                case mutKeyword:
-                    flags = flags | (FConst.Mutable);
-                    break;
+//                case mutKeyword:
+//                    flags = flags | (FConst.Mutable);
+//                    break;
                 default:
                     done = true;
             }
@@ -832,9 +832,9 @@ public class Parser {
         }
         
         //param type default to const
-        if (!param.fieldType.explicitImmutable) {
-            param.fieldType.isImmutable = true;
-        }
+//        if (!param.fieldType.explicitImmutable) {
+//            param.fieldType.isImmutable = true;
+//        }
         
         if (curt == TokenKind.assign) {
             //if (curt === TokenKind.assign) err("Must use := for parameter default");
@@ -880,8 +880,8 @@ public class Parser {
 //                return pointerType(Type.PointerAttr.inst);
             case constKeyword:
                 return imutableType();
-            case mutKeyword:
-                return imutableType();
+//            case mutKeyword:
+//                return imutableType();
             case lbracket:
                 return arrayType();
             case refableKeyword: {
@@ -930,20 +930,20 @@ public class Parser {
     
     private Type imutableType() {
         boolean imutable = false;
-        boolean explicitImutable = false;
+//        boolean explicitImutable = false;
         if (curt == TokenKind.constKeyword) {
             consume();
             imutable = true;
-            explicitImutable = true;
+//            explicitImutable = true;
         }
-        else if (curt == TokenKind.mutKeyword) {
-            consume();
-            imutable = false;
-            explicitImutable = true;
-        }
+//        else if (curt == TokenKind.mutKeyword) {
+//            consume();
+//            imutable = false;
+//            explicitImutable = true;
+//        }
         
         Type type = typeRef();
-        type.explicitImmutable = explicitImutable;
+//        type.explicitImmutable = explicitImutable;
         type.isImmutable = imutable;
         return type;
     }

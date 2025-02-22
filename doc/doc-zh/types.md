@@ -21,7 +21,7 @@ var p3 = share(p1);
 - 所有权指针可以自动转换成非所有权指针和裸指针。
 ```
 var p1: own* Int = ...;
-var p4: * Int = p1;
+var p4: ref* Int = p1;
 var p5: raw* Int = p1;
 ```
 非所有权指针性能和裸指针几乎一样。
@@ -39,21 +39,17 @@ unsafe {
 增加了refalbe修饰的字段取地址后为非所有权指针，负责为裸指针。
 ```
 var i: refable Int = 0;
-var p: *Int = &i;
+var p: ref*Int = &i;
 ```
-为了方便在函数调用时，取地址的操作可自动转为非所有权指针。例如
-```
-fun foo(p: *Int) {};
-var i = 0;
-foo(&i);  //auto convert raw*Int to *Int
-```
-所以，推荐函数参数尽可能用非所有权指针代替裸指针。
 
 其他类型的指针可以自动转为裸指针类型。
 
 #### 指针运算
 只有裸指针才能进行指针运算。指针运算只能在unsafe块，或者unsafe函数中进行。
 
+
+### 引用
+引用的概念同C++，但在sric中引用只能用在函数参数和返回值中。
 
 ### 数组
 数组特指静态大小数组。如果需要动态数组，请参考标准库中的DArray。
@@ -91,14 +87,4 @@ var b: own* B = a!;
 var p : raw* const Int;
 var p : const raw* Int;
 var p : const raw* const Int;
-```
-
-函数参数默认是const的，可以通过mut关键字声明为可变类型。
-```
-struct Bar {
-    var i: Int = 0;
-    fun set(a: mut Int) const : Int {
-        i = a;
-    }
-}
 ```

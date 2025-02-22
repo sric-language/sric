@@ -149,15 +149,6 @@ var p : const raw* Int;
 var p : const raw* const Int;
 ```
 
-函数参数默认是const的
-```
-struct Bar {
-    var i: Int = 0;
-    fun set(a: mut Int) const : Int {
-        i = a;
-    }
-}
-```
 
 ### 可见性
 ```
