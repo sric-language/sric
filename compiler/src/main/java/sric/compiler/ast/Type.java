@@ -21,12 +21,13 @@ public class Type extends AstNode {
     public Type resolvedAlias = null;
     
     public static enum PointerAttr {
-        own, ref, raw, inst
+        own, ref, raw
     };
     
     public boolean explicitImmutable = false;
     public boolean isImmutable = false;
     public boolean isRefable = false;
+    public boolean isReference = false;
     
     public TypeInfo detail = null;
     
@@ -161,15 +162,15 @@ public class Type extends AstNode {
         return false;
     }
     
-    public boolean isRawOrInstPointerType() {
-        if (!isPointerType()) {
-            return false;
-        }
-        if (this.detail instanceof PointerInfo pinfo) {
-            return pinfo.pointerAttr == PointerAttr.raw || pinfo.pointerAttr == PointerAttr.inst;
-        }
-        return false;
-    }
+//    public boolean isRawOrInstPointerType() {
+//        if (!isPointerType()) {
+//            return false;
+//        }
+//        if (this.detail instanceof PointerInfo pinfo) {
+//            return pinfo.pointerAttr == PointerAttr.raw || pinfo.pointerAttr == PointerAttr.inst;
+//        }
+//        return false;
+//    }
     
     public boolean isOwnOrRefPointerType() {
         if (!isPointerType()) {
@@ -506,7 +507,7 @@ public class Type extends AstNode {
         Type type = intType(loc);
         ((NumInfo)type.detail).size = 8;
         type.isImmutable = true;
-        return pointerType(loc, type, PointerAttr.inst, false);
+        return pointerType(loc, type, PointerAttr.raw, false);
     }
     
     public static Type nullType(Loc loc) {
@@ -579,6 +580,10 @@ public class Type extends AstNode {
         else if (this.explicitImmutable) {
             sb.append("mut ");
         }
+                
+        if (this.isReference) {
+            sb.append("&");
+        }
         
         if (isArray()) {
             ArrayInfo info = (ArrayInfo)this.detail;
@@ -609,9 +614,9 @@ public class Type extends AstNode {
             }
             else {
                 PointerInfo info = (PointerInfo)this.detail;
-                if (info.pointerAttr != PointerAttr.inst) {
+                //if (info.pointerAttr != PointerAttr.inst) {
                     sb.append(info.pointerAttr);
-                }
+                //}
                 sb.append("*");
                 if (info.isNullable) sb.append("?");
                 sb.append(" ");
@@ -661,6 +666,7 @@ public class Type extends AstNode {
             }
         }
         nt.isImmutable = this.isImmutable;
+        nt.isReference = this.isReference;
         nt.detail = this.detail;
         if (this.id.resolvedDef instanceof GenericParamDef g) {
             if (typeGenericArgs.containsKey(g)) {
@@ -696,6 +702,7 @@ public class Type extends AstNode {
         type.resolvedAlias = this.resolvedAlias;
         type.explicitImmutable = this.explicitImmutable;
         type.isImmutable = this.isImmutable;
+        type.isReference = this.isReference;
         
         PointerInfo info = new PointerInfo();
         info.pointerAttr = ((PointerInfo)this.detail).pointerAttr;
@@ -718,6 +725,7 @@ public class Type extends AstNode {
         type.explicitImmutable = this.explicitImmutable;
         type.isImmutable = true;
         type.detail = this.detail;
+        type.isReference = this.isReference;
         return type;
     }
     
@@ -737,7 +745,7 @@ public class Type extends AstNode {
         info.pointerAttr = PointerAttr.raw;
         info.isNullable = ((PointerInfo)this.detail).isNullable;
         type.detail = info;
-        
+        type.isReference = this.isReference;
         return type;
     }
 }

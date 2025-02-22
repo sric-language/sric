@@ -6,7 +6,7 @@ var p: Int             //value type
 var p: refable Int;    //referable value type
 var p: own* Int;       //ownership pointer
 var p: ref* Int;       //non-owning pointer
-var p: * Int;          //instant pointer
+var p: & Int;          //reference
 var p: raw* Int;       //unsafe raw pointer
 ```
 

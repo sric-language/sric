@@ -2,14 +2,14 @@ struct A {
     var i: Int = 1;
     var k: Int = 2;
 
-    operator fun compare(b: * A) : Int {
+    operator fun compare(b: & A) : Int {
         return i - b.i;
     }
 }
 
 fun testDerivativeRefable() {
     var a: refable A = A{};
-    var p2: ref* Int = a.k;
+    var p2: ref* Int = &a.k;
 
     //printf("%d\n", *p2);
 }

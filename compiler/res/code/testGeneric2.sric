@@ -3,7 +3,7 @@ abstract struct LT {
 }
 
 struct L$<T: LT> {
-    fun get(): *? T {
+    fun get(): ref*? T {
         return null;
     }
 }

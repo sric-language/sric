@@ -1,4 +1,4 @@
-externc fun printf(format: *const Int8, args: ...): Int;
+externc fun printf(format: raw*const Int8, args: ...): Int;
 
 enum Color {
     Red = 1, Green, Blue

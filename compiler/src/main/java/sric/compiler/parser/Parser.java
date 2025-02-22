@@ -869,20 +869,28 @@ public class Parser {
 //            case weakKeyword:
 //                consume();
 //                return pointerType(Type.PointerAttr.weak);
-            case star:
-                return pointerType(Type.PointerAttr.inst);
+            case amp: {
+                consume();
+                Type stype = typeRef();
+                stype.isReference = true;
+                endLoc(stype, loc);
+                return stype;
+            }
+//            case star:
+//                return pointerType(Type.PointerAttr.inst);
             case constKeyword:
                 return imutableType();
             case mutKeyword:
                 return imutableType();
             case lbracket:
                 return arrayType();
-            case refableKeyword:
+            case refableKeyword: {
                 consume();
                 Type stype = typeRef();
                 stype.isRefable = true;
                 endLoc(stype, loc);
                 return stype;
+            }
             default:
                 break;
         }

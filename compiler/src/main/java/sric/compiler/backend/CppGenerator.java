@@ -523,7 +523,7 @@ public class CppGenerator extends BaseGenerator {
                 break;
             case Buildin.pointerTypeName:
                 PointerInfo pt = (PointerInfo)type.detail;
-                if (type.isRawOrInstPointerType()) {
+                if (type.isRawPointerType()) {
                     printType(type.genericArgs.get(0), false);
                     
                     print("*");
@@ -595,6 +595,10 @@ public class CppGenerator extends BaseGenerator {
         
         if (type.isRefable) {
             print(" >");
+        }
+        
+        if (type.isReference) {
+            print("&");
         }
     }
 
@@ -1251,13 +1255,13 @@ public class CppGenerator extends BaseGenerator {
             }
         }
 
-        if (v.implicitDereference) {
-            print("*");
-        }
-        if (v.implicitGetAddress) {
-            print("sric::addressOf(");
-            parentheses++;
-        }
+//        if (v.implicitDereference) {
+//            print("*");
+//        }
+//        if (v.implicitGetAddress) {
+//            print("sric::addressOf(");
+//            parentheses++;
+//        }
         
         if (v instanceof IdExpr e) {
             this.printIdExpr(e);
@@ -1443,7 +1447,7 @@ public class CppGenerator extends BaseGenerator {
                         print("nonNullable(");
                     }
                     
-                    if (!targetType.isRawOrInstPointerType() && targetType.genericArgs != null) {
+                    if (!targetType.isRawPointerType() && targetType.genericArgs != null) {
                         this.visit(e.lhs);
                         print(".dynamicCastTo<");
                         printType(targetType.genericArgs.get(0));

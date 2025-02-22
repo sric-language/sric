@@ -90,7 +90,7 @@ public class ExprTypeResolver extends TypeResolver {
                             return;
                         }
                         else {
-                            idExpr.resolvedType = Type.pointerType(idExpr.loc, curStruct.inheritances.get(0), Type.PointerAttr.inst, false);
+                            idExpr.resolvedType = Type.pointerType(idExpr.loc, curStruct.inheritances.get(0), Type.PointerAttr.raw, false);
                             idExpr.resolvedType.isImmutable = (f.flags & FConst.Mutable) == 0;
                         }
                     }
@@ -101,7 +101,7 @@ public class ExprTypeResolver extends TypeResolver {
                         }
                         Type self = new Type(curStruct.loc, curStruct.name);
                         self.id.resolvedDef = curStruct;
-                        idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.inst, false);
+                        idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.raw, false);
                         idExpr.resolvedType.isImmutable = (f.flags & FConst.Mutable) == 0;
                     }
                 }
@@ -185,11 +185,11 @@ public class ExprTypeResolver extends TypeResolver {
             else {
                 //Type inference
                 v.fieldType = v.initExpr.resolvedType;
-                if (v.fieldType != null && v.fieldType.detail instanceof Type.PointerInfo pinfo) {
-                    if (pinfo.pointerAttr == Type.PointerAttr.inst) {
-                        v.fieldType = v.fieldType.toRawPointer();
-                    }
-                }
+//                if (v.fieldType != null && v.fieldType.detail instanceof Type.PointerInfo pinfo) {
+//                    if (pinfo.pointerAttr == Type.PointerAttr.inst) {
+//                        v.fieldType = v.fieldType.toRawPointer();
+//                    }
+//                }
             }
         }
         
@@ -629,7 +629,7 @@ public class ExprTypeResolver extends TypeResolver {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
                         }
                         else {
-                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.inst, false);
+                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.raw, false);
                         }
                         break;
                     case awaitKeyword:
@@ -948,10 +948,10 @@ public class ExprTypeResolver extends TypeResolver {
                                 e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
                                 e.lhs.isPointerConvert = true;
                             }
-                            else if ((p1.pointerAttr == Type.PointerAttr.own || p1.pointerAttr == Type.PointerAttr.ref) && p2.pointerAttr == Type.PointerAttr.inst) {
-                                e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
-                                e.lhs.isPointerConvert = true;
-                            }
+//                            else if ((p1.pointerAttr == Type.PointerAttr.own || p1.pointerAttr == Type.PointerAttr.ref) && p2.pointerAttr == Type.PointerAttr.inst) {
+//                                e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
+//                                e.lhs.isPointerConvert = true;
+//                            }
                             else if (p1.pointerAttr == Type.PointerAttr.own && p2.pointerAttr == Type.PointerAttr.ref) {
                                 e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
                                 e.lhs.isPointerConvert = true;

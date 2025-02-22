@@ -129,7 +129,7 @@ public class ErrorChecker extends CompilePass {
                 if (funit.module.name.equals("sric")) {
                     //const char *;
                     if (from.detail instanceof Type.PointerInfo pinfo && from.genericArgs != null) {
-                        if (from.isRawOrInstPointerType() && from.genericArgs.get(0).detail instanceof Type.NumInfo ninfo) {
+                        if (from.isRawPointerType() && from.genericArgs.get(0).detail instanceof Type.NumInfo ninfo) {
                             if (ninfo.size == 8) {
                                 target.implicitTypeConvertTo = to;
                                 target.implicitStringConvert = true;
@@ -141,29 +141,29 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
-        if (from.isPointerType() && !to.isPointerType()) {
-            if (!from.isRawPointerType() && from.genericArgs != null) {
-                target.implicitDereference = true;
-                from = from.genericArgs.get(0);
-            }
-        }
-        else if (!from.isPointerType() && to.detail instanceof Type.PointerInfo pinfo) {
-            if (from.isRefable && pinfo.pointerAttr == Type.PointerAttr.ref) {
-                target.implicitGetAddress = true;
-                from = Type.pointerType(loc, from, Type.PointerAttr.ref, false);
-            }
-            else if (target instanceof AccessExpr aexpr && 
-                    (aexpr.target.resolvedType.isOwnOrRefPointerType() || aexpr.target.resolvedType.isRefable) && 
-                    pinfo.pointerAttr == Type.PointerAttr.ref) {
-                //target.implicitGetAddress = true;
-                aexpr._addressOf = true;
-                from = Type.pointerType(loc, from, Type.PointerAttr.ref, false);
-            }
-            else if (pinfo.pointerAttr == Type.PointerAttr.inst) {
-                target.implicitGetAddress = true;
-                from = Type.pointerType(loc, from, Type.PointerAttr.inst, false);
-            }
-        }
+//        if (from.isPointerType() && !to.isPointerType()) {
+//            if (!from.isRawPointerType() && from.genericArgs != null) {
+//                target.implicitDereference = true;
+//                from = from.genericArgs.get(0);
+//            }
+//        }
+//        else if (!from.isPointerType() && to.detail instanceof Type.PointerInfo pinfo) {
+//            if (from.isRefable && pinfo.pointerAttr == Type.PointerAttr.ref) {
+//                target.implicitGetAddress = true;
+//                from = Type.pointerType(loc, from, Type.PointerAttr.ref, false);
+//            }
+//            else if (target instanceof AccessExpr aexpr && 
+//                    (aexpr.target.resolvedType.isOwnOrRefPointerType() || aexpr.target.resolvedType.isRefable) && 
+//                    pinfo.pointerAttr == Type.PointerAttr.ref) {
+//                //target.implicitGetAddress = true;
+//                aexpr._addressOf = true;
+//                from = Type.pointerType(loc, from, Type.PointerAttr.ref, false);
+//            }
+//            else if (pinfo.pointerAttr == Type.PointerAttr.inst) {
+//                target.implicitGetAddress = true;
+//                from = Type.pointerType(loc, from, Type.PointerAttr.inst, false);
+//            }
+//        }
         
         if (!from.fit(to)) {
             boolean allowUnsafeCast = false;
@@ -201,10 +201,10 @@ public class ErrorChecker extends CompilePass {
                 target.implicitTypeConvertTo = to;
                 target.isPointerConvert = true;
             }
-            else if ((p1.pointerAttr == Type.PointerAttr.own || p1.pointerAttr == Type.PointerAttr.ref) && p2.pointerAttr == Type.PointerAttr.inst) {
-                target.implicitTypeConvertTo = to;
-                target.isPointerConvert = true;
-            }
+//            else if ((p1.pointerAttr == Type.PointerAttr.own || p1.pointerAttr == Type.PointerAttr.ref) && p2.pointerAttr == Type.PointerAttr.inst) {
+//                target.implicitTypeConvertTo = to;
+//                target.isPointerConvert = true;
+//            }
             else if (p1.pointerAttr == Type.PointerAttr.own && p2.pointerAttr == Type.PointerAttr.ref) {
                 target.implicitTypeConvertTo = to;
                 target.isPointerConvert = true;
@@ -252,11 +252,14 @@ public class ErrorChecker extends CompilePass {
 //            err("Unsupport Static Field", v.loc);
 //        }
         
-        if (v.fieldType != null && v.fieldType.detail instanceof PointerInfo pinfo) {
-            if (pinfo.pointerAttr == Type.PointerAttr.inst) {
-                if (!isInUnsafe()) {
-                    err("Can't be inst pointer", v.loc);
-                }
+        if (v.fieldType != null && v.fieldType.isReference) {
+//            if (pinfo.pointerAttr == Type.PointerAttr.inst) {
+//                if (!isInUnsafe()) {
+//                    err("Can't be inst pointer", v.loc);
+//                }
+//            }
+            if (!isInUnsafe()) {
+                err("Can't define reference in safe mode", v.loc);
             }
         }
         
@@ -577,12 +580,20 @@ public class ErrorChecker extends CompilePass {
                     this.verifyTypeFit(rets.expr, rets._funcReturnType, rets.expr.loc);
                 }
                 
-                if (rets._funcReturnType != null && rets._funcReturnType.detail instanceof PointerInfo pinfo) {
-                    if (pinfo.pointerAttr == Type.PointerAttr.inst) {
-                        if (!isInUnsafe()) {
-                            if (rets.expr.resolvedType != null && !rets.expr.resolvedType.isNullType()) {
-                                err("Expect unsafe block", rets.loc);
-                            }
+//                if (rets._funcReturnType != null && rets._funcReturnType.detail instanceof PointerInfo pinfo) {
+//                    if (pinfo.pointerAttr == Type.PointerAttr.inst) {
+//                        if (!isInUnsafe()) {
+//                            if (rets.expr.resolvedType != null && !rets.expr.resolvedType.isNullType()) {
+//                                err("Expect unsafe block", rets.loc);
+//                            }
+//                        }
+//                    }
+//                }
+                
+                if (rets._funcReturnType != null && rets._funcReturnType.isReference) {
+                    if (!isInUnsafe()) {
+                        if (rets.expr.resolvedType != null && !rets.expr.resolvedType.isNullType()) {
+                            err("Expect unsafe block", rets.loc);
                         }
                     }
                 }
@@ -1202,16 +1213,16 @@ public class ErrorChecker extends CompilePass {
                                 }
                             }
                             
-                            AstNode ldef = idResolvedDef(e.lhs);
-                            if (ldef instanceof FieldDef fd && e.rhs.resolvedType.detail instanceof Type.PointerInfo pinfo
-                                    && e.lhs.resolvedType.detail instanceof Type.PointerInfo lpinfo) {
-                                if (lpinfo.pointerAttr != Type.PointerAttr.raw && pinfo.pointerAttr == Type.PointerAttr.inst) {
-                                    if (!isInUnsafe()) {
-                                        err("Can't store instant pointer", e.loc);
-                                        //e._refSafeCheck = true;
-                                    }
-                                }
-                            }
+//                            AstNode ldef = idResolvedDef(e.lhs);
+//                            if (ldef instanceof FieldDef fd && e.rhs.resolvedType.detail instanceof Type.PointerInfo pinfo
+//                                    && e.lhs.resolvedType.detail instanceof Type.PointerInfo lpinfo) {
+//                                if (lpinfo.pointerAttr != Type.PointerAttr.raw && pinfo.pointerAttr == Type.PointerAttr.inst) {
+//                                    if (!isInUnsafe()) {
+//                                        err("Can't store instant pointer", e.loc);
+//                                        //e._refSafeCheck = true;
+//                                    }
+//                                }
+//                            }
                         }
                         else {
                             if (e.lhs.resolvedType.isNum() || e.lhs.resolvedType.isRawPointerType()) {

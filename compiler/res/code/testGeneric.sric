@@ -1,6 +1,6 @@
 
 private abstract struct NT$<T> {
-    abstract operator fun plus(that: * T): * T;
+    abstract operator fun plus(that: & T): & T;
 }
 
 struct A$<T : NT$<T>> {
@@ -10,7 +10,7 @@ struct A$<T : NT$<T>> {
     }
 
     fun foo2(): T {
-        return *(i + &i);
+        return (i + i);
     }
 }
 

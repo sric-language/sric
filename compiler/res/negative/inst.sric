@@ -1,12 +1,12 @@
 
 extern fun alloc$<T>(): own* T;
 
-fun foo(): *Int {
+fun foo(): &Int {
     var p: own* Int = alloc$<Int>();
-    return p;
+    return *p;
 }
 
-fun foo2(a: * Int) {
-    var p : * Int  = a;
+fun foo2(a: & Int) {
+    var p : & Int  = a;
     p = a;
 }
