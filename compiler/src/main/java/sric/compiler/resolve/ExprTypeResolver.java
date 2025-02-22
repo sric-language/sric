@@ -185,6 +185,9 @@ public class ExprTypeResolver extends TypeResolver {
             else {
                 //Type inference
                 v.fieldType = v.initExpr.resolvedType;
+                if (v.fieldType != null && v.fieldType.isImmutable && !v.fieldType.isReference) {
+                    v.fieldType = v.fieldType.toMutable();
+                }
 //                if (v.fieldType != null && v.fieldType.detail instanceof Type.PointerInfo pinfo) {
 //                    if (pinfo.pointerAttr == Type.PointerAttr.inst) {
 //                        v.fieldType = v.fieldType.toRawPointer();
@@ -565,6 +568,9 @@ public class ExprTypeResolver extends TypeResolver {
             }
             else if (e.value instanceof String) {
                 v.resolvedType = Type.strType(e.loc);
+            }
+            if (e.resolvedType != null) {
+                e.resolvedType.isImmutable = true;
             }
         }
         else if (v instanceof Expr.BinaryExpr e) {

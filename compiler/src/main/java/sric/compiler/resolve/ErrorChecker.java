@@ -87,9 +87,9 @@ public class ErrorChecker extends CompilePass {
             return false;
         }
         
-        if (type.isImmutable) {
-            return false;
-        }
+//        if (type.isImmutable) {
+//            return false;
+//        }
         
         if (type.isPointerType() && !type.isNullablePointerType()) {
             return false;
@@ -177,7 +177,7 @@ public class ErrorChecker extends CompilePass {
         AstNode resolvedDef = idResolvedDef(target);
         if (resolvedDef != null) {
             if (resolvedDef instanceof AstNode.FieldDef) {
-                if (!isCopyable(target.resolvedType)) {
+                if (!isCopyable(target.resolvedType) && !to.isReference) {
                     if (to.detail instanceof Type.PointerInfo p2) {
                         if (p2.pointerAttr == Type.PointerAttr.own) {
                             err("Miss move keyword", loc);
@@ -662,6 +662,9 @@ public class ErrorChecker extends CompilePass {
             if (f.prototype.paramDefs.size() != 2) {
                 err("Must 1 params", f.loc);
             }
+        }
+        else {
+            err("Unkonw operator", f.loc);
         }
     }
     

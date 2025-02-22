@@ -246,7 +246,7 @@ public class CppGenerator extends BaseGenerator {
                 print("comment.type = ").print(c.type == TokenKind.cmdComment ? "0" : "1").print(";");
                 print("comment.content = "); printStringLiteral(c.content); print(";");
                 
-                print(varName).print(".comments.add(&comment);}");
+                print(varName).print(".comments.add(comment);}");
                 this.newLine();
             }
         }
@@ -258,7 +258,7 @@ public class CppGenerator extends BaseGenerator {
         print("param.name = \"").print(f.name).print("\";");
         print("param.fieldType = ");printStringLiteral(f.fieldType.toString());print(";");
         print("param.hasDefaultValue = ").print(f.initExpr == null ? "0" : "1").print(";");
-        print(parentName).print(".params.add(&param);");
+        print(parentName).print(".params.add(param);");
         print("}");
         this.newLine();
     }
@@ -295,7 +295,7 @@ public class CppGenerator extends BaseGenerator {
         
         print("f.enumValue = ").print(""+f._enumValue).print(";").newLine();
         
-        print(parentName).print(".fields.add(&f);").newLine();
+        print(parentName).print(".fields.add(f);").newLine();
         
         this.unindent();
         print("}");
@@ -365,7 +365,7 @@ public class CppGenerator extends BaseGenerator {
             }
         }
         
-        print(parentName).print(".funcs.add(&f);");
+        print(parentName).print(".funcs.add(f);");
 
         this.unindent();
         newLine();

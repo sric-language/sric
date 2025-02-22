@@ -23,6 +23,11 @@ public:
         return *this;
     }
 
+    String& operator=(const String& other) {
+        str = other.str;
+        return *this;
+    }
+
     const std::string& cpp_str() const {
         return str;
     }
@@ -46,22 +51,22 @@ public:
     }
 
     int hashCode() const;
-    int compare(const String* other) const;
+    int compare(const String& other) const;
 
-    bool iequals(const String* other) const;
-    bool contains(const String* s) const;
-    bool startsWith(const String* s) const;
-    bool endsWith(const String* s) const;
-    int find(const String* s, int start = 0) const;
+    bool iequals(const String& other) const;
+    bool contains(const String& s) const;
+    bool startsWith(const String& s) const;
+    bool endsWith(const String& s) const;
+    int find(const String& s, int start = 0) const;
 
-    String& operator+(const String* other) {
+    String& operator+(const String& other) {
         plus(other);
     }
-    String& plus(const String* other);
+    String& plus(const String& other);
     void add(const char* cstr);
 
-    void replace(const String* src, const String* dst);
-    DArray<String> split(const String* sep) const;
+    void replace(const String& src, const String& dst);
+    DArray<String> split(const String& sep) const;
     String substr(int pos, int len = -1) const;
 
     void trimEnd();

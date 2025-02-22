@@ -51,51 +51,51 @@ public:
         getHeader()->_dataSize = _size*sizeof(T);
     }
 
-    T* operator[](int i) {
+    T& operator[](int i) {
         sc_assert(i >= 0 && i < size(), "index out of array");
-        return _data+i;
+        return _data[i];
     }
 
-    const T* operator[](int i) const {
+    const T& operator[](int i) const {
         sc_assert(i >= 0 && i < size(), "index out of array");
-        return _data+i;
+        return _data[i];
     }
 
-    T* get(int i) {
+    T& get(int i) {
         sc_assert(i >= 0 && i < size(), "index out of array");
-        return _data + i;
+        return _data[i];
     }
 
-    T* getUnchecked(int i) {
-        return _data + i;
+    T& getUnchecked(int i) {
+        return _data[i];
     }
 
-    const T* constGet(int i) const {
+    const T& constGet(int i) const {
         sc_assert(i >= 0 && i < size(), "index out of array");
-        return _data + i;
+        return _data[i];
     }
 
     RefPtr<T> getRef(int i) {
-        T* t = get(i);
+        T* t = &get(i);
         HeapRefable* p = getHeader();
         return RefPtr<T>(t, p->_checkCode, i * sizeof(T));
     }
 
     RefPtr<const T> constGetRef(int i) const {
         DArray* self = const_cast<DArray*>(this);
-        T* t = self->get(i);
+        T* t = &self->get(i);
         HeapRefable* p = self->getHeader();
         return RefPtr<const T>(t, p->_checkCode, i * sizeof(T));
     }
 
-    void set(int i, T* d) {
+    void set(int i, T& d) {
         sc_assert(i >= 0 && i < size(), "index out of array");
-        _data[i] = *d;
+        _data[i] = std::move(d);
     }
 
-    void set(int i, const T* d) {
+    void set(int i, const T& d) {
         sc_assert(i >= 0 && i < size(), "index out of array");
-        _data[i] = std::move(*d);
+        _data[i] = d;
     }
 
     void clear() {
@@ -154,22 +154,22 @@ private:
     }
 
 public:
-    void add(const T* d) {
+    void add(const T& d) {
         int pos = size();
         tryGrow(pos + 1);
         T* m = (_data+ pos);
         new(m) T();
-        *m = *d;
+        *m = std::move(d);
         ++_size;
         getHeader()->_dataSize += sizeof(T);
     }
 
-    void add(T* d) {
+    void add(T& d) {
         int pos = size();
         tryGrow(pos + 1);
         T* m = (_data + pos);
         new(m) T();
-        *m = std::move(*d);
+        *m = std::move(d);
         ++_size;
         getHeader()->_dataSize += sizeof(T);
     }
@@ -191,18 +191,18 @@ public:
         tryGrow(capacity);
     }
 
-    void swap(DArray<T>* o) {
+    void swap(DArray<T>& o) {
         T* t = _data;
-        _data = o->_data;
-        o->_data = t;
+        _data = o._data;
+        o._data = t;
 
         int s = _size;
-        _size = o->_size;
-        o->_size = s;
+        _size = o._size;
+        o._size = s;
 
         int c = _capacity;
-        _capacity = o->_capacity;
-        o->_capacity = c;
+        _capacity = o._capacity;
+        o._capacity = c;
     }
 };
 }

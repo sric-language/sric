@@ -6,7 +6,7 @@ fun foo(): &Int {
     return *p;
 }
 
-fun foo2(a: & Int) {
+fun foo2(a: &mut Int) {
     var p : & Int  = a;
     p = a;
 }

@@ -221,6 +221,15 @@ public class Type extends AstNode {
             return true;
         }
 
+        if (this.isImmutable && !this.isNullType()) {
+            if (target.isReference && !target.isImmutable) {
+                return false;
+            }
+            if (target.isPointerType() && target.genericArgs != null && !target.genericArgs.get(0).isImmutable) {
+                return false;
+            }
+        }
+        
         if (equals(target, false, false)) {
             return true;
         }
@@ -236,6 +245,7 @@ public class Type extends AstNode {
             return true;
         }
         
+
         //pointer fit
         if (this.detail instanceof PointerInfo e && target.detail instanceof PointerInfo a) {
 
@@ -724,6 +734,22 @@ public class Type extends AstNode {
         type.resolvedAlias = this.resolvedAlias;
         type.explicitImmutable = this.explicitImmutable;
         type.isImmutable = true;
+        type.detail = this.detail;
+        type.isReference = this.isReference;
+        return type;
+    }
+    
+    public Type toMutable() {
+        if (this.isImmutable == false) {
+            return this;
+        }
+        
+        //shadow copy
+        Type type = new Type(this.id);
+        type.genericArgs = this.genericArgs;
+        type.resolvedAlias = this.resolvedAlias;
+        type.explicitImmutable = this.explicitImmutable;
+        type.isImmutable = false;
         type.detail = this.detail;
         type.isReference = this.isReference;
         return type;

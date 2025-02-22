@@ -1,19 +1,19 @@
 
 extern trait FileSystem {
-    extern static fun mkdirs(path: const * const Int8): Bool;
-    extern static fun listFiles(path: const * const Int8, files: DArray$<String>): Bool;
-    extern static fun exists(path: const * const Int8): Bool;
-    extern static fun isDir(path: const * const Int8): Bool;
-    extern static fun fileSize(path: const * const Int8): Int64;
-    extern static fun modifiedTime(path: const * const Int8): UInt64;
-    extern static fun moveTo(src: const * const Int8, dst: const * const Int8): Bool;
-    extern static fun copyTo(src: const * const Int8, dst: const * const Int8): Bool;
-    extern static fun remove(path: const * const Int8): Bool;
+    extern static fun mkdirs(path: const raw* const Int8): Bool;
+    extern static fun listFiles(path: const raw* const Int8, files: &DArray$<String>): Bool;
+    extern static fun exists(path: const raw* const Int8): Bool;
+    extern static fun isDir(path: const raw* const Int8): Bool;
+    extern static fun fileSize(path: const raw* const Int8): Int64;
+    extern static fun modifiedTime(path: const raw* const Int8): UInt64;
+    extern static fun moveTo(src: const raw* const Int8, dst: const raw* const Int8): Bool;
+    extern static fun copyTo(src: const raw* const Int8, dst: const raw* const Int8): Bool;
+    extern static fun remove(path: const raw* const Int8): Bool;
 
-    extern static fun isAbsolute(path: const * const Int8): Bool;
-    extern static fun canonicalPath(path: const * const Int8): String;
-    extern static fun fileName(path: const * const Int8): String;
-    extern static fun getExtName(path: const * const Int8): String;
-    extern static fun getBaseName(path: const * const Int8): String;
-    extern static fun getParentPath(path: const * const Int8): String;
+    extern static fun isAbsolute(path: const raw* const Int8): Bool;
+    extern static fun canonicalPath(path: const raw* const Int8): String;
+    extern static fun fileName(path: const raw* const Int8): String;
+    extern static fun getExtName(path: const raw* const Int8): String;
+    extern static fun getBaseName(path: const raw* const Int8): String;
+    extern static fun getParentPath(path: const raw* const Int8): String;
 }

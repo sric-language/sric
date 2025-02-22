@@ -35,56 +35,35 @@ namespace sric {
 	}
 
 	template<typename T>
-	OwnPtr<T>& nonNullable(OwnPtr<T>& p) {
-		sc_assert(!p.isNull(), "Non-Nullable");
-		return p;
-	}
-
-	template<typename T>
 	OwnPtr<T> nonNullable(OwnPtr<T>&& p) {
 		sc_assert(!p.isNull(), "Non-Nullable");
 		return p;
 	}
 
 	template<typename T>
-	RefPtr<T> nonNullable(RefPtr<T> p) {
+	T& nonNullable(T& p) {
 		sc_assert(!p.isNull(), "Non-Nullable");
 		return p;
 	}
 
 	template<typename T>
-	int hashCode(const T* p) {
-		return p->hashCode();
+	int hashCode(const T& p) {
+		return p.hashCode();
 	}
 
 	template<typename T>
-	int hashCode(const RefPtr<const T> p) {
-		return p->hashCode();
+	int hashCode(const int p) {
+		return p;
 	}
 
 	template<typename T>
-	int hashCode(const RefPtr<T> p) {
-		return p->hashCode();
+	int compare(const T& a, const T& b) {
+		return a.compare(b);
 	}
 
 	template<typename T>
-	int hashCode(const int* p) {
-		return *p;
-	}
-
-	template<typename T>
-	int compare(const T* a, const T* b) {
-		return a->compare(b);
-	}
-
-	template<typename T>
-	int compare(const RefPtr<T> a, const RefPtr<T> b) {
-		return a->compare(b);
-	}
-
-	template<typename T>
-	int compare(const int* a, const int* b) {
-		return *a - *b;
+	int compare(const int a, const int b) {
+		return a - b;
 	}
 
 	template<typename T>

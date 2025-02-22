@@ -105,6 +105,8 @@ public:
 
     T& operator*() { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
 
+    const T& operator*() const { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
+
     operator T* () { return pointer; }
 
     //template <class U>
@@ -188,8 +190,8 @@ OwnPtr<T> init(void* p, std::function<void(void*)> freeMemory) {
 }
 
 template <class T>
-OwnPtr<T> share(OwnPtr<T>* p) {
-    return p->share();
+OwnPtr<T> share(OwnPtr<T>& p) {
+    return p.share();
 }
 
 template <class T>

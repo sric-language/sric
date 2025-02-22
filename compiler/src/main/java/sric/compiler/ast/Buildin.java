@@ -109,7 +109,7 @@ public class Buildin {
             makeBuildinType(scope, "Void");
             makeBuildinType(scope, varargTypeName);//varargs
             makeBuildinType(scope, funcTypeName);//func
-            makeBuildinType(scope, genericParamTypeName).flags = FConst.Noncopyable;
+            makeBuildinType(scope, genericParamTypeName);//.flags = FConst.Noncopyable;
 
             buildinScope = scope;
             

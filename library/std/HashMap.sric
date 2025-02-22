@@ -12,50 +12,79 @@ private struct MapEntryList$<K, V> {
 
 struct HashMap$<K, V> {
     private var table: DArray$<MapEntryList$<K,V>> = DArray$<MapEntryList$<K,V>>{ .resize(4); };
-    var defValue: refable V;
+    static var defValue: refable V;
     private var length: Int = 0;
     
-    private fun constGetEntryList(k: * const K) const : ref* const MapEntryList$<K,V> {
+    private fun constGetEntryList(k: & const K) const : ref* const MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
         return table.constGetRef(h);
     }
 
-    private fun getEntryList(k: * const K) : ref* MapEntryList$<K,V> {
+    private fun getEntryList(k: & const K) : ref* MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
         return table.getRef(h);
     }
 
-    fun constGet(k: K): ref* const V {
-        var list = constGetEntryList(&k);
+    fun constGet(k: &K): ref* const V {
+        var list = constGetEntryList(k);
         for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
-            if (compare$<K>(&itr.k, &k) == 0) {
+            if (compare$<K>(itr.k, k) == 0) {
                 return &itr.v;
             }
         }
         return &defValue;
     }
 
-    fun get(k: K): ref* V {
-        var list = getEntryList(&k);
+    fun getRef(k: &K): ref* V {
+        var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
-            if (compare$<K>(&itr.k, &k) == 0) {
+            if (compare$<K>(itr.k, k) == 0) {
                 return &itr.v;
             }
         }
         return &defValue;
     }
-    
-    fun set(k: mut K, v: mut V) : Bool {
-        var list = getEntryList(&k);
+
+    operator fun get(k: &K): & V {
+        var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
-            if (compare$<K>(&itr.k, &k) == 0) {
+            if (compare$<K>(itr.k, k) == 0) {
+                unsafe {
+                    return itr.v;
+                }
+            }
+        }
+        unsafe {
+            return defValue;
+        }
+    }
+    
+    operator fun set(k: &K, v: mut &V) : Bool {
+        var list = getEntryList(k);
+        for (var itr = list.list.first(); itr != null; itr = itr.next) {
+            if (compare$<K>(itr.k, k) == 0) {
                 itr.v = move v;
                 return false;
             }
         }
-        var entry = alloc$<MapEntry$<K,V>>() { .k = move k; .v = move v; };
+        var entry = alloc$<MapEntry$<K,V>>() { .k = k; .v = move v; };
+        list.list.add(move entry);
+        ++length;
+        rehash();
+        return true;
+    }
+
+    fun constSet(k: &K, v: &V) : Bool {
+        var list = getEntryList(k);
+        for (var itr = list.list.first(); itr != null; itr = itr.next) {
+            if (compare$<K>(itr.k, k) == 0) {
+                itr.v = v;
+                return false;
+            }
+        }
+        var entry = alloc$<MapEntry$<K,V>>() { .k = k; .v = v; };
         list.list.add(move entry);
         ++length;
         rehash();
@@ -73,10 +102,10 @@ struct HashMap$<K, V> {
         length = 0;
     }
     
-    fun remove(k: K) : Bool {
-        var list = getEntryList(&k);
+    fun remove(k: &K) : Bool {
+        var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
-            if (compare$<K>(&itr.k, &k) == 0) {
+            if (compare$<K>(itr.k, k) == 0) {
                 list.list.remove(itr);
                 ++length;
                 return true;
@@ -85,21 +114,21 @@ struct HashMap$<K, V> {
         return false;
     }
     
-    fun contains(k: K) const : Bool {
-        var list = constGetEntryList(&k);
+    fun contains(k: &K) const : Bool {
+        var list = constGetEntryList(k);
         for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
-            if (compare$<K>(&itr.k, &k) == 0) {
+            if (compare$<K>(itr.k, k) == 0) {
                 return true;
             }
         }
         return false;
     }
     
-    fun eachWhile(f: fun(v:* const V, k:* const K):Bool) const {
+    fun eachWhile(f: fun(v:& const V, k:& const K):Bool) const {
         for (var i = 0; i<table.size(); ++i) {
             var list = table.constGetRef(i);
             for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
-                if (!f(&itr.v, &itr.k)) {
+                if (!f(itr.v, itr.k)) {
                     return;
                 }
             }
@@ -112,13 +141,13 @@ struct HashMap$<K, V> {
         }
         var newSize = length < 256 ? length*2+8 : (length*1.5) as Int;
         var otable = DArray$<MapEntryList$<K,V>>{ .resize(newSize); };
-        otable.swap(&this.table);
+        otable.swap(this.table);
         length = 0;
 
         for (var i = 0; i<otable.size(); ++i) {
             var list = otable.getRef(i);
             for (var itr = list.list.first(); itr != null; itr = itr.next) {
-                set(move itr.k, move itr.v);
+                set(itr.k, itr.v);
             }
         }
     }

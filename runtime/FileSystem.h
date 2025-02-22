@@ -13,7 +13,7 @@ namespace sric
 struct FileSystem
 {
     bool mkdirs(const char* path);
-    bool listFiles(const char* dirPath, RefPtr<DArray<String>> files);
+    bool listFiles(const char* dirPath, DArray<String>& files);
     bool exists(const char* filePath);
     bool isDir(const char* filePath);
     int64_t fileSize(const char* filePath);

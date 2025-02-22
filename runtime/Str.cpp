@@ -14,47 +14,47 @@ int String::hashCode() const {
     return hash_fn(cpp_str());
 }
 
-int String::compare(const String* other) const {
-    return strcmp(c_str(), other->c_str());
+int String::compare(const String& other) const {
+    return strcmp(c_str(), other.c_str());
 }
 
-int String::find(const String* s, int start) const {
-    auto it = str.find(s->str, start);
+int String::find(const String& s, int start) const {
+    auto it = str.find(s.str, start);
     if (it == std::string::npos) {
         return -1;
     }
     return it;
 }
 
-bool String::iequals(const String* other) const {
+bool String::iequals(const String& other) const {
     size_t sz = this->size();
-    if (other->size() != sz)
+    if (other.size() != sz)
         return false;
     for (unsigned int i = 0; i < sz; ++i)
-        if (tolower((*this)[i]) != tolower((*other)[i]))
+        if (tolower((*this)[i]) != tolower((other)[i]))
             return false;
     return true;
 }
 
-bool String::contains(const String* s) const {
-    return strstr(this->c_str(), s->c_str()) != NULL;
+bool String::contains(const String& s) const {
+    return strstr(this->c_str(), s.c_str()) != NULL;
 }
-bool String::startsWith(const String* s) const {
-    return strstr(this->c_str(), s->c_str()) == this->c_str();
+bool String::startsWith(const String& s) const {
+    return strstr(this->c_str(), s.c_str()) == this->c_str();
 }
-bool String::endsWith(const String* s) const {
-    return (this->cpp_str()).rfind(s->cpp_str()) == (this->size() - s->size());
+bool String::endsWith(const String& s) const {
+    return (this->cpp_str()).rfind(s.cpp_str()) == (this->size() - s.size());
 }
 
-void String::replace(const String* src, const String* dst) {
-    if (strcmp(src->c_str(), dst->c_str()) == 0) {
+void String::replace(const String& src, const String& dst) {
+    if (strcmp(src.c_str(), dst.c_str()) == 0) {
         return;
     }
-    size_t srcLen = src->size();
-    size_t desLen = dst->size();
+    size_t srcLen = src.size();
+    size_t desLen = dst.size();
     const std::string& self = this->cpp_str();
-    const std::string& csrc = src->cpp_str();
-    const std::string& cdst = dst->cpp_str();
+    const std::string& csrc = src.cpp_str();
+    const std::string& cdst = dst.cpp_str();
     std::string::size_type pos = self.find(csrc);
 
     while ((pos != std::string::npos))
@@ -64,16 +64,16 @@ void String::replace(const String* src, const String* dst) {
     }
 }
 
-DArray<String> String::split(const String* sep) const {
+DArray<String> String::split(const String& sep) const {
     DArray<String> tokens;
     if (this->size() == 0)
         return tokens;
     std::size_t start = 0, end = 0;
     while ((end = find(sep, start)) != std::string::npos) {
-        tokens.add(&substr(start, end - start));
+        tokens.add(substr(start, end - start));
         start = end + 1;
     }
-    tokens.add(&substr(start));
+    tokens.add(substr(start));
     return tokens;
 }
 
@@ -81,8 +81,8 @@ String String::substr(int pos, int len) const {
     return str.substr(pos, len);
 }
 
-String& String::plus(const String* other) {
-    str += other->str;
+String& String::plus(const String& other) {
+    str += other.str;
     return *this;
 }
 void String::add(const char* cstr) {

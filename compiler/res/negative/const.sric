@@ -17,7 +17,7 @@ struct A {
     }
 }
 
-fun foo3(a: A) {
+fun foo3(a: mut & A) {
     a.i = 1;
 }
 

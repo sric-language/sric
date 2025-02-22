@@ -1,36 +1,56 @@
 import sric::*;
 
 fun testHashMap() {
-    var map = HashMap$<String, Int>{ .defValue = 0; };
-    map.set("1", 1);
-    map.set("2", 2);
+    var map = HashMap$<String, Int>{};
+    map.constSet("1", 1);
+    map.constSet("2", 2);
 
-    var i =  map.get("1");
-    printf("%d\n", i);
+    var i =  map.getRef("1");
+    printf("%d\n", *i);
 }
 
 fun testHashMap2() {
-    var map = HashMap$<Int, String>{ .defValue = ""; };
+    var map = HashMap$<Int, String>{};
     map.set(1, "1");
     map.set(2, "2");
 
     unsafe {
-        var i =  map.get(1);
+        var i =  map[1];
         printf("%s\n", i.c_str());
     }
 }
 
 fun testHashMap3() {
-    var map = HashMap$<String, Int>{ .defValue = 0; };
+    var map = HashMap$<String, Int>{};
 
     for (var i=0; i<10; ++i) {
         map.set(String::fromInt32(i), i);
     }
 
-    var t =  map.get("1");
-    printf("%d\n", t);
+    var t =  map.getRef("1");
+    printf("%d\n", *t);
 
-    map.eachWhile(fun(v:* const Int, k:* const String): Bool {
+    map.eachWhile(fun(v:& const Int, k:& const String): Bool {
+        unsafe {
+            printf("%d:%s\n", v, k.c_str());
+        }
+        return true;
+    });
+}
+
+fun testHashMap4() {
+    var map = HashMap$<String, own*? Int>{};
+
+    for (var i=0; i<10; ++i) {
+        var p = alloc$<Int>();
+        *p = i;
+        map.set(String::fromInt32(i), p);
+    }
+
+    var t =  map.getRef("1");
+    printf("%d\n", **t);
+
+    map.eachWhile(fun(v:& const own*? Int, k:& const String): Bool {
         unsafe {
             printf("%d:%s\n", *v, k.c_str());
         }

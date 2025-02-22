@@ -46,7 +46,7 @@ struct LinkedList$<T: Linkable$<T>> {
         ++length;
     }
 
-    fun insertBefore(elem: mut own* T, pos: * mut T) {
+    fun insertBefore(elem: mut own* T, pos: ref* mut T) {
         if (pos.previous == null) {
             insert(move elem);
             return;
@@ -58,7 +58,7 @@ struct LinkedList$<T: Linkable$<T>> {
         ++length;
     }
 
-    fun remove(elem: *? mut T) : Bool {
+    fun remove(elem: ref*? mut T) : Bool {
         if (elem == null) return false;
         
         if (elem.next != null) {

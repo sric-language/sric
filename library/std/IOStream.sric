@@ -7,8 +7,8 @@ extern abstract struct IOStream {
     fun canWrite(): Bool;
     fun canSeek(): Bool;
 
-    abstract fun read(ptr: *Void, size: UInt32, count: UInt32): UInt32;
-    abstract fun write(ptr: *Void, size: UInt32, count: UInt32): UInt32;
+    abstract fun read(ptr: raw*Void, size: UInt32, count: UInt32): UInt32;
+    abstract fun write(ptr: raw*Void, size: UInt32, count: UInt32): UInt32;
 
     virtual fun readLine(buf: raw* Int8, bufSize: Int): raw*Int8;
     virtual fun eof(): Bool;
@@ -30,7 +30,7 @@ extern abstract struct IOStream {
 
     virtual fun close();
 
-    virtual fun pipeTo(out: * IOStream): Int32;
+    virtual fun pipeTo(out: & IOStream): Int32;
 
     fun writeInt8(out: Int8): Int32;
     fun writeInt16(out: Int16): Int32;
@@ -54,9 +54,9 @@ extern abstract struct IOStream {
     fun readFloat32(): Float32;
     fun readFloat64(): Float64;
 
-    fun writeSizedStr(buf: * String);
+    fun writeSizedStr(buf: & String);
     fun readSizedStr(): String;
-    fun writeStr(buf: * String);
+    fun writeStr(buf: & String);
     fun readAllStr(): String;
 
 }
@@ -68,6 +68,6 @@ extern struct Buffer : IOStream {
 }
 
 extern struct FileStream : IOStream {
-    static fun open(path: const * const Int8, mode: const * const Int8): own*? FileStream;
+    static fun open(path: const raw* const Int8, mode: const raw* const Int8): own*? FileStream;
 }
 

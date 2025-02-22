@@ -5,7 +5,7 @@ struct A {
     var i: Int = 1;
     var k: Int = 2;
 
-    operator fun compare(b: * A) : Int {
+    operator fun compare(b: & A) : Int {
         return i - b.i;
     }
 }
@@ -14,7 +14,7 @@ struct CP {
     var p: own*? Int;
 }
 
-fun testA(a: * A) {
+fun testA(a: ref* A) {
     printf("%d\n", a.i);
 }
 
@@ -27,7 +27,7 @@ fun testDerivativePtr() {
 
 fun testDerivativeRefable() {
     var a: refable A = A{};
-    var p2: ref* Int = a.k;
+    var p2: ref* Int = &a.k;
 
     printf("%d\n", *p2);
 }
@@ -58,7 +58,7 @@ fun testPtr() {
 
 fun testShare() {
     var p: own* A = alloc$<A>();
-    var p2: own* A = share$<A>(&p);
+    var p2: own* A = share$<A>(p);
 }
 
 fun testNullable() {
@@ -69,7 +69,7 @@ fun testNullable() {
 fun testCompare() {
     var a = A { .i = 1; };
     var b = A { .i = 2; };
-    if (a < &b) {
+    if (a < b) {
         printf("compare OK\n");
     }
 }
