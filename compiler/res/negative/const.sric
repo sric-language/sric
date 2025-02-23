@@ -4,11 +4,11 @@ var g : const Int = 1;
 struct A {
     var i : Int = 0;
 
-    fun foo() mut {
+    fun foo() {
         i = 1;
     }
 
-    fun foo2() {
+    fun foo2() const {
         i = 1;
     }
 
@@ -17,8 +17,11 @@ struct A {
     }
 }
 
-fun foo3(a: mut & A) {
+fun foo3(a: & A) {
     a.i = 1;
+}
+
+fun foo4(a: raw* A) {
 }
 
 fun main() {
@@ -26,5 +29,6 @@ fun main() {
     a.foo();
     a.foo2();
     foo3(a);
+    foo4(&a);
     g = 2;
 }

@@ -225,9 +225,9 @@ public class Type extends AstNode {
             if (target.isReference && !target.isImmutable) {
                 return false;
             }
-            if (target.isPointerType() && target.genericArgs != null && !target.genericArgs.get(0).isImmutable) {
-                return false;
-            }
+//            if (target.isPointerType() && target.genericArgs != null && !target.genericArgs.get(0).isImmutable) {
+//                return false;
+//            }
         }
         
         if (equals(target, false, false)) {
