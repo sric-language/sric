@@ -26,7 +26,7 @@ fun main()
     p = p2;
 
     var x: own*? Int = null;
-    foo(x!);
+    foo(x);
 
     foo2(move p2);
 

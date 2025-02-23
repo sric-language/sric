@@ -11,7 +11,7 @@ Sric programming language is a memory safe subset of C++.
 - Interoperate with existing C++ code
 - Modularization
 - With Block
-- Non-nullable pointer
+- Null safe
 - Dynamic Reflection
 - Generic Template, Closure, Operator Overloading
 - VSCode plugin and LSP support

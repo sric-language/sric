@@ -136,9 +136,9 @@ var b: Bar$<Int>;
 Pointer is non-nullable by default.
 ```
 var a: own*? B;
-var b: own* B = a!;
+var b: own* B = a;
 ```
-Convert a nullable type to a non-nullable type by using '!'.
+
 
 ### Immutable
 

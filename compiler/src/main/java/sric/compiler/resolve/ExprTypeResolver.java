@@ -721,21 +721,21 @@ public class ExprTypeResolver extends TypeResolver {
             
             e.resolvedType = Type.funcType(e);
         }
-        else if (v instanceof NonNullableExpr e) {
-            this.visit(e.operand);
-            boolean ok = false;
-            if (e.operand.resolvedType != null) {
-                if (e.operand.resolvedType.detail instanceof Type.PointerInfo pt) {
-                    if (pt.isNullable) {
-                        e.resolvedType = e.operand.resolvedType.toNonNullable();
-                        ok = true;
-                    }
-                }
-            }
-            if (!ok) {
-                err("Invalid non-nullable", e.operand.loc);
-            }
-        }
+//        else if (v instanceof NonNullableExpr e) {
+//            this.visit(e.operand);
+//            boolean ok = false;
+//            if (e.operand.resolvedType != null) {
+//                if (e.operand.resolvedType.detail instanceof Type.PointerInfo pt) {
+//                    if (pt.isNullable) {
+//                        e.resolvedType = e.operand.resolvedType.toNonNullable();
+//                        ok = true;
+//                    }
+//                }
+//            }
+//            if (!ok) {
+//                err("Invalid non-nullable", e.operand.loc);
+//            }
+//        }
         else {
             err("Unkown expr:"+v, v.loc);
             return;

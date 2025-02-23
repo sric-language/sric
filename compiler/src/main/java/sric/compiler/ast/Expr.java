@@ -20,6 +20,7 @@ public abstract class Expr extends AstNode {
     public boolean isPointerConvert = false;
     public Type implicitTypeConvertTo = null;
     public boolean implicitStringConvert = false;
+    public boolean checkNonnullable = false;
     
 //    public boolean implicitDereference = false;
 //    public boolean implicitGetAddress = false;
@@ -59,13 +60,13 @@ public abstract class Expr extends AstNode {
         }
     }
     
-    public static class NonNullableExpr extends Expr {
-        public Expr operand;    // operand expression
-        
-        public NonNullableExpr(Expr operand) {
-            this.operand = operand;
-        }
-    }
+//    public static class NonNullableExpr extends Expr {
+//        public Expr operand;    // operand expression
+//        
+//        public NonNullableExpr(Expr operand) {
+//            this.operand = operand;
+//        }
+//    }
     
     /**
      * wrap type for sizeof(t) or 'epxr is/as T'

@@ -7,14 +7,14 @@ var p2 : own* Int;
 fun foo2() : &own*Int {
     unsafe {
         var i: own*? Int;
-        return i!;
+        return i;
     }
 }
 
 fun main()
 {
     var x: own*? Int = null;
-    foo(x!);
+    foo(x);
 
     foo(move p);
     foo(move p2);

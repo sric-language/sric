@@ -1215,13 +1215,14 @@ public class CppGenerator extends BaseGenerator {
     public void visitExpr(Expr v) {
         int parentheses = 0;
         if (v.isStmt || v instanceof IdExpr || v instanceof LiteralExpr || v instanceof CallExpr || v instanceof GenericInstance 
-                || v instanceof AccessExpr || v instanceof NonNullableExpr || v instanceof WithBlockExpr || v instanceof ArrayBlockExpr) {
+                || v instanceof AccessExpr || v instanceof WithBlockExpr || v instanceof ArrayBlockExpr) {
             
         }
         else {
             print("(");
             parentheses++;
         }
+
         
         if (v.implicitTypeConvertTo != null && !v.implicitTypeConvertTo.isVarArgType()) {
             boolean ok = false;
@@ -1253,6 +1254,11 @@ public class CppGenerator extends BaseGenerator {
                 printType(v.implicitTypeConvertTo);
                 print(")");
             }
+        }
+                
+        if (v.checkNonnullable) {
+            print("nonNullable(");
+            parentheses++;
         }
 
 //        if (v.implicitDereference) {
@@ -1421,11 +1427,11 @@ public class CppGenerator extends BaseGenerator {
         else if (v instanceof ClosureExpr e) {
             printClosureExpr(e);
         }
-        else if (v instanceof NonNullableExpr e) {
-            print("nonNullable(");
-            this.visit(e.operand);
-            print(")");
-        }
+//        else if (v instanceof NonNullableExpr e) {
+//            print("nonNullable(");
+//            this.visit(e.operand);
+//            print(")");
+//        }
         else {
             err("Unkown expr:"+v, v.loc);
         }

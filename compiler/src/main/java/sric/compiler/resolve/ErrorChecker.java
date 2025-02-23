@@ -164,6 +164,10 @@ public class ErrorChecker extends CompilePass {
 //                from = Type.pointerType(loc, from, Type.PointerAttr.inst, false);
 //            }
 //        }
+
+        if (from.isNullablePointerType() && !to.isNullablePointerType()) {
+            target.checkNonnullable = true;
+        }
         
         if (!from.fit(to)) {
             boolean allowUnsafeCast = false;
@@ -238,9 +242,9 @@ public class ErrorChecker extends CompilePass {
     }
     
     public static AstNode idResolvedDef(Expr target) {
-        if (target instanceof Expr.NonNullableExpr e) {
-            target = e.operand;
-        }
+//        if (target instanceof Expr.NonNullableExpr e) {
+//            target = e.operand;
+//        }
 
         if (target instanceof Expr.IdExpr e) {
             return e.resolvedDef;
@@ -875,17 +879,17 @@ public class ErrorChecker extends CompilePass {
         else if (v instanceof Expr.ClosureExpr e) {
             this.visit(e.code);
         }
-        else if (v instanceof Expr.NonNullableExpr e) {
-            this.visit(e.operand);
-            if (e.operand.resolvedType.detail instanceof Type.PointerInfo pinfo) {
-                if (!pinfo.isNullable) {
-                    err("Must nullable expr", v.loc);
-                }
-            }
-            else {
-                err("Must nullable expr", v.loc);
-            }
-        }
+//        else if (v instanceof Expr.NonNullableExpr e) {
+//            this.visit(e.operand);
+//            if (e.operand.resolvedType.detail instanceof Type.PointerInfo pinfo) {
+//                if (!pinfo.isNullable) {
+//                    err("Must nullable expr", v.loc);
+//                }
+//            }
+//            else {
+//                err("Must nullable expr", v.loc);
+//            }
+//        }
         else {
             err("Unkown expr:"+v, v.loc);
         }

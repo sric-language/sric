@@ -249,10 +249,10 @@ public class Type extends AstNode {
         //pointer fit
         if (this.detail instanceof PointerInfo e && target.detail instanceof PointerInfo a) {
 
-            if (e.isNullable && !a.isNullable) {
-                //error to nonnullable
-                return false;
-            }
+//            if (e.isNullable && !a.isNullable) {
+//                //error to nonnullable
+//                return false;
+//            }
 
             if ((e.pointerAttr != a.pointerAttr)) {
                 if (e.pointerAttr == PointerAttr.own) {

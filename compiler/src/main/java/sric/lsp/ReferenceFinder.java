@@ -224,9 +224,9 @@ public class ReferenceFinder extends CompilePass {
             visitFuncPrototype(e, e.prototype);
             this.visit(e.code);
         }
-        else if (v instanceof Expr.NonNullableExpr e) {
-            this.visit(e.operand);
-        }
+//        else if (v instanceof Expr.NonNullableExpr e) {
+//            this.visit(e.operand);
+//        }
         else {
             //err("Unkown expr:"+v, v.loc);
         }

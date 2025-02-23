@@ -701,24 +701,24 @@ public class DeepParser extends Parser {
      **/
     private Expr termExpr() {
         Expr target = primaryExpr();
-        if (curt == TokenKind.bang) {
-            consume();
-            Loc loc = target.loc;
-            target = new NonNullableExpr(target);
-            endLoc(target, loc);
-        }
+//        if (curt == TokenKind.bang) {
+//            consume();
+//            Loc loc = target.loc;
+//            target = new NonNullableExpr(target);
+//            endLoc(target, loc);
+//        }
         while (curt != TokenKind.semicolon) {
             Expr chained = termChainExpr(target);
             if (chained == null) {
                 break;
             }
             target = chained;
-            if (curt == TokenKind.bang) {
-                consume();
-                Loc loc = target.loc;
-                target = new NonNullableExpr(target);
-                endLoc(target, loc);
-            }
+//            if (curt == TokenKind.bang) {
+//                consume();
+//                Loc loc = target.loc;
+//                target = new NonNullableExpr(target);
+//                endLoc(target, loc);
+//            }
         }
         return target;
     }

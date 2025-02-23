@@ -529,7 +529,7 @@ public class ScLibGenerator extends BaseGenerator {
     public void visitExpr(Expr v) {
         boolean parentheses = true;
         if (v.isStmt || v instanceof Expr.IdExpr || v instanceof Expr.LiteralExpr || v instanceof Expr.CallExpr || v instanceof Expr.GenericInstance 
-                || v instanceof Expr.AccessExpr || v instanceof Expr.NonNullableExpr || v instanceof Expr.WithBlockExpr || v instanceof Expr.ArrayBlockExpr
+                || v instanceof Expr.AccessExpr || v instanceof Expr.WithBlockExpr || v instanceof Expr.ArrayBlockExpr
                 || v instanceof Expr.TypeExpr || v instanceof ClosureExpr) {
             parentheses = false;
         }
@@ -611,10 +611,10 @@ public class ScLibGenerator extends BaseGenerator {
         else if (v instanceof ClosureExpr e) {
             printClosureExpr(e);
         }
-        else if (v instanceof Expr.NonNullableExpr e) {
-            this.visit(e.operand);
-            print("!");
-        }
+//        else if (v instanceof Expr.NonNullableExpr e) {
+//            this.visit(e.operand);
+//            print("!");
+//        }
         else {
             err("Unkown expr:"+v, v.loc);
         }

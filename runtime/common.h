@@ -1,7 +1,9 @@
 #ifndef _SRIC_COMMON_H_
 #define _SRIC_COMMON_H_
 
-#ifdef NDEBUG
+#ifndef _DEBUG
+    #define SC_NO_CHECK
+#elif defined(NDEBUG)
     #define SC_NO_CHECK
 #endif
 
