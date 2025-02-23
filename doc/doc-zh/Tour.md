@@ -100,7 +100,7 @@ a.foo();
 b.foo();
 ```
 
-### 类型转换和判断:
+### 类型转换和判断
 ```
 var a = p as own* A;
 var b = p is own* A;
@@ -131,7 +131,7 @@ T fun foo$<T>(a: T) {
 var b: Bar$<Int>;
 ```
 
-### Non-nullable
+### Null 安全
 
 指针默认是不可以为null的
 ```

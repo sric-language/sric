@@ -100,7 +100,7 @@ a.foo();
 b.foo();
 ```
 
-### Type Cast and Check:
+### Type Cast and Check
 ```
 var a = p as own* A;
 var b = p is own* A;
@@ -131,7 +131,7 @@ T fun foo$<T>(a: T) {
 var b: Bar$<Int>;
 ```
 
-### Nullable
+### Null safe
 
 Pointer is non-nullable by default.
 ```
