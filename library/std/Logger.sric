@@ -1,7 +1,7 @@
 //@#include "Logger.h"
 
-extern fun scError(tag: raw*const Int8, msg: raw*const Int8, args: ...);
-extern fun scWarn(tag: raw*const Int8, msg: raw*const Int8, args: ...);
-extern fun scInfo(tag: raw*const Int8, msg: raw*const Int8, args: ...);
-extern fun scDebug(tag: raw*const Int8, msg: raw*const Int8, args: ...);
+externc fun scError(tag: raw*const Int8, msg: raw*const Int8, args: ...);
+externc fun scWarn(tag: raw*const Int8, msg: raw*const Int8, args: ...);
+externc fun scInfo(tag: raw*const Int8, msg: raw*const Int8, args: ...);
+externc fun scDebug(tag: raw*const Int8, msg: raw*const Int8, args: ...);
 

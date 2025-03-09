@@ -543,7 +543,7 @@ public class Type extends AstNode {
         Type type = new Type(loc, Buildin.pointerTypeName);
         if (elemType != null) {
             type.genericArgs = new ArrayList<>();
-            type.genericArgs.add(elemType);
+            type.genericArgs.add(elemType.toDereference());
         }
         PointerInfo info = new PointerInfo();
         info.pointerAttr = pointerAttr;
@@ -733,6 +733,22 @@ public class Type extends AstNode {
         type.isImmutable = true;
         type.detail = this.detail;
         type.isReference = this.isReference;
+        return type;
+    }
+    
+    public Type toDereference() {
+        if (!this.isReference) {
+            return this;
+        }
+        
+        //shadow copy
+        Type type = new Type(this.id);
+        type.genericArgs = this.genericArgs;
+        type.resolvedAlias = this.resolvedAlias;
+        //type.explicitImmutable = this.explicitImmutable;
+        type.isImmutable = this.isImmutable;
+        type.detail = this.detail;
+        type.isReference = false;
         return type;
     }
     

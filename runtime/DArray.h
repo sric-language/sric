@@ -174,6 +174,14 @@ public:
         getHeader()->_dataSize += sizeof(T);
     }
 
+    T pop() {
+        T t = std::move(_data[i]);
+        (_data + i)->~T();
+        --_size;
+        getHeader()->_dataSize -= sizeof(T);
+        return t;
+    }
+
     int size() const {
         return _size;
     }

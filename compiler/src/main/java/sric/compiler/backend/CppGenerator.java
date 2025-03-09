@@ -62,7 +62,7 @@ public class CppGenerator extends BaseGenerator {
     }
     
     private void printCommentInclude(TopLevelDef type) {
-        if (type.isExtern() && type.comment != null) {
+        if (type.comment != null) {
             for (Comment comment : type.comment.comments) {
                if (comment.content.startsWith("#")) {
                    print(comment.content);
@@ -882,7 +882,7 @@ public class CppGenerator extends BaseGenerator {
             print(getSymbolName(v));
         }
         
-        printFuncPrototype(v.prototype, false, v.isStatic());
+        printFuncPrototype(v.prototype, false, v.isStatic(), implMode() || inlined);
         
         if (v.code == null) {
             if ((v.flags & FConst.Abstract) != 0) {
@@ -916,7 +916,7 @@ public class CppGenerator extends BaseGenerator {
         }
     }
     
-    private void printFuncPrototype(FuncPrototype prototype, boolean isLambda, boolean isStatic) {
+    private void printFuncPrototype(FuncPrototype prototype, boolean isLambda, boolean isStatic, boolean isImple) {
         print("(");
         if (prototype != null && prototype.paramDefs != null) {
             int i = 0;
@@ -932,7 +932,7 @@ public class CppGenerator extends BaseGenerator {
                     print(" ");
                     print(p.name);
                 }
-                if (p.initExpr != null) {
+                if (p.initExpr != null && !isImple) {
                     print(" = ");
                     this.visit(p.initExpr);
                 }
@@ -1257,7 +1257,7 @@ public class CppGenerator extends BaseGenerator {
         }
                 
         if (v.checkNonnullable) {
-            print("nonNullable(");
+            print("sric::nonNullable(");
             parentheses++;
         }
 
@@ -1307,7 +1307,7 @@ public class CppGenerator extends BaseGenerator {
                 boolean isNullable = false;
                 if (e.target.resolvedType != null && e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
                     if (pinfo.isNullable) {
-                        print("nonNullable(");
+                        print("sric::nonNullable(");
                         isNullable = true;
                     }
                 }
@@ -1428,7 +1428,7 @@ public class CppGenerator extends BaseGenerator {
             printClosureExpr(e);
         }
 //        else if (v instanceof NonNullableExpr e) {
-//            print("nonNullable(");
+//            print("sric::nonNullable(");
 //            this.visit(e.operand);
 //            print(")");
 //        }
@@ -1450,7 +1450,7 @@ public class CppGenerator extends BaseGenerator {
                 if (targetType.detail instanceof Type.PointerInfo pinfo) {
                     
                     if (!pinfo.isNullable) {
-                        print("nonNullable(");
+                        print("sric::nonNullable(");
                     }
                     
                     if (!targetType.isRawPointerType() && targetType.genericArgs != null) {
@@ -1738,7 +1738,7 @@ public class CppGenerator extends BaseGenerator {
 //        }
         print("]");
         
-        this.printFuncPrototype(expr.prototype, true, false);
+        this.printFuncPrototype(expr.prototype, true, false, false);
         
         this.visit(expr.code);
     }

@@ -30,5 +30,6 @@ The generated C++ code is located in the "sric/output" directory.
 
 ## Compile by fmake (Option)
 ```
+fan fmake runtime/sric.fmake -debug
 fan fmake output/test.fmake -debug
 ```

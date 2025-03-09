@@ -165,7 +165,7 @@ public class ErrorChecker extends CompilePass {
 //            }
 //        }
 
-        if (from.isNullablePointerType() && !to.isNullablePointerType()) {
+        if (from.isNullablePointerType() && (!to.isNullablePointerType() && !to.isFuncType())) {
             target.checkNonnullable = true;
         }
         
@@ -574,6 +574,9 @@ public class ErrorChecker extends CompilePass {
         }
         else if (v instanceof Stmt.ExprStmt exprs) {
             this.visit(exprs.expr);
+            if (exprs.expr instanceof IdExpr) {
+                err("Can not be statment", exprs.expr.loc);
+            }
         }
         else if (v instanceof Stmt.JumpStmt jumps) {
 
@@ -1008,6 +1011,7 @@ public class ErrorChecker extends CompilePass {
                 this.visit(t.argExpr);
             }
         }
+
         if (e.target.isResolved()) {
             if (e.target.resolvedType.detail instanceof Type.FuncInfo f) {
                 

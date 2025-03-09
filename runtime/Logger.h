@@ -70,20 +70,20 @@ public:
  */
 
 #define sc_Log_log(tag, level, msg, ...) do {\
-  if (Log::cur().isEnableLevel(level))\
-    Log::cur().doLog(tag, __FILE__, __func__, __LINE__,  level, msg, ## __VA_ARGS__);\
+  if (sric::Log::cur().isEnableLevel(level))\
+    sric::Log::cur().doLog(tag, __FILE__, __func__, __LINE__,  level, msg, ## __VA_ARGS__);\
 } while(false)
 
 /**
  * convenience log macro.
  *
  */
-#define scError(tag, msg, ...) sc_Log_log(tag, Log::Err, msg, ## __VA_ARGS__)
-#define scWarn(tag, msg, ...)  sc_Log_log(tag, Log::Warn, msg, ## __VA_ARGS__)
-#define scInfo(tag, msg, ...)  sc_Log_log(tag, Log::Info, msg, ## __VA_ARGS__)
+#define scError(tag, msg, ...) sc_Log_log(tag, sric::LogLevel::Err, msg, ## __VA_ARGS__)
+#define scWarn(tag, msg, ...)  sc_Log_log(tag, sric::LogLevel::Warn, msg, ## __VA_ARGS__)
+#define scInfo(tag, msg, ...)  sc_Log_log(tag, sric::LogLevel::Info, msg, ## __VA_ARGS__)
 
 #ifdef _DEBUG
-  #define scDebug(tag, msg, ...) sc_Log_log(tag, Log::Debug, msg, ## __VA_ARGS__)
+  #define scDebug(tag, msg, ...) sc_Log_log(tag, sric::LogLevel::Debug, msg, ## __VA_ARGS__)
 #else
   #define scDebug(tag, msg, ...)
 #endif

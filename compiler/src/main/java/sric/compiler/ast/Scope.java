@@ -57,6 +57,18 @@ public class Scope extends AstNode {
         }
     }
     
+    public void addOverride(Scope other) {
+        for (HashMap.Entry<String, ArrayList<AstNode>> entry : other.symbolTable.entrySet()) {
+            for (AstNode anode : entry.getValue()) {
+                ArrayList<AstNode> nodes = symbolTable.get(entry.getKey());
+                if (nodes != null && nodes.size() > 0) {
+                    continue;
+                }
+                put(entry.getKey(), anode);
+            }
+        }
+    }
+    
     public Scope dup() {
         Scope s = new Scope();
         s.symbolTable = this.symbolTable;

@@ -1,0 +1,10 @@
+name = sric
+summary = sric
+outType = lib
+version = 1.0
+depends = 
+srcDirs = ./, ../output/sric.cpp
+incDir = ./
+extIncDirs = ../output/
+msvc.extConfigs.cppflags = /std:c++17
+gcc.extConfigs.cppflags = -std=c++17

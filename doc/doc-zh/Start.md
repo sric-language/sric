@@ -29,5 +29,6 @@ sric test.scm
 
 ## 通过fmake来编译 (可选的)
 ```
+fan fmake runtime/sric.fmake -debug
 fan fmake output/test.fmake -debug
 ```

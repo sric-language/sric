@@ -108,6 +108,9 @@ public class ScLibGenerator extends BaseGenerator {
         if ((flags & FConst.Operator) != 0) {
             print("operator ");
         }
+        if ((flags & FConst.Noncopyable) != 0) {
+            print("noncopyable ");
+        }
     }
     
     private void printCommont(TopLevelDef f) {

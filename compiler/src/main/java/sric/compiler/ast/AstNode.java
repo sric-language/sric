@@ -268,7 +268,7 @@ public class AstNode {
                             inhSd.getScopeNoPrivate(s);
                             Scope inhScope2 = inhSd.getInheriteScope();
                             if (inhScope2 != null) {
-                                s.addAll(inhScope2);
+                                s.addOverride(inhScope2);
                             }
                         }
                     }
