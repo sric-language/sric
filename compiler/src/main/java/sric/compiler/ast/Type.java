@@ -283,8 +283,11 @@ public class Type extends AstNode {
 
             if (this.id.resolvedDef != null && target.id.resolvedDef != null) {
                 if (this.id.resolvedDef instanceof TypeDef sd && target.id.resolvedDef instanceof TypeDef td) {
-                    if (sd.originGenericTemplate == td.originGenericTemplate || sd == td.originGenericTemplate || sd.originGenericTemplate == td) {
-                        return true;
+                    
+                    if (sd.originGenericTemplate != null || td.originGenericTemplate != null) {
+                        if (sd.originGenericTemplate == td.originGenericTemplate || sd == td.originGenericTemplate || sd.originGenericTemplate == td) {
+                            return true;
+                        }
                     }
 
                     if (sd.isInheriteFrom(td)) {
@@ -380,7 +383,7 @@ public class Type extends AstNode {
         
         if (this.id.resolvedDef != null && target.id.resolvedDef != null) {
             if (this.id.resolvedDef instanceof TypeDef sd && target.id.resolvedDef instanceof TypeDef td) {
-                if (sd.originGenericTemplate == td.originGenericTemplate) {
+                if (sd.originGenericTemplate != null && sd.originGenericTemplate == td.originGenericTemplate) {
                     return true;
                 }
                 if (sd == td.originGenericTemplate) {
@@ -432,11 +435,11 @@ public class Type extends AstNode {
                 }
                 
                 if (from.id.resolvedDef instanceof TypeDef sd && to.id.resolvedDef instanceof TypeDef td) {
-                    //if (ttd instanceof TypeDef td) {
+                    if (sd.originGenericTemplate != null || td.originGenericTemplate != null) {
                         if (sd.originGenericTemplate == td.originGenericTemplate || sd == td.originGenericTemplate || sd.originGenericTemplate == td) {
                             ok = true;
                         }
-                    //}
+                    }
 
                     if (sd.isInheriteFrom(td)) {
                         ok = true;

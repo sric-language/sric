@@ -93,7 +93,7 @@ public:
         _data[i] = std::move(d);
     }
 
-    void set(int i, const T& d) {
+    void constSet(int i, const T& d) {
         sc_assert(i >= 0 && i < size(), "index out of array");
         _data[i] = d;
     }
@@ -175,8 +175,11 @@ public:
     }
 
     T pop() {
-        T t = std::move(_data[i]);
-        (_data + i)->~T();
+        if (_size == 0) {
+            return T();
+        }
+        T t = std::move(_data[_size-1]);
+        (_data + _size - 1)->~T();
         --_size;
         getHeader()->_dataSize -= sizeof(T);
         return t;

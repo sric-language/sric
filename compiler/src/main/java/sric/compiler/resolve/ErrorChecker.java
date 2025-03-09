@@ -122,6 +122,10 @@ public class ErrorChecker extends CompilePass {
             return;
         }
         
+//        if (loc.line == 74) {
+//            System.err.println("DEBUG");
+//        }
+        
         //implicit convert string
         //sric::String
         if (to.id.resolvedDef instanceof TypeDef td) {
@@ -266,7 +270,7 @@ public class ErrorChecker extends CompilePass {
         if (v.initExpr != null) {
             this.visit(v.initExpr);
         }
-        
+
 //        if ((v.flags & FConst.Static) != 0) {
 //            err("Unsupport Static Field", v.loc);
 //        }
@@ -366,6 +370,9 @@ public class ErrorChecker extends CompilePass {
                     if (v.code != null) {
                         err("abstract method must no code", v.loc);
                     }
+                }
+                else if ((v.flags & FConst.Static) == 0) {
+                    err("Must be abstract", v.loc);
                 }
             }
         }

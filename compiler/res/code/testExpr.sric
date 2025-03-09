@@ -23,7 +23,7 @@ fun foo() : Int {
 
     var h = false;
     var i = !h && g;
-    print(i);
+    print(i as Int);
 
     return 1;
 }

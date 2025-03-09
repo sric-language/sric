@@ -69,6 +69,7 @@ class RefPtr {
 
     template <class U> friend class RefPtr;
     template <class U> friend RefPtr<U> rawToRef(U* ptr);
+    template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 private:
 #ifdef SC_NO_CHECK
 #else
@@ -173,8 +174,8 @@ public:
     bool isNull() { return pointer == nullptr; }
 
     bool operator==(const T* other) { return this->pointer == other; }
-    bool operator==(const RefPtr<T>& other) { return this->pointer == other->pointer; }
-    bool operator<(const RefPtr<T>& other) { return this->pointer < other->pointer; }
+    bool operator==(const RefPtr<T>& other) { return this->pointer == other.pointer; }
+    bool operator<(const RefPtr<T>& other) { return this->pointer < other.pointer; }
 
     template <class U> RefPtr<U> castTo()
     {
