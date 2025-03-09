@@ -986,6 +986,9 @@ public class ExprTypeResolver extends TypeResolver {
                     if (e.lhs.resolvedType.isNum() && e.rhs.resolvedType.isNum()) {
                         //OK
                     }
+                    else if (e.lhs.resolvedType.isBool() && e.rhs.resolvedType.isBool()) {
+                        //OK
+                    }
                     else if (e.lhs.resolvedType.isPointerType() && e.rhs.resolvedType.isPointerType()) {
                         //OK
                     }

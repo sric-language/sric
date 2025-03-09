@@ -114,9 +114,9 @@ public class ErrorChecker extends CompilePass {
     }
     
     private void verifyTypeFit(Expr target, Type to, Loc loc) {
-        verifyTypeFit(target, to, loc, false);
+        verifyTypeFit(target, to, loc, false, false);
     }
-    private void verifyTypeFit(Expr target, Type to, Loc loc, boolean isCallArg) {
+    private void verifyTypeFit(Expr target, Type to, Loc loc, boolean isCallArg, boolean isReturn) {
         Type from = target.resolvedType;
         if (from == null) {
             return;
@@ -182,36 +182,8 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
-        //field not moved
-        AstNode resolvedDef = idResolvedDef(target);
-        if (resolvedDef != null) {
-            if (resolvedDef instanceof AstNode.FieldDef) {
-                if (!isCopyable(target.resolvedType) && !to.isReference) {
-                    if (to.detail instanceof Type.PointerInfo p2) {
-                        if (p2.pointerAttr == Type.PointerAttr.own) {
-                            err("Miss move keyword", loc);
-                        }
-                    }
-                    else {
-                        err("Miss move keyword", loc);
-                    }
-                }
-            }
-        }
-        
-        //fix return reference
-        //foo():&A;
-        //var a: A = foo();
-        if (target.resolvedType.isReference && !isCopyable(target.resolvedType) && !to.isReference) {
-            if (to.detail instanceof Type.PointerInfo p2) {
-                if (p2.pointerAttr == Type.PointerAttr.own) {
-                    err("Miss move keyword", loc);
-                }
-            }
-            else {
-                err("Miss move keyword", loc);
-            }
-        }
+        checkMove(target, isReturn, to, loc);
+
         
         if (target instanceof LiteralExpr lit && to.detail instanceof Type.PointerInfo p2) {
             if (p2.pointerAttr == Type.PointerAttr.own || p2.pointerAttr == Type.PointerAttr.ref) {
@@ -242,6 +214,42 @@ public class ErrorChecker extends CompilePass {
                 wbe._storeVar = null;
             }
             target.implicitTypeConvertTo = to;
+        }
+    }
+
+    private void checkMove(Expr target, boolean isReturn, Type to, Loc loc) {
+        
+        boolean targetNeedMove = false;
+        //field not moved
+        AstNode resolvedDef = idResolvedDef(target);
+        if (resolvedDef != null) {
+            if (resolvedDef instanceof AstNode.FieldDef) {
+                targetNeedMove = true;
+            }
+        }
+        //fix return reference
+        //foo():&A;
+        //var a: A = foo();
+        if (target.resolvedType.isReference) {
+            targetNeedMove = true;
+        }
+        
+        //local var auto move
+        if (isReturn && resolvedDef instanceof AstNode.FieldDef f) {
+            if (f.isLocalVar) {
+                targetNeedMove = false;
+            }
+        }
+        
+        if (targetNeedMove && !isCopyable(target.resolvedType) && !to.isReference) {
+            if (to.detail instanceof Type.PointerInfo p2) {
+                if (p2.pointerAttr == Type.PointerAttr.own) {
+                    err("Miss move keyword", loc);
+                }
+            }
+            else {
+                err("Miss move keyword", loc);
+            }
         }
     }
     
@@ -606,7 +614,7 @@ public class ErrorChecker extends CompilePass {
                     err("Invalid return", rets.loc);
                 }
                 else {
-                    this.verifyTypeFit(rets.expr, rets._funcReturnType, rets.expr.loc);
+                    this.verifyTypeFit(rets.expr, rets._funcReturnType, rets.expr.loc, false, true);
                 }
                 
 //                if (rets._funcReturnType != null && rets._funcReturnType.detail instanceof PointerInfo pinfo) {
@@ -1037,7 +1045,7 @@ public class ErrorChecker extends CompilePass {
                                     err("Arg name error", t.loc);
                                 }
                             }
-                            verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).fieldType, t.loc, true);
+                            verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).fieldType, t.loc, true, false);
                             ++i;
                         }
                         if (i < e.args.size()) {
@@ -1157,10 +1165,10 @@ public class ErrorChecker extends CompilePass {
                         else if (e.lhs.resolvedType.detail instanceof Type.PointerInfo p1 && e.rhs.resolvedType.detail instanceof Type.PointerInfo p2) {
                             if (p1.pointerAttr != p2.pointerAttr) {
                                 if (p1.pointerAttr.ordinal() > p2.pointerAttr.ordinal()) {
-                                    verifyTypeFit(e.rhs, e.lhs.resolvedType, e.rhs.loc, true);
+                                    verifyTypeFit(e.rhs, e.lhs.resolvedType, e.rhs.loc, true, false);
                                 }
                                 else {
-                                    verifyTypeFit(e.lhs, e.rhs.resolvedType, e.lhs.loc, true);
+                                    verifyTypeFit(e.lhs, e.rhs.resolvedType, e.lhs.loc, true, false);
                                 }
                             }
                         }
@@ -1170,7 +1178,7 @@ public class ErrorChecker extends CompilePass {
                     }
                     else if (e.resolvedOperator != null) {
                         Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
-                        verifyTypeFit(e.rhs, paramType, e.rhs.loc, true);
+                        verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false);
                     }
                     else if (!e.lhs.resolvedType.equals(e.rhs.resolvedType)) {
                         err("Cant compare different type", e.loc);
@@ -1196,7 +1204,7 @@ public class ErrorChecker extends CompilePass {
                 case slash:
                     if (e.resolvedOperator != null) {
                         Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
-                        verifyTypeFit(e.rhs, paramType, e.rhs.loc, true);
+                        verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false);
                     }
                     verifyUnsafe(e.lhs);
                     break;

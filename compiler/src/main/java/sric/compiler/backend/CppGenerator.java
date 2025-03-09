@@ -1387,18 +1387,18 @@ public class CppGenerator extends BaseGenerator {
             this.printType(e.type);
         }
         else if (v instanceof IndexExpr e) {
-            if (e.resolvedOperator != null) {
-                this.visit(e.target);
-                print(".get(");
-                this.visit(e.index);
-                print(")");
-            }
-            else {
+//            if (e.resolvedOperator != null) {
+//                this.visit(e.target);
+//                print(".get(");
+//                this.visit(e.index);
+//                print(")");
+//            }
+//            else {
                 this.visit(e.target);
                 print("[");
                 this.visit(e.index);
                 print("]");
-            }
+//            }
         }
         else if (v instanceof GenericInstance e) {
             this.visit(e.target);
@@ -1518,30 +1518,39 @@ public class CppGenerator extends BaseGenerator {
         }
         else {
             if (e.resolvedOperator !=  null) {
-                this.visit(e.lhs);
-                print(".").print(e.resolvedOperator.name).print("(");
-                this.visit(e.rhs);
-                print(")");
-                switch (e.opToken) {
-                    case eq:
-                        print(" == 0");
-                        break;
-                    case notEq:
-                        print(" != 0");
-                        break;
-                    case lt:
-                        print(" < 0");
-                        break;
-                    case gt:
-                        print(" > 0");
-                        break;
-                    case ltEq:
-                        print(" <= 0");
-                        break;
-                    case gtEq:
-                        print(" >= 0");
-                        break;
-                    default:
+                if (e.opToken == TokenKind.minus || e.opToken == TokenKind.plus || e.opToken == TokenKind.star || e.opToken == TokenKind.slash) {
+                    this.visit(e.lhs);
+                    print(" ");
+                    print(e.opToken.symbol);
+                    print(" ");
+                    this.visit(e.rhs);
+                }
+                else {
+                    this.visit(e.lhs);
+                    print(".").print(e.resolvedOperator.name).print("(");
+                    this.visit(e.rhs);
+                    print(")");
+                    switch (e.opToken) {
+                        case eq:
+                            print(" == 0");
+                            break;
+                        case notEq:
+                            print(" != 0");
+                            break;
+                        case lt:
+                            print(" < 0");
+                            break;
+                        case gt:
+                            print(" > 0");
+                            break;
+                        case ltEq:
+                            print(" <= 0");
+                            break;
+                        case gtEq:
+                            print(" >= 0");
+                            break;
+                        default:
+                    }
                 }
             }
             else {
