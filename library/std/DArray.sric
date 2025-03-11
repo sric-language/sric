@@ -28,4 +28,6 @@ extern noncopyable struct DArray$<T> {
     fun removeAt(i: Int);
 
     fun swap(t: &DArray$<T>);
+
+    fun isEmpty() const: Bool;
 }

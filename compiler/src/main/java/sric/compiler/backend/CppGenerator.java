@@ -661,6 +661,10 @@ public class CppGenerator extends BaseGenerator {
 
     @Override
     public void visitField(AstNode.FieldDef v) {
+        if ((v.flags & FConst.ExternC) != 0) {
+            return;
+        }
+        
         if (v.isLocalVar) {
             if (printLocalFieldDefAsExpr(v)) {
                 print(";").newLine();
@@ -831,9 +835,10 @@ public class CppGenerator extends BaseGenerator {
 //        if ((v.flags & FConst.Extern) != 0) {
 //            print("extern ");
 //        }
-        
-        printType(v.prototype.returnType);
-        print(" ");
+        if ((v.flags & FConst.Ctor) == 0) {
+            printType(v.prototype.returnType);
+            print(" ");
+        }
         if (implMode()) {
             if (v.parent instanceof TypeDef t) {
                 if (t.parent instanceof FileUnit fu) {
@@ -850,7 +855,15 @@ public class CppGenerator extends BaseGenerator {
             }
         }
         
-        if (isOperator) {
+        if ((v.flags & FConst.Ctor) != 0) {
+            if (!v.name.equals("new")) {
+                print("~");
+            }
+            if (v.parent instanceof TypeDef t) {
+                print(t.name);
+            }
+        }
+        else if (isOperator) {
             print("operator");
             switch (v.name) {
                 case "plus":

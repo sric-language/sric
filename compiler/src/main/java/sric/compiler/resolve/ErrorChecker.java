@@ -465,6 +465,16 @@ public class ErrorChecker extends CompilePass {
                 --inUnsafe;
             }
         }
+        
+        if ((v.flags & FConst.Ctor) != 0) {
+            if (v.prototype.paramDefs != null && v.prototype.paramDefs.size() > 0) {
+                err("Ctor unsupport paramters", v.loc);
+            }
+                            
+            if (v.prototype.returnType != null && !v.prototype.returnType.isVoid()) {
+                err("Can't return from Ctor", v.loc);
+            }
+        }
     }
 
     @Override

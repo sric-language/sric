@@ -266,6 +266,9 @@ public class ExprTypeResolver extends TypeResolver {
                     if ((f.flags & FConst.Static) != 0) {
                         continue;
                     }
+                    if ((f.flags & FConst.Ctor) != 0) {
+                        continue;
+                    }
                     if (inhScopes.contains(f.name)) {
                         if ((f.flags | FConst.Override) != 0) {
                             AstNode old = inhScopes.get(f.name, v.loc, null);

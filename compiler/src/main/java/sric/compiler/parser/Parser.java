@@ -180,6 +180,12 @@ public class Parser {
             case funKeyword:
             {
                 consume();
+                if (curt == newKeyword || curt == deleteKeyword) {
+                    String sname = curt.symbol;
+                    consume();
+                    flags |= FConst.Ctor;
+                    return methodDef(loc, doc, flags, null, sname);
+                }
                 String sname = consumeId();
                 return methodDef(loc, doc, flags, null, sname);
             }

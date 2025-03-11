@@ -33,6 +33,8 @@ extern noncopyable struct String {
     fun toFloat() const: Float32;
     fun toDouble() const: Float64;
 
+    fun isEmpty() const: Bool;
+
     fun hashCode() const: Int;
     operator fun compare(p: &const String) const : Int;
 

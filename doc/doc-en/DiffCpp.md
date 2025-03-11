@@ -5,9 +5,7 @@
 - No function overload by params
 - No header file
 - No implicit copying of large objects
-- No new, delete
 - No define multi var per statement
-- No constructor
 - No nested class, nested function
 - No class, just struct
 - No namespace

@@ -11,7 +11,7 @@ package sric.compiler.ast;
 public class FConst {
     public static final int Abstract   = 0x00000001;
     public static final int Const      = 0x00000002;
-//    public static final int Ctor       = 0x00000004;
+    public static final int Ctor       = 0x00000004;
     public static final int Enum       = 0x00000008;
 //    public static final int Facet      = 0x00000010;
     public static final int Unsafe     = 0x00000020;

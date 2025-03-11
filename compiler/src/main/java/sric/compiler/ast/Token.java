@@ -156,6 +156,7 @@ public class Token {
         operatorKeyword("operator", true),
         noncopyableKeyword("noncopyable", true),
         refableKeyword("refable", true),
+        deleteKeyword("delete", true),
         
         // misc
         eof("eof", false);

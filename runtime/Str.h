@@ -50,6 +50,10 @@ public:
         return get(i);
     }
 
+    bool isEmpty() {
+        return str.size() > 0;
+    }
+
     int hashCode() const;
     int compare(const String& other) const;
 

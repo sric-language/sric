@@ -1,0 +1,11 @@
+
+
+struct A {
+    var i : Int;
+    fun new() {
+        i = 1;
+    }
+    fun delete() {
+        i = 0;
+    }
+}

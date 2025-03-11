@@ -215,6 +215,10 @@ public:
         _capacity = o._capacity;
         o._capacity = c;
     }
+
+    bool isEmpty() {
+        return _size > 0;
+    }
 };
 }
 #endif
