@@ -1,24 +1,13 @@
 
 
-externc fun printf(format: raw*const Int8, args: ...): Int;
 
-extern fun alloc$<T>(): own* T;
-
-extern struct WeakPtr$<T> {
-    fun init(p: own* T);
-    fun lock(): own* T;
-}
-
-
-extern fun share$<T>(p: & own* T): own* T;
-
-extern unsafe fun rawToOwn$<T>(p: raw* T): own* T;
-
-extern fun refToOwn$<T>(p: ref* T): own*? T;
-
-extern unsafe fun rawToRef$<T>(p: raw* T): ref* T;
 
 extern fun hashCode$<T>(p: & const T): UInt32;
 extern fun compare$<T>(a: & const T, b: & const T): Int;
 
-extern fun init$<T>(p: raw* Void, freeMemory: fun(p: raw* Void)): own* T;
+fun max$<T:Float>(a: & T, b: & T): T {
+    return a > b ? b : a;
+}
+fun min$<T:Float>(a: & T, b: & T): T {
+    return a < b ? b : a;
+}

@@ -1,0 +1,25 @@
+
+externc fun acos(x: Float64): Float64;
+externc fun asin(x: Float64): Float64;
+externc fun atan(x: Float64): Float64;
+externc fun atan2(y: Float64, x: Float64): Float64;
+externc fun cos(x: Float64): Float64;
+externc fun cosh(x: Float64): Float64;
+externc fun sin(x: Float64): Float64;
+externc fun sinh(x: Float64): Float64;
+externc fun tanh(x: Float64): Float64;
+externc fun exp(x: Float64): Float64;
+externc fun frexp(x: Float64, exponent: raw*Int): Float64;
+externc fun ldexp(x: Float64, exponent: Int): Float64;
+externc fun log(x: Float64): Float64;
+externc fun log10(x: Float64): Float64;
+externc fun modf(x: Float64, integer: raw* Float64): Float64;
+externc fun pow(x: Float64, y: Float64): Float64;
+externc fun sqrt(x: Float64): Float64;
+externc fun ceil(x: Float64): Float64;
+externc fun fabs(x: Float64): Float64;
+externc fun floor(x: Float64): Float64;
+externc fun fmod(x: Float64, y: Float64): Float64;
+
+externc var M_PI: const Float64;
+externc var M_E: const Float64;

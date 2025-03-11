@@ -71,14 +71,19 @@ public class MessageSender {
         
         PublishDiagnosticsParams params = new PublishDiagnosticsParams();
         params.uri = documentUri;
+
+        String file = Workspace.canonicalPath(documentUri);
         
         if(!errors.isEmpty()) {
             params.diagnostics = new ArrayList<>();
             for(CompilerErr error : errors) {
+                if (!file.endsWith(error.loc.file)) {
+                    continue;
+                }
                 Diagnostic d = new Diagnostic();                
                 d.message = error.msg;
                 d.severity = 1;
-                d.source = error.loc.file;
+                //d.source = error.loc.file;
                 d.range = LspUtil.fromSrcPosLine(error.loc, 0);
 
                 params.diagnostics.add(d);

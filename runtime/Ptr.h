@@ -46,6 +46,7 @@ template<typename T>
 class OwnPtr {
     T* pointer;
     template <class U> friend class OwnPtr;
+    template <class U> friend class SharedPtr;
 public:
     OwnPtr() : pointer(nullptr) {
     }
@@ -202,7 +203,111 @@ OwnPtr<T> rawToOwn(T* ptr) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//class WeakRefBlock;
+template<typename T>
+class SharedPtr {
+    T* pointer;
+    template <class U> friend class SharedPtr;
+public:
+    SharedPtr() : pointer(nullptr) {
+    }
+
+    SharedPtr(const SharedPtr& other) : pointer(other.pointer) {
+        if (other.pointer) {
+            HeapRefable* refp = getRefable(other.pointer);
+            refp->addRef();
+        }
+    }
+
+    template <class U>
+    SharedPtr(SharedPtr<U>& other) : pointer(other.pointer) {
+        if (other.pointer) {
+            HeapRefable* refp = getRefable(other.pointer);
+            refp->addRef();
+        }
+    }
+
+    virtual ~SharedPtr() {
+        clear();
+    }
+
+    SharedPtr& operator=(T* other) {
+        if (other) {
+            HeapRefable* refp = getRefable(other.pointer);
+            refp->addRef();
+        }
+        if (pointer) {
+            HeapRefable* refp = getRefable(pointer);
+            refp->release();
+        }
+        pointer = other;
+        return *this;
+    }
+
+    SharedPtr& operator=(const SharedPtr& other) {
+        if (other.pointer) {
+            HeapRefable* refp = getRefable(other.pointer);
+            refp->addRef();
+        }
+        if (pointer) {
+            HeapRefable* refp = getRefable(pointer);
+            refp->release();
+        }
+        pointer = other.pointer;
+        return *this;
+    }
+
+    T* operator->() { return pointer; }
+
+    T& operator*() { return *pointer; }
+
+    bool operator==(const SharedPtr& other) { return this->pointer == other.pointer; }
+    bool operator!=(const SharedPtr& other) { return this->pointer != other.pointer; }
+
+    T& get() const { return *pointer; }
+
+    void _set(T* p) { pointer = p; }
+
+    template <class U>
+    void set(OwnPtr<U>& other) {
+        if (other.pointer) {
+            HeapRefable* refp = getRefable(other.pointer);
+            refp->addRef();
+        }
+        if (pointer) {
+            HeapRefable* refp = getRefable(pointer);
+            refp->release();
+        }
+        pointer = other.pointer;
+    }
+
+    OwnPtr<T> lock() {
+        if (!pointer) {
+            return OwnPtr<T>();
+        }
+        HeapRefable* refp = getRefable(pointer);
+        return OwnPtr<T>((T*)(refp));
+    }
+
+    bool isNull() { return pointer == nullptr; }
+
+    void clear() {
+        if (pointer) {
+            HeapRefable* refp = getRefable(pointer);
+            refp->release();
+            pointer = nullptr;
+        }
+    }
+
+    T* take() {
+        if (pointer) {
+            HeapRefable* refp = getRefable(pointer);
+            refp->addRef();
+        }
+        return pointer;
+    }
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
 class WeakPtr {
@@ -278,6 +383,18 @@ public:
         }
     }
 };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template<typename T>
+SharedPtr<T> toShared(OwnPtr<T> t) {
+    return SharedPtr<T>(t);
+}
+
+template<typename T>
+WeakPtr<T> toWeak(OwnPtr<T> t) {
+    return WeakPtr<T>(t);
+}
 
 }
 #endif

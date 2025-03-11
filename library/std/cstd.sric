@@ -1,0 +1,16 @@
+
+
+externc fun printf(format: raw*const Int8, args: ...): Int;
+
+
+//@#include <float.h>
+externc var FLT_MAX: const Float64;
+externc var FLT_MIN: const Float64;
+
+//@#include <limits.h>
+externc var INT_MAX: const Int;
+externc var INT_MIN: const Int;
+
+//@#include <stdlib.h>
+externc fun rand(): Int;
+externc var RAND_MAX: const Int;

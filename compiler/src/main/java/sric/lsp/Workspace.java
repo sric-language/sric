@@ -39,7 +39,7 @@ public class Workspace {
         log.log("Source Directory: '" + sourceDir);
     }
 
-    private String canonicalPath(String docUri) {
+    static String canonicalPath(String docUri) {
         try {
             return new File(URI.create(docUri)).getCanonicalPath();
         } catch (IOException ex) {
