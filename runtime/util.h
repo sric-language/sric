@@ -41,9 +41,9 @@ namespace sric {
 	}
 
 	template<typename T>
-	T& nonNullable(T& p) {
+	T& nonNullable(const T& p) {
 		sc_assert(!p.isNull(), "Non-Nullable");
-		return p;
+		return (T&)p;
 	}
 
 	template<typename T>

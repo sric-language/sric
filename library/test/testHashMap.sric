@@ -11,8 +11,8 @@ fun testHashMap() {
 
 fun testHashMap2() {
     var map = HashMap$<Int, String>{};
-    map.set(1, "1");
-    map.set(2, "2");
+    map.constSet(1, "1");
+    map.constSet(2, "2");
 
     unsafe {
         var i =  map[1];

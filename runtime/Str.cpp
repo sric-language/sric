@@ -70,10 +70,12 @@ DArray<String> String::split(const String& sep) const {
         return tokens;
     std::size_t start = 0, end = 0;
     while ((end = find(sep, start)) != std::string::npos) {
-        tokens.add(substr(start, end - start));
+        String ts = substr(start, end - start);
+        tokens.add(ts);
         start = end + 1;
     }
-    tokens.add(substr(start));
+    String ts = substr(start);
+    tokens.add(ts);
     return tokens;
 }
 

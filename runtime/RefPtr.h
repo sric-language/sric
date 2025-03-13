@@ -18,6 +18,9 @@ namespace sric
 uint32_t generateCheckCode();
 
 template<typename T>
+class RefPtr;
+
+template<typename T>
 struct StackRefable {
     uint32_t checkCode;
     T value;
@@ -138,11 +141,11 @@ public:
     }
 
     template <class U>
-    RefPtr(RefPtr<U>& p) : pointer(p.pointer), checkCode(p.checkCode), offset(p.offset), type(p.type) {
+    RefPtr(const RefPtr<U>& p) : pointer(p.pointer), checkCode(p.checkCode), offset(p.offset), type(p.type) {
     }
 
     template <class U>
-    RefPtr(RefPtr<U>& p, T* ptr) : checkCode(p.checkCode), pointer(ptr), type(p.type) {
+    RefPtr(const RefPtr<U>& p, T* ptr) : checkCode(p.checkCode), pointer(ptr), type(p.type) {
         offset = (char*)ptr - (char*)p.get();
     }
 
@@ -171,7 +174,7 @@ public:
 
     T* get() const { return pointer; }
 
-    bool isNull() { return pointer == nullptr; }
+    bool isNull() const { return pointer == nullptr; }
 
     bool operator==(const T* other) { return this->pointer == other; }
     bool operator==(const RefPtr<T>& other) { return this->pointer == other.pointer; }
@@ -193,6 +196,7 @@ public:
         return copy;
     }
 };
+
 
 template <class T>
 OwnPtr<T> refToOwn(RefPtr<T> ptr) {

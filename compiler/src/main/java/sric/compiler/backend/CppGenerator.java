@@ -273,7 +273,7 @@ public class CppGenerator extends BaseGenerator {
         String moduleName = this.module.name;
         if (f.isStatic()) {
             print("f.offset = 0;").newLine();
-            print("f.pointer = &");print(moduleName);print("::");
+            print("f.pointer = (void*) &");print(moduleName);print("::");
             if (f.parent instanceof TypeDef td) {
                 print(this.getSymbolName(td));
                 print("::");
@@ -343,10 +343,10 @@ public class CppGenerator extends BaseGenerator {
         
         String moduleName = this.module.name;
         if (f.isStatic()) {
-            print("f.pointer = &");print(moduleName);print("::").print(this.getSymbolName(f)).print(";").newLine();
+            print("f.pointer = (void*) &");print(moduleName);print("::").print(this.getSymbolName(f)).print(";").newLine();
         }
         else {
-            print("f.pointer = &");print(this.module.name).print("_").print(this.getSymbolName((TopLevelDef)f.parent)).
+            print("f.pointer = (void*) &");print(this.module.name).print("_").print(this.getSymbolName((TopLevelDef)f.parent)).
                 print("_").print(this.getSymbolName(f)).print(";").newLine();
         }
 

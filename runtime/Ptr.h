@@ -184,7 +184,7 @@ OwnPtr<T> alloc() {
 template<typename T>
 OwnPtr<T> init(void* p, std::function<void(void*)> freeMemory) {
     HeapRefable* h = new (p) HeapRefable();
-    h->freeMemory = freeMemory.target<void (*)(void*)>();
+    h->freeMemory = freeMemory.target<void (void*)>();
     void* m = ((HeapRefable*)p + 1);
     T* t = new(m) T();
     return OwnPtr<T>(t);

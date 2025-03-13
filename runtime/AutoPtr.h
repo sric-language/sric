@@ -96,7 +96,7 @@ namespace sric
 
         SharedPtr& operator=(T* other) {
             if (other) {
-                HeapRefable* refp = getRefable(other.pointer);
+                HeapRefable* refp = getRefable(other);
                 refp->addRef();
             }
             if (pointer) {
@@ -150,7 +150,7 @@ namespace sric
             return OwnPtr<T>((T*)(pointer));
         }
 
-        bool isNull() { return pointer == nullptr; }
+        bool isNull() const { return pointer == nullptr; }
 
         void clear() {
             if (pointer) {

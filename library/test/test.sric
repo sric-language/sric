@@ -1,7 +1,7 @@
 
 
 
-fun main() {
+fun main(): Int {
     testDArray();
     testDArray2();
     testString();
@@ -21,4 +21,5 @@ fun main() {
     
     testStatic();
     testClosure();
+    return 0;
 }
