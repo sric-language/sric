@@ -187,6 +187,7 @@ public abstract class Expr extends AstNode {
     public static class ClosureExpr extends Expr {
         public FuncPrototype prototype = new FuncPrototype();// function signature
         public Block code;             // code block
+        public ArrayList<IdExpr> captures;
     }
 
 }

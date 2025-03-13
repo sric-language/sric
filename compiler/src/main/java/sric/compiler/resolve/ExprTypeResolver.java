@@ -33,7 +33,7 @@ public class ExprTypeResolver extends TypeResolver {
     
     protected TypeDef curStruct = null;
     protected WithBlockExpr curItBlock = null;
-    protected Scope curItBlockScope = null;
+    //protected Scope curItBlockScope = null;
     
     public ExprTypeResolver(CompilerLog log, SModule module) {
         super(log, module);
@@ -142,6 +142,20 @@ public class ExprTypeResolver extends TypeResolver {
                 }
             }
         }
+        
+        ClosureExpr closure = getCurClosure();
+        if (closure != null) {
+            if (idExpr.resolvedDef != null) {
+                if (idExpr.resolvedDef instanceof FieldDef f) {
+                    if (f.parent != closure) {
+                        if (closure.captures == null) {
+                            closure.captures = new ArrayList<>();
+                        }
+                        closure.captures.add(idExpr);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -200,15 +214,21 @@ public class ExprTypeResolver extends TypeResolver {
             lastScope().put(v.name, v);
         }
         
+        if (v.parent == null) {
+            v.parent = this.funcs.peek();
+        }
+        
     }
     
     private void visitFuncPrototype(AstNode.FuncPrototype prototype, Scope scope) {
         if (prototype != null && prototype.paramDefs != null) {
+            AstNode parent = this.funcs.peek();
             for (AstNode.FieldDef p : prototype.paramDefs) {
                 this.resolveType(p.fieldType, false);
                 if (p.initExpr != null) {
                     this.visit(p.initExpr);
                 }
+                p.parent = parent;
                 scope.put(p.name, p);
             }
         }
@@ -722,6 +742,10 @@ public class ExprTypeResolver extends TypeResolver {
             preScope = null;
             this.funcs.pop();
             
+            if (e.captures == null) {
+                e.prototype.postFlags |= FConst.Const;
+            }
+            
             e.resolvedType = Type.funcType(e);
         }
 //        else if (v instanceof NonNullableExpr e) {
@@ -747,6 +771,14 @@ public class ExprTypeResolver extends TypeResolver {
         if (v.resolvedType == null) {
             err("Resolved fail", v.loc);
         }
+    }
+    
+    private ClosureExpr getCurClosure() {
+        AstNode f = this.funcs.peek();
+        if (f != null && f instanceof ClosureExpr ce) {
+            return ce;
+        }
+        return null;
     }
     
     private TypeDef getTypeStructDef(Type type) {

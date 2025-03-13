@@ -957,6 +957,9 @@ public class CppGenerator extends BaseGenerator {
         if (!isLambda && !isStatic && prototype.isThisImmutable()) {
             print(" const ");
         }
+        else if (isLambda && !prototype.isThisImmutable()) {
+            print(" mutable ");
+        }
         
         if (isLambda && prototype != null) {
             if (prototype.returnType != null && !prototype.returnType.isVoid()) {

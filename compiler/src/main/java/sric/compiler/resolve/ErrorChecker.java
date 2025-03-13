@@ -906,6 +906,14 @@ public class ErrorChecker extends CompilePass {
         }
         else if (v instanceof Expr.ClosureExpr e) {
             this.visit(e.code);
+            if (e.captures != null) {
+                for (IdExpr ide : e.captures) {
+                    FieldDef f = (FieldDef)ide.resolvedDef;
+                    if (!this.isCopyable(f.fieldType)) {
+                        err("Capture a noncopyable field", ide.loc);
+                    }
+                }
+            }
         }
 //        else if (v instanceof Expr.NonNullableExpr e) {
 //            this.visit(e.operand);
@@ -938,6 +946,7 @@ public class ErrorChecker extends CompilePass {
         
         boolean hasFuncCall = false;
         if (e.block != null) {
+            WithBlockExpr savedCurItBlock = curItBlock;
             curItBlock = e;
             for (Stmt t : e.block.stmts) {
                 this.visit(t);
@@ -947,7 +956,7 @@ public class ErrorChecker extends CompilePass {
                     }
                 }
             }
-            curItBlock = null;
+            curItBlock = savedCurItBlock;
         }
         if (!e.target.isResolved()) {
             return;

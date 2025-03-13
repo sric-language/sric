@@ -1,0 +1,8 @@
+extern fun alloc$<T>(): own* T;
+
+fun main() {
+    var i = alloc$<Int>();
+    var f = fun() {
+        var a = *i;
+    };
+}

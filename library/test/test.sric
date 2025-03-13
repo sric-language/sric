@@ -20,4 +20,5 @@ fun main() {
     testHashMap4();
     
     testStatic();
+    testClosure();
 }

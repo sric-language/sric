@@ -8,13 +8,19 @@ extern struct WeakPtr$<T> {
     fun lock(): own* T;
 }
 
-extern struct SharedPtr$<T> {
-    fun set(p: own* T);
-    fun lock(): own* T;
+extern struct AutoMove$<T> {
+    fun set(p: &T);
+    fun take(): T;
     fun get(): &T;
 }
 
+extern struct SharedPtr$<T> {
+    fun set(p: own* T);
+    fun get(): own* T;
+}
+
 extern fun toShared$<T>(p: & own* T): SharedPtr$<T>;
+extern fun autoMove$<T>(p: T): AutoMove$<T>;
 extern fun toWeak$<T>(p: & own* T): WeakPtr$<T>;
 
 
