@@ -3,7 +3,7 @@
   "displayName": "sric-language",
   "description": "sric language",
   "publisher": "sric-language",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.92.0"
   },
@@ -34,25 +34,25 @@
     "configuration": {
       "title": "Sric",
       "properties": {
-        "sric.languageServerPath": {
+        "sric.sricHome": {
           "type": "string",
           "default": "",
-          "description": "Path of the Sric language server binary (e.g. \"java -cp C:/workspace/code/sric/bin/gson-2.8.6.jar;C:/workspace/code/sric/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main\")"
-        },
-        "sric.languageServerArguments": {
-          "type": "string",
-          "default": "",
-          "description": "Command line arguments for the Sric language server (e.g. \"-lib C:/workspace/code/sric/lib -lsp\")"
+          "description": "Sric home path"
         },
         "sric.failFast": {
           "type": "boolean",
-          "default": "",
+          "default": false,
           "description": "Prevents the server from being restarted after it has crashed"
         },
         "sric.languageServerLog": {
           "type": "boolean",
-          "default": "false",
+          "default": false,
           "description": "Outputs a log file for debuging the Sric Language Server"
+        },
+        "sric.debugLsp": {
+          "type": "boolean",
+          "default": false,
+          "description": "Debug the Language Server by JPDA. LSP as client and connect to port 5005"
         }
       }
     },

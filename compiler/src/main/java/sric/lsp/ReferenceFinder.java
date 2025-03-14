@@ -202,7 +202,7 @@ public class ReferenceFinder extends CompilePass {
         else if (v instanceof Expr.GenericInstance e) {
             this.visit(e.target);
             for (Type t : e.genericArgs) {
-                this.visit(t);
+                this.visitType(t);
             }
         }
         else if (v instanceof Expr.IfExpr e) {

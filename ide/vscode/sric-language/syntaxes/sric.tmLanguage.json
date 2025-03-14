@@ -120,7 +120,7 @@
 		"patterns": [
 		  {
 			"name": "storage.modifier.sric",
-			"match": "\\b(fun|var|mut|constexpr|operator|reflect|typealias|unsafe|raw|weak|move|ref|own|uninit|await|yield|async|extension|throws|abstract|const|final|internal|native|once|override|private|protected|public|readonly|static|virtual|volatile|reflect|packed|noncopyable|refable|extern|externc)\\b"
+			"match": "\\b(fun|var|mutable|constexpr|operator|reflect|typealias|unsafe|raw|weak|move|ref|own|uninit|await|yield|async|extension|throws|abstract|const|final|internal|native|once|override|private|protected|public|readonly|static|virtual|volatile|reflect|packed|noncopyable|refable|extern|externc)\\b"
 		  },
 		  {
 			"name": "storage.modifier.global.sric",
@@ -152,7 +152,7 @@
 		  },
 		  {
 			"name": "keyword.operator.named.sric",
-			"match": "\\b(new|is|as)\\b"
+			"match": "\\b(new|is|as|delete)\\b"
 		  },
 		  {
 			"match": "(===?|!==?|<=>?|>=|<|>|\\bis(not)?\\b)",

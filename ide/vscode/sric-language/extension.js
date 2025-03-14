@@ -1,7 +1,7 @@
 const vscode = require("vscode");
 const vscode_languageclient = require("vscode-languageclient");
 const cp = require('child_process');
-
+const path = require('node:path');
 
 class FailFastErrorHandler {
     error(_error, _message, count) {
@@ -21,17 +21,21 @@ class FailFastErrorHandler {
  */
 function activate(context) {
     var config = vscode.workspace.getConfiguration("sric");
-        
-    var binaryPath = config.get("languageServerPath");
-    if (!binaryPath) {
-        vscode.window.showErrorMessage("Could not start Sric language server due to missing setting: sric.languageServerPath");
+
+    var sricHome = config.get("sricHome");
+    if (!sricHome) {
+        vscode.window.showErrorMessage("Could not start Sric language server due to missing setting: sric.sricHome");
         return;
     }
-
-    var args = config.get("languageServerArguments");
-    if (!args) {
-        args = "";
+    
+    var debugLsp = config.get("debugLsp");
+    var binaryPath = "java";
+    if (debugLsp) {
+        binaryPath += " -agentlib:jdwp=transport=dt_socket,address=localhost:5005,server=n,suspend=y";
     }
+    binaryPath += " -cp "+sricHome+"/bin/gson-2.8.6.jar" + path.delimiter + sricHome+"/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main";
+
+    var args = "-lib "+sricHome+"/lib -lsp";
 
     var debugLog = config.get("languageServerLog");
     if (debugLog) {
@@ -82,6 +86,7 @@ function activate(context) {
     // }));
 
     console.log("Running Sric Language server...");
+    console.log(serverOptions);
 
     var client = new vscode_languageclient.LanguageClient("SricLanguageServer", "SricLanguageServer", serverOptions, clientOptions);
     client.start(); 
