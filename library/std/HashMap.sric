@@ -57,13 +57,13 @@ struct HashMap$<K, V> {
             }
         }
         var defValue: V;
-        set(k, defValue);
+        set(k, move defValue);
         unsafe {
             return get(k);
         }
     }
     
-    operator fun set(k: &const K, v: &V) : Bool {
+    operator fun set(k: K, v: V) : Bool {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
@@ -71,22 +71,7 @@ struct HashMap$<K, V> {
                 return false;
             }
         }
-        var entry = alloc$<MapEntry$<K,V>>() { .k = k; .v = move v; };
-        list.list.add(move entry);
-        ++length;
-        rehash();
-        return true;
-    }
-
-    fun constSet(k: &const K, v: &const V) : Bool {
-        var list = getEntryList(k);
-        for (var itr = list.list.first(); itr != null; itr = itr.next) {
-            if (compare$<K>(itr.k, k) == 0) {
-                itr.v = v;
-                return false;
-            }
-        }
-        var entry = alloc$<MapEntry$<K,V>>() { .k = k; .v = v; };
+        var entry = alloc$<MapEntry$<K,V>>() { .k = move k; .v = move v; };
         list.list.add(move entry);
         ++length;
         rehash();
@@ -149,7 +134,7 @@ struct HashMap$<K, V> {
         for (var i = 0; i<otable.size(); ++i) {
             var list = otable.getRef(i);
             for (var itr = list.list.first(); itr != null; itr = itr.next) {
-                set(itr.k, itr.v);
+                set(move itr.k, move itr.v);
             }
         }
     }

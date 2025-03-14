@@ -71,11 +71,11 @@ DArray<String> String::split(const String& sep) const {
     std::size_t start = 0, end = 0;
     while ((end = find(sep, start)) != std::string::npos) {
         String ts = substr(start, end - start);
-        tokens.add(ts);
+        tokens.add(std::move(ts));
         start = end + 1;
     }
-    String ts = substr(start);
-    tokens.add(ts);
+
+    tokens.add(substr(start));
     return tokens;
 }
 

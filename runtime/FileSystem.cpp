@@ -48,7 +48,7 @@ bool FileSystem::listFiles(const char* dirPath, DArray<String>& files)
     fs::path dir = fs::u8path(dirPath);
     for (auto& p : fs::directory_iterator(dir)) {
         String pathstr = p.path().string();
-        files.add(pathstr);
+        files.add(std::move(pathstr));
     }
     return fs::is_directory(dir);
 }

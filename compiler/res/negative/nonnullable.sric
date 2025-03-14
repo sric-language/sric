@@ -6,6 +6,7 @@ fun foo(p: & Int) {
 fun main() {
     var a : own*? Int = null;
     var b : own* Int;
+    var c : own* Int = null;
     
     foo(a);
 }

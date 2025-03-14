@@ -2,8 +2,8 @@ import sric::*;
 
 fun testDArray() {
     var a = DArray$<Int> {};
-    a.constAdd(1);
-    a.constAdd(2);
+    a.add(1);
+    a.add(2);
 
     for (var i = 0; i<a.size(); ++i) {
         var v: Int = a[i];
@@ -14,7 +14,7 @@ fun testDArray() {
 fun testDArray2() {
     var a = DArray$<own*Int> {};
     var p = alloc$<Int>();
-    a.add(p);
+    a.add(move p);
 
     for (var i = 0; i<a.size(); ++i) {
         printf("%d\n", *a[i]);

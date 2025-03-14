@@ -23,9 +23,8 @@ public:
         return *this;
     }
 
-    String& operator=(const String& other) {
-        str = other.str;
-        return *this;
+    String copy() {
+        return String(this->str);
     }
 
     const std::string& cpp_str() const {

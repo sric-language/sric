@@ -88,7 +88,7 @@ public:
         return RefPtr<const T>(t, p->_checkCode, i * sizeof(T));
     }
 
-    void set(int i, T& d) {
+    void set(int i, T&& d) {
         sc_assert(i >= 0 && i < size(), "index out of array");
         _data[i] = std::move(d);
     }
@@ -164,7 +164,7 @@ public:
         getHeader()->_dataSize += sizeof(T);
     }
 
-    void add(T& d) {
+    void add(T&& d) {
         int pos = size();
         tryGrow(pos + 1);
         T* m = (_data + pos);

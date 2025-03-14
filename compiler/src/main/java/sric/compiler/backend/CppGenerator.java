@@ -246,7 +246,7 @@ public class CppGenerator extends BaseGenerator {
                 print("comment.type = ").print(c.type == TokenKind.cmdComment ? "0" : "1").print(";");
                 print("comment.content = "); printStringLiteral(c.content); print(";");
                 
-                print(varName).print(".comments.add(comment);}");
+                print(varName).print(".comments.add(std::move(comment));}");
                 this.newLine();
             }
         }
@@ -258,7 +258,7 @@ public class CppGenerator extends BaseGenerator {
         print("param.name = \"").print(f.name).print("\";");
         print("param.fieldType = ");printStringLiteral(f.fieldType.toString());print(";");
         print("param.hasDefaultValue = ").print(f.initExpr == null ? "0" : "1").print(";");
-        print(parentName).print(".params.add(param);");
+        print(parentName).print(".params.add(std::move(param));");
         print("}");
         this.newLine();
     }
@@ -295,7 +295,7 @@ public class CppGenerator extends BaseGenerator {
         
         print("f.enumValue = ").print(""+f._enumValue).print(";").newLine();
         
-        print(parentName).print(".fields.add(f);").newLine();
+        print(parentName).print(".fields.add(std::move(f));").newLine();
         
         this.unindent();
         print("}");
@@ -360,12 +360,12 @@ public class CppGenerator extends BaseGenerator {
         
         if (f.generiParamDefs != null) {
             for (GenericParamDef p : f.generiParamDefs) {
-                print("f.genericParams.add(");printStringLiteral(p.name); print(");");
+                print("f.genericParams.add(std::move(");printStringLiteral(p.name); print("));");
                 this.newLine();
             }
         }
         
-        print(parentName).print(".funcs.add(f);");
+        print(parentName).print(".funcs.add(std::move(f));");
 
         this.unindent();
         newLine();
@@ -429,6 +429,7 @@ public class CppGenerator extends BaseGenerator {
                     reflectFuncDef(f, "s");
                 }
                 
+                print("m.types.add(std::move(s));").newLine();
                 
                 this.unindent();
                 print("}");

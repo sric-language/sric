@@ -7,8 +7,7 @@ extern noncopyable struct DArray$<T> {
 
     fun size() const : Int;
 
-    fun add(d: &T);
-    fun constAdd(d: &const T);
+    fun add(d: T);
     fun pop(): T;
 
     operator fun get(i: Int): & T;
@@ -19,8 +18,7 @@ extern noncopyable struct DArray$<T> {
     fun getRef(i: Int): ref* T;
     fun constGetRef(i: Int) const: ref* const T;
     
-    operator fun set(i: Int, d: &T);
-    fun constSet(i: Int, d: & const T);
+    operator fun set(i: Int, d: T);
 
     fun clear();
     fun resize(size: Int);

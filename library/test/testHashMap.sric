@@ -2,8 +2,8 @@ import sric::*;
 
 fun testHashMap() {
     var map = HashMap$<String, Int>{};
-    map.constSet("1", 1);
-    map.constSet("2", 2);
+    map.set("1", 1);
+    map.set("2", 2);
 
     var i =  map.getRef("1");
     printf("%d\n", *i);
@@ -11,8 +11,8 @@ fun testHashMap() {
 
 fun testHashMap2() {
     var map = HashMap$<Int, String>{};
-    map.constSet(1, "1");
-    map.constSet(2, "2");
+    map.set(1, "1");
+    map.set(2, "2");
 
     unsafe {
         var i =  map[1];
@@ -44,7 +44,7 @@ fun testHashMap4() {
     for (var i=0; i<10; ++i) {
         var p = alloc$<Int>();
         *p = i;
-        map.set(String::fromInt32(i), p);
+        map.set(String::fromInt32(i), move p);
     }
 
     var t =  map.getRef("1");
