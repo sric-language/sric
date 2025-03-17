@@ -1,0 +1,18 @@
+
+
+fun foo1$<T>(t: T) : T {
+    return t;
+}
+
+
+fun foo2$<T>(t: ref*? T) : ref*? T {
+    return null;
+}
+
+fun main() {
+    var i  = 0;
+    var p: own*? Int;
+
+    var a = foo1(i);
+    var b = foo2(p);
+}

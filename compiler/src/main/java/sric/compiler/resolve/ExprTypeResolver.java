@@ -961,7 +961,36 @@ public class ExprTypeResolver extends TypeResolver {
         
         if (e.target.isResolved()) {
             if (e.target.resolvedType.detail instanceof Type.FuncInfo f) {
-                e.resolvedType = f.prototype.returnType;
+                //infer generic type
+                if (f.funcDef != null && f.funcDef.generiParamDefs != null && f.funcDef.generiParamDefs.size() == 1) {
+                    if (f.funcDef.prototype.paramDefs != null && f.funcDef.prototype.paramDefs.size() > 0 &&
+                            e.args != null && e.args.size() > 0 && e.args.get(0).argExpr.resolvedType != null) {
+                        Map<GenericParamDef, Type> typeGenericArgs = new HashMap<>();
+                        
+                        Type exprType = e.args.get(0).argExpr.resolvedType;
+                        Type paramType = f.funcDef.prototype.paramDefs.get(0).fieldType;
+                        if (paramType.isPointerType() && paramType.genericArgs != null && paramType.genericArgs.size() > 0 && 
+                                exprType.isPointerType() && exprType.genericArgs != null && exprType.genericArgs.size() > 0) {
+                            paramType = paramType.genericArgs.get(0);
+                            exprType = exprType.genericArgs.get(0);
+                        }
+                        
+                        if (paramType.id.resolvedDef == f.funcDef.generiParamDefs.get(0)) {
+                            typeGenericArgs.put(f.funcDef.generiParamDefs.get(0), exprType);
+                        }
+
+                        FuncDef nf = f.funcDef.templateInstantiate(typeGenericArgs);
+                        if (e.target instanceof IdExpr ie) {
+                            ie.resolvedDef = nf;
+                            ie.resolvedType = getSlotType(nf, false, e.loc);
+                        }
+                        e.resolvedType = nf.prototype.returnType;
+                    }
+                }
+                
+                if (e.resolvedType == null) {
+                    e.resolvedType = f.prototype.returnType;
+                }
             }
             else {
                 err("Invalid call target", e.loc);
