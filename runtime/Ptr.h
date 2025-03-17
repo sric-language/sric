@@ -197,7 +197,9 @@ OwnPtr<T> share(OwnPtr<T>& p) {
 
 template <class T>
 OwnPtr<T> rawToOwn(T* ptr) {
-    getRefable(ptr)->addRef();
+    HeapRefable *r = getRefable(ptr);
+    sc_assert(r->_magicCode == SC_HEAP_MAGIC_CODE, "try cast raw pointer to own ptr");
+    r->addRef();
     return OwnPtr<T>(ptr);
 }
 

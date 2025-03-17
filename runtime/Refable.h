@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define SC_HEAP_MAGIC_CODE 0xf1780126
+#define SC_STACK_MAGIC_CODE 0xf672941
+
 namespace sric
 {
 
@@ -86,6 +89,9 @@ private:
     //is only one reference
     bool _isUnique;
 
+public:
+    uint32_t _magicCode;
+private:
     int _refCount;
 
     WeakRefBlock* _weakRefBlock;

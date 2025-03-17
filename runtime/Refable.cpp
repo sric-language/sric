@@ -56,7 +56,7 @@ uint32_t generateCheckCode() {
 }
 
 HeapRefable::HeapRefable() :
-    _refCount(1), _isUnique(true), _dataSize(0), _weakRefBlock(NULL), freeMemory(0)
+    _refCount(1), _isUnique(true), _dataSize(0), _weakRefBlock(NULL), freeMemory(0), _magicCode(SC_HEAP_MAGIC_CODE)
 {
     _checkCode = generateCheckCode();
 #ifdef SC_USE_REF_TRACE
@@ -70,6 +70,7 @@ HeapRefable::~HeapRefable()
         sc_assert(_refCount == 0, "ref count error");
     }
     _checkCode = 0;
+    _magicCode = 0;
     _refCount = SC_REFCOUNT_INVALID;
 #ifdef SC_USE_REF_TRACE
     untrackRef(this);

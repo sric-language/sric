@@ -22,16 +22,18 @@ class RefPtr;
 
 template<typename T>
 struct StackRefable {
+    uint32_t _magicCode;
     uint32_t checkCode;
     T value;
 
-    StackRefable(): checkCode(generateCheckCode()) {}
+    StackRefable(): checkCode(generateCheckCode()), _magicCode(SC_STACK_MAGIC_CODE) {}
 
-    StackRefable(const T& v): value(v), checkCode(generateCheckCode()) {
+    StackRefable(const T& v): value(v), checkCode(generateCheckCode()), _magicCode(SC_STACK_MAGIC_CODE) {
     }
 
     ~StackRefable() {
         checkCode = 0;
+        _magicCode = 0;
     }
 
     StackRefable& operator=(const T& v) {
@@ -87,12 +89,7 @@ private:
         }
         case RefType::StackRef: {
             T* first = (T*)(((char*)pointer) - offset);
-            if (alignof(T) <= 4) {
-                sc_assert(checkCode == *(((int32_t*)first) - 1), "try access invalid pointer");
-            }
-            else {
-                sc_assert(checkCode == *(((int64_t*)first) - 1), "try access invalid pointer");
-            }
+            sc_assert(checkCode == *(((int32_t*)first) - 1), "try access invalid pointer");
             break;
         }
         case RefType::ArrayRef: {
@@ -117,6 +114,9 @@ public:
     }
 
     RefPtr(StackRefable<T>& p) : pointer(&p.value), checkCode(p.checkCode), offset(0), type(RefType::StackRef) {
+    }
+
+    RefPtr(HeapRefable *r) : pointer((T*)(r+1)), checkCode(r->_checkCode), offset(0), type(RefType::HeapRef) {
     }
 
     template <class U>
@@ -209,6 +209,17 @@ OwnPtr<T> refToOwn(RefPtr<T> ptr) {
 
 template <class T>
 RefPtr<T> rawToRef(T* ptr) {
+
+    StackRefable<T>* sr = (StackRefable<T>*)ptr;
+    if (sr->_magicCode == SC_STACK_MAGIC_CODE) {
+        return RefPtr<T>(*sr);
+    }
+
+    HeapRefable *r = getRefable(ptr);
+    if (r->_magicCode == SC_HEAP_MAGIC_CODE) {
+        return RefPtr<T>(r);
+    }
+
     return RefPtr<T>(ptr);
 }
 
