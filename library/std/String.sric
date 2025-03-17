@@ -4,6 +4,8 @@ extern noncopyable struct String {
     fun c_str() const: raw* Int8;
     fun size() const: Int;
 
+    fun copy() const : String;
+
     operator fun get(i: Int) const: Int8;
 
     fun iequals(other: &const String) const: Bool;

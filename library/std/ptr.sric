@@ -4,8 +4,8 @@ extern fun alloc$<T>(): own* T;
 extern fun init$<T>(p: raw* Void, freeMemory: fun(p: raw* Void)): own* T;
 
 extern struct WeakPtr$<T> {
-    fun set(p: own* T);
-    fun lock(): own* T;
+    fun set(p: own*? T);
+    fun lock(): own*? T;
 }
 
 extern struct AutoMove$<T> {
@@ -15,8 +15,8 @@ extern struct AutoMove$<T> {
 }
 
 extern struct SharedPtr$<T> {
-    fun set(p: own* T);
-    fun get(): own* T;
+    fun set(p: own*? T);
+    fun get(): own*? T;
 }
 
 extern fun toShared$<T>(p: & own* T): SharedPtr$<T>;

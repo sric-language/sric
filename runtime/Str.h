@@ -23,7 +23,7 @@ public:
         return *this;
     }
 
-    String copy() {
+    String copy() const {
         return String(this->str);
     }
 

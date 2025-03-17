@@ -879,7 +879,7 @@ public class ErrorChecker extends CompilePass {
             verifyUnsafe(e.target);
             this.visit(e.index);
             //verifyInt(e.index);
-            if (e.resolvedOperator != null) {
+            if (e.resolvedOperator != null && e.resolvedOperator.prototype.paramDefs != null) {
                 Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
                 verifyTypeFit(e.index, paramType, e.index.loc);
             }
@@ -1195,7 +1195,7 @@ public class ErrorChecker extends CompilePass {
                     else if (e.lhs.resolvedType.isFuncType() && e.rhs.resolvedType.isNullType() && (curt == eq || curt == notEq)) {
                         //OK
                     }
-                    else if (e.resolvedOperator != null) {
+                    else if (e.resolvedOperator != null && e.resolvedOperator.prototype.paramDefs != null) {
                         Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
                         verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false);
                     }
@@ -1221,7 +1221,7 @@ public class ErrorChecker extends CompilePass {
                 case minus:
                 case star:
                 case slash:
-                    if (e.resolvedOperator != null) {
+                    if (e.resolvedOperator != null && e.resolvedOperator.prototype.paramDefs != null) {
                         Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
                         verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false);
                     }
@@ -1245,7 +1245,8 @@ public class ErrorChecker extends CompilePass {
                         }
                     }
                     else if (e.lhs instanceof Expr.IndexExpr indexExpr) {
-                        if (indexExpr.resolvedOperator != null && indexExpr.resolvedOperator.prototype.paramDefs.size() > 1) {
+                        if (indexExpr.resolvedOperator != null && indexExpr.resolvedOperator.prototype.paramDefs != null
+                                && indexExpr.resolvedOperator.prototype.paramDefs.size() > 1) {
                             Type paramType = indexExpr.resolvedOperator.prototype.paramDefs.get(1).fieldType;
                             verifyTypeFit(e.rhs, paramType, e.rhs.loc);
                         }
