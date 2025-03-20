@@ -72,6 +72,12 @@ public class ErrorChecker extends CompilePass {
             }
             if (resolvedDef instanceof TypeDef sd && sd.isStruct()) {
                 for (FieldDef f : sd.fieldDefs) {
+                    if (f.isStatic()) {
+                        continue;
+                    }
+                    if (f.fieldType == type) {
+                        return true;
+                    }
                     if (!isCopyable(f.fieldType)) {
                         return false;
                     }
@@ -103,6 +109,12 @@ public class ErrorChecker extends CompilePass {
         if (resolvedDef instanceof TopLevelDef td) {
             if (resolvedDef instanceof TypeDef sd && sd.isStruct()) {
                 for (FieldDef f : sd.fieldDefs) {
+                    if (f.isStatic()) {
+                        continue;
+                    }
+                    if (f.fieldType == type) {
+                        return true;
+                    }
                     if (!isMoveable(f.fieldType)) {
                         return false;
                     }

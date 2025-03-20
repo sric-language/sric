@@ -49,6 +49,27 @@ extern noncopyable struct String {
     * 'printf' style format
     */
     extern static fun format(format: raw*const Int8, args: ...): String;
+
+
+    /**
+    * make from unicode char
+    */
+    static fun fromChar(c: Int): String;
+
+    /**
+    * read unicode char from byte position
+    */
+    fun getCharAt(bytePos: Int, byteSize: raw*Int = null) const: Int;
+
+    /**
+    * get unicode char at char index
+    */
+    fun getChar(i: Int) const: Int;
+    
+    /**
+    * return unicode char number
+    */
+    fun charCount()const: Int;
 }
 
 

@@ -220,3 +220,116 @@ String String::format(const char* fmt, ...) {
     va_end(args);
     return String(buf);
 }
+
+String String::fromChar(uint32_t c) {
+    char out[4];
+    int i = 0;
+    if (c <= 0x007F) {
+        out[i] = c;
+        ++i;
+    }
+    else if (c <= 0x07FF) {
+        out[i] = ((c >> 6) & 0x1F) | 0xC0;
+        ++i;
+        out[i] = (c & 0x3F) | 0x80;
+        ++i;
+    }
+    else if (c <= 0xFFFF) {
+        out[i] = ((c >> 12) & 0x0F) | 0xE0;
+        ++i;
+        out[i] = ((c >> 6) & 0x3F) | 0x80;
+        ++i;
+        out[i] = (c & 0x3F) | 0x80;
+        ++i;
+        //echo("encode ${out[i-3]}, ${out[i-2]}, ${out[i-1]}")
+    }
+    else if (c <= 0x10FFFF) {
+        out[i] = ((c >> 18) & 0x07) | 0xF0;
+        ++i;
+        out[i] = ((c >> 12) & 0x3F) | 0x80;
+        ++i;
+        out[i] = ((c >> 6) & 0x3F) | 0x80;
+        ++i;
+        out[i] = (c & 0x3F) | 0x80;
+        ++i;
+    }
+    else {
+        out[i] = 0;
+        ++i;
+    }
+    return String(out, i);
+}
+uint32_t String::getCharAt(int i, int32_t* byteSize) const {
+    int c1 = get(i); ++i;
+        //if (c1 < 0) return -1
+    int size = 0;
+    int ch = 0;
+    //echo("decod1 $c1")
+
+    if (c1 < 0x80) {
+        ch = c1;
+        size = 1;
+    }
+    else if (c1 < 0xE0) {
+        int c2 = get(i); ++i;
+        ch = ((c1 & 0x1F) << 6) | (c2 & 0x3F);
+        size = 2;
+    }
+    else if (c1 < 0xF0) {
+        int c2 = get(i); ++i;
+        int c3 = get(i); ++i;
+        //echo("decode $c1, $c2, $c3")
+        if ((c2 & 0xC0) != 0x80 || (c3 & 0xC0) != 0x80) {
+            size = 1;
+            //Invalid UTF-8 encoding
+            ch = -1;
+        }
+        ch = ((c1 & 0x0F) << (12) | ((c2 & 0x3F) << (6)) | (c3 & 0x3F));
+        size = 3;
+    }
+    else if (c1 < 0xF8) {
+        int c2 = get(i); ++i;
+        int c3 = get(i); ++i;
+        int c4 = get(i); ++i;
+        ch = (c1 & 0x0F) << (18) | ((c2 & 0x3F) << (12)) | ((c3 & 0x3F)<<6) | (c4 & 0x3F);
+        size = 4;
+    }
+    else {
+        size = 1;
+        //Invalid UTF-8 encoding
+        ch = -1;
+    }
+    if (byteSize) {
+        *byteSize = size;
+    }
+    return ch;
+}
+int String::charByteIndex(int index) const {
+    if (index == 0) return 0;
+    //if (index < 0 || index < size) throw IndexErr("$index not in [0..$size]")
+    int charCount = 0;
+    for (int i  = 0; i < str.size(); ++i) {
+        char ch = str[i];
+        if ((ch & 0xC0) != 0x80) {
+            ++charCount;
+            if (charCount == index + 1) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+uint32_t String::getChar(int i) const {
+    int pos = charByteIndex(i);
+    return getCharAt(pos);
+}
+int String::charCount()const {
+    int _charCount = 0;
+    for (int i = 0; i < str.size(); ++i) {
+        char ch = str[i];
+        if ((ch & 0xC0) != 0x80) {
+            ++_charCount;
+        }
+    }
+    return _charCount;
+}

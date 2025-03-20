@@ -12,6 +12,7 @@ class String : public Noncopyable {
 public:
     String() {};
     String(const char* c) : str(c) {}
+    String(const char* c, int size) : str(c, size) {}
     String(const std::string& c) : str(c) {}
 
     String(String&& other) {
@@ -94,6 +95,15 @@ public:
     * 'printf' style format
     */
     static String format(const char* fmt, ...);
+
+
+    static String fromChar(uint32_t c);
+    uint32_t getCharAt(int bytePos, int32_t* byteSize = nullptr) const;
+    uint32_t getChar(int i) const;
+    int charCount()const;
+private:
+    int charByteIndex(int i) const;
+public:
 };
 
 
