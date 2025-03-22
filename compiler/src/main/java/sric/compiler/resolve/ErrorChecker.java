@@ -357,6 +357,10 @@ public class ErrorChecker extends CompilePass {
                     }
                 }
             }
+            
+            if (v.fieldType.isMetaType()) {
+                err("Unsupport MetaType", v.loc);
+            }
         }
     }
 

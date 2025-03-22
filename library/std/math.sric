@@ -1,6 +1,8 @@
 
+//@#include <math.h>
 externc fun acos(x: Float64): Float64;
 externc fun asin(x: Float64): Float64;
+externc fun tan(x: Float64): Float64;
 externc fun atan(x: Float64): Float64;
 externc fun atan2(y: Float64, x: Float64): Float64;
 externc fun cos(x: Float64): Float64;

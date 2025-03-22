@@ -17,6 +17,5 @@ You need [Sric](https://github.com/chunquedong/sric) installed
 
 ## Extension Settings
 
-* `sric.languageServerPath`: Path of the Sric language server binary
-* `sric.languageServerArguments`: Command line arguments for the Sric language server
+* `sric.sricHome`: Path of the Sric language home
 

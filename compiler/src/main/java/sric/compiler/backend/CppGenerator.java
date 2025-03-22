@@ -880,10 +880,10 @@ public class CppGenerator extends BaseGenerator {
                     print("-");
                     break;
                 case "mult":
-                    print("-");
+                    print("*");
                     break;
                 case "div":
-                    print("-");
+                    print("/");
                     break;
                 case "compare":
                     print("<=>");

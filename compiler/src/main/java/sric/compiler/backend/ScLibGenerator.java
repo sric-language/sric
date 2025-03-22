@@ -28,6 +28,7 @@ import sric.compiler.ast.Type;
  */
 public class ScLibGenerator extends BaseGenerator {
     public boolean isPrintAll = false;
+    private SModule module;
     
     public ScLibGenerator(CompilerLog log, String file) throws IOException {
         super(log, file);
@@ -38,6 +39,16 @@ public class ScLibGenerator extends BaseGenerator {
     }
     
     public void run(SModule module) {
+        this.module = module;
+        
+        for (SModule.Depend dep : module.depends) {
+            print("import ");
+            print(dep.name);
+            print(";");
+            newLine();
+        }
+        newLine();
+
         module.walkChildren(this);
     }
     
@@ -219,6 +230,15 @@ public class ScLibGenerator extends BaseGenerator {
             printIdExpr(id.namespace);
             print("::");
         }
+        else if (id.resolvedDef != null) {
+            if (id.resolvedDef instanceof TopLevelDef f) {
+                if (f.parent instanceof AstNode.FileUnit u) {
+                    if (u.module != this.module) {
+                        print(u.module.name+"::");
+                    }
+                }
+            }
+        }
         if (id.name.equals(".")) {
             return;
         }
@@ -238,16 +258,16 @@ public class ScLibGenerator extends BaseGenerator {
     @Override
     public void visitUnit(AstNode.FileUnit v) {
         
-        for (AstNode.Import i : v.imports) {
-            print("import ");
-            printIdExpr(i.id);
-            if (i.star) {
-                print("::*");
-            }
-            print(";");
-            newLine();
-        }
-        newLine();
+//        for (AstNode.Import i : v.imports) {
+//            print("import ");
+//            printIdExpr(i.id);
+//            if (i.star) {
+//                print("::*");
+//            }
+//            print(";");
+//            newLine();
+//        }
+//        newLine();
         v.walkChildren(this);
     }
 
