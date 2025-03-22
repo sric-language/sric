@@ -219,6 +219,36 @@ public:
     bool isEmpty() {
         return _size > 0;
     }
+
+    void insert(int i, T d) {
+        int pos = size();
+        tryGrow(pos + 1);
+        T* m = (_data + i);
+
+        memmove(m + 1, m, pos - i);
+
+        new(m) T();
+        *m = std::move(d);
+        ++_size;
+        getHeader()->_dataSize += sizeof(T);
+    }
+
+    void insertAll(int i, DArray<T> o) {
+        int msize = o.size();
+        int pos = size();
+        tryGrow(pos + msize);
+        T* m = (_data + i);
+
+        memmove(m + msize, m, pos - i);
+        for (int i = 0; i < o.size(); ++i) {
+            new(m) T();
+            *m = std::move(o._data[i]);
+            ++m;
+        }
+        o._size = 0;
+        _size += msize;
+        getHeader()->_dataSize += sizeof(T) * msize;
+    }
 };
 }
 #endif

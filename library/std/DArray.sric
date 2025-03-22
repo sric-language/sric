@@ -28,4 +28,7 @@ extern noncopyable struct DArray$<T> {
     fun swap(t: &DArray$<T>);
 
     fun isEmpty() const: Bool;
+
+    fun insert(i: Int, d: T);
+    fun insertAll(i: Int, t: DArray$<T>);
 }

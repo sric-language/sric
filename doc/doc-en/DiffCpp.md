@@ -18,7 +18,7 @@
 - No i++ just ++i
 - No switch auto fallthrough
 - No template specialization
-
+- No various constructors
 
 ## More than C++
 

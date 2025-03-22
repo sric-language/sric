@@ -81,6 +81,8 @@ public class TopLevelTypeResolver extends TypeResolver {
             }
             else {
                 if (i.id.resolvedDef instanceof SModule m) {
+                    importScope.put(i.id.name, i.id.resolvedDef);
+                    
                     Scope mcope = m.getScope(log);
                     importScope.addAll(mcope);
                 }

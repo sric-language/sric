@@ -143,6 +143,7 @@ public class ExprTypeResolver extends TypeResolver {
             }
         }
         
+        //check closure captures
         ClosureExpr closure = getCurClosure();
         if (closure != null) {
             if (idExpr.resolvedDef != null) {
@@ -152,6 +153,11 @@ public class ExprTypeResolver extends TypeResolver {
                             closure.captures = new ArrayList<>();
                         }
                         closure.captures.add(idExpr);
+                    }
+                }
+                else if (idExpr.resolvedDef instanceof FuncDef f) {
+                    if (!f.isStatic()) {
+                        err("Can't access instance method", idExpr.loc);
                     }
                 }
             }
@@ -287,6 +293,12 @@ public class ExprTypeResolver extends TypeResolver {
                         continue;
                     }
                     if ((f.flags & FConst.Ctor) != 0) {
+                        if (f.name.equals(newKeyword)) {
+                            v._hasCotr = true;
+                        }
+                        else {
+                            v._hasDecotr = true;
+                        }
                         continue;
                     }
                     if (inhScopes.contains(f.name)) {

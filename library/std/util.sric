@@ -5,9 +5,14 @@
 extern fun hashCode$<T>(p: & const T): UInt32;
 extern fun compare$<T>(a: & const T, b: & const T): Int;
 
-fun max$<T:Float>(a: & T, b: & T): T {
+fun max$<T:Float>(a:  T, b:  T): T {
     return a > b ? b : a;
 }
-fun min$<T:Float>(a: & T, b: & T): T {
+fun min$<T:Float>(a:  T, b:  T): T {
     return a < b ? b : a;
+}
+fun clamp(v: Float, min: Float, max: Float) : Float {
+    if (v < min) v = min;
+    if (v > max) v = max;
+    return v;
 }

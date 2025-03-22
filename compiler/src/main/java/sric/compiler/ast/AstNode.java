@@ -151,6 +151,9 @@ public class AstNode {
         private TypeDef genericTemplate = null;
 //        private HashMap<String, StructDef> parameterizeCache;
         
+        public boolean _hasCotr = false;
+        public boolean _hasDecotr = false;
+        
         public enum Kind {
             Struct, Enum, Tarit
         }
@@ -170,6 +173,18 @@ public class AstNode {
         }
         public boolean isStruct() {
             return kind == Kind.Struct;
+        }
+        public boolean isAbstractOrVirtual() {
+            if (isTrait()) {
+                return true;
+            }
+            if ((this.flags & FConst.Abstract) != 0) {
+                return true;
+            }
+            if ((this.flags & FConst.Virtual) != 0) {
+                return true;
+            }
+            return false;
         }
         
         public void addSlot(AstNode node) {

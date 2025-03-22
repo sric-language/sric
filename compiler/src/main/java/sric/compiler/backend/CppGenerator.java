@@ -1053,7 +1053,7 @@ public class CppGenerator extends BaseGenerator {
 
             newLine();
             
-            if ((v.flags & FConst.Abstract) != 0 || (v.flags & FConst.Virtual) != 0) {
+            if (v.isAbstractOrVirtual() && !v._hasDecotr) {
                 print("virtual ~");
                 print(getSymbolName(v));
                 print("(){}");

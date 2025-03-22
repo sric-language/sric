@@ -291,9 +291,9 @@ public class ErrorChecker extends CompilePass {
             this.visit(v.initExpr);
         }
 
-//        if ((v.flags & FConst.Static) != 0) {
-//            err("Unsupport Static Field", v.loc);
-//        }
+        if ((v.flags & FConst.Virtual) != 0 || (v.flags & FConst.Abstract) != 0) {
+            err("Invalide flags", v.loc);
+        }
         
         if (v.fieldType != null && v.fieldType.isReference) {
 //            if (pinfo.pointerAttr == Type.PointerAttr.inst) {
@@ -975,7 +975,7 @@ public class ErrorChecker extends CompilePass {
         }
         
         AstNode.TypeDef sd = e._structDef;
-        if (sd != null) {            
+        if (sd != null && !sd._hasCotr) {            
             if (e._isType && (sd.flags & FConst.Abstract) != 0) {
                 err("It's abstract", e.target.loc);
             }
