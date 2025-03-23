@@ -164,7 +164,7 @@ public:
         getHeader()->_dataSize += sizeof(T);
     }
 
-    void add(T&& d) {
+    void add(T d) {
         int pos = size();
         tryGrow(pos + 1);
         T* m = (_data + pos);

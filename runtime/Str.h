@@ -63,10 +63,10 @@ public:
     bool endsWith(const String& s) const;
     int find(const String& s, int start = 0) const;
 
-    String& operator+(const String& other) {
+    String operator+(const String& other) {
         plus(other);
     }
-    String& plus(const String& other);
+    String plus(const String& other) const;
     void add(const char* cstr);
 
     void replace(const String& src, const String& dst);

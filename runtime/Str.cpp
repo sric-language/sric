@@ -83,9 +83,8 @@ String String::substr(int pos, int len) const {
     return str.substr(pos, len);
 }
 
-String& String::plus(const String& other) {
-    str += other.str;
-    return *this;
+String String::plus(const String& other) const {
+    return String(str + other.str);
 }
 void String::add(const char* cstr) {
     str += cstr;

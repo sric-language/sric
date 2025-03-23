@@ -249,12 +249,12 @@ namespace sric
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     template<typename T>
-    SharedPtr<T> toShared(OwnPtr<T> t) {
+    SharedPtr<T> toShared(OwnPtr<T>& t) {
         return SharedPtr<T>(t);
     }
 
     template<typename T>
-    WeakPtr<T> toWeak(OwnPtr<T> t) {
+    WeakPtr<T> toWeak(OwnPtr<T>& t) {
         return WeakPtr<T>(t);
     }
 
