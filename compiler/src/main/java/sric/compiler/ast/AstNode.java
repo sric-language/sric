@@ -134,6 +134,16 @@ public class AstNode {
             }
             return false;
         }
+        
+        public boolean isEnumField() {
+            if (parent instanceof TypeDef td) {
+                //already checked in ExprTypeResolver
+                if (td.isEnum()) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
     
     public static class TypeDef extends TopLevelDef {
@@ -374,7 +384,7 @@ public class AstNode {
         }
         
         public boolean match(FuncPrototype p) {
-            if (!this.returnType.equals(p.returnType)) {
+            if (!this.returnType.strictEquals(p.returnType)) {
                 return false;
             }
             if (this.postFlags != p.postFlags) {
@@ -392,7 +402,7 @@ public class AstNode {
                 }
                 for (int i = 0; i< this.paramDefs.size(); ++i) {
                     if (this.paramDefs.get(i).fieldType != null && p.paramDefs.get(i).fieldType != null) {
-                        if (!this.paramDefs.get(i).fieldType.equals(p.paramDefs.get(i).fieldType)) {
+                        if (!this.paramDefs.get(i).fieldType.strictEquals(p.paramDefs.get(i).fieldType)) {
                             return false;
                         }
                     }

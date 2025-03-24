@@ -230,7 +230,7 @@ public class Type extends AstNode {
 //            }
         }
         
-        if (equals(target, false, false)) {
+        if (semanticEquals(target)) {
             return true;
         }
         
@@ -314,29 +314,40 @@ public class Type extends AstNode {
         return equals(target, true, false);
     }
     
-    private boolean equals(Type target, boolean checkRefable, boolean isGenericParam) {
+    public boolean strictEquals(Type target) {
+        return equals(target, true, true);
+    }
+    
+    public boolean semanticEquals(Type target) {
+        return equals(target, false, false);
+    }
+    
+    private boolean equals(Type target, boolean checkRefable, boolean strict) {
         if (this == target) {
             return true;
         }
         
         if (this.resolvedAlias != null) {
-            if (this.resolvedAlias.equals(target)) {
+            if (this.resolvedAlias.equals(target, checkRefable, strict)) {
                 return true;
             }
         }
         if (target.resolvedAlias != null) {
-            if (this.equals(target.resolvedAlias)) {
+            if (this.equals(target.resolvedAlias, checkRefable, strict)) {
                 return true;
             }
         }
         
-        if (isGenericParam) {
+        if (strict) {
             if (this.isImmutable != target.isImmutable) {
+                return false;
+            }
+            if (this.isReference != target.isReference) {
                 return false;
             }
         }
         
-        if (checkRefable | isGenericParam) {
+        if (checkRefable || strict) {
             if (this.isRefable != target.isRefable) {
                 return false;
             }
@@ -369,6 +380,9 @@ public class Type extends AstNode {
         else if (this.isNum()) {
             if (this.detail instanceof NumInfo e && target.detail instanceof NumInfo a) {
                 if ( (e.isUnsigned != a.isUnsigned))  {
+                    return false;
+                }
+                else if (strict && (e.size != a.size))  {
                     return false;
                 }
             }
@@ -406,7 +420,7 @@ public class Type extends AstNode {
                 return false;
             }
             for (int i=0; i<this.genericArgs.size(); ++i) {
-                if (!this.genericArgs.get(i).equals(target.genericArgs.get(i), true, true)) {
+                if (!this.genericArgs.get(i).strictEquals(target.genericArgs.get(i))) {
                     return false;
                 }
             }
@@ -752,6 +766,23 @@ public class Type extends AstNode {
         type.isImmutable = this.isImmutable;
         type.detail = this.detail;
         type.isReference = false;
+        return type;
+    }
+    
+    public Type toDerefable() {
+        if (!this.isRefable) {
+            return this;
+        }
+        
+        //shadow copy
+        Type type = new Type(this.id);
+        type.genericArgs = this.genericArgs;
+        type.resolvedAlias = this.resolvedAlias;
+        //type.explicitImmutable = this.explicitImmutable;
+        type.isImmutable = this.isImmutable;
+        type.detail = this.detail;
+        type.isReference = this.isReference;
+        type.isRefable = false;
         return type;
     }
     

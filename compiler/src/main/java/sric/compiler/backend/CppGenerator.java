@@ -542,12 +542,15 @@ public class CppGenerator extends BaseGenerator {
                     else if (pt.pointerAttr == Type.PointerAttr.ref) {
                         print("sric::RefPtr");
                     }
+
 //                    else if (pt.pointerAttr == Type.PointerAttr.weak) {
 //                        print("sric::WeakPtr");
 //                    }
-                    print("<");
-                    printType(type.genericArgs.get(0), false);
-                    print(">");
+
+                        print("<");
+                        printType(type.genericArgs.get(0), false);
+                        print(">");
+
                 }
                 printGenericParam = false;
                 break;
@@ -1097,6 +1100,14 @@ public class CppGenerator extends BaseGenerator {
         
         if (!v.isEnum()) {
             for (FieldDef f : v.fieldDefs) {
+                if (f.isStatic() && f.fieldType.id.resolvedDef instanceof TypeDef td) {
+                    if (td.originGenericTemplate != null) {
+                        td  = td.originGenericTemplate;
+                    }
+                    if (td == v) {
+                        continue;
+                    }
+                }
                 if (!f.fieldType.isPointerType() && f.fieldType.id.resolvedDef != null && f.fieldType.id.resolvedDef instanceof TypeDef td) {
                     if (td.parent != null && td.parent instanceof FileUnit unit) {
                         if (unit.module == this.module) {
@@ -1252,7 +1263,9 @@ public class CppGenerator extends BaseGenerator {
                 if (v.resolvedType.detail instanceof Type.PointerInfo p1 && v.implicitTypeConvertTo.detail instanceof Type.PointerInfo p2) {
                     if (p1.pointerAttr == Type.PointerAttr.own && p2.pointerAttr == Type.PointerAttr.ref) {
                         print("sric::RefPtr<");
+
                         printType(v.implicitTypeConvertTo.genericArgs.get(0));
+                        
                         print(" >(");
                         parentheses++;
                         ok = true;
@@ -1411,7 +1424,15 @@ public class CppGenerator extends BaseGenerator {
 //                print(")");
 //            }
 //            else {
+                boolean p = false;
+                if (e.target.resolvedType != null && (e.target.resolvedType.isRefable)) {
+                    print("(*");
+                    p = true;
+                }
                 this.visit(e.target);
+                if (p) {
+                    print(")");
+                }
                 print("[");
                 this.visit(e.index);
                 print("]");
@@ -1516,9 +1537,17 @@ public class CppGenerator extends BaseGenerator {
         }
         //index set operator: a[i] = b
         else if (e.opToken == TokenKind.assign && e.lhs instanceof IndexExpr iexpr) {
-            
+            boolean p = false;
+            if (iexpr.target.resolvedType != null && (iexpr.target.resolvedType.isRefable)) {
+                print("(*");
+                p = true;
+            }
+            this.visit(iexpr.target);
+            if (p) {
+                print(")");
+            }
+
             if (iexpr.resolvedOperator != null) {
-                this.visit(iexpr.target);
                 print(".set(");
                 this.visit(iexpr.index);
                 print(", ");
@@ -1526,7 +1555,6 @@ public class CppGenerator extends BaseGenerator {
                 print(")");
             }
             else {
-                this.visit(iexpr.target);
                 print("[");
                 this.visit(iexpr.index);
                 print("] = ");
@@ -1708,7 +1736,12 @@ public class CppGenerator extends BaseGenerator {
                 print(" = ");
             }
             //[&]()->T{ T __t = target(); __t.name =1; return __t; }()
-            print("[&]()->");
+            if (e._storeVar == null || (e._storeVar.isLocalOrParam())) {
+                print("[&]()->");
+            }
+            else {
+                print("[]()->");
+            }
             printType(e.resolvedType);
             print("{");
             

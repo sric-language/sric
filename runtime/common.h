@@ -1,6 +1,9 @@
 #ifndef _SRIC_COMMON_H_
 #define _SRIC_COMMON_H_
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #ifndef _DEBUG
     #define SC_NO_CHECK
 #elif defined(NDEBUG)

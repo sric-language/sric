@@ -657,7 +657,7 @@ public class ExprTypeResolver extends TypeResolver {
                         }
                         
                         if (e.operand.resolvedType.isRefable) {
-                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                            e.resolvedType = Type.pointerType(e.loc, elmentType.toDerefable(), Type.PointerAttr.ref, false);
                         }
                         else if (e.operand instanceof AccessExpr aexpr && aexpr.target.resolvedType.isOwnOrRefPointerType()) {
                             e._addressOfField = true;
@@ -667,7 +667,7 @@ public class ExprTypeResolver extends TypeResolver {
                         else if (e.operand instanceof AccessExpr aexpr && aexpr.target.resolvedType.isRefable) {
                             e._addressOfField = true;
                             aexpr._addressOf = true;
-                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                            e.resolvedType = Type.pointerType(e.loc, elmentType.toDerefable(), Type.PointerAttr.ref, false);
                         }
                         else {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.raw, false);

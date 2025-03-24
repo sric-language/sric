@@ -210,10 +210,10 @@ OwnPtr<T> refToOwn(RefPtr<T> ptr) {
 template <class T>
 RefPtr<T> rawToRef(T* ptr) {
 
-    StackRefable<T>* sr = (StackRefable<T>*)ptr;
-    if (sr->_magicCode == SC_STACK_MAGIC_CODE) {
-        return RefPtr<T>(*sr);
-    }
+    //StackRefable<T>* sr = (StackRefable<T>*)ptr;
+    //if (sr->_magicCode == SC_STACK_MAGIC_CODE) {
+    //    return RefPtr<T>(*sr);
+    //}
 
     HeapRefable *r = getRefable(ptr);
     if (r->_magicCode == SC_HEAP_MAGIC_CODE) {

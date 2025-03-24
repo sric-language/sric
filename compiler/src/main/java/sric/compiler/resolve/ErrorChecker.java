@@ -327,11 +327,9 @@ public class ErrorChecker extends CompilePass {
         else {
             if (v.initExpr != null) {
                 boolean ok = false;
-                if (v.parent instanceof TypeDef td) {
+                if (v.isEnumField()) {
                     //already checked in ExprTypeResolver
-                    if (td.isEnum()) {
-                        ok = true;
-                    }
+                    ok = true;
                 }
                 if (!ok) {
                     verifyTypeFit(v.initExpr, v.fieldType, v.loc);
@@ -426,6 +424,17 @@ public class ErrorChecker extends CompilePass {
             for (FieldDef p : v.prototype.paramDefs) {
                 if (p.initExpr != null) {
                     hasDefaultValue = true;
+                    AstNode idDef = idResolvedDef(p.initExpr);
+                    if (idDef instanceof FuncDef f) {
+                        if (!f.isStatic()) {
+                            err("Unsupport param default value", p.initExpr.loc);
+                        }
+                    }
+                    else if (idDef instanceof FieldDef f) {
+                        if (!f.isStatic() && !f.isEnumField()) {
+                            err("Unsupport param default value", p.initExpr.loc);
+                        }
+                    }
                 }
                 else {
                     if (hasDefaultValue) {
@@ -617,6 +626,11 @@ public class ErrorChecker extends CompilePass {
             this.visit(exprs.expr);
             if (exprs.expr instanceof IdExpr) {
                 err("Can not be statment", exprs.expr.loc);
+            }
+            else if (exprs.expr instanceof AccessExpr) {
+                if (exprs.expr.resolvedType != null && exprs.expr.resolvedType.isFuncType()) {
+                    err("Can not be statment", exprs.expr.loc);
+                }
             }
         }
         else if (v instanceof Stmt.JumpStmt jumps) {
@@ -1177,6 +1191,18 @@ public class ErrorChecker extends CompilePass {
                     break;
                 case asKeyword: {
                     verifyMetType(e.rhs);
+                    if (e.rhs.resolvedType.detail instanceof Type.MetaTypeInfo minfo) {
+                        Type asType = minfo.type;
+                        if (e.lhs.resolvedType.isFuncType() && !asType.isFuncType()) {
+                            err("Invalide as", e.rhs.loc);
+                        }
+                        else if (e.lhs.resolvedType.isPointerType() && (!asType.isPointerType() && !asType.isInt())) {
+                            err("Invalide as", e.rhs.loc);
+                        }
+                        else if (asType.isPointerType() && (!e.lhs.resolvedType.isPointerType() && !e.lhs.resolvedType.isInt())) {
+                            err("Invalide as", e.rhs.loc);
+                        }
+                    }
                 }
                     break;
                 case eq:
@@ -1215,7 +1241,7 @@ public class ErrorChecker extends CompilePass {
                         Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
                         verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false);
                     }
-                    else if (!e.lhs.resolvedType.equals(e.rhs.resolvedType)) {
+                    else if (!e.lhs.resolvedType.semanticEquals(e.rhs.resolvedType)) {
                         err("Cant compare different type", e.loc);
                     }
                     break;

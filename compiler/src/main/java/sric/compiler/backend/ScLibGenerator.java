@@ -411,7 +411,13 @@ public class ScLibGenerator extends BaseGenerator {
         
         printCommont(v);
         printFlags(v.flags);
-        print("struct ");
+        
+        if (v.isTrait()) {
+            print("trait ");
+        }
+        else {
+            print("struct ");
+        }
         print(v.name);
         
         //if (v instanceof AstNode.StructDef sd) {

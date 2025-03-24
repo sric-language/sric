@@ -64,7 +64,7 @@ public:
     int find(const String& s, int start = 0) const;
 
     String operator+(const String& other) {
-        plus(other);
+        return plus(other);
     }
     String plus(const String& other) const;
     void add(const char* cstr);

@@ -298,7 +298,7 @@ public class Parser {
         // mixin
         if (curt == TokenKind.traitKeyword) {
             if ((flags & FConst.Abstract) != 0) {
-                err("The 'abstract' modifier is implied on trait");
+                //err("The 'abstract' modifier is implied on trait");
             }
             //flags = flags | FConst.Mixin | FConst.Abstract;
             flags = flags | FConst.Abstract;
