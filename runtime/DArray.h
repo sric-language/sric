@@ -249,6 +249,17 @@ public:
         _size += msize;
         getHeader()->_dataSize += sizeof(T) * msize;
     }
+
+    DArray<T> copy() const {
+        DArray<T> b;
+        b.reserve(size());
+        for (int i = 0; i < size(); ++i) {
+            b.add(sric::copy((*this)[i]));
+        }
+        return b;
+    }
 };
+
+
 }
 #endif

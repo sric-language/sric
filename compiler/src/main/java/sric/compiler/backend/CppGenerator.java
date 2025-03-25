@@ -429,6 +429,14 @@ public class CppGenerator extends BaseGenerator {
                     reflectFuncDef(f, "s");
                 }
                 
+                if (type.generiParamDefs == null && type.isStruct()) {
+                    print("s.ctor = (void*) &");print("sric::alloc<").print(this.module.name).print("::").
+                            print(this.getSymbolName(type)).print(">").print(";").newLine();
+                }
+                else {
+                    print("s.ctor = nullptr;").newLine();
+                }
+                
                 print("m.types.add(std::move(s));").newLine();
                 
                 this.unindent();
@@ -489,9 +497,9 @@ public class CppGenerator extends BaseGenerator {
             print("const ");
         }
         
-        if (type.isRefable) {
-            print("sric::StackRefable<");
-        }
+//        if (type.isRefable) {
+//            print("sric::StackRefable<");
+//        }
         
         boolean printGenericParam = true;
         switch (type.id.name) {
@@ -597,9 +605,9 @@ public class CppGenerator extends BaseGenerator {
             print(" >");
         }
         
-        if (type.isRefable) {
-            print(" >");
-        }
+//        if (type.isRefable) {
+//            print(" >");
+//        }
         
         if (type.isReference) {
             print("&");
@@ -710,8 +718,14 @@ public class CppGenerator extends BaseGenerator {
         if (isStatic && !isImpl && v.parent instanceof TypeDef) {
             print("static ");
         }
-        
+               
+        if (v.isRefable) {
+            print("sric::StackRefable<");
+        }
         printType(v.fieldType);
+        if (v.isRefable) {
+            print(">");
+        }
         print(" ");
         if (isStatic && isImpl && !v.isLocalVar) {
             if (v.parent instanceof TypeDef t) {
@@ -728,8 +742,11 @@ public class CppGenerator extends BaseGenerator {
                 }
             }
         }
+
         print(getSymbolName(v));
-        
+        if (v.isRefable) {
+            print("__");
+        }
 //        if (v.fieldType.isArray()) {
 //            ArrayInfo arrayType = (ArrayInfo)v.fieldType.detail;
 //            print("[");
@@ -780,6 +797,14 @@ public class CppGenerator extends BaseGenerator {
                     print(" = nullptr");
                 }
             }
+        }
+        
+        if (v.isRefable) {
+            print("; auto& ");
+            print(getSymbolName(v));
+            print(" = *");
+            print(getSymbolName(v));
+            print("__");
         }
         return true;
     }
@@ -1353,9 +1378,9 @@ public class CppGenerator extends BaseGenerator {
                 else if (e.target.resolvedType != null && e.target.resolvedType.isPointerType()) {
                     print("->");
                 }
-                else if (e.target.resolvedType != null && e.target.resolvedType.isRefable) {
-                    print("->");
-                }
+//                else if (e.target.resolvedType != null && e.target.resolvedType.isRefable) {
+//                    print("->");
+//                }
                 else {
                     print(".");
                 }
@@ -1397,6 +1422,9 @@ public class CppGenerator extends BaseGenerator {
                 else {
                     this.visit(e.operand);
                 }
+                if (e._addressOfRefable) {
+                    print("__");
+                }
             }
             else if (e.opToken == TokenKind.moveKeyword) {
                 print("std::move(");
@@ -1424,15 +1452,15 @@ public class CppGenerator extends BaseGenerator {
 //                print(")");
 //            }
 //            else {
-                boolean p = false;
-                if (e.target.resolvedType != null && (e.target.resolvedType.isRefable)) {
-                    print("(*");
-                    p = true;
-                }
+//                boolean p = false;
+//                if (e.target.resolvedType != null && (e.target.resolvedType.isRefable)) {
+//                    print("(*");
+//                    p = true;
+//                }
                 this.visit(e.target);
-                if (p) {
-                    print(")");
-                }
+//                if (p) {
+//                    print(")");
+//                }
                 print("[");
                 this.visit(e.index);
                 print("]");
@@ -1491,14 +1519,20 @@ public class CppGenerator extends BaseGenerator {
                         print("sric::nonNullable(");
                     }
                     
+                    Type elemType = targetType.genericArgs.get(0);
                     if (!targetType.isRawPointerType() && targetType.genericArgs != null) {
                         this.visit(e.lhs);
-                        print(".dynamicCastTo<");
-                        printType(targetType.genericArgs.get(0));
+                        if (elemType.id.resolvedDef instanceof TypeDef td && td.isAbstractOrVirtual()) {
+                            print(".dynamicCastTo<");
+                        }
+                        else {
+                            print(".castTo<");
+                        }
+                        printType(elemType);
                         print(" >()");
                         processed = true;
                     }
-                    else {
+                    else if (elemType.id.resolvedDef instanceof TypeDef td && td.isAbstractOrVirtual()) {
                         print("dynamic_cast<");
                         printType(targetType);
                         print(" >(");
@@ -1537,15 +1571,15 @@ public class CppGenerator extends BaseGenerator {
         }
         //index set operator: a[i] = b
         else if (e.opToken == TokenKind.assign && e.lhs instanceof IndexExpr iexpr) {
-            boolean p = false;
-            if (iexpr.target.resolvedType != null && (iexpr.target.resolvedType.isRefable)) {
-                print("(*");
-                p = true;
-            }
+//            boolean p = false;
+//            if (iexpr.target.resolvedType != null && (iexpr.target.resolvedType.isRefable)) {
+//                print("(*");
+//                p = true;
+//            }
             this.visit(iexpr.target);
-            if (p) {
-                print(")");
-            }
+//            if (p) {
+//                print(")");
+//            }
 
             if (iexpr.resolvedOperator != null) {
                 print(".set(");

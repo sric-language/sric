@@ -5,6 +5,8 @@
 extern fun hashCode$<T>(p: & const T): UInt32;
 extern fun compare$<T>(a: & const T, b: & const T): Int;
 
+extern fun copy$<T>(a: & const T): T;
+
 fun max$<T:Float>(a:  T, b:  T): T {
     return a > b ? b : a;
 }

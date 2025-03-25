@@ -76,6 +76,19 @@ namespace sric {
 		return &b;
 	}
 
+	template<typename T>
+	OwnPtr<T> copy(const OwnPtr<T>& b) {
+		return share(const_cast<OwnPtr<T>&>(b));
+	}
+
+	template<typename T>
+	typename std::enable_if<!std::is_copy_constructible<T>::value, T>::type copy(const T& b) {
+		return b.copy();
+	}
+	template<typename T>
+	typename std::enable_if<std::is_copy_constructible<T>::value, T>::type copy(const T& b) {
+		return b;
+	}
 }
 //
 //inline bool isNull(void* p) {

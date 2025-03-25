@@ -890,13 +890,6 @@ public class Parser {
 //                return imutableType();
             case lbracket:
                 return arrayType();
-            case refableKeyword: {
-                consume();
-                Type stype = typeRef();
-                stype.isRefable = true;
-                endLoc(stype, loc);
-                return stype;
-            }
             default:
                 break;
         }

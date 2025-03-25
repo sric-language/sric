@@ -26,19 +26,19 @@ fun testDerivativePtr() {
 }
 
 fun testDerivativeRefable() {
-    var a: refable A = A{};
-    var p2: ref* Int = &a.k;
+    refable var a: A = A{};
+    var p2: ref* Int = &(&a).k;
 
     printf("%d\n", *p2);
 }
 
 fun testRefable() {
-    var i: refable Int = 1;
-    var a: refable A = uninit;
+    refable var i: Int = 1;
+    refable var a: A = uninit;
     a.i = i + 1;
     testA(&a);
     var b: A = a;
-    var c: refable A = b;
+    refable var c: A = b;
     a = c;
     b = a;
 }
@@ -88,4 +88,10 @@ fun testRaw() {
         *p1 = 2;
     }
     printf("%d\n", a);
+}
+
+fun testVoidPtr() {
+    var p : own* A = alloc$<A>();
+    var p2 : own* Void = move p ;
+    var p3: ref* Void = p2;
 }

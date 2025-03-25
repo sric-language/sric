@@ -117,6 +117,17 @@ public class DeepParser extends Parser {
         if (curt == TokenKind.varKeyword) {
             return localDefStmt(loc, null);
         }
+        if (curt == TokenKind.refableKeyword) {
+            consume();
+            if (curt == TokenKind.varKeyword) {
+                LocalDefStmt d = localDefStmt(loc, null);
+                d.fieldDef.isRefable = true;
+                return d;
+            }
+            else {
+                err("Unexpected refable");
+            }
+        }
 
         // otherwise assume it's a stand alone expression statement
         Expr e = expr();

@@ -510,6 +510,7 @@ public class ErrorChecker extends CompilePass {
 
         if (v.inheritances != null) {
             int i = 0;
+            TypeDef firstInherit = null;
             for (Type inh : v.inheritances) {
                 if (i == 0) {
                     if (inh.id.resolvedDef instanceof TypeDef superSd) {
@@ -520,6 +521,7 @@ public class ErrorChecker extends CompilePass {
                             else {
                                 err("Base struct must be abstract or virutal", inh.loc);
                             }
+                            firstInherit = superSd;
                         }
                         else if (superSd.isTrait()) {
                             //ok
@@ -537,6 +539,9 @@ public class ErrorChecker extends CompilePass {
                         if (inh.id.resolvedDef instanceof TypeDef superSd) {
                             if (!superSd.isTrait()) {
                                 err("Unsupport multi struct inheritance", inh.loc);
+                            }
+                            if (firstInherit != null && firstInherit.isInheriteFrom(superSd)) {
+                                err("MultiInherit "+superSd.name+" in "+firstInherit.name, inh.loc);
                             }
                         }
                     }

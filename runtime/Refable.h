@@ -98,7 +98,7 @@ private:
 
 public:
     void (*freeMemory)(void*);
-
+    void (*dealloc)(HeapRefable*);
 private:
     // Memory leak diagnostic data
 #ifdef SC_USE_REF_TRACE

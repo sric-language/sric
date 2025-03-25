@@ -26,7 +26,7 @@ public class Type extends AstNode {
     
 //    public boolean explicitImmutable = false;
     public boolean isImmutable = false;
-    public boolean isRefable = false;
+    
     public boolean isReference = false;
     
     public TypeInfo detail = null;
@@ -311,29 +311,29 @@ public class Type extends AstNode {
     }
     
     public boolean equals(Type target) {
-        return equals(target, true, false);
+        return equals(target, false);
     }
     
     public boolean strictEquals(Type target) {
-        return equals(target, true, true);
+        return equals(target, true);
     }
     
     public boolean semanticEquals(Type target) {
-        return equals(target, false, false);
+        return equals(target, false);
     }
     
-    private boolean equals(Type target, boolean checkRefable, boolean strict) {
+    private boolean equals(Type target, boolean strict) {
         if (this == target) {
             return true;
         }
         
         if (this.resolvedAlias != null) {
-            if (this.resolvedAlias.equals(target, checkRefable, strict)) {
+            if (this.resolvedAlias.equals(target, strict)) {
                 return true;
             }
         }
         if (target.resolvedAlias != null) {
-            if (this.equals(target.resolvedAlias, checkRefable, strict)) {
+            if (this.equals(target.resolvedAlias, strict)) {
                 return true;
             }
         }
@@ -347,11 +347,11 @@ public class Type extends AstNode {
             }
         }
         
-        if (checkRefable || strict) {
-            if (this.isRefable != target.isRefable) {
-                return false;
-            }
-        }
+//        if (checkRefable || strict) {
+//            if (this.isRefable != target.isRefable) {
+//                return false;
+//            }
+//        }
         
         if (!genericArgsEquals(target)) {
             return false;
@@ -597,9 +597,9 @@ public class Type extends AstNode {
         
         StringBuilder sb = new StringBuilder();
 
-        if (this.isRefable) {
-            sb.append("refable ");
-        }
+//        if (this.isRefable) {
+//            sb.append("refable ");
+//        }
         
         if (this.isImmutable) {
             sb.append("const ");
@@ -769,22 +769,22 @@ public class Type extends AstNode {
         return type;
     }
     
-    public Type toDerefable() {
-        if (!this.isRefable) {
-            return this;
-        }
-        
-        //shadow copy
-        Type type = new Type(this.id);
-        type.genericArgs = this.genericArgs;
-        type.resolvedAlias = this.resolvedAlias;
-        //type.explicitImmutable = this.explicitImmutable;
-        type.isImmutable = this.isImmutable;
-        type.detail = this.detail;
-        type.isReference = this.isReference;
-        type.isRefable = false;
-        return type;
-    }
+//    public Type toDerefable() {
+//        if (!this.isRefable) {
+//            return this;
+//        }
+//        
+//        //shadow copy
+//        Type type = new Type(this.id);
+//        type.genericArgs = this.genericArgs;
+//        type.resolvedAlias = this.resolvedAlias;
+//        //type.explicitImmutable = this.explicitImmutable;
+//        type.isImmutable = this.isImmutable;
+//        type.detail = this.detail;
+//        type.isReference = this.isReference;
+//        type.isRefable = false;
+//        return type;
+//    }
     
     public Type toMutable() {
         if (this.isImmutable == false) {

@@ -96,6 +96,7 @@ public class AstNode {
         
         public boolean isLocalVar = false;
         public boolean isParamDef = false;
+        public boolean isRefable = false;
         
         public int _enumValue = -1;
         

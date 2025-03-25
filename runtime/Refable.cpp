@@ -56,7 +56,7 @@ uint32_t generateCheckCode() {
 }
 
 HeapRefable::HeapRefable() :
-    _refCount(1), _isUnique(true), _dataSize(0), _weakRefBlock(NULL), freeMemory(0), _magicCode(SC_HEAP_MAGIC_CODE)
+    _refCount(1), _isUnique(true), _dataSize(0), _weakRefBlock(NULL), freeMemory(0), dealloc(0), _magicCode(SC_HEAP_MAGIC_CODE)
 {
     _checkCode = generateCheckCode();
 #ifdef SC_USE_REF_TRACE

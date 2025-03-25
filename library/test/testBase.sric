@@ -21,6 +21,18 @@ fun testDArray2() {
     }
 }
 
+fun testCopy() {
+    var a = DArray$<own*Int> {};
+    var p = DArray$<Int> {};
+    var i = 1;
+    var s: String = "a";
+
+    var a1 = copy(a);
+    var p1 = copy(p);
+    var i1 = copy(i);
+    var s1 = copy(s);
+}
+
 var globalValue : const Int = 1;
 fun testGlobal() {
     printf("%d\n", globalValue);

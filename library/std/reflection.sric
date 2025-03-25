@@ -31,6 +31,7 @@ struct RType {
     readonly var comments : DArray$<RComment>;
     readonly var name : raw*const Int8;
     readonly var kind : Int;
+    readonly var ctor: raw* Void;
     readonly var fields : DArray$<RField>;
     readonly var funcs : DArray$<RFunc>;
     readonly var inheritances : DArray$<raw*const Int8>;

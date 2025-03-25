@@ -56,6 +56,7 @@ struct StackRefable {
 
     RefPtr<T> operator&() { return RefPtr<T>(*this); }
 
+    RefPtr<T> getRef() { return RefPtr<T>(*this); }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,7 +147,7 @@ public:
 
     template <class U>
     RefPtr(const RefPtr<U>& p, T* ptr) : checkCode(p.checkCode), pointer(ptr), type(p.type) {
-        offset = (char*)ptr - (char*)p.get();
+        offset = p.offset + (char*)ptr - (char*)p.get();
     }
 
     T* operator->() const {
@@ -197,10 +198,132 @@ public:
     }
 };
 
+template<>
+class RefPtr<void> {
+    void* pointer;
+    uint32_t checkCode;
+    uint32_t offset;
+    RefType type;
+
+    template <class U> friend class RefPtr;
+    template <class U> friend RefPtr<U> rawToRef(U* ptr);
+    template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
+private:
+#ifdef SC_NO_CHECK
+#else
+    void onDeref() const {
+        sc_assert(pointer != nullptr, "try access null pointer");
+        switch (type) {
+        case RefType::HeapRef : {
+            void* first = (void*)(((char*)pointer) - offset);
+            HeapRefable* refable = getRefable(first);
+            sc_assert(checkCode == refable->_checkCode, "try access invalid pointer");
+            break;
+        }
+        case RefType::StackRef: {
+            void* first = (void*)(((char*)pointer) - offset);
+            sc_assert(checkCode == *(((int32_t*)first) - 1), "try access invalid pointer");
+            break;
+        }
+        case RefType::ArrayRef: {
+            void* first = (void*)(((char*)pointer) - offset);
+            HeapRefable* refable = getRefable(first);
+            sc_assert(checkCode == refable->_checkCode, "try access invalid array element pointer");
+            sc_assert(offset < refable->_dataSize, "try access invalid array element pointer");
+            break;
+        }
+        }
+    }
+#endif
+private:
+    RefPtr(void* p) : pointer(p), checkCode(0), offset(0), type(RefType::RawRef) {
+    }
+public:
+
+    RefPtr() : pointer(nullptr), checkCode(0), offset(0), type(RefType::RawRef) {
+    }
+
+    RefPtr(void* p, uint32_t checkCode, uint32_t arrayOffset) : pointer(p), checkCode(checkCode), offset(arrayOffset), type(RefType::ArrayRef) {
+    }
+
+    RefPtr(HeapRefable *r) : pointer((void*)(r+1)), checkCode(r->_checkCode), offset(0), type(RefType::HeapRef) {
+    }
+
+    template <class U>
+    RefPtr(const OwnPtr<U>& p) : offset(0) {
+        if (p.isNull()) {
+            pointer = nullptr;
+            type = RefType::RawRef;
+            checkCode = 0;
+        }
+        else {
+            pointer = p.get();
+            type = RefType::HeapRef;
+            checkCode = getRefable(pointer)->_checkCode;
+        }
+    }
+
+    template <class U>
+    RefPtr(const OwnPtr<U>& p, void* ptr) : pointer(ptr), type(RefType::HeapRef) {
+        sc_assert(p.get(), "try access null pointer");
+        offset = (char*)ptr - (char*)p.get();
+        checkCode = getRefable(p.get())->_checkCode;
+    }
+
+    template <class U>
+    RefPtr(const RefPtr<U>& p) : pointer(p.pointer), checkCode(p.checkCode), offset(p.offset), type(p.type) {
+    }
+
+    template <class U>
+    RefPtr(const RefPtr<U>& p, void* ptr) : checkCode(p.checkCode), pointer(ptr), type(p.type) {
+        offset = p.offset + (char*)ptr - (char*)p.get();
+    }
+
+    void* operator->() const {
+#ifndef SC_NO_CHECK
+        onDeref();
+#endif
+        return pointer;
+    }
+
+    void* operator->() {
+#ifndef SC_NO_CHECK
+        onDeref();
+#endif
+        return pointer;
+    }
+
+    operator void* () { return pointer; }
+
+    void* get() const { return pointer; }
+
+    bool isNull() const { return pointer == nullptr; }
+
+    bool operator==(const void* other) { return this->pointer == other; }
+    bool operator==(const RefPtr<void>& other) { return this->pointer == other.pointer; }
+    bool operator<(const RefPtr<void>& other) { return this->pointer < other.pointer; }
+
+    template <class U> RefPtr<U> castTo()
+    {
+        RefPtr<U> copy((U*)(pointer));
+        copy.checkCode = checkCode;
+        copy.type = type;
+        return copy;
+    }
+
+    template <class U> RefPtr<U> dynamicCastTo()
+    {
+        RefPtr<U> copy(dynamic_cast<U*>(pointer));
+        copy.checkCode = checkCode;
+        copy.type = type;
+        return copy;
+    }
+};
 
 template <class T>
 OwnPtr<T> refToOwn(RefPtr<T> ptr) {
     if (ptr.type != RefType::HeapRef) {
+        sc_assert(false, "Can't cast ref pointer to own pointer");
         return OwnPtr<T>();
     }
     getRefable(ptr.get())->addRef();
@@ -220,6 +343,7 @@ RefPtr<T> rawToRef(T* ptr) {
         return RefPtr<T>(r);
     }
 
+    sc_assert(false, "Can't cast raw pointer to ref pointer");
     return RefPtr<T>(ptr);
 }
 

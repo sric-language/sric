@@ -21,26 +21,34 @@
 namespace sric
 {
 
-//class HeapRefable;
-//
-//template<typename T>
-//class RefPtr;
+template<typename U>
+typename std::enable_if<std::is_polymorphic<U>::value, void*>::type  toVoid(U* pointer) {
+    return dynamic_cast<void*>(pointer);
+}
 
 template<typename U>
-typename std::enable_if<std::is_polymorphic<U>::value, HeapRefable*>::type  getRefable(U* pointer) {
-    void* mostTop = dynamic_cast<void*>(pointer);
+typename std::enable_if<!std::is_polymorphic<U>::value, void*>::type  toVoid(U* pointer) {
+    return (void*)pointer;
+}
+
+template<typename U>
+typename std::enable_if<std::is_polymorphic<U>::value, U*>::type  fromVoid(void* pointer) {
+    return dynamic_cast<U*>(pointer);
+}
+
+template<typename U>
+typename std::enable_if<!std::is_polymorphic<U>::value, U*>::type  fromVoid(void* pointer) {
+    return (U*)pointer;
+}
+
+template<typename U>
+HeapRefable* getRefable(U* pointer) {
+    void* mostTop = toVoid(pointer);
     HeapRefable* p = (HeapRefable*)mostTop;
     --p;
     return p;
 }
 
-template<typename U>
-typename std::enable_if<!std::is_polymorphic<U>::value, HeapRefable*>::type  getRefable(U* pointer) {
-    void* mostTop = (void*)pointer;
-    HeapRefable* p = (HeapRefable*)mostTop;
-    --p;
-    return p;
-}
 
 template<typename T>
 class OwnPtr {
@@ -129,13 +137,7 @@ private:
     void doFree(T* pointer) {
         HeapRefable* p = getRefable(pointer);
         if (p->release()) {
-            pointer->~T();
-            if (p->freeMemory) {
-                p->freeMemory(p);
-            }
-            else {
-                free(p);
-            }
+            p->dealloc(p);
         }
     }
 public:
@@ -171,11 +173,148 @@ public:
 };
 
 
+template<>
+class OwnPtr<void> {
+    void* pointer;
+    template <class U> friend class OwnPtr;
+    template <class U> friend class SharedPtr;
+public:
+    OwnPtr() : pointer(nullptr) {
+    }
+
+    explicit OwnPtr(void* p) : pointer(p) {
+    }
+
+    ~OwnPtr() {
+        clear();
+    }
+
+    OwnPtr(const OwnPtr& other) = delete;
+
+    OwnPtr(OwnPtr&& other) {
+        if (other.pointer) {
+            pointer = other.pointer;
+            other.pointer = nullptr;
+        }
+        else {
+            pointer = nullptr;
+        }
+    }
+
+    template <class U>
+    OwnPtr(OwnPtr<U>&& other) {
+        if (other.pointer) {
+            pointer = other.pointer;
+            other.pointer = nullptr;
+        }
+        else {
+            pointer = nullptr;
+        }
+    }
+
+    OwnPtr& operator=(const OwnPtr& other) = delete;
+
+    OwnPtr& operator=(OwnPtr&& other) {
+        void* toDelete = pointer;
+
+        if (other.pointer) {
+            pointer = other.pointer;
+            other.pointer = nullptr;
+        }
+        else {
+            pointer = nullptr;
+        }
+
+        if (toDelete) {
+            doFree(toDelete);
+        }
+        return *this;
+    }
+
+    void* operator->() const { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
+
+    void* operator->() { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
+
+    // T& operator*() { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
+
+    // const T& operator*() const { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
+
+    operator void* () { return pointer; }
+
+    //template <class U>
+    //operator RefPtr<U>() { return RefPtr<U>(this); }
+    //operator RefPtr<T>() { return RefPtr<T>(this); }
+
+    void* get() const { return pointer; }
+
+    bool isNull() const { return pointer == nullptr; }
+
+    void clear() {
+        if (pointer) {
+            doFree(pointer);
+            pointer = nullptr;
+        }
+    }
+
+private:
+    void doFree(void* pointer) {
+        HeapRefable* p = getRefable(pointer);
+        if (p->release()) {
+            p->dealloc(p);
+        }
+    }
+public:
+    void* take() {
+        void* p = pointer;
+        pointer = nullptr;
+        return p;
+    }
+
+    void swap(OwnPtr& other) {
+        void* p = pointer;
+        pointer = other.pointer;
+        other.pointer = p;
+    }
+
+    template <class U> OwnPtr<U> castTo()
+    {
+        OwnPtr<U> copy((U*)(take()));
+        return copy;
+    }
+
+    template <class U> OwnPtr<U> dynamicCastTo()
+    {
+        OwnPtr<U> copy(dynamic_cast<U*>(take()));
+        return copy;
+    }
+
+    OwnPtr<void> share() {
+        if (pointer)
+            getRefable(pointer)->addRef();
+        return OwnPtr<void>(pointer);
+    }
+};
+
+
+
+template<typename T>
+void dealloc(HeapRefable* p) {
+    void* apointer = p + 1;
+    T* pointer = (T*)(apointer);
+    pointer->~T();
+    if (p->freeMemory) {
+        p->freeMemory(p);
+    }
+    else {
+        free(p);
+    }
+}
 
 template<typename T>
 OwnPtr<T> alloc() {
     HeapRefable* p = (HeapRefable*)malloc(sizeof(HeapRefable) + sizeof(T));
     new (p) HeapRefable();
+    p->dealloc = dealloc<T>;
     void* m = (p + 1);
     T* t = new(m) T();
     return OwnPtr<T>(t);
@@ -184,6 +323,7 @@ OwnPtr<T> alloc() {
 template<typename T>
 OwnPtr<T> init(void* p, std::function<void(void*)> freeMemory) {
     HeapRefable* h = new (p) HeapRefable();
+    h->dealloc = dealloc<T>;
     h->freeMemory = freeMemory.target<void (void*)>();
     void* m = ((HeapRefable*)p + 1);
     T* t = new(m) T();

@@ -4,6 +4,9 @@
 fun main(): Int {
     testDArray();
     testDArray2();
+    testCopy();
+    testGlobal();
+    testArray();
     testString();
     
     testPtr();
@@ -13,12 +16,14 @@ fun main(): Int {
     testRaw();
     testDerivativePtr();
     testDerivativeRefable();
+    testVoidPtr();
     
     testHashMap();
     testHashMap2();
     testHashMap3();
     testHashMap4();
     
+    testReflection();
     testStatic();
     testClosure();
     return 0;

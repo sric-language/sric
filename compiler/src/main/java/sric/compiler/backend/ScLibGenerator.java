@@ -146,9 +146,9 @@ public class ScLibGenerator extends BaseGenerator {
             return;
         }
         
-        if (type.isRefable) {
-            print("refable ");
-        }
+//        if (type.isRefable) {
+//            print("refable ");
+//        }
         if (type.isImmutable) {
             print("const ");
         }
@@ -280,6 +280,9 @@ public class ScLibGenerator extends BaseGenerator {
     }
     
     void printLocalFieldDefAsExpr(AstNode.FieldDef v) {
+        if (v.isRefable) {
+            print("refable ");
+        }
         print("var ");
         print(v.name);
         
