@@ -71,7 +71,7 @@ struct HashMap$<K, V> {
                 return false;
             }
         }
-        var entry = alloc$<MapEntry$<K,V>>() { .k = move k; .v = move v; };
+        var entry = new MapEntry$<K,V> { .k = move k; .v = move v; };
         list.list.add(move entry);
         ++length;
         rehash();

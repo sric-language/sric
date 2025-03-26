@@ -19,7 +19,7 @@ fun testA(a: ref* A) {
 }
 
 fun testDerivativePtr() {
-    var p: own*? A = alloc$<A>();
+    var p: own*? A = new A;
     var p2: ref* Int = &p.k;
 
     printf("%d\n", *p2);
@@ -44,7 +44,7 @@ fun testRefable() {
 }
 
 fun testPtr() {
-    var p: own*? A = alloc$<A>();
+    var p: own*? A = new A;
     testA(p);
 
     if (p != null) {
@@ -57,8 +57,8 @@ fun testPtr() {
 }
 
 fun testShare() {
-    var p: own* A = alloc$<A>();
-    var p2: own* A = share$<A>(p);
+    var p: own* A = new A;
+    var p2: own* A = share(p);
 }
 
 fun testNullable() {
@@ -91,7 +91,19 @@ fun testRaw() {
 }
 
 fun testVoidPtr() {
-    var p : own* A = alloc$<A>();
+    var p : own* A = new A;
     var p2 : own* Void = move p ;
     var p3: ref* Void = p2;
+}
+
+fun testRawCast() {
+    var p : own* A = new A;
+    //var a : A;
+    refable var r : A;
+
+    var p1 : raw* A = p;
+    var p2 = rawToRef(p1);
+    
+    var r1 : raw* A = &r;
+    var r2 = rawToRef(r1);
 }

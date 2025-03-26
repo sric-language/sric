@@ -30,7 +30,7 @@ Buffer::~Buffer() {
 }
 
 OwnPtr<Buffer> Buffer::make(size_t size) {
-    OwnPtr<Buffer> stream = sric::alloc<Buffer>();
+    OwnPtr<Buffer> stream = sric::new_<Buffer>();
     stream->data = (uint8_t*)malloc(size);
     stream->_size = size;
     stream->owner = true;

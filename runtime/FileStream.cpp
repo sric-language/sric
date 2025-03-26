@@ -50,7 +50,7 @@ OwnPtr<FileStream> FileStream::open(const char* filePath, const char* mode)
 #endif
     if (file)
     {
-        OwnPtr<FileStream> stream = sric::alloc<FileStream>();
+        OwnPtr<FileStream> stream = sric::new_<FileStream>();
         stream->_file = file;
         const char* s = mode;
         while (s != NULL && *s != '\0')

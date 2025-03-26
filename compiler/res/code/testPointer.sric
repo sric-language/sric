@@ -1,5 +1,4 @@
 externc fun printf(format: raw*const Int8, args: ...): Int;
-extern fun alloc$<T>(): own* T;
 
 struct A {
     var a: own* Int;
@@ -20,7 +19,7 @@ fun main()
     var p: ref* Int = &i;
     foo(p);
 
-    var p2: own* Int = alloc$<Int>();
+    var p2: own* Int = new Int;
     foo(p2);
 
     p = p2;
@@ -36,7 +35,7 @@ fun main()
 }
 
 fun test() {
-    var p: own* Int = alloc$<Int>();
+    var p: own* Int = new Int;
     var pp: raw* own*Int = &p;
     unsafe {
         var p2 = **pp;

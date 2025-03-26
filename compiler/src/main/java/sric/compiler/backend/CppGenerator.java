@@ -430,7 +430,7 @@ public class CppGenerator extends BaseGenerator {
                 }
                 
                 if (type.generiParamDefs == null && type.isStruct()) {
-                    print("s.ctor = (void*) &");print("sric::alloc<").print(this.module.name).print("::").
+                    print("s.ctor = (void*) &");print("sric::new_<").print(this.module.name).print("::").
                             print(this.getSymbolName(type)).print(">").print(";").newLine();
                 }
                 else {
@@ -1268,7 +1268,7 @@ public class CppGenerator extends BaseGenerator {
     public void visitExpr(Expr v) {
         int parentheses = 0;
         if (v.isStmt || v instanceof IdExpr || v instanceof LiteralExpr || v instanceof CallExpr || v instanceof GenericInstance 
-                || v instanceof AccessExpr || v instanceof WithBlockExpr || v instanceof ArrayBlockExpr) {
+                || v instanceof AccessExpr || v instanceof WithBlockExpr || v instanceof ArrayBlockExpr || v instanceof TypeExpr) {
             
         }
         else {
@@ -1435,6 +1435,11 @@ public class CppGenerator extends BaseGenerator {
                 print("co_await ");
                 this.visit(e.operand);
                 //print("");
+            }
+            else if (e.opToken == TokenKind.newKeyword) {
+                print("sric::new_<");
+                this.visit(e.operand);
+                print(">()");
             }
             else {
                 print(e.opToken.symbol);

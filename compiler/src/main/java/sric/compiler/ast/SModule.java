@@ -19,7 +19,7 @@ public class SModule extends AstNode {
     public static class Depend {
         public String name;
         public String version;
-        public SModule cache;
+        //public SModule cache;
 
         public String toString() {
             return name + " " + version;
@@ -32,7 +32,7 @@ public class SModule extends AstNode {
     public String outType;
     
     public ArrayList<FileUnit> fileUnits = new ArrayList<>();
-    public Scope scope = null;
+    private Scope scope = null;
     public ArrayList<Depend> depends = new ArrayList<>();
     
     public String sourcePath;
@@ -112,6 +112,10 @@ public class SModule extends AstNode {
             map.put("license", this.metaProps.get("license"));
         }
         return map;
+    }
+    
+    public void clearCache() {
+        scope = null;
     }
 
     public Scope getScope(CompilerLog log) {

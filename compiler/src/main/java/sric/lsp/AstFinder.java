@@ -55,6 +55,9 @@ public class AstFinder extends CompilePass {
         if (isContains(v)) {
             found = v;
             visitType(v.fieldType);
+            if (v.initExpr != null) {
+                visit(v.initExpr);
+            }
         }
     }
     
@@ -82,6 +85,9 @@ public class AstFinder extends CompilePass {
                 if (isContains(p)) {
                     found = v;
                     visitType(p.fieldType);
+                    if (p.initExpr != null) {
+                        visit(p.initExpr);
+                    }
                 }
             }
         }

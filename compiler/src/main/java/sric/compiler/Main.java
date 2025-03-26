@@ -39,6 +39,7 @@ public class Main {
         boolean recursion = false;
         boolean lsp = false;
         boolean verbose = false;
+        boolean scriptMode = false;
         for (int i = 0; i<args.length; ++i) {
             if (args[i].equals("-lib")) {
                 ++i;
@@ -61,6 +62,9 @@ public class Main {
             else if (args[i].equals("-verbose")) {
                 verbose = true;
             }
+            else if (args[i].equals("-scriptMode")) {
+                scriptMode = true;
+            }
             else {
                 sourcePath = args[i];
             }
@@ -77,18 +81,18 @@ public class Main {
             return;
         }
         
-        if ( !compile(sourcePath, libPath, recursion)) {
+        if ( !compile(sourcePath, libPath, recursion, scriptMode)) {
             System.err.println("Compile Fail");
         }
     }
     
-    public static boolean compile(String sourcePath, String libPath, boolean recursion) throws IOException {
+    public static boolean compile(String sourcePath, String libPath, boolean recursion, boolean scriptMode) throws IOException {
         Compiler compiler;
-        if (sourcePath.endsWith(".scm")) {
-            compiler = Compiler.fromProps(sourcePath, libPath);
+        if (scriptMode) {
+            compiler = Compiler.makeDefault(sourcePath, libPath);
         }
         else {
-            compiler = Compiler.makeDefault(sourcePath, libPath);
+            compiler = Compiler.fromProps(sourcePath, libPath);
         }
         
         if (recursion) {
@@ -102,7 +106,7 @@ public class Main {
                         System.out.println("file not found: "+sourcePath2);
                         continue;
                     }
-                    if (!compile(sourcePath2, libPath, recursion)) {
+                    if (!compile(sourcePath2, libPath, recursion, false)) {
                         System.err.println("Compile Fail: "+sourcePath2);
                         return false;
                     }

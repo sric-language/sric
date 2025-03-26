@@ -611,6 +611,10 @@ public class Tokenizer {
         }
         StringBuilder s = new StringBuilder();
         while (true) {
+            if (cur == '\r') {
+                consume();
+                continue;
+            }
             if (cur == '\n') {
                 end = pos - 1;
                 consume();
@@ -623,11 +627,12 @@ public class Tokenizer {
             s.append((char) cur);
             consume();
         }
+
         if (isDoc) {
             return new Token(TokenKind.cmdComment, s.toString());
         }
         if (parseComment) {
-            return new Token(TokenKind.mlComment, s.toString());
+            return new Token(TokenKind.slComment, s.toString());
         }
         return null;
     }

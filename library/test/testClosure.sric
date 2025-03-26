@@ -2,7 +2,7 @@
 import sric::*;
 
 fun testClosure() {
-    var i = alloc$<Int>();
+    var i = new Int;
     var w = autoMove$<own*Int>(move i);
     var f = fun() {
         var a = w.take();

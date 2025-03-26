@@ -305,23 +305,21 @@ void dealloc(HeapRefable* p) {
     if (p->freeMemory) {
         p->freeMemory(p);
     }
-    else {
-        free(p);
-    }
 }
 
 template<typename T>
-OwnPtr<T> alloc() {
+OwnPtr<T> new_() {
     HeapRefable* p = (HeapRefable*)malloc(sizeof(HeapRefable) + sizeof(T));
     new (p) HeapRefable();
     p->dealloc = dealloc<T>;
+    p->freeMemory = free;
     void* m = (p + 1);
     T* t = new(m) T();
     return OwnPtr<T>(t);
 }
 
 template<typename T>
-OwnPtr<T> init(void* p, std::function<void(void*)> freeMemory) {
+OwnPtr<T> placementNew(void* p, std::function<void(void*)> freeMemory) {
     HeapRefable* h = new (p) HeapRefable();
     h->dealloc = dealloc<T>;
     h->freeMemory = freeMemory.target<void (void*)>();
@@ -338,7 +336,10 @@ OwnPtr<T> share(OwnPtr<T>& p) {
 template <class T>
 OwnPtr<T> rawToOwn(T* ptr) {
     HeapRefable *r = getRefable(ptr);
-    sc_assert(r->_magicCode == SC_HEAP_MAGIC_CODE, "try cast raw pointer to own ptr");
+    if (r->_magicCode != SC_HEAP_MAGIC_CODE) {
+        printf("ERROR: try cast raw pointer to own ptr: %p\n", ptr);
+        abort();
+    }
     r->addRef();
     return OwnPtr<T>(ptr);
 }

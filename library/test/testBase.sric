@@ -13,7 +13,7 @@ fun testDArray() {
 
 fun testDArray2() {
     var a = DArray$<own*Int> {};
-    var p = alloc$<Int>();
+    var p = new Int;
     a.add(move p);
 
     for (var i = 0; i<a.size(); ++i) {

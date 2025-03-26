@@ -40,6 +40,9 @@ public class ReferenceFinder extends CompilePass {
     @Override
     public void visitField(AstNode.FieldDef v) {
         visitType(v.fieldType);
+        if (v.initExpr != null) {
+            visit(v.initExpr);
+        }
     }
     
     void visitId(IdExpr e) {
@@ -65,6 +68,9 @@ public class ReferenceFinder extends CompilePass {
         if (prototype.paramDefs != null) {
             for (var p : prototype.paramDefs) {
                 visitType(p.fieldType);
+                if (p.initExpr != null) {
+                    visit(p.initExpr);
+                }
             }
         }
     }

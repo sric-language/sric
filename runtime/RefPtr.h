@@ -103,12 +103,13 @@ private:
         }
     }
 #endif
-private:
-    RefPtr(T* p) : pointer(p), checkCode(0), offset(0), type(RefType::RawRef) {
-    }
+
 public:
 
     RefPtr() : pointer(nullptr), checkCode(0), offset(0), type(RefType::RawRef) {
+    }
+
+    RefPtr(T* p, uint32_t checkCode, RefType type, uint32_t offset = 0) : pointer(p), checkCode(checkCode), offset(offset), type(type) {
     }
 
     RefPtr(T* p, uint32_t checkCode, uint32_t arrayOffset) : pointer(p), checkCode(checkCode), offset(arrayOffset), type(RefType::ArrayRef) {
@@ -183,17 +184,13 @@ public:
 
     template <class U> RefPtr<U> castTo()
     {
-        RefPtr<U> copy((U*)(pointer));
-        copy.checkCode = checkCode;
-        copy.type = type;
+        RefPtr<U> copy((U*)(pointer), checkCode, type, offset);
         return copy;
     }
 
     template <class U> RefPtr<U> dynamicCastTo()
     {
-        RefPtr<U> copy(dynamic_cast<U*>(pointer));
-        copy.checkCode = checkCode;
-        copy.type = type;
+        RefPtr<U> copy(dynamic_cast<U*>(pointer), checkCode, type, offset);
         return copy;
     }
 };
@@ -235,12 +232,13 @@ private:
         }
     }
 #endif
-private:
-    RefPtr(void* p) : pointer(p), checkCode(0), offset(0), type(RefType::RawRef) {
-    }
+
 public:
 
     RefPtr() : pointer(nullptr), checkCode(0), offset(0), type(RefType::RawRef) {
+    }
+
+    RefPtr(void* p, uint32_t checkCode, RefType type, uint32_t offset = 0) : pointer(p), checkCode(checkCode), offset(offset), type(type) {
     }
 
     RefPtr(void* p, uint32_t checkCode, uint32_t arrayOffset) : pointer(p), checkCode(checkCode), offset(arrayOffset), type(RefType::ArrayRef) {
@@ -305,17 +303,13 @@ public:
 
     template <class U> RefPtr<U> castTo()
     {
-        RefPtr<U> copy((U*)(pointer));
-        copy.checkCode = checkCode;
-        copy.type = type;
+        RefPtr<U> copy((U*)(pointer), checkCode, type, offset);
         return copy;
     }
 
     template <class U> RefPtr<U> dynamicCastTo()
     {
-        RefPtr<U> copy(dynamic_cast<U*>(pointer));
-        copy.checkCode = checkCode;
-        copy.type = type;
+        RefPtr<U> copy(dynamic_cast<U*>(pointer), checkCode, type, offset);
         return copy;
     }
 };
@@ -343,8 +337,14 @@ RefPtr<T> rawToRef(T* ptr) {
         return RefPtr<T>(r);
     }
 
+    void *p = toVoid(ptr);
+    uint32_t *code = ((uint32_t*)p) - 2;
+    if (*code == SC_STACK_MAGIC_CODE) {
+        return RefPtr<T>(ptr, *(code-1), RefType::StackRef);
+    }
+
     sc_assert(false, "Can't cast raw pointer to ref pointer");
-    return RefPtr<T>(ptr);
+    return RefPtr<T>(ptr, 0, RefType::RawRef);
 }
 
 }

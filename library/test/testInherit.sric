@@ -17,7 +17,7 @@ virtual struct B {
 }
 
 fun testInherit() {
-    var x = alloc$<C>();
+    var x = new C;
     x.foo();
 
     var p1: ref* B = x;
@@ -33,7 +33,7 @@ fun testInherit() {
 }
 
 fun testDector() {
-    var x : own* I = alloc$<C>();
+    var x : own* I = new C;
     //var x : own* I = move a;
     x.foo();
 }

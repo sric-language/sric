@@ -42,7 +42,7 @@ fun testHashMap4() {
     var map = HashMap$<String, own*? Int>{};
 
     for (var i=0; i<10; ++i) {
-        var p = alloc$<Int>();
+        var p = new Int;
         *p = i;
         map.set(String::fromInt32(i), move p);
     }

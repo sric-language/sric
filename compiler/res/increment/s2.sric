@@ -1,0 +1,10 @@
+
+
+struct A {
+    var i: Int = 0;
+
+    fun main() {
+        var self : ref* A = rawToRef(this);
+    }
+}
+

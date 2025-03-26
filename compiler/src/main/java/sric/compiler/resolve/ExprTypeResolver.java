@@ -681,6 +681,12 @@ public class ExprTypeResolver extends TypeResolver {
                     case moveKeyword:
                         e.resolvedType = e.operand.resolvedType;
                         break;
+                    case newKeyword: {
+                        if (e.operand.resolvedType.detail instanceof Type.MetaTypeInfo typeInfo) {
+                            e.resolvedType = Type.pointerType(e.loc, typeInfo.type, Type.PointerAttr.own, false);
+                        }
+                        break;
+                    }
                     default:
                         break;
                 }
@@ -778,11 +784,11 @@ public class ExprTypeResolver extends TypeResolver {
 //            }
 //        }
         else {
-            err("Unkown expr:"+v, v.loc);
+            err("Unkown expr type:"+v, v.loc);
             return;
         }
         
-        if (v.resolvedType == null) {
+        if (v.resolvedType == null && !hasError()) {
             err("Resolved fail", v.loc);
         }
     }
@@ -799,7 +805,7 @@ public class ExprTypeResolver extends TypeResolver {
         if (type.isPointerType() && type.genericArgs != null) {
             type = type.genericArgs.get(0);
         }
-        if (type.id.resolvedDef instanceof TypeDef sd && sd.isStruct()) {
+        if (type.id.resolvedDef instanceof TypeDef sd && (sd.isStruct() || sd.isTrait())) {
             return sd;
         }
         return null;
@@ -835,16 +841,19 @@ public class ExprTypeResolver extends TypeResolver {
         else if (e.target instanceof CallExpr call) {
             sd = getTypeStructDef(e.target.resolvedType);
         }
+        else if (e.target instanceof UnaryExpr ue) {
+            if (ue.opToken == newKeyword) {
+                if (ue.operand.resolvedType.detail instanceof Type.MetaTypeInfo typeInfo) {
+                    sd = getTypeStructDef(typeInfo.type);
+                }
+            }
+        }
         else if (e.target instanceof TypeExpr te) {
             if (te.type.id.resolvedDef instanceof TypeDef) {
                 sd = (TypeDef)te.type.id.resolvedDef;
                 //e._isType = true;
             }
             //e._isType = true;
-        }
-        
-        if (sd != null && (!sd.isStruct() || (sd.flags & FConst.Abstract) != 0)) {
-            err("Must non-abstract struct", e.target.loc);
         }
         
         e._structDef = sd;
@@ -871,6 +880,10 @@ public class ExprTypeResolver extends TypeResolver {
 
             curItBlock = savedCurItBlock;
             this.loops = savedLoop;
+        }
+        
+        if (e.resolvedType == null) {
+            err("Unknow target of with block ", e.loc);
         }
     }
     

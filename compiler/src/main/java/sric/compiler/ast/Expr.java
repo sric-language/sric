@@ -123,6 +123,15 @@ public abstract class Expr extends AstNode {
             this.name = name;
         }
         
+        public void setNamespace(IdExpr ns) {
+            if (namespace == null) {
+                namespace = ns;
+            }
+            else {
+                namespace.setNamespace(ns);
+            }
+        }
+        
         private String getNamespaceName() {
             if (this.namespace != null) {
                 return namespace.toString();

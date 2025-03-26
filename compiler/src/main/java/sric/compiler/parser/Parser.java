@@ -222,7 +222,7 @@ public class Parser {
             
             consume();
             IdExpr idexpr = idExpr();
-            idexpr.namespace = e;
+            idexpr.setNamespace(e);
             e = idexpr;
         }
         

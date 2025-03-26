@@ -37,16 +37,14 @@ public class CompletionFinder {
         this.target = node;
         this.text = text;
         
-        boolean isNamespace = true;
+        boolean isNamespace = false;
         //'abc.'
         if (node instanceof AccessExpr aexpr) {
-            if (aexpr.name.equals("")) {
-                this.target = aexpr.target;
-            }
+            this.target = aexpr.target;
         }
         //'abc::'
         else if (node instanceof IdExpr aexpr) {
-            if (aexpr.namespace != null && aexpr.name.equals("")) {
+            if (aexpr.namespace != null) {
                 this.target = aexpr.namespace;
                 isNamespace = true;
             }

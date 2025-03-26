@@ -85,7 +85,7 @@ struct A {
 }
 
 var a  = A { .init(); .i = 0; };
-var a: own* A = alloc$<A>() { .i = 0; };
+var a: own* A = new A { .i = 0; };
 ```
 
 

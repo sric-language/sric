@@ -17,6 +17,7 @@ fun main(): Int {
     testDerivativePtr();
     testDerivativeRefable();
     testVoidPtr();
+    testRawCast();
     
     testHashMap();
     testHashMap2();

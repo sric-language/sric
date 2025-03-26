@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sric.compiler.ast.AstNode;
@@ -42,6 +43,8 @@ public class Compiler {
     
     public boolean genCode = true;
     public boolean print = true;
+    
+    private HashMap<String, SModule> moduleCache = new HashMap<String, SModule>();
     
     public Compiler(SModule module, File sourceDir, String libPath, String outputDir) {
         this.module = module;
@@ -150,7 +153,7 @@ public class Compiler {
                 }
             }
             module.fileUnits.add(funit);
-
+            module.clearCache();
 
             typeCheck();
         }
@@ -162,12 +165,19 @@ public class Compiler {
     }
     
     public SModule importModule(String moduleName, String version, Loc loc) {
+        SModule s = moduleCache.get(moduleName);
+        if (s != null) {
+            return s;
+        }
+        
         String libFile = libPath + "/" + moduleName;
         try {
             Compiler compiler = Compiler.fromProps(libFile+".meta", libPath, libFile+".sric");
             compiler.genCode = false;
-        
+            compiler.moduleCache = this.moduleCache;
             compiler.run();
+            
+            moduleCache.put(moduleName, compiler.module);
             return compiler.module;
             
         } catch (Exception ex) {

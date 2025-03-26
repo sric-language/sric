@@ -1,7 +1,7 @@
 
-extern fun alloc$<T>(): own* T;
+//extern fun alloc$<T>(): own* T;
 
-extern fun init$<T>(p: raw* Void, freeMemory: fun(p: raw* Void)): own* T;
+extern fun placementNew$<T>(p: raw* Void, freeMemory: fun(p: raw* Void)): own* T;
 
 extern struct WeakPtr$<T> {
     fun set(p: own*? T);

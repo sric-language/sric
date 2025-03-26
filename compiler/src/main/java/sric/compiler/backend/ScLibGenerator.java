@@ -132,6 +132,12 @@ public class ScLibGenerator extends BaseGenerator {
                     print(comment.content);
                     newLine();
                 }
+                else if (comment.type == TokenKind.docComment) {
+                    print("/**");
+                    print(comment.content);
+                    print("*/");
+                    newLine();
+                }
             }
         }
     }
@@ -295,10 +301,12 @@ public class ScLibGenerator extends BaseGenerator {
             print(" = uninit");
         }
         
-        if (v.initExpr != null) {
-            print(" = ");
-            this.visit(v.initExpr);
-        }
+        //if (v.isParamDef) {
+            if (v.initExpr != null) {
+                print(" = ");
+                this.visit(v.initExpr);
+            }
+        //}
     }
     
     @Override

@@ -185,6 +185,15 @@ public class AstNode {
         public boolean isStruct() {
             return kind == Kind.Struct;
         }
+        public boolean isAbstract() {
+            if (isTrait()) {
+                return true;
+            }
+            if ((this.flags & FConst.Abstract) != 0) {
+                return true;
+            }
+            return false;
+        }
         public boolean isAbstractOrVirtual() {
             if (isTrait()) {
                 return true;

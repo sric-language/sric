@@ -309,7 +309,8 @@ public class ErrorChecker extends CompilePass {
         //check constexpr
         if ((v.flags & FConst.ConstExpr) != 0) {
             if (v.initExpr == null) {
-                err("Must init constExpr", v.loc);
+                if ((!module.isImported))
+                    err("Must init constExpr", v.loc);
             }
             else if (v.initExpr instanceof Expr.LiteralExpr) {
                 if (!v.isStatic()) {
@@ -342,7 +343,8 @@ public class ErrorChecker extends CompilePass {
 
                 }
                 else if (v.fieldType != null && v.fieldType.isPointerType() && !v.fieldType.isNullablePointerType()) {
-                    err("Variable is not initialized", v.loc);
+                    if (!module.isImported)
+                        err("Variable is not initialized", v.loc);
                 }
             }
 
@@ -902,6 +904,16 @@ public class ErrorChecker extends CompilePass {
                             err("Const error", e.loc);
                         }
                         break;
+                    case newKeyword: {
+                        if (e.operand.resolvedType.detail instanceof Type.MetaTypeInfo typeInfo) {
+                            if (typeInfo.type.id.resolvedDef instanceof TypeDef td) {
+                                if (td.isAbstract()) {
+                                    err("Can't new abstract struct: " + td.name, e.loc);
+                                }
+                            }
+                        }
+                        break;
+                    }
                     default:
                         break;
                 }
@@ -998,12 +1010,12 @@ public class ErrorChecker extends CompilePass {
         }
         
         AstNode.TypeDef sd = e._structDef;
-        if (sd != null && !sd._hasCotr) {            
-            if (e._isType && (sd.flags & FConst.Abstract) != 0) {
+        if (sd != null) {            
+            if (e._isType && sd.isAbstract()) {
                 err("It's abstract", e.target.loc);
             }
             
-            if (e.block != null) {
+            if (e.block != null && !sd._hasCotr) {
                 
                 HashMap<String,FieldDef> fields = new HashMap<>();
                 sd.getAllFields(fields);

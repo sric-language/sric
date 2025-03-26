@@ -28,6 +28,10 @@ public abstract class CompilePass implements Visitor {
         return log.err(msg, loc);
     }
     
+    public boolean hasError() {
+        return log.hasError();
+    }
+    
     public void visitUnit(FileUnit v) {
     }
     

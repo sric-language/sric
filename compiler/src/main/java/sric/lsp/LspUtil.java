@@ -131,18 +131,30 @@ public class LspUtil {
             item.deprecated = td.isDeprecated();
             name = td.name;
             if (decl instanceof FuncDef fd) {
+                StringBuilder fname = new StringBuilder(name);
+                if (fd.generiParamDefs != null && fd.prototype.paramDefs == null) {
+                    fname.append("$<");
+//                    for (AstNode.GenericParamDef gd : fd.generiParamDefs) {
+//                        fname.append(gd.name);
+//                    }
+                    fname.append(">");
+                }
                 if (fd.prototype.paramDefs != null) {
-                    name += "(";
+                    fname.append("(");
                     int i = 0;
                     for (FieldDef param : fd.prototype.paramDefs) {
                         if (i > 0) {
-                            name += ", ";
+                            fname.append(", ");
                         }
-                        name += param.name;
+                        fname.append(param.name);
                         ++i;
                     }
-                    name += ")";
+                    fname.append(")");
                 }
+                else {
+                    fname.append("()");
+                }
+                name = fname.toString();
             }
         }
         else if (decl instanceof LocalDefStmt ld) {
@@ -150,7 +162,7 @@ public class LspUtil {
         }
 
         item.kind = CompletionItemKind.fromSymbol(decl).getValue();
-        item.detail = name;
+        //item.detail = name;
         item.label = name;
         return item;
     }
