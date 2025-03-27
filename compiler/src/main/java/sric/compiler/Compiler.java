@@ -49,7 +49,13 @@ public class Compiler {
     public Compiler(SModule module, File sourceDir, String libPath, String outputDir) {
         this.module = module;
         log = new CompilerLog();
-        this.sources = Util.listFile(sourceDir);
+        if (sourceDir.isDirectory()) {
+            this.sources = Util.listFile(sourceDir);
+        }
+        else {
+            this.sources = new ArrayList<File>();
+            this.sources.add(sourceDir);
+        }
         this.libPath = libPath;
         this.outputDir = outputDir;
     }
@@ -78,6 +84,9 @@ public class Compiler {
         module.sourcePath = new File(sourcePath).getAbsolutePath();
         module.outType = "exe";
         module.scriptMode = true;
+        if (sourcePath.endsWith(".sch")) {
+            module.isStubFile = true;
+        }
         File libDir = new File(libPath);
         module.depends= listDepends(libDir);
         return new Compiler(module, sourceDir, libPath, libDir.getParent()+"/output/");
@@ -172,7 +181,7 @@ public class Compiler {
         
         String libFile = libPath + "/" + moduleName;
         try {
-            Compiler compiler = Compiler.fromProps(libFile+".meta", libPath, libFile+".sric");
+            Compiler compiler = Compiler.fromProps(libFile+".meta", libPath, libFile+".sch");
             compiler.genCode = false;
             compiler.moduleCache = this.moduleCache;
             compiler.run();
@@ -213,7 +222,7 @@ public class Compiler {
     
     public void genOutput() throws IOException {
         String libFile = libPath + "/" + this.module.name;
-        ScLibGenerator scGenerator = new ScLibGenerator(log, libFile + ".sric");
+        ScLibGenerator scGenerator = new ScLibGenerator(log, libFile + ".sch");
         scGenerator.run(module);
         
         var props = this.module.toMetaProps();

@@ -3,7 +3,7 @@
   "displayName": "sric-language",
   "description": "sric language",
   "publisher": "sric-language",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.92.0"
   },
@@ -19,7 +19,8 @@
           "sric"
         ],
         "extensions": [
-          "sric"
+          "sric",
+          "sch"
         ],
         "configuration": "./language-configuration.json"
       }

@@ -51,6 +51,9 @@ public class ErrorChecker extends CompilePass {
     }
     
     private boolean isCopyable(Type type) {
+        if (type == null) {
+            return true;
+        }
         if (type.id.resolvedDef == null) {
             return false;
         }
@@ -309,7 +312,7 @@ public class ErrorChecker extends CompilePass {
         //check constexpr
         if ((v.flags & FConst.ConstExpr) != 0) {
             if (v.initExpr == null) {
-                if ((!module.isImported))
+                if (!this.module.isStubFile && !v.isExtern())
                     err("Must init constExpr", v.loc);
             }
             else if (v.initExpr instanceof Expr.LiteralExpr) {
@@ -343,7 +346,7 @@ public class ErrorChecker extends CompilePass {
 
                 }
                 else if (v.fieldType != null && v.fieldType.isPointerType() && !v.fieldType.isNullablePointerType()) {
-                    if (!module.isImported)
+                    if (!v.unkonwInit && !v.isExtern())
                         err("Variable is not initialized", v.loc);
                 }
             }
@@ -407,7 +410,7 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
-        if (v.code == null && (!module.isImported && !module.scriptMode)) {
+        if (v.code == null && (!module.isStubFile)) {
             if ((v.flags & (FConst.Abstract|FConst.Virtual|FConst.Extern| FConst.ExternC)) == 0) {
                 if (curStruct != null) {
                     if ((curStruct.flags & (FConst.Abstract|FConst.Virtual|FConst.Extern| FConst.ExternC)) == 0) {
@@ -956,7 +959,7 @@ public class ErrorChecker extends CompilePass {
             if (e.captures != null) {
                 for (IdExpr ide : e.captures) {
                     FieldDef f = (FieldDef)ide.resolvedDef;
-                    if (!this.isCopyable(f.fieldType)) {
+                    if (f.fieldType != null && !this.isCopyable(f.fieldType)) {
                         err("Capture a noncopyable field", ide.loc);
                     }
                 }
@@ -1015,7 +1018,7 @@ public class ErrorChecker extends CompilePass {
                 err("It's abstract", e.target.loc);
             }
             
-            if (e.block != null && !sd._hasCotr) {
+            if (e.block != null) {
                 
                 HashMap<String,FieldDef> fields = new HashMap<>();
                 sd.getAllFields(fields);
@@ -1028,14 +1031,8 @@ public class ErrorChecker extends CompilePass {
                     if (f.fieldType == null) {
                         continue;
                     }
-                    if (f.fieldType.isNullablePointerType()) {
-                        continue;
-                    }
-                    if (f.fieldType.isNum()) {
-                        continue;
-                    }
                     
-                    if (f.fieldType.isPointerType() && !f.fieldType.isNullablePointerType()) {
+                    if (f.uninit || (f.fieldType.isPointerType() && !f.fieldType.isNullablePointerType())) {
                         boolean found = false;
                         for (Stmt t : e.block.stmts) {
                             if (t instanceof ExprStmt exprStmt) {
@@ -1121,14 +1118,14 @@ public class ErrorChecker extends CompilePass {
                         }
                         
                         if (i < f.prototype.paramDefs.size()) {
-                            if (f.prototype.paramDefs.get(i).initExpr == null && !f.prototype.paramDefs.get(i).fieldType.isVarArgType()) {
+                            if (!f.prototype.paramDefs.get(i).hasParamDefaultValue() && !f.prototype.paramDefs.get(i).fieldType.isVarArgType()) {
                                 err("Arg number error", e.loc);
                             }
                         }
                     }
                 }
                 else if (f.prototype.paramDefs != null) {
-                    if (f.prototype.paramDefs.get(0).initExpr == null) {
+                    if (!f.prototype.paramDefs.get(0).hasParamDefaultValue()) {
                         err("Arg number error", e.loc);
                     }
                 }

@@ -257,7 +257,7 @@ public class CppGenerator extends BaseGenerator {
         print("sric::RField param;");
         print("param.name = \"").print(f.name).print("\";");
         print("param.fieldType = ");printStringLiteral(f.fieldType.toString());print(";");
-        print("param.hasDefaultValue = ").print(f.initExpr == null ? "0" : "1").print(";");
+        print("param.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";");
         print(parentName).print(".params.add(std::move(param));");
         print("}");
         this.newLine();
@@ -291,7 +291,7 @@ public class CppGenerator extends BaseGenerator {
         }
         
         print("f.fieldType = ");printStringLiteral(f.fieldType.toString());print(";").newLine();
-        print("f.hasDefaultValue = ").print(f.initExpr == null ? "0" : "1").print(";").newLine();
+        print("f.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";").newLine();
         
         print("f.enumValue = ").print(""+f._enumValue).print(";").newLine();
         

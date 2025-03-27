@@ -569,7 +569,13 @@ public class Parser {
         // optional ctor args
         if (curt == TokenKind.assign) {
             consume(TokenKind.assign);
-            def.initExpr = expr();
+            if (curt == TokenKind.dotDotDot) {
+                consume();
+                def.unkonwInit = true;
+            }
+            else {
+                def.initExpr = expr();
+            }
         }
 
         endLoc(def, loc);
@@ -741,7 +747,13 @@ public class Parser {
         if (curt == TokenKind.assign) {
             //if (curt === TokenKind.assign) err("Must use := for field initialization")
             consume();
-            field.initExpr = expr();
+            if (curt == TokenKind.dotDotDot) {
+                consume();
+                field.unkonwInit = true;
+            }
+            else {
+                field.initExpr = expr();
+            }
         }
 
         // disable type inference for now - doing inference for literals is

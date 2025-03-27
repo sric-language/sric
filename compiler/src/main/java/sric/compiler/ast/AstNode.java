@@ -93,6 +93,7 @@ public class AstNode {
         public Type fieldType;        // field type
         public Expr initExpr;         // init expression or null
         public boolean uninit = false;
+        public boolean unkonwInit = false;
         
         public boolean isLocalVar = false;
         public boolean isParamDef = false;
@@ -102,6 +103,12 @@ public class AstNode {
         
         public boolean isLocalOrParam() {
             return isLocalVar || isParamDef;
+        }
+        
+        public boolean hasParamDefaultValue() {
+            if (initExpr != null) return true;
+            if (unkonwInit) return true;
+            return false;
         }
         
         public FieldDef(Comments comment, String name) {

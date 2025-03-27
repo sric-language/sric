@@ -33,7 +33,7 @@ function activate(context) {
     if (debugLsp) {
         binaryPath += " -agentlib:jdwp=transport=dt_socket,address=localhost:5005,server=n,suspend=y";
     }
-    binaryPath += " -cp "+sricHome+"/bin/gson-2.8.6.jar" + path.delimiter + sricHome+"/bin/sric-1.0-SNAPSHOT.jar sric.compiler.Main";
+    binaryPath += " -cp "+sricHome+"/bin/gson-2.8.6.jar" + path.delimiter + sricHome+"/bin/sric-1.0.jar sric.compiler.Main";
 
     var args = "-lib "+sricHome+"/lib -lsp";
 

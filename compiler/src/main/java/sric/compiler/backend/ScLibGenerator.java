@@ -301,12 +301,21 @@ public class ScLibGenerator extends BaseGenerator {
             print(" = uninit");
         }
         
-        //if (v.isParamDef) {
-            if (v.initExpr != null) {
-                print(" = ");
+        if (v.unkonwInit) {
+            print(" = ...");
+        }
+        
+        if (v.initExpr != null) {
+            print(" = ");
+            if (isPrintAll || v.isLocalOrParam())
+                this.visit(v.initExpr);
+            else if (v.parent instanceof TypeDef tf && tf.generiParamDefs != null) {
                 this.visit(v.initExpr);
             }
-        //}
+            else {
+                print("...");
+            }
+        }
     }
     
     @Override
@@ -356,6 +365,9 @@ public class ScLibGenerator extends BaseGenerator {
                 if (p.initExpr != null) {
                     print(" = ");
                     this.visit(p.initExpr);
+                }
+                else if (p.unkonwInit) {
+                    print(" = ...");
                 }
                 ++i;
             }
