@@ -218,7 +218,10 @@ public class Type extends AstNode {
         }
         
         if (target.isVarArgType()) {
-            return true;
+            if (this.isBool() || this.isNum() || this.isRawPointerType() || this.isNullType())
+                return true;
+            else
+                return false;
         }
 
         if (this.isImmutable && !this.isNullType()) {

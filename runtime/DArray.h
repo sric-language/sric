@@ -217,7 +217,7 @@ public:
     }
 
     bool isEmpty() {
-        return _size > 0;
+        return _size == 0;
     }
 
     void insert(int i, T d) {

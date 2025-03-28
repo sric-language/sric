@@ -44,3 +44,9 @@ fun test() {
         s += **pp;
     }
 }
+
+fun testAccess() {
+    var a: *? A;
+    var c: raw*? Int = a.c;
+    var p: * A = a;
+}

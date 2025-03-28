@@ -8,7 +8,6 @@ package sric.compiler.resolve;
 import java.util.HashMap;
 import sric.compiler.CompilePass;
 import sric.compiler.CompilerLog;
-import sric.compiler.ast.AstNode;
 import sric.compiler.ast.AstNode.*;
 import sric.compiler.ast.Expr.*;
 import sric.compiler.ast.Stmt.*;
@@ -129,9 +128,9 @@ public class ErrorChecker extends CompilePass {
     }
     
     private void verifyTypeFit(Expr target, Type to, Loc loc) {
-        verifyTypeFit(target, to, loc, false, false);
+        verifyTypeFit(target, to, loc, false, false, false);
     }
-    private void verifyTypeFit(Expr target, Type to, Loc loc, boolean isCallArg, boolean isReturn) {
+    private void verifyTypeFit(Expr target, Type to, Loc loc, boolean isCallArg, boolean isReturn, boolean isCompare) {
         Type from = target.resolvedType;
         if (from == null) {
             return;
@@ -184,7 +183,7 @@ public class ErrorChecker extends CompilePass {
 //            }
 //        }
 
-        if (from.isNullablePointerType() && (!to.isNullablePointerType() && !to.isFuncType())) {
+        if (!isCompare && !to.isVarArgType() && from.isNullablePointerType() && (!to.isNullablePointerType() && !to.isFuncType())) {
             target.checkNonnullable = true;
         }
         
@@ -664,7 +663,7 @@ public class ErrorChecker extends CompilePass {
                     err("Invalid return", rets.loc);
                 }
                 else {
-                    this.verifyTypeFit(rets.expr, rets._funcReturnType, rets.expr.loc, false, true);
+                    this.verifyTypeFit(rets.expr, rets._funcReturnType, rets.expr.loc, false, true, false);
                 }
                 
 //                if (rets._funcReturnType != null && rets._funcReturnType.detail instanceof PointerInfo pinfo) {
@@ -783,7 +782,7 @@ public class ErrorChecker extends CompilePass {
         }
         if (target instanceof IdExpr id) {
             if (id.name.equals(TokenKind.thisKeyword.symbol) || id.name.equals(TokenKind.superKeyword.symbol)
-                    || id.name.equals(TokenKind.dot.symbol)) {
+                    || id.name.equals(TokenKind.dot.symbol)  || id.name.equals(TokenKind.selfKeyword.symbol)) {
                 return;
             }
         }
@@ -1031,6 +1030,9 @@ public class ErrorChecker extends CompilePass {
                     if (f.fieldType == null) {
                         continue;
                     }
+                    if (f.unkonwInit) {
+                        continue;
+                    }
                     
                     if (f.uninit || (f.fieldType.isPointerType() && !f.fieldType.isNullablePointerType())) {
                         boolean found = false;
@@ -1108,18 +1110,25 @@ public class ErrorChecker extends CompilePass {
                                     err("Arg name error", t.loc);
                                 }
                             }
-                            verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).fieldType, t.loc, true, false);
+                            verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).fieldType, t.loc, true, false, false);
                             ++i;
                         }
                         if (i < e.args.size()) {
-                            if (!f.prototype.paramDefs.get(f.prototype.paramDefs.size()-1).fieldType.isVarArgType()) {
-                                err("Arg number error", e.loc);
+                            Type lastParamType = f.prototype.paramDefs.get(f.prototype.paramDefs.size()-1).fieldType;
+                            if (!lastParamType.isVarArgType()) {
+                                err("Too many args", e.loc);
+                            }
+                            else {
+                                for (; i<e.args.size(); ++i) {
+                                    Expr.CallArg t = e.args.get(i);
+                                    verifyTypeFit(t.argExpr, lastParamType, t.loc, true, false, false);
+                                }
                             }
                         }
                         
                         if (i < f.prototype.paramDefs.size()) {
                             if (!f.prototype.paramDefs.get(i).hasParamDefaultValue() && !f.prototype.paramDefs.get(i).fieldType.isVarArgType()) {
-                                err("Arg number error", e.loc);
+                                err("Too few args", e.loc);
                             }
                         }
                     }
@@ -1216,6 +1225,9 @@ public class ErrorChecker extends CompilePass {
                         else if (asType.isPointerType() && (!e.lhs.resolvedType.isPointerType() && !e.lhs.resolvedType.isInt())) {
                             err("Invalide as", e.rhs.loc);
                         }
+                        if (asType.detail instanceof Type.PointerInfo pinfo && pinfo.pointerAttr == Type.PointerAttr.own) {
+                            err("Can't cast to own pointer", e.rhs.loc);
+                        }
                     }
                 }
                     break;
@@ -1240,10 +1252,10 @@ public class ErrorChecker extends CompilePass {
                         else if (e.lhs.resolvedType.detail instanceof Type.PointerInfo p1 && e.rhs.resolvedType.detail instanceof Type.PointerInfo p2) {
                             if (p1.pointerAttr != p2.pointerAttr) {
                                 if (p1.pointerAttr.ordinal() > p2.pointerAttr.ordinal()) {
-                                    verifyTypeFit(e.rhs, e.lhs.resolvedType, e.rhs.loc, true, false);
+                                    verifyTypeFit(e.rhs, e.lhs.resolvedType, e.rhs.loc, true, false, true);
                                 }
                                 else {
-                                    verifyTypeFit(e.lhs, e.rhs.resolvedType, e.lhs.loc, true, false);
+                                    verifyTypeFit(e.lhs, e.rhs.resolvedType, e.lhs.loc, true, false, true);
                                 }
                             }
                         }
@@ -1253,7 +1265,7 @@ public class ErrorChecker extends CompilePass {
                     }
                     else if (e.resolvedOperator != null && e.resolvedOperator.prototype.paramDefs != null) {
                         Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
-                        verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false);
+                        verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false, true);
                     }
                     else if (!e.lhs.resolvedType.semanticEquals(e.rhs.resolvedType)) {
                         err("Cant compare different type", e.loc);
@@ -1279,7 +1291,7 @@ public class ErrorChecker extends CompilePass {
                 case slash:
                     if (e.resolvedOperator != null && e.resolvedOperator.prototype.paramDefs != null) {
                         Type paramType = e.resolvedOperator.prototype.paramDefs.get(0).fieldType;
-                        verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false);
+                        verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false, false);
                     }
                     verifyUnsafe(e.lhs);
                     break;

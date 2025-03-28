@@ -79,6 +79,9 @@ public class CppGenerator extends BaseGenerator {
         else if (sym.equals("float")) {
             return "_float";
         }
+        else if (sym.equals(TokenKind.selfKeyword.symbol)) {
+            return ("sric::rawToRef(this)");
+        }
         return sym;
     }
     
@@ -1308,7 +1311,7 @@ public class CppGenerator extends BaseGenerator {
                 print(")");
             }
         }
-                
+
         if (v.checkNonnullable) {
             print("sric::nonNullable(");
             parentheses++;
@@ -1359,7 +1362,7 @@ public class CppGenerator extends BaseGenerator {
             else {
                 boolean isNullable = false;
                 if (e.target.resolvedType != null && e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
-                    if (pinfo.isNullable) {
+                    if (pinfo.isNullable && pinfo.pointerAttr == Type.PointerAttr.raw) {
                         print("sric::nonNullable(");
                         isNullable = true;
                     }
@@ -1730,28 +1733,28 @@ public class CppGenerator extends BaseGenerator {
         /* Local var define:
             var x = a { ... };
             =>
-                x = a; { a.xxx = x; }
+                x = a; { x.name = y; }
                 x = {};
-                x; { a.xxx = x; }
+                x; { x.name = y; }
         */
-        if (e._storeVar != null && e._storeVar.isLocalVar) {
-            if (!e._isType) {
-                print(" = ");
-                this.visit(e.target);
-            }
-            else if (e.block.stmts.size() == 0) {
-                //print(" = {}");
-                return;
-            }
-            print(";");
-            
-            String targetName = e._storeVar.name;
-            if (e._storeVar.isRefable) {
-                targetName = "(*" + targetName + ")";
-            }
-            printItBlockArgs(e, targetName);
-            return;
-        }
+//        if (e._storeVar != null && e._storeVar.isLocalVar && (e._storeVar.fieldType == null || !e._storeVar.fieldType.isImmutable)) {
+//            if (!e._isType) {
+//                print(" = ");
+//                this.visit(e.target);
+//            }
+//            else if (e.block.stmts.size() == 0) {
+//                //print(" = {}");
+//                return;
+//            }
+//            print(";");
+//            
+//            String targetName = e._storeVar.name;
+//            if (e._storeVar.isRefable) {
+//                targetName = "(*" + targetName + ")";
+//            }
+//            printItBlockArgs(e, targetName);
+//            return;
+//        }
         
         /* single name var with:
             a { ... }

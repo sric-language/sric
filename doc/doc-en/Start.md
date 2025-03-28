@@ -5,7 +5,6 @@
 Require:
 - JDK 17+
 - C++ compier that support C++17
-- Maven
 
 Build:
 1. Add "bin" into your env path
@@ -14,7 +13,7 @@ Build:
 ## IDE
 
 1. Search 'sric-language' in vscode marketplace, install it.
-2. Config Language Server Path, Language Server Arguments in plugin setting.
+2. Configure sricHome to point to the sric directory (the parent directory of bin).
 
 
 ## Usage

@@ -1,7 +1,7 @@
 
 import sric::*;
 
-struct A {
+virtual struct A {
     var i: Int = 1;
     var k: Int = 2;
 
@@ -9,6 +9,7 @@ struct A {
         return i - b.i;
     }
 }
+
 
 struct CP {
     var p: own*? Int;
@@ -107,3 +108,4 @@ fun testRawCast() {
     var r1 : raw* A = &r;
     var r2 = rawToRef(r1);
 }
+

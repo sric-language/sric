@@ -248,6 +248,10 @@ public class ScLibGenerator extends BaseGenerator {
         if (id.name.equals(".")) {
             return;
         }
+        if (id.name.equals(TokenKind.selfKeyword.symbol)) {
+            print("self()");
+            return;
+        }
         print(id.name);
     }
     

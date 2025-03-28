@@ -4,7 +4,7 @@ struct A {
     var i: Int = 0;
 
     fun main() {
-        var self : * A = rawToRef(this);
+        var s : * A = rawToRef(this);
     }
 }
 

@@ -153,17 +153,17 @@ public:
         other.pointer = p;
     }
 
-    template <class U> OwnPtr<U> castTo()
-    {
-        OwnPtr<U> copy((U*)(take()));
-        return copy;
-    }
+    //template <class U> OwnPtr<U> castTo()
+    //{
+    //    OwnPtr<U> copy((U*)(take()));
+    //    return copy;
+    //}
 
-    template <class U> OwnPtr<U> dynamicCastTo()
-    {
-        OwnPtr<U> copy(dynamic_cast<U*>(take()));
-        return copy;
-    }
+    //template <class U> OwnPtr<U> dynamicCastTo()
+    //{
+    //    OwnPtr<U> copy(dynamic_cast<U*>(take()));
+    //    return copy;
+    //}
 
     OwnPtr<T> share() {
         if (pointer)
@@ -276,17 +276,17 @@ public:
         other.pointer = p;
     }
 
-    template <class U> OwnPtr<U> castTo()
-    {
-        OwnPtr<U> copy((U*)(take()));
-        return copy;
-    }
+    //template <class U> OwnPtr<U> castTo()
+    //{
+    //    OwnPtr<U> copy((U*)(take()));
+    //    return copy;
+    //}
 
-    template <class U> OwnPtr<U> dynamicCastTo()
-    {
-        OwnPtr<U> copy(dynamic_cast<U*>(take()));
-        return copy;
-    }
+    //template <class U> OwnPtr<U> dynamicCastTo()
+    //{
+    //    OwnPtr<U> copy(dynamic_cast<U*>(take()));
+    //    return copy;
+    //}
 
     OwnPtr<void> share() {
         if (pointer)

@@ -6,3 +6,13 @@ fun main() {
         var a = *i;
     };
 }
+
+struct A {
+    var i: Int;
+
+    fun test() {
+        var c = fun(){
+            var x = this.i;
+        };
+    }
+}

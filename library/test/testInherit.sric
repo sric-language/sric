@@ -38,3 +38,8 @@ fun testDector() {
     x.foo();
 }
 
+fun testDynamicCast() {
+    var p : own*? B = new C;
+    var i = p as * C;
+    i.foo();
+}

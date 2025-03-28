@@ -33,7 +33,7 @@ public class ExprTypeResolver extends TypeResolver {
     
     protected TypeDef curStruct = null;
     protected WithBlockExpr curItBlock = null;
-    //protected Scope curItBlockScope = null;
+    protected FuncDef curFunc = null;
     
     public ExprTypeResolver(CompilerLog log, SModule module) {
         super(log, module);
@@ -73,17 +73,20 @@ public class ExprTypeResolver extends TypeResolver {
 //                return;
             }
             else if (idExpr.name.equals(TokenKind.thisKeyword.symbol) || 
-                    idExpr.name.equals(TokenKind.superKeyword.symbol) ) {
+                    idExpr.name.equals(TokenKind.superKeyword.symbol) ||
+                    idExpr.name.equals(TokenKind.selfKeyword.symbol)) {
                 
-                AstNode func = this.funcs.peek();
-                if (func instanceof FuncDef f) {
-                    if ((f.flags & FConst.Static) != 0) {
+                if (curFunc != null) {
+                    if (curFunc.isStatic()) {
                         err("No this in static", idExpr.loc);
                     }
+                    if (curStruct == null) {
+                        err("Use super out of struct", idExpr.loc);
+                        return;
+                    }
                     if (idExpr.name.equals(TokenKind.superKeyword.symbol)) {
-                        if (curStruct == null) {
-                            err("Use super out of struct", idExpr.loc);
-                            return;
+                        if (this.getCurClosure() != null) {
+                            err("Can't capture super", idExpr.loc);
                         }
                         if (curStruct.inheritances == null) {
                             err("Invalid super", idExpr.loc);
@@ -91,18 +94,23 @@ public class ExprTypeResolver extends TypeResolver {
                         }
                         else {
                             idExpr.resolvedType = Type.pointerType(idExpr.loc, curStruct.inheritances.get(0), Type.PointerAttr.raw, false);
-                            idExpr.resolvedType.isImmutable = (f.flags & FConst.Mutable) == 0;
+                            idExpr.resolvedType.isImmutable = true;
                         }
                     }
                     else if (idExpr.name.equals(TokenKind.thisKeyword.symbol)) {
-                        if (curStruct == null) {
-                            err("Use this out of struct", idExpr.loc);
-                            return;
+                        if (this.getCurClosure() != null) {
+                            err("Can't capture this, use self()", idExpr.loc);
                         }
                         Type self = new Type(curStruct.loc, curStruct.name);
                         self.id.resolvedDef = curStruct;
                         idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.raw, false);
-                        idExpr.resolvedType.isImmutable = (f.flags & FConst.Mutable) == 0;
+                        idExpr.resolvedType.isImmutable = true;
+                    }
+                    else if (idExpr.name.equals(TokenKind.selfKeyword.symbol)) {
+                        Type self = new Type(curStruct.loc, curStruct.name);
+                        self.id.resolvedDef = curStruct;
+                        idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.ref, false);
+                        idExpr.resolvedType.isImmutable = true;
                     }
                 }
                 else {
@@ -248,6 +256,7 @@ public class ExprTypeResolver extends TypeResolver {
 
     @Override
     public void visitFunc(FuncDef v) {
+        this.curFunc = v;
         this.funcs.push(v);
         
         if (v.generiParamDefs != null) {
@@ -270,6 +279,7 @@ public class ExprTypeResolver extends TypeResolver {
         }
         
         funcs.pop();
+        this.curFunc = null;
     }
 
     @Override

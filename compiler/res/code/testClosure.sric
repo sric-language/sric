@@ -10,3 +10,13 @@ fun main() {
     var i = 0;
     foo(fun(a:Int, b:Int):Int{ return a-b+i; });
 }
+
+struct A {
+    var i: Int;
+
+    fun test() {
+        var c = fun(){
+            var x = self().i;
+        };
+    }
+}

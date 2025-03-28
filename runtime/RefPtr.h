@@ -319,7 +319,7 @@ public:
 template <class T>
 OwnPtr<T> refToOwn(RefPtr<T> ptr) {
     if (ptr.type != RefType::HeapRef) {
-        sc_assert(false, "Can't cast ref pointer to own pointer");
+        //sc_assert(false, "Can't cast ref pointer to own pointer");
         return OwnPtr<T>();
     }
     getRefable(ptr.get())->addRef();

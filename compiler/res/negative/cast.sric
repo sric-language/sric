@@ -1,0 +1,13 @@
+
+
+virtual struct A {
+}
+
+struct B : A {
+}
+
+
+fun testCast() {
+    var i : own*? B;
+    var j = i as own*? A;
+}
