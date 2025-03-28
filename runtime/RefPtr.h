@@ -52,6 +52,8 @@ struct StackRefable {
 
     T& operator*() { return value; }
 
+    const T& operator*() const { return value; }
+
     operator T () { return value; }
 
     RefPtr<T> operator&() { return RefPtr<T>(*this); }

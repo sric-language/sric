@@ -34,7 +34,6 @@ public abstract class Expr extends AstNode {
         public Expr operand;    // operand expression
         
         public boolean _addressOfField = false;
-        public boolean _addressOfRefable = false;
                 
         public UnaryExpr(TokenKind tok, Expr operand) {
             this.opToken = tok;
@@ -118,6 +117,8 @@ public abstract class Expr extends AstNode {
         
         public AstNode resolvedDef;
         public boolean implicitThis;
+        
+        public boolean _autoDerefRefableVar = true;
         
         public IdExpr(String name) {
             this.name = name;

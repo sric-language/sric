@@ -645,11 +645,19 @@ public class CppGenerator extends BaseGenerator {
             }
         }
         
+        if (id._autoDerefRefableVar && id.resolvedDef instanceof FieldDef df && df.isRefable) {
+            print("(*");
+        }
+        
         if (id.resolvedDef instanceof TopLevelDef td) {
             print(getSymbolName(td));
         }
         else {
             print(filterSymbolName(id.name));
+        }
+        
+        if (id._autoDerefRefableVar && id.resolvedDef instanceof FieldDef df && df.isRefable) {
+            print(")");
         }
     }
     
@@ -744,9 +752,6 @@ public class CppGenerator extends BaseGenerator {
         }
 
         print(getSymbolName(v));
-        if (v.isRefable) {
-            print("__");
-        }
 //        if (v.fieldType.isArray()) {
 //            ArrayInfo arrayType = (ArrayInfo)v.fieldType.detail;
 //            print("[");
@@ -799,13 +804,6 @@ public class CppGenerator extends BaseGenerator {
             }
         }
         
-        if (v.isRefable) {
-            print("; auto& ");
-            print(getSymbolName(v));
-            print(" = *");
-            print(getSymbolName(v));
-            print("__");
-        }
         return true;
     }
     
@@ -1422,9 +1420,6 @@ public class CppGenerator extends BaseGenerator {
                 else {
                     this.visit(e.operand);
                 }
-                if (e._addressOfRefable) {
-                    print("__");
-                }
             }
             else if (e.opToken == TokenKind.moveKeyword) {
                 print("std::move(");
@@ -1731,15 +1726,9 @@ public class CppGenerator extends BaseGenerator {
 //        if (!e.target.isResolved()) {
 //            return;
 //        }
-        
-        String targetId = null;
-        if (e.target instanceof Expr.IdExpr id) {
-            if (id.namespace == null) {
-                targetId = id.name;
-            }
-        }
 
-        /*var x = a { ... };
+        /* Local var define:
+            var x = a { ... };
             =>
                 x = a; { a.xxx = x; }
                 x = {};
@@ -1756,17 +1745,30 @@ public class CppGenerator extends BaseGenerator {
             }
             print(";");
             
-            printItBlockArgs(e, e._storeVar.name);
+            String targetName = e._storeVar.name;
+            if (e._storeVar.isRefable) {
+                targetName = "(*" + targetName + ")";
+            }
+            printItBlockArgs(e, targetName);
+            return;
         }
-        //a { ... }
-        else if (targetId != null && e.isStmt && !e._isType) {
-//            if (e._isType) {
-//                this.visit(e.target);
-//                print("();");
-//            }
-            printItBlockArgs(e, targetId);
+        
+        /* single name var with:
+            a { ... }
+        */
+        if (e.isStmt && !e._isType && e.target instanceof Expr.IdExpr id && id.namespace == null) {
+            String targetId = id.name;
+            if (id._autoDerefRefableVar && id.resolvedDef instanceof FieldDef fd && fd.isRefable) {
+                targetId = "(*" + targetId + ")";
+            }
+            if (targetId != null) {
+                printItBlockArgs(e, targetId);
+                return;
+            }
         }
-        else if (e.target.isResolved()) {
+        
+        //to closure
+        if (e.target.isResolved()) {
             if (e._storeVar != null) {
                 if (e.block.stmts.size() == 0) {
                     print(" = {}");
@@ -1807,8 +1809,12 @@ public class CppGenerator extends BaseGenerator {
         int i = 0;
         print("{");
         if (e.args != null) {
+            String targetName = e._storeVar.name;
+            if (e._storeVar.isRefable) {
+                targetName = "(*" + targetName + ")";
+            }
             for (Expr t : e.args) {
-                print(e._storeVar.name);
+                print(targetName);
                 print("[");
                 print(""+i);
                 print("] = ");

@@ -36,9 +36,9 @@ unsafe {
 }
 ```
 
-增加了refalbe修饰的字段取地址后为非所有权指针，负责为裸指针。
+本地字段取地址后为非所有权指针(数组除外）。
 ```
-var i: refable Int = 0;
+var i: Int = 0;
 var p: ref*Int = &i;
 ```
 

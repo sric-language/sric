@@ -16,3 +16,10 @@ fun testDerivativeRefable() {
 
     //printf("%d\n", *p2);
 }
+
+fun testDerivativeLocal() {
+    var a: A;
+    var p2: ref* Int = &a.k;
+
+    //printf("%d\n", *p2);
+}

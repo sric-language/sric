@@ -15,7 +15,7 @@ fun foo2(c: own* Int) {
 
 fun main()
 {
-    refable var i: Int = 1;
+    var i: Int = 1;
     var p: ref* Int = &i;
     foo(p);
 

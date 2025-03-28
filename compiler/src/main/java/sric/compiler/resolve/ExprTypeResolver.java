@@ -647,33 +647,44 @@ public class ExprTypeResolver extends TypeResolver {
                         e.resolvedType = e.operand.resolvedType;
                         break;
                     //&
-                    case amp:
+                    case amp: {
                         if (e.operand instanceof Expr.LiteralExpr lexpr) {
                             err("Invalid & for literal", e.loc);
                         }
                         Type elmentType = e.operand.resolvedType;
+                        
+                        //arrray address to raw* T;
                         if (e.operand.resolvedType.isArray()) {
                             elmentType = e.operand.resolvedType.genericArgs.get(0);
                         }
-                                                
-                        if (e.operand instanceof IdExpr idExpr && idExpr.resolvedDef instanceof FieldDef f && f.isRefable) {
+                        //address of local field
+                        else if (e.operand instanceof IdExpr idExpr && idExpr.resolvedDef instanceof FieldDef f && f.isLocalVar) {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
-                            e._addressOfRefable = true;
+                            f.isRefable = true;
+                            idExpr._autoDerefRefableVar = false;
                         }
-                        else if (e.operand instanceof AccessExpr aexpr && aexpr.target.resolvedType.isOwnOrRefPointerType()) {
-                            e._addressOfField = true;
-                            aexpr._addressOf = true;
-                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                        else if (e.operand instanceof AccessExpr aexpr) {
+                            if (aexpr.target.resolvedType.isOwnOrRefPointerType()) {
+                                e._addressOfField = true;
+                                aexpr._addressOf = true;
+                                e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                            }
+                            else {
+                                //local field access: a.b;
+                                if (aexpr.target instanceof IdExpr idExpr && idExpr.resolvedDef instanceof FieldDef f && f.isLocalVar) {
+                                    e._addressOfField = true;
+                                    aexpr._addressOf = true;
+                                    e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                                    f.isRefable = true;
+                                    idExpr._autoDerefRefableVar = false;
+                                }
+                            }
                         }
-//                        else if (e.operand instanceof AccessExpr aexpr && def instanceof FieldDef f && f.isRefable) {
-//                            e._addressOfField = true;
-//                            e._addressOfRefable = true;
-//                            aexpr._addressOf = true;
-//                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
-//                        }
-                        else {
+                        
+                        if (e.resolvedType == null) {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.raw, false);
                         }
+                    }
                         break;
                     case awaitKeyword:
                         e.resolvedType = e.operand.resolvedType;

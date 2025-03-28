@@ -286,9 +286,9 @@ public class ScLibGenerator extends BaseGenerator {
     }
     
     void printLocalFieldDefAsExpr(AstNode.FieldDef v) {
-        if (v.isRefable) {
-            print("refable ");
-        }
+//        if (v.isRefable) {
+//            print("refable ");
+//        }
         print("var ");
         print(v.name);
         
