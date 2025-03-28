@@ -5,7 +5,7 @@ fun foo1$<T>(t: T) : T {
 }
 
 
-fun foo2$<T>(t: ref*? T) : ref*? T {
+fun foo2$<T>(t: *? T) : *? T {
     return null;
 }
 

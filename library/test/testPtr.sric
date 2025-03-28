@@ -14,20 +14,20 @@ struct CP {
     var p: own*? Int;
 }
 
-fun testA(a: ref* A) {
+fun testA(a: * A) {
     printf("%d\n", a.i);
 }
 
 fun testDerivativePtr() {
     var p: own*? A = new A;
-    var p2: ref* Int = &p.k;
+    var p2: * Int = &p.k;
 
     printf("%d\n", *p2);
 }
 
 fun testDerivativeRefable() {
     var a: A = A{};
-    var p2: ref* Int = &a.k;
+    var p2: * Int = &a.k;
 
     printf("%d\n", *p2);
 }
@@ -51,7 +51,7 @@ fun testPtr() {
         printf("%d\n", p.i);
     }
 
-    var rp: ref* A = p;
+    var rp: * A = p;
     p = null;
     //printf("%d\n", rp.i);
 }
@@ -62,7 +62,7 @@ fun testShare() {
 }
 
 fun testNullable() {
-    var p: ref*? A = null;
+    var p: *? A = null;
     var i = p.i;
 }
 
@@ -93,7 +93,7 @@ fun testRaw() {
 fun testVoidPtr() {
     var p : own* A = new A;
     var p2 : own* Void = move p ;
-    var p3: ref* Void = p2;
+    var p3: * Void = p2;
 }
 
 fun testRawCast() {

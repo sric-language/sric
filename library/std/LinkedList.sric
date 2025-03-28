@@ -1,12 +1,12 @@
 
 abstract struct Linkable$<T> {
     var next: own*? T;
-    var previous: ref*? T;
+    var previous: *? T;
 }
 
 struct LinkedList$<T: Linkable$<T>> {
     private var head: own*? T = null;
-    private var tail: ref*? T = null;
+    private var tail: *? T = null;
     private var length: Int = 0;
 
     fun clear() {
@@ -46,7 +46,7 @@ struct LinkedList$<T: Linkable$<T>> {
         ++length;
     }
 
-    fun insertBefore(elem: own* T, pos: ref* T) {
+    fun insertBefore(elem: own* T, pos: * T) {
         if (pos.previous == null) {
             insert(move elem);
             return;
@@ -58,7 +58,7 @@ struct LinkedList$<T: Linkable$<T>> {
         ++length;
     }
 
-    fun remove(elem: ref*? T) : Bool {
+    fun remove(elem: *? T) : Bool {
         if (elem == null) return false;
         
         if (elem.next != null) {
@@ -85,19 +85,19 @@ struct LinkedList$<T: Linkable$<T>> {
         return length == 0;
     }
 
-    fun constFirst() const : ref*? const T {
+    fun constFirst() const : *? const T {
         return head;
     }
 
-    fun first(): ref*?T {
+    fun first(): *?T {
         return head;
     }
 
-    fun last(): ref*?T {
+    fun last(): *?T {
         return tail;
     }
 
-    fun end(): ref*?T {
+    fun end(): *?T {
         return null;
     }
 }

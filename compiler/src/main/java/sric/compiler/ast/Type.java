@@ -638,9 +638,9 @@ public class Type extends AstNode {
             }
             else {
                 PointerInfo info = (PointerInfo)this.detail;
-                //if (info.pointerAttr != PointerAttr.inst) {
+                if (info.pointerAttr != PointerAttr.ref) {
                     sb.append(info.pointerAttr);
-                //}
+                }
                 sb.append("*");
                 if (info.isNullable) sb.append("?");
                 sb.append(" ");

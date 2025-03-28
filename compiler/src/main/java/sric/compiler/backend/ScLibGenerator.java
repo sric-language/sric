@@ -195,9 +195,9 @@ public class ScLibGenerator extends BaseGenerator {
             }
             else {
                 Type.PointerInfo info = (Type.PointerInfo)type.detail;
-//                if (info.pointerAttr != Type.PointerAttr.inst) {
+                if (info.pointerAttr != Type.PointerAttr.ref) {
                     print(info.pointerAttr.toString());
-//                }
+                }
                 print("*");
                 if (info.isNullable) print("?");
                 print(" ");

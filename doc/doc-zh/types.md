@@ -21,7 +21,7 @@ var p3 = share(p1);
 - 所有权指针可以自动转换成非所有权指针和裸指针。
 ```
 var p1: own* Int = ...;
-var p4: ref* Int = p1;
+var p4: * Int = p1;
 var p5: raw* Int = p1;
 ```
 非所有权指针性能和裸指针几乎一样。
@@ -39,7 +39,7 @@ unsafe {
 本地字段取地址后为非所有权指针(数组除外）。
 ```
 var i: Int = 0;
-var p: ref*Int = &i;
+var p: *Int = &i;
 ```
 
 其他类型的指针可以自动转为裸指针类型。

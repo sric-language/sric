@@ -2,12 +2,12 @@ externc fun printf(format: raw*const Int8, args: ...): Int;
 
 struct A {
     var a: own* Int;
-    var b: ref* Int;
+    var b: * Int;
     var c: raw* Int;
     //var d: WeakPtr$<Int>;
 }
 
-fun foo(c: ref* Int) {
+fun foo(c: * Int) {
 }
 
 fun foo2(c: own* Int) {
@@ -16,7 +16,7 @@ fun foo2(c: own* Int) {
 fun main()
 {
     var i: Int = 1;
-    var p: ref* Int = &i;
+    var p: * Int = &i;
     foo(p);
 
     var p2: own* Int = new Int;

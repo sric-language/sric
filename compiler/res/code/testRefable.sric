@@ -12,14 +12,14 @@ struct A {
 
 fun testDerivativeRefable() {
     var a = alloc$<A>(){};
-    var p2: ref* Int = &a.k;
+    var p2: * Int = &a.k;
 
     //printf("%d\n", *p2);
 }
 
 fun testDerivativeLocal() {
     var a: A;
-    var p2: ref* Int = &a.k;
+    var p2: * Int = &a.k;
 
     //printf("%d\n", *p2);
 }

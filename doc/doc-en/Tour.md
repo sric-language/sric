@@ -4,7 +4,7 @@
 ```
 var p: Int             //value type
 var p: own* Int;       //ownership pointer
-var p: ref* Int;       //non-owning pointer
+var p: * Int;       //non-owning pointer
 var p: & Int;          //reference
 var p: raw* Int;       //unsafe raw pointer
 ```
