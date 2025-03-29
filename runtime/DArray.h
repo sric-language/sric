@@ -4,6 +4,7 @@
 #include "common.h"
 #include <vector>
 #include "RefPtr.h"
+#include "util.h"
 
 namespace sric
 {
@@ -75,13 +76,13 @@ public:
         return _data[i];
     }
 
-    RefPtr<T> getRef(int i) {
+    RefPtr<T> getPtr(int i) {
         T* t = &get(i);
         HeapRefable* p = getHeader();
         return RefPtr<T>(t, p->_checkCode, i * sizeof(T));
     }
 
-    RefPtr<const T> constGetRef(int i) const {
+    RefPtr<const T> constGetPtr(int i) const {
         DArray* self = const_cast<DArray*>(this);
         T* t = &self->get(i);
         HeapRefable* p = self->getHeader();

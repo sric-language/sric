@@ -18,13 +18,13 @@ struct HashMap$<K, V> {
     private fun constGetEntryList(k: & const K) const : * const MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
-        return table.constGetRef(h);
+        return table.constGetPtr(h);
     }
 
     private fun getEntryList(k: & const K) : * MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
-        return table.getRef(h);
+        return table.getPtr(h);
     }
 
     fun constGet(k: &const K): *? const V {
@@ -37,7 +37,7 @@ struct HashMap$<K, V> {
         return null;
     }
 
-    fun getRef(k: &const K): *? V {
+    fun getPtr(k: &const K): *? V {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
@@ -113,7 +113,7 @@ struct HashMap$<K, V> {
     
     fun eachWhile(f: fun(v:& const V, k:& const K):Bool) const {
         for (var i = 0; i<table.size(); ++i) {
-            var list = table.constGetRef(i);
+            var list = table.constGetPtr(i);
             for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
                 if (!f(itr.v, itr.k)) {
                     return;
@@ -132,7 +132,7 @@ struct HashMap$<K, V> {
         length = 0;
 
         for (var i = 0; i<otable.size(); ++i) {
-            var list = otable.getRef(i);
+            var list = otable.getPtr(i);
             for (var itr = list.list.first(); itr != null; itr = itr.next) {
                 set(move itr.k, move itr.v);
             }

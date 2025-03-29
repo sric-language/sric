@@ -5,7 +5,7 @@ fun testHashMap() {
     map.set("1", 1);
     map.set("2", 2);
 
-    var i =  map.getRef("1");
+    var i =  map.getPtr("1");
     printf("%d\n", *i);
 }
 
@@ -27,7 +27,7 @@ fun testHashMap3() {
         map.set(String::fromInt32(i), i);
     }
 
-    var t =  map.getRef("1");
+    var t =  map.getPtr("1");
     printf("%d\n", *t);
 
     map.eachWhile(fun(v:& const Int, k:& const String): Bool {
@@ -47,7 +47,7 @@ fun testHashMap4() {
         map.set(String::fromInt32(i), move p);
     }
 
-    var t =  map.getRef("1");
+    var t =  map.getPtr("1");
     printf("%d\n", **t);
 
     map.eachWhile(fun(v:& const own*? Int, k:& const String): Bool {

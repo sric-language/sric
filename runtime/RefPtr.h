@@ -16,12 +16,12 @@
 
 #ifdef SC_NO_CHECK 
     #define SC_SAFE_STRUCT
-    #define SC_BEGIN_METHOD() auto __this = sric::RefPtr<SC_SELF_TYPE>(this, 0, sric::RefType::UnsafeRef)
+    #define SC_BEGIN_METHOD() auto __this = sric::makeUnsafeRefPtr(this)
 #else
     #define SC_SAFE_STRUCT uint32_t __magicCode = SC_INTRUSIVE_MAGIC_CODE;\
         uint32_t __checkCode = sric::generateCheckCode();
         
-    #define SC_BEGIN_METHOD() auto __this = sric::RefPtr<SC_SELF_TYPE>(this, __checkCode, sric::RefType::IntrusiveRef)
+    #define SC_BEGIN_METHOD() auto __this = sric::makeSafeRefPtr(this)
     
 #endif // SC_NO_CHECK
 
@@ -83,7 +83,7 @@ struct StackRefable {
 
     RefPtr<T> operator&() { return RefPtr<T>(*this); }
 
-    RefPtr<T> getRef() { return RefPtr<T>(*this); }
+    RefPtr<T> getPtr() { return RefPtr<T>(*this); }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,6 +487,16 @@ OwnPtr<T> refToOwn(RefPtr<T> ptr) {
 template<typename T>
 RefPtr<T> addressOf(T& b) {
     return sric::RefPtr<T>(&b, b.__checkCode, sric::RefType::IntrusiveRef);
+}
+
+template<typename T>
+RefPtr<T> makeSafeRefPtr(T* b) {
+    return sric::RefPtr<T>(b, b->__checkCode, sric::RefType::IntrusiveRef);
+}
+
+template<typename T>
+RefPtr<T> makeUnsafeRefPtr(T* b) {
+    return sric::RefPtr<T>(b, 0, sric::RefType::UnsafeRef);
 }
 
 template <class T>
