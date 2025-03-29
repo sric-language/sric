@@ -130,11 +130,19 @@ private:
         }
         case RefType::IntrusiveRef: {
             if constexpr (has_checkcode<T>::value) {
-                sc_assert(checkCode == pointer->__checkCode, "try access invalid pointer");
+                if (offset == 0) {
+                    sc_assert(checkCode == pointer->__checkCode, "try access invalid pointer");
+                }
+                else {
+                    T* first = (T*)(((char*)pointer) - offset);
+                    int32_t* code = (int32_t*)toVoid(first);
+                    sc_assert(checkCode == *(code + 1), "try access invalid pointer");
+                }
             }
             else {
-                int32_t* first = (int32_t*)toVoid(pointer);
-                sc_assert(checkCode == *(first + 1), "try access invalid pointer");
+                T* first = (T*)(((char*)pointer) - offset);
+                int32_t* code = (int32_t*)toVoid(first);
+                sc_assert(checkCode == *(code + 1), "try access invalid pointer");
             }
             break;
         }
@@ -324,8 +332,9 @@ private:
             break;
         }
         case RefType::IntrusiveRef: {
-            int32_t* first = (int32_t*)(pointer);
-            sc_assert(checkCode == *(first + 1), "try access invalid pointer");
+            void* first = (void*)(((char*)pointer) - offset);
+            int32_t* code = (int32_t*)first;
+            sc_assert(checkCode == *(code + 1), "try access invalid pointer");
             break;
         }
         }
