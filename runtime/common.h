@@ -4,16 +4,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifndef _DEBUG
-    #define SC_NO_CHECK
-#elif defined(NDEBUG)
+#ifdef _DEBUG
+    #define SC_CHECK
+#endif
+
+#ifdef NDEBUG
     #define SC_NO_CHECK
 #endif
 
 namespace sric
 {
 
-#ifdef SC_NO_CHECK
+#ifndef SC_CHECK
     #define sc_assert(c, m) 
 #else
     #define sc_assert(c, msg) \
@@ -21,7 +23,7 @@ namespace sric
             printf("ERROR: %s\n", msg);\
             abort();\
         }
-#endif // SC_NO_CHECK
+#endif // SC_CHECK
 
 
     class Noncopyable {

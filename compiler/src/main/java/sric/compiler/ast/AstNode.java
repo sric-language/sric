@@ -182,6 +182,29 @@ public class AstNode {
             this.flags = flags;
             this.name = name;
         }
+        
+        public boolean isSafe() {
+            if (!isStruct()) {
+                return false;
+            }
+            if ((this.flags & FConst.Unsafe) != 0) {
+                return false;
+            }
+            if (this.isExtern()) {
+                return false;
+            }
+            return true;
+        }
+        
+        //is inherit from struct
+        public boolean isConcroteInherit() {
+            if (this.inheritances == null) return false;
+            Type inh = this.inheritances.get(0);
+            if (inh.id.resolvedDef instanceof TypeDef superSd && superSd.isStruct()) {
+                return true;
+            }
+            return false;
+        }
 
         public boolean isTrait() {
             return kind == Kind.Tarit;
@@ -561,6 +584,9 @@ public class AstNode {
     }
     
     public static class Block extends Stmt {
+        //print '{' for code generator
+        public boolean _printBrace = true;
+        
         public ArrayList<Stmt> stmts = new ArrayList<Stmt>();
         @Override public void walkChildren(Visitor visitor) {
             for (Stmt s : stmts) {

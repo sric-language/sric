@@ -3,8 +3,9 @@
 
 #include <stdint.h>
 
-#define SC_HEAP_MAGIC_CODE 0xf1780126
-#define SC_STACK_MAGIC_CODE 0xf672941
+#define SC_HEAP_MAGIC_CODE 0xF1780126
+#define SC_STACK_MAGIC_CODE 0xE672941A
+#define SC_INTRUSIVE_MAGIC_CODE 0xB392E928
 
 namespace sric
 {

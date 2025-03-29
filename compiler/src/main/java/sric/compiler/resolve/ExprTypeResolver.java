@@ -667,6 +667,10 @@ public class ExprTypeResolver extends TypeResolver {
                         if (e.operand.resolvedType.isArray()) {
                             elmentType = e.operand.resolvedType.genericArgs.get(0);
                         }
+                        //safe struct
+                        else if (e.operand.resolvedType.id.resolvedDef instanceof TypeDef td && td.isSafe()) {
+                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                        }
                         //address of local field
                         else if (e.operand instanceof IdExpr idExpr && idExpr.resolvedDef instanceof FieldDef f && f.isLocalVar) {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
@@ -674,6 +678,7 @@ public class ExprTypeResolver extends TypeResolver {
                             idExpr._autoDerefRefableVar = false;
                         }
                         else if (e.operand instanceof AccessExpr aexpr) {
+                            //own pointer
                             if (aexpr.target.resolvedType.isOwnOrRefPointerType()) {
                                 e._addressOfField = true;
                                 aexpr._addressOf = true;

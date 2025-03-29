@@ -79,9 +79,6 @@ public class CppGenerator extends BaseGenerator {
         else if (sym.equals("float")) {
             return "_float";
         }
-        else if (sym.equals(TokenKind.selfKeyword.symbol)) {
-            return ("sric::rawToRef(this)");
-        }
         return sym;
     }
     
@@ -646,10 +643,27 @@ public class CppGenerator extends BaseGenerator {
                 print(this.curItName);
                 return;
             }
+            else if (id.name.equals(TokenKind.selfKeyword.symbol)) {
+                print("sric::rawToRef(this)");
+                return;
+            }
+            else if (id.name.equals(TokenKind.thisKeyword.symbol)) {
+                if (curStruct != null && curStruct.isSafe()) {
+                    print("sc_this");
+                }
+                else {
+                    print("this");
+                }
+                return;
+            }
         }
         
         if (id._autoDerefRefableVar && id.resolvedDef instanceof FieldDef df && df.isRefable) {
             print("(*");
+        }
+        
+        if (id.implicitThis) {
+            print("sc_this->");
         }
         
         if (id.resolvedDef instanceof TopLevelDef td) {
@@ -935,8 +949,24 @@ public class CppGenerator extends BaseGenerator {
         }
         else {
             if (implMode() || inlined) {
-                print(" ");
+                boolean isSafe = false;
+                if (curStruct != null && curStruct.isSafe() && !v.isStatic()) {
+                    print(" {").newLine();
+                    this.indent();
+                    print("SC_BEGIN_METHOD();").newLine();
+                    isSafe = true;
+                    v.code._printBrace = false;
+                }
+                else {
+                    print(" ");
+                }
+                
                 this.visit(v.code);
+                
+                if (isSafe) {
+                    this.unindent();
+                    print("}").newLine();
+                }
             }
             else {
                 print(";");
@@ -946,6 +976,7 @@ public class CppGenerator extends BaseGenerator {
     
     @Override
     public void visitFunc(AstNode.FuncDef v) {
+
         if (v.isExtern()) {
             return;
         }
@@ -1009,14 +1040,12 @@ public class CppGenerator extends BaseGenerator {
             if (!topoSort(v)) return;
         }
         
-
+        curStruct =  v;
+        
         if (implMode()) {
-            //if (v instanceof StructDef sd) {
-                curStruct =  v;
-            //}
+
             v.walkChildren(this);
-            curStruct =  null;
-            return;
+
         }
         else {
             newLine();
@@ -1077,6 +1106,10 @@ public class CppGenerator extends BaseGenerator {
 
             print(" {").newLine();
             indent();
+            
+            if (v.isSafe() && !v.isConcroteInherit()) {
+                print("SC_SAFE_STRUCT").newLine();
+            }
 
             v.walkChildren(this);
 
@@ -1094,6 +1127,8 @@ public class CppGenerator extends BaseGenerator {
             print("};").newLine();
         
         }
+        
+        curStruct =  null;
     }
 
     private boolean topoSort(TypeDef v) {
@@ -1157,11 +1192,15 @@ public class CppGenerator extends BaseGenerator {
     @Override
     public void visitStmt(Stmt v) {
         if (v instanceof Block bs) {
-            print("{").newLine();
-            indent();
+            if (bs._printBrace) {
+                print("{").newLine();
+                indent();
+            }
             bs.walkChildren(this);
-            unindent();
-            print("}").newLine();
+            if (bs._printBrace) {
+                unindent();
+                print("}").newLine();
+            }
         }
         else if (v instanceof IfStmt ifs) {
             print("if (");
@@ -1719,6 +1758,7 @@ public class CppGenerator extends BaseGenerator {
             String savedName = curItName;
             curItName = varName;
             
+            e.block._printBrace = false;
             this.visit(e.block);
             
             curItName = savedName;
@@ -1737,24 +1777,24 @@ public class CppGenerator extends BaseGenerator {
                 x = {};
                 x; { x.name = y; }
         */
-//        if (e._storeVar != null && e._storeVar.isLocalVar && (e._storeVar.fieldType == null || !e._storeVar.fieldType.isImmutable)) {
-//            if (!e._isType) {
-//                print(" = ");
-//                this.visit(e.target);
-//            }
-//            else if (e.block.stmts.size() == 0) {
-//                //print(" = {}");
-//                return;
-//            }
-//            print(";");
-//            
-//            String targetName = e._storeVar.name;
-//            if (e._storeVar.isRefable) {
-//                targetName = "(*" + targetName + ")";
-//            }
-//            printItBlockArgs(e, targetName);
-//            return;
-//        }
+        if (e._storeVar != null && e._storeVar.isLocalVar && (e._storeVar.fieldType == null || !e._storeVar.fieldType.isImmutable)) {
+            if (!e._isType) {
+                print(" = ");
+                this.visit(e.target);
+            }
+            else if (e.block.stmts.size() == 0) {
+                //print(" = {}");
+                return;
+            }
+            print(";");
+            
+            String targetName = e._storeVar.name;
+            if (e._storeVar.isRefable) {
+                targetName = "(*" + targetName + ")";
+            }
+            printItBlockArgs(e, targetName);
+            return;
+        }
         
         /* single name var with:
             a { ... }

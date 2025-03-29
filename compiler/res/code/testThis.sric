@@ -1,0 +1,8 @@
+
+struct A {
+    var i : Int;
+
+    fun foo1() : Int { return i; }
+
+    fun foo2() { foo1(); }
+}

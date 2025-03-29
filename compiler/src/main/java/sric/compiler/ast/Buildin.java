@@ -30,7 +30,7 @@ public class Buildin {
         return makeBuildinType(scope, name, null);
     }
     private static TypeDef makeBuildinType(Scope scope, String name, ArrayList<GenericParamDef> gps) {
-        TypeDef typeDef = new AstNode.TypeDef(null, 0, name);
+        TypeDef typeDef = new AstNode.TypeDef(null, FConst.Unsafe, name);
         typeDef.loc = loc;
         typeDef.generiParamDefs = gps;
         scope.put(name, typeDef);
