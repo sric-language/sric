@@ -4,7 +4,8 @@
 ```
 struct Point {
     var x: Int = 0;
-    var y: Int;
+    var y: Int = uninit;
+    var z: Int;
 }
 var p = Point { .y = 1; };
 ```
@@ -19,8 +20,9 @@ point {
 也可以提供一个初始化的方法，约定名称为init。
 ```
 struct Point {
-    var x: Int = 0;
+    var x: Int;
     var y: Int;
+
     fun init(a: Int) {
         this { .y = a; }
     }
@@ -46,7 +48,10 @@ strcut Point {
     static fun foo() {
     }
 }
+
+Point::foo();
 ```
+
 
 ## 类型别名
 类型别名相当于C的typedef
@@ -96,5 +101,27 @@ trait I {
 }
 struct A : B , I {
     override fun foo2() {}
+}
+```
+
+## 构造函数和析构函数
+Sric没有C++类似的构造函数，只有默认构造函数，不能有参数。例如
+```
+struct A {
+    fun new() {
+    }
+    fun delete() {
+    }
+}
+```
+Sric绝大部分情况是不需要写析构函数的，因为所有权机制会自定清理内存。
+
+构造函数是为了弥补原地初始化不能写复杂逻辑的问题。例如可以用三个点的语法，在构造函数中初始化。
+```
+struct A {
+    var p : own* Int = ...;
+    fun new() {
+        p = new Int;
+    }
 }
 ```
