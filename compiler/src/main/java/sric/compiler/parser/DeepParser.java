@@ -992,13 +992,13 @@ public class DeepParser extends Parser {
                 expr = new IdExpr(tok.symbol);
                 break;
             }
-            case selfKeyword: {
-                TokenKind tok = consume().kind;
-                consume(TokenKind.lparen);
-                consume(TokenKind.rparen);
-                expr = new IdExpr(tok.symbol);
-                break;
-            }
+//            case selfKeyword: {
+//                TokenKind tok = consume().kind;
+//                consume(TokenKind.lparen);
+//                consume(TokenKind.rparen);
+//                expr = new IdExpr(tok.symbol);
+//                break;
+//            }
             case dot:
             {
                 IdExpr id = new IdExpr(TokenKind.dot.symbol);

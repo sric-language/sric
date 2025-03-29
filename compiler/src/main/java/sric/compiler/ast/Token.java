@@ -157,7 +157,7 @@ public class Token {
         noncopyableKeyword("noncopyable", true),
         refableKeyword("refable", true),
         deleteKeyword("delete", true),
-        selfKeyword("self", true),
+        //selfKeyword("self", true),
         
         // misc
         eof("eof", false);

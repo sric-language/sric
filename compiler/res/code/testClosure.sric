@@ -16,7 +16,8 @@ struct A {
 
     fun test() {
         var c = fun(){
-            var x = self().i;
+            var x = this.i;
+            var y = i;
         };
     }
 }

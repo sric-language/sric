@@ -73,8 +73,7 @@ public class ExprTypeResolver extends TypeResolver {
 //                return;
             }
             else if (idExpr.name.equals(TokenKind.thisKeyword.symbol) || 
-                    idExpr.name.equals(TokenKind.superKeyword.symbol) ||
-                    idExpr.name.equals(TokenKind.selfKeyword.symbol)) {
+                    idExpr.name.equals(TokenKind.superKeyword.symbol) ) {
                 
                 if (curFunc != null) {
                     if (curFunc.isStatic()) {
@@ -98,18 +97,9 @@ public class ExprTypeResolver extends TypeResolver {
                         }
                     }
                     else if (idExpr.name.equals(TokenKind.thisKeyword.symbol)) {
-                        if (this.getCurClosure() != null) {
-                            err("Can't capture this, use self()", idExpr.loc);
-                        }
                         Type self = new Type(curStruct.loc, curStruct.name);
                         self.id.resolvedDef = curStruct;
                         idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.raw, false);
-                        idExpr.resolvedType.isImmutable = true;
-                    }
-                    else if (idExpr.name.equals(TokenKind.selfKeyword.symbol)) {
-                        Type self = new Type(curStruct.loc, curStruct.name);
-                        self.id.resolvedDef = curStruct;
-                        idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.ref, false);
                         idExpr.resolvedType.isImmutable = true;
                     }
                 }

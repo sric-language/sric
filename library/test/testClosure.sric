@@ -16,7 +16,7 @@ struct ClosureClass {
 
     fun testSelf() {
         var f = fun() {
-            var a = self().i;
+            var a = this.i;
             printf("%d\n", a);
         };
         f();

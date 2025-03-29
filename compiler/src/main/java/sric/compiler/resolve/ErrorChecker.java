@@ -782,7 +782,7 @@ public class ErrorChecker extends CompilePass {
         }
         if (target instanceof IdExpr id) {
             if (id.name.equals(TokenKind.thisKeyword.symbol) || id.name.equals(TokenKind.superKeyword.symbol)
-                    || id.name.equals(TokenKind.dot.symbol)  || id.name.equals(TokenKind.selfKeyword.symbol)) {
+                    || id.name.equals(TokenKind.dot.symbol) ) {
                 return;
             }
         }
@@ -959,7 +959,7 @@ public class ErrorChecker extends CompilePass {
                 for (IdExpr ide : e.captures) {
                     FieldDef f = (FieldDef)ide.resolvedDef;
                     if (f.fieldType != null && !this.isCopyable(f.fieldType)) {
-                        err("Capture a noncopyable field", ide.loc);
+                        err("Capture a noncopyable field:" + f.name, ide.loc);
                     }
                 }
             }

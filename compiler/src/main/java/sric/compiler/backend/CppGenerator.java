@@ -643,10 +643,6 @@ public class CppGenerator extends BaseGenerator {
                 print(this.curItName);
                 return;
             }
-            else if (id.name.equals(TokenKind.selfKeyword.symbol)) {
-                print("sric::rawToRef(this)");
-                return;
-            }
             else if (id.name.equals(TokenKind.thisKeyword.symbol)) {
                 if (curStruct != null && curStruct.isSafe()) {
                     print("sc_this");
