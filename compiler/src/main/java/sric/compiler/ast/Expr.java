@@ -34,7 +34,8 @@ public abstract class Expr extends AstNode {
         public Expr operand;    // operand expression
         
         public boolean _addressOfField = false;
-                
+        public boolean _addressOfSafeStruct = false;
+        
         public UnaryExpr(TokenKind tok, Expr operand) {
             this.opToken = tok;
             this.operand = operand;

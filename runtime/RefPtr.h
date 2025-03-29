@@ -16,21 +16,20 @@
 
 #ifdef SC_NO_CHECK 
     #define SC_SAFE_STRUCT
+    #define SC_BEGIN_METHOD() auto __this = sric::RefPtr<SC_SELF_TYPE>(this, 0, sric::RefType::UnsafeRef)
 #else
     #define SC_SAFE_STRUCT uint32_t __magicCode = SC_INTRUSIVE_MAGIC_CODE;\
-        uint32_t __checkCode = sric::generateCheckCode();\
-        auto operator&() { return sric::RefPtr<SC_SELF_TYPE>(this, __checkCode, sric::RefType::IntrusiveRef); }
-
+        uint32_t __checkCode = sric::generateCheckCode();
+        
+    #define SC_BEGIN_METHOD() auto __this = sric::RefPtr<SC_SELF_TYPE>(this, __checkCode, sric::RefType::IntrusiveRef)
+    
 #endif // SC_NO_CHECK
 
 #ifdef SC_CHECK
-    #define SC_BEGIN_METHOD() auto __self = sric::RefPtr<SC_SELF_TYPE>(this, __checkCode, sric::RefType::IntrusiveRef)
-    #define sc_this __self.get()
+    #define SC_THIS __this->
 #else
-    #define SC_BEGIN_METHOD() 
-    #define sc_this this
-#endif // SC_CHECK
-
+    #define SC_THIS
+#endif
 
 namespace sric
 {
@@ -265,11 +264,20 @@ public:
 
     template <class U> RefPtr<U> castTo()
     {
+        if constexpr (std::is_polymorphic<U>::value) {
 #ifndef SC_NO_CHECK
-        return RefPtr<U>((U*)(pointer), checkCode, type, offset);
-#else 
-        return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
+            return RefPtr<U>(dynamic_cast<U*>(pointer), checkCode, type, offset);
+#else
+            return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
 #endif
+        }
+        else {
+#ifndef SC_NO_CHECK
+            return RefPtr<U>((U*)(pointer), checkCode, type, offset);
+#else
+            return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
+#endif
+        }
     }
 
     template <class U> RefPtr<U> dynamicCastTo()
@@ -438,11 +446,20 @@ public:
 
     template <class U> RefPtr<U> castTo()
     {
+        if constexpr (std::is_polymorphic<U>::value) {
 #ifndef SC_NO_CHECK
-        return RefPtr<U>((U*)(pointer), checkCode, type, offset);
+            return RefPtr<U>(dynamic_cast<U*>(pointer), checkCode, type, offset);
 #else
-        return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
+            return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
 #endif
+        }
+        else {
+#ifndef SC_NO_CHECK
+            return RefPtr<U>((U*)(pointer), checkCode, type, offset);
+#else
+            return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
+#endif
+        }
     }
 
     template <class U> RefPtr<U> dynamicCastTo()
@@ -467,11 +484,15 @@ OwnPtr<T> refToOwn(RefPtr<T> ptr) {
     return OwnPtr<T>(ptr.get());
 }
 
+template<typename T>
+RefPtr<T> addressOf(T& b) {
+    return sric::RefPtr<T>(&b, b.__checkCode, sric::RefType::IntrusiveRef);
+}
 
 template <class T>
 RefPtr<T> rawToRef(T* ptr) {
     if constexpr (has_checkcode<T>::value) {
-        return &(*ptr);
+        return addressOf<T>(*ptr);
     }
 
     HeapRefable *r = getRefable(ptr);

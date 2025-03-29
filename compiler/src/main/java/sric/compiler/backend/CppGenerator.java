@@ -645,7 +645,7 @@ public class CppGenerator extends BaseGenerator {
             }
             else if (id.name.equals(TokenKind.thisKeyword.symbol)) {
                 if (curStruct != null && curStruct.isSafe()) {
-                    print("sc_this");
+                    print("__this");
                 }
                 else {
                     print("this");
@@ -658,8 +658,8 @@ public class CppGenerator extends BaseGenerator {
             print("(*");
         }
         
-        if (id.implicitThis) {
-            print("sc_this->");
+        if (id.implicitThis && curStruct != null && curStruct.isSafe()) {
+            print("SC_THIS ");
         }
         
         if (id.resolvedDef instanceof TopLevelDef td) {
@@ -1351,14 +1351,6 @@ public class CppGenerator extends BaseGenerator {
             print("sric::nonNullable(");
             parentheses++;
         }
-
-//        if (v.implicitDereference) {
-//            print("*");
-//        }
-//        if (v.implicitGetAddress) {
-//            print("sric::addressOf(");
-//            parentheses++;
-//        }
         
         if (v instanceof IdExpr e) {
             this.printIdExpr(e);
@@ -1443,40 +1435,45 @@ public class CppGenerator extends BaseGenerator {
             print(")");
         }
         else if (v instanceof UnaryExpr e) {
-            if (e.opToken == TokenKind.amp) {
-                if (!e._addressOfField) {
-                //if (e._isRawAddressOf) {
-                    print("&");
-                    this.visit(e.operand);
-                //}
-//                else {
-//                    print("sric::addressOf(");
-//                    this.visit(e.operand);
-//                    print(")");
-//                }
-                }
-                else {
-                    this.visit(e.operand);
-                }
-            }
-            else if (e.opToken == TokenKind.moveKeyword) {
-                print("std::move(");
-                this.visit(e.operand);
-                print(")");
-            }
-            else if (e.opToken == TokenKind.awaitKeyword) {
-                print("co_await ");
-                this.visit(e.operand);
-                //print("");
-            }
-            else if (e.opToken == TokenKind.newKeyword) {
-                print("sric::new_<");
-                this.visit(e.operand);
-                print(">()");
-            }
-            else {
+            if (null == e.opToken) {
                 print(e.opToken.symbol);
                 this.visit(e.operand);
+            }
+            else switch (e.opToken) {
+                case amp:
+                    if (e._addressOfSafeStruct && e.resolvedType.genericArgs != null) {
+                        print("sric::addressOf<");
+                        this.printType(e.resolvedType.genericArgs.get(0));
+                        print(">(");
+                        this.visit(e.operand);
+                        print(")");
+                    }
+                    else if (e._addressOfField) {
+                        this.visit(e.operand);
+                    }
+                    else {
+                        print("&");
+                        this.visit(e.operand);
+                    }   break;
+                case moveKeyword:
+                    print("std::move(");
+                    this.visit(e.operand);
+                    print(")");
+                    break;
+                case awaitKeyword:
+                    print("co_await ");
+                    this.visit(e.operand);
+                    //print("");
+                    break;
+                case newKeyword:
+                    print("sric::new_<");
+                    this.visit(e.operand);
+                    print(">()");
+                    break;
+                default:
+                    print(e.opToken.symbol);
+                    this.visit(e.operand);
+                    break;
             }
         }
         else if (v instanceof TypeExpr e) {

@@ -66,15 +66,6 @@ namespace sric {
 		return a - b;
 	}
 
-	template<typename T>
-	const T* addressOf(const T& b) {
-		return &b;
-	}
-
-	template<typename T>
-	T* addressOf(T& b) {
-		return &b;
-	}
 
 	template<typename T>
 	OwnPtr<T> copy(const OwnPtr<T>& b) {

@@ -99,7 +99,12 @@ public class ExprTypeResolver extends TypeResolver {
                     else if (idExpr.name.equals(TokenKind.thisKeyword.symbol)) {
                         Type self = new Type(curStruct.loc, curStruct.name);
                         self.id.resolvedDef = curStruct;
-                        idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.raw, false);
+                        if (curStruct.isSafe()) {
+                            idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.ref, false);
+                        }
+                        else {
+                            idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.raw, false);
+                        }
                         idExpr.resolvedType.isImmutable = true;
                     }
                 }
@@ -155,7 +160,7 @@ public class ExprTypeResolver extends TypeResolver {
                 }
                 else if (idExpr.resolvedDef instanceof FuncDef f) {
                     if (!f.isStatic()) {
-                        err("Can't access instance method", idExpr.loc);
+                        err("Can only access instance method by 'this'", idExpr.loc);
                     }
                 }
             }
@@ -660,6 +665,7 @@ public class ExprTypeResolver extends TypeResolver {
                         //safe struct
                         else if (e.operand.resolvedType.id.resolvedDef instanceof TypeDef td && td.isSafe()) {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                            e._addressOfSafeStruct = true;
                         }
                         //address of local field
                         else if (e.operand instanceof IdExpr idExpr && idExpr.resolvedDef instanceof FieldDef f && f.isLocalVar) {
