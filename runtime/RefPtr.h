@@ -13,14 +13,15 @@
 #include "Ptr.h"
 
 #define SC_SELF_TYPE std::remove_reference<decltype(*this)>::type
+#define SC_SAFE_STRUCT
 
-#ifdef SC_NO_CHECK 
-    #define SC_SAFE_STRUCT
+#ifdef SC_NO_CHECK
+    #define SC_OBJ_BASE
+    #define SC_BEGIN_INHERIT :
     #define SC_BEGIN_METHOD() auto __this = sric::makeRefPtr(this)
 #else
-    #define SC_SAFE_STRUCT uint32_t __magicCode = SC_INTRUSIVE_MAGIC_CODE;\
-        uint32_t __checkCode = sric::generateCheckCode();
-        
+    #define SC_OBJ_BASE : public sric::ObjBase
+    #define SC_BEGIN_INHERIT ,
     #define SC_BEGIN_METHOD() auto __this = sric::makeRefPtr(this)
     
 #endif // SC_NO_CHECK
@@ -44,6 +45,16 @@ uint32_t generateCheckCode();
 
 template<typename T>
 class RefPtr;
+
+struct ObjBase {
+    uint32_t __magicCode = SC_INTRUSIVE_MAGIC_CODE;
+    uint32_t __checkCode = sric::generateCheckCode();
+
+    ~ObjBase() {
+        __magicCode = 0;
+        __checkCode = 0;
+    }
+};
 
 template<typename T>
 struct StackRefable {
@@ -138,6 +149,11 @@ private:
                     int32_t* code = (int32_t*)toVoid(first);
                     sc_assert(checkCode == *(code + 1), "try access invalid pointer 4");
                 }
+            }
+            else if constexpr (std::is_polymorphic<T>::value) {
+                T* first = (T*)(((char*)pointer) - offset);
+                ObjBase* code = (ObjBase*)dynamic_cast<ObjBase*>(first);
+                sc_assert(checkCode == code->__checkCode, "try access invalid pointer 5");
             }
             else {
                 T* first = (T*)(((char*)pointer) - offset);
@@ -337,9 +353,9 @@ private:
             break;
         }
         case RefType::IntrusiveRef: {
-            void* first = (void*)(((char*)pointer) - offset);
+            /*void* first = (void*)(((char*)pointer) - offset);
             int32_t* code = (int32_t*)first;
-            sc_assert(checkCode == *(code + 1), "try access invalid pointer");
+            sc_assert(checkCode == *(code + 1), "try access invalid pointer");*/
             break;
         }
         }

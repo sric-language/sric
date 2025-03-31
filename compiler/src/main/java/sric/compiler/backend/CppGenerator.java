@@ -1078,12 +1078,25 @@ public class CppGenerator extends BaseGenerator {
 
             print("struct ");
             print(getSymbolName(v));
+            
+            boolean isSafeInherit = false;
+            if (v.isSafe() && !v.isConcroteInherit()) {
+                isSafeInherit = true;
+                print(" SC_OBJ_BASE ");
+            }
 
             //if (v instanceof StructDef sd) {
             if (v.inheritances != null) {
                 int i = 0;
                 for (Type inh : v.inheritances) {
-                    if (i == 0) print(" : ");
+                    if (i == 0) {
+                        if (isSafeInherit) {
+                            print(" SC_BEGIN_INHERIT ");
+                        }
+                        else {
+                            print(" : ");
+                        }
+                    }
                     else print(", ");
                     print("public ");
                     printType(inh);
@@ -1104,7 +1117,7 @@ public class CppGenerator extends BaseGenerator {
             print(" {").newLine();
             indent();
             
-            if (v.isSafe() && !v.isConcroteInherit()) {
+            if (isSafeInherit) {
                 print("SC_SAFE_STRUCT").newLine();
             }
 
