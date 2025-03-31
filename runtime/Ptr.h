@@ -337,7 +337,7 @@ template <class T>
 OwnPtr<T> rawToOwn(T* ptr) {
     HeapRefable *r = getRefable(ptr);
     if (r->_magicCode != SC_HEAP_MAGIC_CODE) {
-        printf("ERROR: try cast raw pointer to own ptr: %p\n", ptr);
+        fprintf(stderr, "ERROR: try cast raw pointer to own ptr: %p\n", ptr);
         abort();
     }
     r->addRef();

@@ -107,7 +107,7 @@ void Log::doLog(const char *tag, const char *file, const char *func, const unsig
 FileLogListener::FileLogListener(const char *path) {
   file = fopen(path, "w");
   if (!file) {
-    printf("ERROR: open file error: %s\n", path);
+    fprintf(stderr, "ERROR: open file error: %s\n", path);
   }
 }
 

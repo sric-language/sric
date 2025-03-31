@@ -1154,7 +1154,7 @@ public class ErrorChecker extends CompilePass {
         }
     }
     
-    private boolean checkProtection(AstNode.TopLevelDef slot, AstNode parent, Loc loc, boolean isSet) {
+    private void checkProtection(AstNode.TopLevelDef slot, AstNode parent, Loc loc, boolean isSet) {
         int slotFlags = slot.flags;
         if (isSet && slot instanceof AstNode.FieldDef f) {
             if ((f.flags & FConst.Readonly) != 0) {
@@ -1165,8 +1165,14 @@ public class ErrorChecker extends CompilePass {
         if (parent instanceof AstNode.TypeDef tparent) {
             if (parent != curStruct) {
                 if ((slotFlags & FConst.Private) != 0) {
-                    err("It's private", loc);
-                    return false;
+                    //readonly
+                    if ((slot.flags & FConst.Private) == 0 && curStruct != null && curStruct.isInheriteFrom(tparent)) {
+                        //allow acccess readonly from subclass
+                    }
+                    else {
+                        err("It's private", loc);
+                        return;
+                    }
                 }
 
                 if ((slotFlags & FConst.Protected) != 0) {
@@ -1184,14 +1190,12 @@ public class ErrorChecker extends CompilePass {
                     err("It's private or protected", loc);
                 }
             }
-            
             if ((slotFlags & FConst.Private) != 0) {
                 if (fu != this.curUnit) {
                     err("It's private or protected", loc);
                 }
             }
         }
-        return false;
     }
 
     private void resolveBinaryExpr(Expr.BinaryExpr e) {

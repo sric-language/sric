@@ -4,12 +4,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#if !defined(SC_NO_CHECK) && !defined(SC_CHECK)
+
 #ifdef _DEBUG
     #define SC_CHECK
 #endif
 
 #ifdef NDEBUG
     #define SC_NO_CHECK
+#endif
+
 #endif
 
 namespace sric
@@ -20,7 +24,7 @@ namespace sric
 #else
     #define sc_assert(c, msg) \
         if (!(c)) {\
-            printf("ERROR: %s\n", msg);\
+            fprintf(stderr, "ERROR: %s\n", msg);\
             abort();\
         }
 #endif // SC_CHECK

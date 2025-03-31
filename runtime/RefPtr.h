@@ -305,10 +305,11 @@ public:
 template<>
 class RefPtr<void> {
     void* pointer;
+#ifndef SC_NO_CHECK
     uint32_t checkCode;
     uint32_t offset;
     RefType type;
-
+#endif
     template <class U> friend class RefPtr;
     template <class U> friend RefPtr<U> rawToRef(U* ptr);
     template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
@@ -489,7 +490,9 @@ template <class T>
 OwnPtr<T> refToOwn(RefPtr<T> ptr) {
 #ifndef SC_NO_CHECK
     if (ptr.type != RefType::HeapRef) {
-        sc_assert(false, "Can't cast ref pointer to own pointer");
+        //sc_assert(false, "Can't cast ref pointer to own pointer");
+        fprintf(stderr, "ERROR: Can't cast ref pointer to own pointer\n");
+        abort();
         return OwnPtr<T>();
     }
 #endif

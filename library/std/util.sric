@@ -8,10 +8,10 @@ extern fun compare$<T>(a: & const T, b: & const T): Int;
 extern fun copy$<T>(a: & const T): T;
 
 fun max$<T:Float>(a:  T, b:  T): T {
-    return a > b ? b : a;
+    return a > b ? a : b;
 }
 fun min$<T:Float>(a:  T, b:  T): T {
-    return a < b ? b : a;
+    return a < b ? a : b;
 }
 fun clamp(v: Float, min: Float, max: Float) : Float {
     if (v < min) v = min;

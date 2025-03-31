@@ -28,6 +28,6 @@ extern fun share$<T>(p: & own* T): own* T;
 
 extern fun rawToOwn$<T>(p: raw* T): own* T;
 
-extern fun refToOwn$<T>(p: * T): own*? T;
+extern fun refToOwn$<T>(p: * T): own* T;
 
 extern fun rawToRef$<T>(p: raw* T): * T;

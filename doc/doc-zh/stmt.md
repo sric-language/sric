@@ -76,9 +76,3 @@ var a = p as own* A;
 var b = p is own* A;
 ```
 
-### 未初始化变量
-默认所有变量都是初始化的，原始类型自动初始化为零值。如果为了性能不想初始化可以用uninit关键字。
-```
-var a: Int = uninit;
-```
-
