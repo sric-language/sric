@@ -21,7 +21,7 @@ public abstract class Expr extends AstNode {
     public Type implicitTypeConvertTo = null;
     public boolean implicitStringConvert = false;
     public boolean checkNonnullable = false;
-    
+    public boolean implicitMove = false;
 //    public boolean implicitDereference = false;
 //    public boolean implicitGetAddress = false;
         

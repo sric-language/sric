@@ -55,11 +55,15 @@ class OwnPtr {
     T* pointer;
     template <class U> friend class OwnPtr;
     template <class U> friend class SharedPtr;
-public:
-    OwnPtr() : pointer(nullptr) {
-    }
+    template <class U> friend class WeakPtr;
+    template<typename T> friend OwnPtr<T> new_();
+    template <class T> friend OwnPtr<T> rawToOwn(T* ptr);
+    template <class T> friend OwnPtr<T> refToOwn(RefPtr<T> ptr);
 
     explicit OwnPtr(T* p) : pointer(p) {
+    }
+public:
+    OwnPtr() : pointer(nullptr) {
     }
 
     ~OwnPtr() {
@@ -178,12 +182,17 @@ class OwnPtr<void> {
     void* pointer;
     template <class U> friend class OwnPtr;
     template <class U> friend class SharedPtr;
+    template <class U> friend class WeakPtr;
+    template<typename T> friend OwnPtr<T> new_();
+    template <class T> friend OwnPtr<T> rawToOwn(T* ptr);
+    template <class T> friend OwnPtr<T> refToOwn(RefPtr<T> ptr);
+
+    explicit OwnPtr(void* p) : pointer(p) {
+    }
 public:
     OwnPtr() : pointer(nullptr) {
     }
 
-    explicit OwnPtr(void* p) : pointer(p) {
-    }
 
     ~OwnPtr() {
         clear();

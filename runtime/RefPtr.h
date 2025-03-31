@@ -108,41 +108,41 @@ class RefPtr {
 private:
 #ifdef SC_CHECK
     void onDeref() const {
-        sc_assert(pointer != nullptr, "try access null pointer");
+        sc_assert(pointer != nullptr, "try access null pointer 0");
         switch (type) {
         case RefType::HeapRef : {
             T* first = (T*)(((char*)pointer) - offset);
             HeapRefable* refable = getRefable(first);
-            sc_assert(checkCode == refable->_checkCode, "try access invalid pointer");
+            sc_assert(checkCode == refable->_checkCode, "try access invalid pointer 1");
             break;
         }
         case RefType::StackRef: {
             T* first = (T*)(((char*)pointer) - offset);
-            sc_assert(checkCode == *(((int32_t*)first) - 1), "try access invalid pointer");
+            sc_assert(checkCode == *(((int32_t*)first) - 1), "try access invalid pointer 2");
             break;
         }
         case RefType::ArrayRef: {
             T* first = (T*)(((char*)pointer) - offset);
             HeapRefable* refable = getRefable(first);
-            sc_assert(checkCode == refable->_checkCode, "try access invalid array element pointer");
-            sc_assert(offset < refable->_dataSize, "try access invalid array element pointer");
+            sc_assert(checkCode == refable->_checkCode, "try access invalid array element pointer 1");
+            sc_assert(offset < refable->_dataSize, "try access invalid array element pointer 2");
             break;
         }
         case RefType::IntrusiveRef: {
             if constexpr (has_checkcode<T>::value) {
                 if (offset == 0) {
-                    sc_assert(checkCode == pointer->__checkCode, "try access invalid pointer");
+                    sc_assert(checkCode == pointer->__checkCode, "try access invalid pointer 3");
                 }
                 else {
                     T* first = (T*)(((char*)pointer) - offset);
                     int32_t* code = (int32_t*)toVoid(first);
-                    sc_assert(checkCode == *(code + 1), "try access invalid pointer");
+                    sc_assert(checkCode == *(code + 1), "try access invalid pointer 4");
                 }
             }
             else {
                 T* first = (T*)(((char*)pointer) - offset);
                 int32_t* code = (int32_t*)toVoid(first);
-                sc_assert(checkCode == *(code + 1), "try access invalid pointer");
+                sc_assert(checkCode == *(code + 1), "try access invalid pointer 5");
             }
             break;
         }

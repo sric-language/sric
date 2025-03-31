@@ -75,6 +75,14 @@ namespace sric
         SharedPtr() : pointer(nullptr) {
         }
 
+        template <class U>
+        SharedPtr(OwnPtr<U>& other) : pointer(other.pointer) {
+            if (other.pointer) {
+                HeapRefable* refp = getRefable(other.pointer);
+                refp->addRef();
+            }
+        }
+
         SharedPtr(const SharedPtr& other) : pointer(other.pointer) {
             if (other.pointer) {
                 HeapRefable* refp = getRefable(other.pointer);

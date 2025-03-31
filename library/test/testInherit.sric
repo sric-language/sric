@@ -43,3 +43,9 @@ fun testDynamicCast() {
     var i = p as * C;
     i.foo();
 }
+
+fun testCast() : own* I {
+  var x: own*? C;
+  //var a: own* C = move x;
+  return x;
+}

@@ -49,7 +49,7 @@ public class ErrorChecker extends CompilePass {
         curUnit = null;
     }
     
-    private boolean isCopyable(Type type) {
+    public static boolean isCopyable(Type type) {
         if (type == null) {
             return true;
         }
@@ -248,14 +248,16 @@ public class ErrorChecker extends CompilePass {
             targetNeedMove = true;
         }
         
-        //local var auto move
-        if (isReturn && resolvedDef instanceof AstNode.FieldDef f) {
-            if (f.isLocalVar) {
-                targetNeedMove = false;
+        if (targetNeedMove && !to.isReference && !isCopyable(target.resolvedType) ) {
+            //local var auto move
+            if (isReturn && resolvedDef instanceof AstNode.FieldDef f) {
+                if (f.isLocalVar) {
+                    //targetNeedMove = false;
+                    target.implicitMove = true;
+                    return;
+                }
             }
-        }
-        
-        if (targetNeedMove && !isCopyable(target.resolvedType) && !to.isReference) {
+            
             if (to.detail instanceof Type.PointerInfo p2) {
                 if (p2.pointerAttr == Type.PointerAttr.own) {
                     err("Miss move keyword", loc);
@@ -658,7 +660,7 @@ public class ErrorChecker extends CompilePass {
                 this.visit(rets.expr);
                 
                 hasReturn = true;
-                
+
                 if (rets._funcReturnType.isVoid()) {
                     err("Invalid return", rets.loc);
                 }

@@ -37,6 +37,7 @@ import static sric.compiler.ast.Token.TokenKind.notEq;
 import static sric.compiler.ast.Token.TokenKind.notSame;
 import static sric.compiler.ast.Token.TokenKind.same;
 import sric.compiler.ast.Type.*;
+import sric.compiler.resolve.ErrorChecker;
 
 /**
  *
@@ -1344,6 +1345,13 @@ public class CppGenerator extends BaseGenerator {
                 print("(");
                 printType(v.implicitTypeConvertTo);
                 print(")");
+            }
+        }
+        
+        if (v.implicitMove && (v.implicitTypeConvertTo != null || v.checkNonnullable)) {
+            if (v instanceof IdExpr e && e.resolvedDef instanceof FieldDef df && df.isLocalVar) {
+                print("std::move(");
+                parentheses++;
             }
         }
 
