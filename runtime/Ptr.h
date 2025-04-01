@@ -49,6 +49,8 @@ HeapRefable* getRefable(U* pointer) {
     return p;
 }
 
+template<typename T>
+class RefPtr;
 
 template<typename T>
 class OwnPtr {
@@ -56,9 +58,9 @@ class OwnPtr {
     template <class U> friend class OwnPtr;
     template <class U> friend class SharedPtr;
     template <class U> friend class WeakPtr;
-    template<typename T> friend OwnPtr<T> new_();
-    template <class T> friend OwnPtr<T> rawToOwn(T* ptr);
-    template <class T> friend OwnPtr<T> refToOwn(RefPtr<T> ptr);
+    template <class U> friend OwnPtr<U> new_();
+    template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
+    template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
     explicit OwnPtr(T* p) : pointer(p) {
     }
@@ -183,9 +185,9 @@ class OwnPtr<void> {
     template <class U> friend class OwnPtr;
     template <class U> friend class SharedPtr;
     template <class U> friend class WeakPtr;
-    template<typename T> friend OwnPtr<T> new_();
-    template <class T> friend OwnPtr<T> rawToOwn(T* ptr);
-    template <class T> friend OwnPtr<T> refToOwn(RefPtr<T> ptr);
+    template <class U> friend OwnPtr<U> new_();
+    template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
+    template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
     explicit OwnPtr(void* p) : pointer(p) {
     }

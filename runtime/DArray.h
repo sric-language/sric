@@ -120,6 +120,8 @@ public:
         }
         _data = nullptr;
     }
+
+    int getCapacity() { return _capacity; }
 private:
     void alloc(int bsize) {
         HeapRefable* p;
@@ -143,6 +145,7 @@ private:
     void tryGrow(int size) {
         if (!_data) {
             alloc(size * sizeof(T));
+            _capacity = size;
             return;
         }
         //HeapRefable* refable = getHeader();
