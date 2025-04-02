@@ -310,8 +310,11 @@ public class ExprTypeResolver extends TypeResolver {
                         if ((f.flags | FConst.Override) != 0) {
                             AstNode old = inhScopes.get(f.name, v.loc, null);
                             if (old instanceof FuncDef oldF) {
+                                if ((oldF.flags & FConst.Abstract) == 0 && (oldF.flags & FConst.Virtual) == 0 && (oldF.flags & FConst.Override) == 0) {
+                                    err("Can't override non-virtual method", f.loc);
+                                }
                                 if (!oldF.prototype.match(f.prototype)) {
-                                    err("Invalide override", f.loc);
+                                    err("Invalide override. funtion prototype not match", f.loc);
                                 }
                             }
                             else {

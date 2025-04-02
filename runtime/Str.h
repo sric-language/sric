@@ -51,7 +51,7 @@ public:
     }
 
     bool isEmpty() {
-        return str.size() > 0;
+        return str.size() == 0;
     }
 
     int hashCode() const;

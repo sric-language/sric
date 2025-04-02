@@ -465,6 +465,10 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
+        if ((v.flags & FConst.Static) != 0 && ((v.flags & FConst.Abstract) != 0 || (v.flags & FConst.Virtual) != 0)) {
+            err("Invalid flags", v.loc);
+        }
+        
         if ((v.flags & FConst.Static) != 0 && v.parent instanceof FileUnit) {
             err("Invalid static flags", v.loc);
         }
