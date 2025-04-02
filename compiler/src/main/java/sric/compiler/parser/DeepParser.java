@@ -131,6 +131,10 @@ public class DeepParser extends Parser {
 
         // otherwise assume it's a stand alone expression statement
         Expr e = expr();
+        
+        if (curt == TokenKind.comma) {
+            e = itAdd(e);
+        }
 
         // return expression as statement
         ExprStmt stmt = new ExprStmt();
@@ -140,6 +144,52 @@ public class DeepParser extends Parser {
         endOfStmt();
         endLoc(stmt, loc);
         return stmt;
+    }
+    
+    private Expr makeItAdd(Expr targetExpr, Expr e) {
+        Loc loc = targetExpr.loc;
+        CallExpr ce = new CallExpr();
+        {
+            AccessExpr target = new AccessExpr();
+            target.name = "add";
+            target.target = targetExpr;
+            target.opToken = TokenKind.dot;
+            endLoc(target, loc);
+
+            ce.target = target;
+        }
+        {
+            CallArg arg = new CallArg(e);
+            endLoc(arg, e.loc);
+            
+            ce.args = new ArrayList<CallArg>();
+            ce.args.add(arg);
+        }
+        endLoc(ce, loc);
+        return ce;
+    }
+    
+    private Expr itAdd(Expr e)
+    {
+      Loc loc = e.loc;
+      Expr it = new IdExpr(TokenKind.dot.symbol);
+      it.loc = loc;
+
+      e = makeItAdd(it, e);
+      
+      while (true)
+      {
+        consume(TokenKind.comma);
+        if (curt == TokenKind.semicolon) break;
+        
+        e = makeItAdd(e, expr());
+        
+        if (curt != TokenKind.comma) {
+            break;
+        }
+      }
+      endLoc(e, loc);
+      return e;
     }
 
     /**

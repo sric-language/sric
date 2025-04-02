@@ -1,0 +1,27 @@
+struct A {
+    fun add(i: Int): &A {
+        unsafe {
+            return *this;
+        }
+    }
+}
+
+fun test() {
+    var a = A { 1,; };
+}
+
+fun test2() {
+    var a = A { 1,2; };
+}
+
+fun test3() {
+    var a = A { 1,2,; };
+}
+
+fun test4() {
+    var a = A { 1,2,3; };
+}
+
+fun test5() {
+    var a = A { 1,2,3,; };
+}
