@@ -47,6 +47,12 @@ namespace sric {
 	}
 
 	template<typename T>
+	std::function<T>& nonNullable(const std::function<T>& p) {
+		sc_assert(p != nullptr, "Non-Nullable");
+		return (std::function<T>&)p;
+	}
+
+	template<typename T>
 	int hashCode(const T& p) {
 		return p.hashCode();
 	}

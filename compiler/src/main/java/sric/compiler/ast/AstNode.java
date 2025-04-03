@@ -160,9 +160,10 @@ public class AstNode {
         public ArrayList<FuncDef> funcDefs = new ArrayList<FuncDef>();
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
-        private Scope scope = null;
+        private Scope instanceScope = null;
         private Scope staticScope = null;
-        private Scope inheritScopes = null;
+        private Scope instanceInheritScopes = null;
+        private Scope staticInheritScopes = null;
         public TypeDef originGenericTemplate = null;
         private Map<GenericParamDef, Type> typeGenericArgs;
         private boolean genericInited = false;
@@ -278,10 +279,10 @@ public class AstNode {
             }
         }
         
-        public Scope getScope(CompilerLog log) {
-            if (scope == null) {
+        public Scope getInstanceScope(CompilerLog log) {
+            if (instanceScope == null) {
                 templateInstantiate();
-                scope = new Scope();
+                Scope scope = new Scope();
                 if (this.generiParamDefs != null) {
                     for (GenericParamDef gp : this.generiParamDefs) {
                         if (!scope.put(gp.name, gp)) {
@@ -299,8 +300,9 @@ public class AstNode {
                         if (log != null) log.err("Duplicate name: " + f.name, f.loc);
                     }
                 }
+                instanceScope = scope;
             }
-            return scope;
+            return instanceScope;
         }
         
         public Scope getStaticScope(CompilerLog log) {
@@ -321,8 +323,8 @@ public class AstNode {
             return staticScope;
         }
         
-        public Scope getInheriteScope() {
-            if (inheritScopes == null) {
+        public Scope getInstanceInheriteScope() {
+            if (instanceInheritScopes == null) {
                 if (this.inheritances == null) {
                     return null;
                 }
@@ -330,32 +332,70 @@ public class AstNode {
                 for (Type inh : this.inheritances) {
                     if (inh.id.resolvedDef != null) {
                         if (inh.id.resolvedDef instanceof TypeDef inhSd) {
-                            inhSd.getScopeNoPrivate(s);
-                            Scope inhScope2 = inhSd.getInheriteScope();
+                            inhSd.getScopeNoPrivate(s, false);
+                            Scope inhScope2 = inhSd.getInstanceInheriteScope();
                             if (inhScope2 != null) {
                                 s.addOverride(inhScope2);
                             }
                         }
                     }
                 }
-                inheritScopes = s;
+                instanceInheritScopes = s;
             }
-            return inheritScopes;
+            return instanceInheritScopes;
         }
         
-        private void getScopeNoPrivate(Scope scope) {
+        public Scope getStaticInheriteScope() {
+            if (staticInheritScopes == null) {
+                if (this.inheritances == null) {
+                    return null;
+                }
+                Scope s = new Scope();
+                for (Type inh : this.inheritances) {
+                    if (inh.id.resolvedDef != null) {
+                        if (inh.id.resolvedDef instanceof TypeDef inhSd) {
+                            inhSd.getScopeNoPrivate(s, true);
+                            Scope inhScope2 = inhSd.getStaticInheriteScope();
+                            if (inhScope2 != null) {
+                                s.addAll(inhScope2);
+                            }
+                        }
+                    }
+                }
+                staticInheritScopes = s;
+            }
+            return staticInheritScopes;
+        }
+        
+        private void getScopeNoPrivate(Scope scope, boolean isStatic) {
             templateInstantiate();
             for (FieldDef f : fieldDefs) {
                 if ((f.flags & FConst.Private) != 0) {
                     continue;
                 }
-                scope.put(f.name, f);
+                boolean fstatic = (f.flags & FConst.Static) !=0;
+                if (fstatic) {
+                    if (isStatic)
+                        scope.put(f.name, f);
+                }
+                else {
+                    if (!isStatic)
+                        scope.put(f.name, f);
+                }
             }
             for (FuncDef f : funcDefs) {
                 if ((f.flags & FConst.Private) != 0) {
                     continue;
                 }
-                scope.put(f.name, f);
+                boolean fstatic = (f.flags & FConst.Static) !=0;
+                if (fstatic) {
+                    if (isStatic)
+                        scope.put(f.name, f);
+                }
+                else {
+                    if (!isStatic)
+                        scope.put(f.name, f);
+                }
             }
         }
         

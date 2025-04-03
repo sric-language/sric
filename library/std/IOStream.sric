@@ -10,7 +10,7 @@ extern abstract struct IOStream {
     abstract fun read(ptr: raw*Void, size: UInt32, count: UInt32): UInt32;
     abstract fun write(ptr: raw*Void, size: UInt32, count: UInt32): UInt32;
 
-    virtual fun readLine(buf: raw* Int8, bufSize: Int): raw*Int8;
+    virtual fun readLine(buf: raw* Int8, bufSize: Int): raw*? Int8;
     virtual fun eof(): Bool;
     virtual fun rewind(): Bool;
 

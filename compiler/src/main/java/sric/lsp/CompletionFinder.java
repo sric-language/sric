@@ -9,10 +9,12 @@ import java.util.HashMap;
 import sric.compiler.ast.AstNode;
 import sric.compiler.ast.AstNode.FieldDef;
 import sric.compiler.ast.AstNode.FileUnit;
+import sric.compiler.ast.AstNode.TopLevelDef;
 import sric.compiler.ast.Buildin;
 import sric.compiler.ast.Expr;
 import sric.compiler.ast.Expr.AccessExpr;
 import sric.compiler.ast.Expr.IdExpr;
+import sric.compiler.ast.FConst;
 import sric.compiler.ast.Scope;
 import sric.compiler.ast.Type;
 import sric.compiler.resolve.ErrorChecker;
@@ -72,9 +74,15 @@ public class CompletionFinder {
 
             if (resolvedDef != null) {
                 if (resolvedDef instanceof AstNode.TypeDef t) {
-                    Scope scope = isNamespace ? t.getStaticScope(null) : t.getScope(null);
+                    Scope scope = isNamespace ? t.getStaticScope(null) : t.getInstanceScope(null);
                     
-                    addScope(scope, text);
+                    addScope(scope, text, t.parent != funit);
+                    
+                    if (!isNamespace) {
+                        scope = t.getInstanceInheriteScope();
+                        addScope(scope, text);
+                    }
+                    
                     if (defs.size() == 0) {
                         addScope(scope, null);
                     }
@@ -94,10 +102,19 @@ public class CompletionFinder {
     }
     
     private void addScope(Scope scope, String prefix) {
+        addScope(scope, prefix, false);
+    }
+    
+    private void addScope(Scope scope, String prefix, boolean filterPrivate) {
         for (HashMap.Entry<String, ArrayList<AstNode>> entry : scope.symbolTable.entrySet()) {
             String name = entry.getKey();
             if (prefix == null || name.startsWith(prefix)) {
                 for (AstNode anode : entry.getValue()) {
+                    if (filterPrivate && anode instanceof TopLevelDef tdef) {
+                        if ((tdef.flags & FConst.Private) != 0) {
+                            continue;
+                        }
+                    }
                     defs.add(anode);
                 }
             }

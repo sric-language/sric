@@ -14,4 +14,7 @@ struct A {
 
 fun main() {
     var i = A::s;
+
+    var a: A;
+    a.foo();
 }

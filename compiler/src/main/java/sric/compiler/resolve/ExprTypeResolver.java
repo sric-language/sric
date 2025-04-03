@@ -283,8 +283,12 @@ public class ExprTypeResolver extends TypeResolver {
         if (v.isStruct()) {
             curStruct = v;
             if (v.inheritances != null) {
-                Scope inhScopes = v.getInheriteScope();
+                Scope inhScopes = v.getInstanceInheriteScope();
                 this.scopes.add(inhScopes);
+                ++scopeCount;
+                
+                Scope staticInhScopes = v.getStaticInheriteScope();
+                this.scopes.add(staticInhScopes);
                 ++scopeCount;
                 
                 for (FieldDef f : v.fieldDefs) {
@@ -347,7 +351,7 @@ public class ExprTypeResolver extends TypeResolver {
                 ++enumValue;
             }
         }
-        Scope scope = v.getScope(log);
+        Scope scope = v.getInstanceScope(log);
         this.scopes.add(scope);
         ++scopeCount;
         
@@ -536,17 +540,19 @@ public class ExprTypeResolver extends TypeResolver {
 
         if (resolvedDef instanceof TypeDef t) {
             Scope scope;
+            boolean isStatic = false;
             if (target.resolvedType.isMetaType()) {
                 scope = t.getStaticScope(log);
+                isStatic = true;
             }
             else {
-                scope = t.getScope(log);
+                scope = t.getInstanceScope(log);
             }
             AstNode def = scope.get(name, loc, log);
             if (def == null) {
                 //if (t instanceof StructDef sd) {
-                    if (t.inheritances != null) {
-                        Scope inhScopes = t.getInheriteScope();
+                    if (t.inheritances != null && !isStatic) {
+                        Scope inhScopes = t.getInstanceInheriteScope();
                         def = inhScopes.get(name, loc, log);
                     }
                 //}
