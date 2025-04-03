@@ -44,6 +44,7 @@ public:
         return str.size();
     }
     char get(int i) const {
+        sc_assert(i >= 0 && i < size(), "index out of string");
         return str[i];
     }
     char operator[](int i) const {
@@ -68,6 +69,7 @@ public:
     }
     String plus(const String& other) const;
     void add(const char* cstr);
+    void addStr(const String& other);
 
     void replace(const String& src, const String& dst);
     DArray<String> split(const String& sep) const;

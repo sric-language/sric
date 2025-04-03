@@ -1849,11 +1849,11 @@ public class CppGenerator extends BaseGenerator {
                 print(" = ");
                 this.visit(e.target);
             }
-            print(";");
+            print(";").newLine();
             
             printItBlockArgs(e, "__t");
             
-            print("return __t;");
+            print("return __t;").newLine();
             
             print("}()");
         }

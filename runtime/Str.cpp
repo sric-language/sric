@@ -89,6 +89,9 @@ String String::plus(const String& other) const {
 void String::add(const char* cstr) {
     str += cstr;
 }
+void String::addStr(const String& other) {
+    str += other.str;
+}
 
 static bool isSpace(char ch) {
     return (ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t');

@@ -20,6 +20,7 @@ extern noncopyable struct String {
     fun substr(pos:Int, len:Int = -1) const: String;
 
     operator fun plus(other: &const String) const: String;
+    fun addStr(str: &const String);
     fun add(cstr: raw*const Int8);
 
     fun trimEnd();

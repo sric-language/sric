@@ -279,7 +279,8 @@ public:
 
     T* get() const {
 #ifdef SC_CHECK
-        onDeref();
+        if (pointer)
+            onDeref();
 #endif
         return pointer;
     }
@@ -463,7 +464,8 @@ public:
 
     void* get() const {
 #ifdef SC_CHECK
-        onDeref();
+        if (pointer)
+            onDeref();
 #endif
         return pointer;
     }
@@ -504,15 +506,15 @@ public:
 
 template <class T>
 OwnPtr<T> refToOwn(RefPtr<T> ptr) {
+    HeapRefable* r = getRefable(ptr.get());
 #ifndef SC_NO_CHECK
-    if (ptr.type != RefType::HeapRef) {
-        //sc_assert(false, "Can't cast ref pointer to own pointer");
+    if (r->_magicCode != SC_HEAP_MAGIC_CODE) {
         fprintf(stderr, "ERROR: Can't cast ref pointer to own pointer\n");
         abort();
         return OwnPtr<T>();
     }
 #endif
-    getRefable(ptr.get())->addRef();
+    r->addRef();
     return OwnPtr<T>(ptr.get());
 }
 

@@ -60,23 +60,25 @@ struct LinkedList$<T: Linkable$<T>> {
 
     fun remove(elem: *? T) : Bool {
         if (elem == null) return false;
+        var next = move elem.next;
+        var previous = elem.previous;
+        elem.previous = null;
         
-        if (elem.next != null) {
-            elem.next.previous = elem.previous;
+        if (next != null) {
+            next.previous = previous;
         }
 
         if (head == elem) {
-            head = move elem.next;
+            head = move next;
         }
-        if (elem.previous != null) {
-            elem.previous.next = move elem.next;
+        if (previous != null) {
+            previous.next = move next;
         }
 
         if (tail == elem) {
-            tail = elem.previous;
+            tail = previous;
         }
-        elem.next = null;
-        elem.previous = null;
+
         --length;
         return true;
     }

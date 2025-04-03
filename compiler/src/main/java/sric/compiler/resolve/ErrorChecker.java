@@ -755,6 +755,14 @@ public class ErrorChecker extends CompilePass {
                 err("Must 1 params", f.loc);
             }
         }
+        else if (f.name.equals("add")) {
+            if (f.prototype.paramDefs.size() != 1) {
+                err("Must 1 params", f.loc);
+            }
+            if (f.prototype.returnType.isVoid()) {
+                err("Must return Self", f.loc);
+            }
+        }
         else {
             err("Unkonw operator", f.loc);
         }
@@ -1099,6 +1107,11 @@ public class ErrorChecker extends CompilePass {
         }
 
         if (e.target.isResolved()) {
+            if (e.target instanceof IdExpr ide) {
+                if (ide.resolvedDef instanceof FieldDef f) {
+                    e.target.checkNonnullable = true;
+                }
+            }
             if (e.target.resolvedType.detail instanceof Type.FuncInfo f) {
                 
                 if (e.args != null) {
@@ -1257,7 +1270,14 @@ public class ErrorChecker extends CompilePass {
                     }
                     else if (e.lhs.resolvedType.isPointerType() && e.rhs.resolvedType.isPointerType()) {
                         if (e.lhs.resolvedType.isNullType() || e.rhs.resolvedType.isNullType()) {
-                            //OK
+                            if (!isInUnsafe()) {
+                                if (!e.lhs.resolvedType.isNullablePointerType() && e.rhs.resolvedType.isNullType()) {
+                                    err("Compare non-nullable pointer to null", e.loc);
+                                }
+                                else if (!e.rhs.resolvedType.isNullablePointerType() && e.lhs.resolvedType.isNullType()) {
+                                    err("Compare non-nullable pointer to null", e.loc);
+                                }
+                            }
                         }
                         else if (e.lhs.resolvedType.detail instanceof Type.PointerInfo p1 && e.rhs.resolvedType.detail instanceof Type.PointerInfo p2) {
                             if (p1.pointerAttr != p2.pointerAttr) {
