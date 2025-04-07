@@ -197,7 +197,9 @@ public:
         
         (_data + i)->~T();
         int s = size()-i-1;
-        memmove(_data + i, _data + i + 1, s * sizeof(T));
+        if (s > 0) {
+            memmove(_data + i, _data + i + 1, s * sizeof(T));
+        }
         --_size;
         getHeader()->_dataSize -= sizeof(T);
     }
@@ -225,11 +227,11 @@ public:
     }
 
     void insert(int i, T d) {
-        int pos = size();
-        tryGrow(pos + 1);
+        int n = size();
+        tryGrow(n + 1);
         T* m = (_data + i);
 
-        memmove(m + 1, m, pos - i);
+        memmove(m + 1, m, (n - i) * sizeof(T));
 
         new(m) T();
         *m = std::move(d);
@@ -239,11 +241,12 @@ public:
 
     void insertAll(int i, DArray<T> o) {
         int msize = o.size();
-        int pos = size();
-        tryGrow(pos + msize);
+        int n = size();
+        tryGrow(n + msize);
         T* m = (_data + i);
-
-        memmove(m + msize, m, pos - i);
+        if (n-i > 0) {
+            memmove(m + msize, m, (n - i) * sizeof(T));
+        }
         for (int i = 0; i < o.size(); ++i) {
             new(m) T();
             *m = std::move(o._data[i]);

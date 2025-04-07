@@ -80,7 +80,9 @@ public class CompletionFinder {
                     
                     if (!isNamespace) {
                         scope = t.getInstanceInheriteScope();
-                        addScope(scope, text);
+                        if (scope != null) {
+                            addScope(scope, text);
+                        }
                     }
                     
                     if (defs.size() == 0) {
