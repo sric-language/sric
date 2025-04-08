@@ -522,6 +522,8 @@ public class AstNode {
         public Block code;            // code block
         public ArrayList<GenericParamDef> generiParamDefs = null;
         
+        public boolean _useThisAsRefPtr = false;
+        
         public FuncDef templateInstantiate(Map<GenericParamDef, Type> typeGenericArgs) {
 //            if ("hashCode".equals(this.name)) {
 //                System.out.print("DEBUG");

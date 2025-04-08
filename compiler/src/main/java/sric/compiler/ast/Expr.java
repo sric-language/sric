@@ -120,6 +120,7 @@ public abstract class Expr extends AstNode {
         public boolean implicitThis;
         
         public boolean _autoDerefRefableVar = true;
+        public boolean _isAccessExprTarget = false;
         
         public IdExpr(String name) {
             this.name = name;

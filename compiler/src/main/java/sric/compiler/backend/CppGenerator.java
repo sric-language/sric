@@ -646,7 +646,12 @@ public class CppGenerator extends BaseGenerator {
             }
             else if (id.name.equals(TokenKind.thisKeyword.symbol)) {
                 if (curStruct != null && curStruct.isSafe()) {
-                    print("__this");
+                    if (id._isAccessExprTarget) {
+                        print("sc_this");
+                    }
+                    else {
+                        print("sc_thisref");
+                    }
                 }
                 else {
                     print("this");
@@ -660,7 +665,7 @@ public class CppGenerator extends BaseGenerator {
         }
         
         if (id.implicitThis && curStruct != null && curStruct.isSafe()) {
-            print("SC_THIS ");
+            print("sc_this->");
         }
         
         if (id.resolvedDef instanceof TopLevelDef td) {
@@ -950,7 +955,13 @@ public class CppGenerator extends BaseGenerator {
                 if (curStruct != null && curStruct.isSafe() && !v.isStatic()) {
                     print(" {").newLine();
                     this.indent();
-                    print("SC_BEGIN_METHOD();").newLine();
+                    if (v._useThisAsRefPtr) {
+                        print("SC_DEFINE_THIS_REFPTR");
+                    }
+                    else {
+                        print("SC_DEFINE_THIS");
+                    }
+                    newLine();
                     isSafe = true;
                     v.code._printBrace = false;
                 }
@@ -1767,12 +1778,12 @@ public class CppGenerator extends BaseGenerator {
         }
     }
     
-    private void printItBlockArgs(WithBlockExpr e, String varName) {
+    private void printItBlockArgs(WithBlockExpr e, String varName, boolean printBrace) {
         if (e.block != null) {
             String savedName = curItName;
             curItName = varName;
             
-            e.block._printBrace = false;
+            e.block._printBrace = printBrace;
             this.visit(e.block);
             
             curItName = savedName;
@@ -1806,7 +1817,7 @@ public class CppGenerator extends BaseGenerator {
             if (e._storeVar.isRefable) {
                 targetName = "(*" + targetName + ")";
             }
-            printItBlockArgs(e, targetName);
+            printItBlockArgs(e, targetName, true);
             return;
         }
         
@@ -1819,7 +1830,7 @@ public class CppGenerator extends BaseGenerator {
                 targetId = "(*" + targetId + ")";
             }
             if (targetId != null) {
-                printItBlockArgs(e, targetId);
+                printItBlockArgs(e, targetId, true);
                 return;
             }
         }
@@ -1833,7 +1844,7 @@ public class CppGenerator extends BaseGenerator {
                 }
                 print(" = ");
             }
-            //[&]()->T{ T __t = target(); __t.name =1; return __t; }()
+            //[&]()->T{ T it = target(); it.name =1; return it; }()
             if (e._storeVar == null || (e._storeVar.isLocalOrParam())) {
                 print("[&]()->");
             }
@@ -1841,19 +1852,22 @@ public class CppGenerator extends BaseGenerator {
                 print("[]()->");
             }
             printType(e.resolvedType);
-            print("{");
+            print("{").newLine();
+            this.indent();
             
             printType(e.resolvedType);
-            print(" __t");
+            print(" it");
             if (!e._isType) {
                 print(" = ");
                 this.visit(e.target);
             }
             print(";").newLine();
             
-            printItBlockArgs(e, "__t");
+            printItBlockArgs(e, "it", false);
             
-            print("return __t;").newLine();
+            print("return it;").newLine();
+            
+            this.unindent();
             
             print("}()");
         }

@@ -106,6 +106,9 @@ public class ExprTypeResolver extends TypeResolver {
                             idExpr.resolvedType = Type.pointerType(idExpr.loc, self, Type.PointerAttr.raw, false);
                         }
                         idExpr.resolvedType.isImmutable = true;
+                        if (!idExpr._isAccessExprTarget) {
+                            curFunc._useThisAsRefPtr = true;
+                        }
                     }
                 }
                 else {
@@ -584,7 +587,11 @@ public class ExprTypeResolver extends TypeResolver {
             }
         }
         else if (v instanceof Expr.AccessExpr e) {
+            if (e.target instanceof IdExpr ide) {
+                ide._isAccessExprTarget = true;
+            }
             this.visit(e.target);
+            
             e.resolvedDef = resoveOnTarget(e.target, e.name, e.loc, true);
             if (e.resolvedDef != null) {
                 boolean targetImmutable = e.target.resolvedType.isImmutable;
