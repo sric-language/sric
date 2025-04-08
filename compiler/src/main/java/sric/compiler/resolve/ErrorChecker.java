@@ -1251,6 +1251,14 @@ public class ErrorChecker extends CompilePass {
                         if (asType.detail instanceof Type.PointerInfo pinfo && pinfo.pointerAttr == Type.PointerAttr.own) {
                             err("Can't cast to own pointer", e.rhs.loc);
                         }
+                        
+                        if (e.lhs.resolvedType.isPointerType() && e.lhs.resolvedType.genericArgs != null && asType.isPointerType() && asType.genericArgs != null) {
+                            Type t1 = e.lhs.resolvedType.genericArgs.get(0);
+                            Type t2 = asType.genericArgs.get(0);
+                            if (t1.isVoid() && t2.id.resolvedDef instanceof TypeDef t && t.isTrait()) {
+                                err("Can't cast *void to trait", e.rhs.loc);
+                            }
+                        }
                     }
                 }
                     break;

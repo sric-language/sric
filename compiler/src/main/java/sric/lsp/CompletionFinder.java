@@ -74,19 +74,10 @@ public class CompletionFinder {
 
             if (resolvedDef != null) {
                 if (resolvedDef instanceof AstNode.TypeDef t) {
-                    Scope scope = isNamespace ? t.getStaticScope(null) : t.getInstanceScope(null);
-                    
-                    addScope(scope, text, t.parent != funit);
-                    
-                    if (!isNamespace) {
-                        scope = t.getInstanceInheriteScope();
-                        if (scope != null) {
-                            addScope(scope, text);
-                        }
-                    }
+                    addTypeScope(funit, t, isNamespace, text);
                     
                     if (defs.size() == 0) {
-                        addScope(scope, null);
+                        addTypeScope(funit, t, isNamespace, null);
                     }
                 }
             }
@@ -101,6 +92,19 @@ public class CompletionFinder {
         addScope(Buildin.getBuildinScope(), text);
         
         return defs;
+    }
+    
+    private void addTypeScope(FileUnit funit, AstNode.TypeDef t, boolean isStatic, String text) {
+        Scope scope = isStatic ? t.getStaticScope(null) : t.getInstanceScope(null);
+                    
+        addScope(scope, text, t.parent != funit);
+
+        if (!isStatic) {
+            scope = t.getInstanceInheriteScope();
+            if (scope != null) {
+                addScope(scope, text);
+            }
+        }
     }
     
     private void addScope(Scope scope, String prefix) {

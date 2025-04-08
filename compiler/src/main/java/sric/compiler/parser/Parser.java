@@ -423,9 +423,9 @@ public class Parser {
                 case abstractKeyword:
                     flags = flags | (FConst.Abstract);
                     break;
-                case constKeyword:
-                    flags = flags | (FConst.Const);
-                    break;
+//                case constKeyword:
+//                    flags = flags | (FConst.Const);
+//                    break;
                 case readonlyKeyword:
                     flags = flags | (FConst.Readonly);
                     break;
