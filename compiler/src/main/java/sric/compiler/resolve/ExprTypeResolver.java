@@ -1188,15 +1188,23 @@ public class ExprTypeResolver extends TypeResolver {
         }
         
         if (lt.isNum() && rt.isNum()) {
-            if (curt != TokenKind.cmp) {
+            if (curt != TokenKind.cmp && lt.detail != null && rt.detail != null) {
+                Type.NumInfo li = (Type.NumInfo)lt.detail;
+                Type.NumInfo ri = (Type.NumInfo)rt.detail;
                 if (lt.isFloat()) {
                     e.resolvedType = lt;
+                    if (rt.isFloat() && ri.size > li.size) {
+                        e.resolvedType = rt;
+                    }
                 }
                 else if (rt.isFloat()) {
                     e.resolvedType = rt;
                 }
                 else {
                     e.resolvedType = lt;
+                    if (ri.size > li.size) {
+                        e.resolvedType = rt;
+                    }
                 }
             }
             return;

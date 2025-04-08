@@ -1622,7 +1622,7 @@ public class CppGenerator extends BaseGenerator {
                 }
             }
             else {
-                print(e.lhs.resolvedType.equals(targetType) ? "true" : "false");
+                print(e.lhs.resolvedType.typeEquals(targetType) ? "true" : "false");
             }
         }
         //index set operator: a[i] = b

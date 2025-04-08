@@ -223,7 +223,7 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
-        if (!from.equals(to)) {
+        if (!from.typeEquals(to)) {
             if (target instanceof WithBlockExpr wbe) {
                 wbe._storeVar = null;
             }
@@ -956,7 +956,7 @@ public class ErrorChecker extends CompilePass {
             this.visit(e.falseExpr);
             verifyBool(e.condition);
             if (e.trueExpr.isResolved() && e.falseExpr.isResolved()) {
-                if (!e.trueExpr.resolvedType.equals(e.falseExpr.resolvedType)) {
+                if (!e.trueExpr.resolvedType.semanticEquals(e.falseExpr.resolvedType)) {
                     err("Type must equals", e.falseExpr.loc);
                 }
             }

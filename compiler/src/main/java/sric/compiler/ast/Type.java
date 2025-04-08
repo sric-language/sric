@@ -313,30 +313,30 @@ public class Type extends AstNode {
         return false;
     }
     
-    public boolean equals(Type target) {
-        return equals(target, false);
+    public boolean typeEquals(Type target) {
+        return equals(target, false, true);
     }
     
     public boolean strictEquals(Type target) {
-        return equals(target, true);
+        return equals(target, true, true);
     }
     
     public boolean semanticEquals(Type target) {
-        return equals(target, false);
+        return equals(target, false, false);
     }
     
-    private boolean equals(Type target, boolean strict) {
+    private boolean equals(Type target, boolean strict, boolean checkNumber) {
         if (this == target) {
             return true;
         }
         
         if (this.resolvedAlias != null) {
-            if (this.resolvedAlias.equals(target, strict)) {
+            if (this.resolvedAlias.equals(target, strict, checkNumber)) {
                 return true;
             }
         }
         if (target.resolvedAlias != null) {
-            if (this.equals(target.resolvedAlias, strict)) {
+            if (this.equals(target.resolvedAlias, strict, checkNumber)) {
                 return true;
             }
         }
@@ -382,10 +382,10 @@ public class Type extends AstNode {
         }
         else if (this.isNum()) {
             if (this.detail instanceof NumInfo e && target.detail instanceof NumInfo a) {
-                if ( (e.isUnsigned != a.isUnsigned))  {
+                if (checkNumber && (e.isUnsigned != a.isUnsigned))  {
                     return false;
                 }
-                else if (strict && (e.size != a.size))  {
+                else if (checkNumber && (e.size != a.size))  {
                     return false;
                 }
             }
