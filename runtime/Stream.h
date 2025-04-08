@@ -76,10 +76,10 @@ public:
     float readFloat32();
     double readFloat64();
 
-    void writeSizedStr(const RefPtr<String> buf);
+    void writeSizedStr(const String& buf);
     String readSizedStr();
 
-    void writeStr(const RefPtr<String> buf);
+    void writeStr(const String& buf);
     String readAllStr();
 };
 

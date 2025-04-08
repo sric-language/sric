@@ -235,10 +235,10 @@ double IOStream::readFloat64() {
 ///////////////////////////////////////////////////////////
 
 
-void IOStream::writeSizedStr(const RefPtr<String> buf) {
-    size_t size = buf->size();
+void IOStream::writeSizedStr(const String& buf) {
+    size_t size = buf.size();
     writeUInt32((uint32_t)size);
-    write(buf->c_str(), size);
+    write(buf.c_str(), size);
 }
 
 String IOStream::readSizedStr() {
@@ -249,9 +249,9 @@ String IOStream::readSizedStr() {
     return (s);
 }
 
-void IOStream::writeStr(const RefPtr<String> buf) {
-    int size = buf->size();
-    write(buf->c_str(), size);
+void IOStream::writeStr(const String& buf) {
+    int size = buf.size();
+    write(buf.c_str(), size);
 }
 String IOStream::readAllStr() {
     long size = this->length();

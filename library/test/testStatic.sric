@@ -1,8 +1,10 @@
+import sric::*;
 
 struct StaticTest {
     var i : Int = 0;
     static var s: const Int = 0;
-    static fun foo() {
+    static fun foo(): Int {
+        return s;
     }
     fun foo2() {
     }
@@ -10,5 +12,6 @@ struct StaticTest {
 
 fun testStatic() {
     var i = StaticTest::s;
-    StaticTest::foo();
+    var j = StaticTest::foo();
+    verify(i == j);
 }

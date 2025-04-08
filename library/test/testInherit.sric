@@ -17,7 +17,7 @@ virtual struct B {
 }
 
 fun testInherit() {
-    var x = new C;
+    var x = new C { .a = 1; };
     x.foo();
 
     var p1: * B = x;
@@ -30,6 +30,9 @@ fun testInherit() {
     var b1 = p1 is * I;
 
     printf("x is I: %d\n", b1);
+
+    verify(b1);
+    verify(p1.a == 1);
 }
 
 fun testDector() {

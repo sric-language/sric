@@ -22,7 +22,7 @@ public:
     virtual bool canSeek();
     virtual void close();
     virtual long read(void* ptr, size_t size);
-    virtual char* readLine(char* str, int num);
+    //virtual char* readLine(char* str, int num);
     virtual long write(const void* ptr, size_t size);
     virtual bool eof();
     virtual long length();

@@ -2,30 +2,21 @@
 
 
 fun main(): Int {
-    testDArray();
-    testDArray2();
+    testDArrayAll();
     testCopy();
     testGlobal();
     testArray();
     testString();
     
-    testPtr();
+    testPtrAll();
     testInherit();
-    testCompare();
-    testMove();
-    testRaw();
-    testDerivativePtr();
-    testDerivativeRefable();
-    testVoidPtr();
-    testRawCast();
     
-    testHashMap();
-    testHashMap2();
-    testHashMap3();
-    testHashMap4();
+    testHashMapAll();
     
     testReflection();
+    testEnum();
     testStatic();
     testClosure();
+    testStream();
     return 0;
 }

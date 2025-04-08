@@ -194,7 +194,8 @@ public:
     }
 
     void removeAt(int i) {
-        
+        sc_assert(i >= 0 && i < size(), "index out of array");
+
         (_data + i)->~T();
         int s = size()-i-1;
         if (s > 0) {
@@ -202,6 +203,19 @@ public:
         }
         --_size;
         getHeader()->_dataSize -= sizeof(T);
+    }
+
+    void removeRange(int begin, int end) {
+        if (begin >= end) return;
+        sc_assert(begin >= 0 && begin < size(), "index out of array");
+        sc_assert(end-1 >= 0 && end-1 < size(), "index out of array");
+        int s = size()-end;
+        if (s > 0) {
+            memmove(_data + begin, _data + end, s * sizeof(T));
+        }
+        int n = end - begin;
+        _size -= n;
+        getHeader()->_dataSize -= n*sizeof(T);
     }
 
     void reserve(int capacity) {
@@ -227,7 +241,14 @@ public:
     }
 
     void insert(int i, T d) {
+        sc_assert(i >= 0 && i <= size(), "index out of array");
+
         int n = size();
+        if (n == i) {
+            add(d);
+            return;
+        }
+
         tryGrow(n + 1);
         T* m = (_data + i);
 
@@ -240,6 +261,8 @@ public:
     }
 
     void insertAll(int i, DArray<T> o) {
+        sc_assert(i >= 0 && i <= size(), "index out of array");
+
         int msize = o.size();
         int n = size();
         tryGrow(n + msize);

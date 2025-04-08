@@ -3,10 +3,12 @@ import sric::*;
 
 fun testClosure() {
     var i = new Int;
+    *i = 1;
     var w = autoMove$<own*Int>(move i);
     var f = fun() {
         var a = w.take();
         printf("%d\n", *a);
+        verify(*a == 1);
     };
     f();
 }

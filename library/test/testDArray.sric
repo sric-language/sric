@@ -1,0 +1,99 @@
+import sric::*;
+
+fun testDArray1() {
+    var a = DArray$<Int> {};
+    a.add(1);
+    a.add(2);
+
+    verify(a.size() == 2);
+    verify(a[0] == 1);
+    verify(a[1] == 2);
+}
+
+fun testDArray2() {
+    var a = DArray$<own*Int> {};
+    var p = new Int;
+    *p = 1;
+    a.add(move p);
+
+    verify(a.size() == 1);
+    verify(*(a[0]) == 1);
+}
+
+fun testDArray3() {
+    var a = DArray$<Int> {};
+    a.add(1);
+    a.add(2);
+
+    a.removeAt(1);
+
+    verify(a.size() == 1);
+    verify(a[0] == 1);
+}
+
+fun testDArray4() {
+    var a = DArray$<Int> {};
+    a.add(1);
+    a.add(2);
+
+    a.insert(0, 0);
+
+    verify(a.size() == 3);
+    verify(a[0] == 0);
+    verify(a[1] == 1);
+    verify(a[2] == 2);
+}
+
+fun testDArray5() {
+    var a = DArray$<Int> {};
+    a.add(1);
+
+    var b = DArray$<Int> {};
+    b.add(2);
+
+    a.insertAll(0, move b);
+
+    verify(a.size() == 2);
+    verify(a[0] == 2);
+    verify(a[1] == 1);
+}
+
+fun testDArray6() {
+    var a = DArray$<Int> {};
+    a.insert(0, 3);
+    a.insert(0, 1);
+    a.insert(1, 2);
+
+    verify(a.size() == 3);
+    verify(a[1] == 2);
+    
+    a.removeRange(1, 2);
+
+    verify(a.size() == 2);
+    verify(a[1] == 3);
+}
+
+fun testDArray7() {
+    var a = DArray$<Int> {};
+    a.insert(0, 3);
+    a.insert(0, 1);
+    a.insert(1, 2);
+
+    verify(a.size() == 3);
+    verify(a[1] == 2);
+    
+    a.removeRange(1, 3);
+
+    verify(a.size() == 1);
+    verify(a[0] == 1);
+}
+
+fun testDArrayAll() {
+    testDArray1();
+    testDArray2();
+    testDArray3();
+    testDArray4();
+    testDArray5();
+    testDArray6();
+    testDArray7();
+}

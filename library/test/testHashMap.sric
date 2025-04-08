@@ -7,6 +7,8 @@ fun testHashMap() {
 
     var i =  map.getPtr("1");
     printf("%d\n", *i);
+    verify(map.size() == 2);
+    verify(map["1"] == 1);    
 }
 
 fun testHashMap2() {
@@ -14,10 +16,10 @@ fun testHashMap2() {
     map.set(1, "1");
     map.set(2, "2");
 
-    unsafe {
-        var i =  map[1];
-        printf("%s\n", i.c_str());
-    }
+    printf("%s\n", map[1].c_str());
+
+    verify(map.size() == 2);
+    verify(map[2] == "2");
 }
 
 fun testHashMap3() {
@@ -30,12 +32,19 @@ fun testHashMap3() {
     var t =  map.getPtr("1");
     printf("%d\n", *t);
 
+    verify(map.size() == 10);
+    verify(map["9"] == 9);
+
+    var s = 0;
+    var p = &s;
     map.eachWhile(fun(v:& const Int, k:& const String): Bool {
-        unsafe {
-            printf("%d:%s\n", v, k.c_str());
-        }
+        //printf("%d:%s\n", v, k.c_str());
+        verify( v == k.toInt32());
+        
+        *p = *p+1;
         return true;
     });
+    verify(s == 10);
 }
 
 fun testHashMap4() {
@@ -50,10 +59,19 @@ fun testHashMap4() {
     var t =  map.getPtr("1");
     printf("%d\n", **t);
 
+    verify(map.size() == 10);
+    verify(*(map["9"]) == 9);
+
     map.eachWhile(fun(v:& const own*? Int, k:& const String): Bool {
-        unsafe {
-            printf("%d:%s\n", *v, k.c_str());
-        }
+        //printf("%d:%s\n", *v, k.c_str());
+        verify( *v == k.toInt32());
         return true;
     });
+}
+
+fun testHashMapAll() {
+    testHashMap();
+    testHashMap2();
+    testHashMap3();
+    testHashMap4();
 }

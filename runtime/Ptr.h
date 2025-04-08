@@ -32,16 +32,6 @@ typename std::enable_if<!std::is_polymorphic<U>::value, void*>::type  toVoid(U* 
 }
 
 template<typename U>
-typename std::enable_if<std::is_polymorphic<U>::value, U*>::type  fromVoid(void* pointer) {
-    return dynamic_cast<U*>(pointer);
-}
-
-template<typename U>
-typename std::enable_if<!std::is_polymorphic<U>::value, U*>::type  fromVoid(void* pointer) {
-    return (U*)pointer;
-}
-
-template<typename U>
 HeapRefable* getRefable(U* pointer) {
     void* mostTop = toVoid(pointer);
     HeapRefable* p = (HeapRefable*)mostTop;

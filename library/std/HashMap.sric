@@ -47,7 +47,7 @@ struct HashMap$<K, V> {
         return null;
     }
 
-    operator fun get(k: &const K): & V {
+    operator fun get(k: K): & V {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
@@ -57,9 +57,9 @@ struct HashMap$<K, V> {
             }
         }
         var defValue: V;
-        set(k, move defValue);
+        set(move k, move defValue);
         unsafe {
-            return get(k);
+            return get(move k);
         }
     }
     

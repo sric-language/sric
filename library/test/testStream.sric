@@ -1,15 +1,29 @@
 
 import sric::*;
 
-fun testStream() {
-    var stream = FileStream::open("C:/workspace/code/safeC/README.md", "r");
+fun testWrite() {
+    var stream = FileStream::open("tmp", "wb");
+    stream.writeStr("Hello\nWorld");
+}
 
+fun testRead() {
+    var stream = FileStream::open("tmp", "rb");
     var buf: [128]Int8 = uninit;
+    var line = stream.readLine(&buf, 128);
 
-    while (true) {
-        var line = stream.readLine(&buf, 128);
-        if (line == null) break;
+    verify(asStr(&buf) == "Hello");
+}
 
-        printf("%s\n", line);
-    }
+fun testRead2() {
+    var stream = FileStream::open("tmp", "rb");
+    var line = stream.readAllStr();
+
+    verify(line == "Hello\nWorld");
+}
+
+fun testStream() {
+    testWrite();
+    testRead();
+    testRead2();
+    FileSystem::remove("tmp");
 }

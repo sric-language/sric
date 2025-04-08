@@ -12,24 +12,24 @@ namespace sric
  */
 struct FileSystem
 {
-    bool mkdirs(const char* path);
-    bool listFiles(const char* dirPath, DArray<String>& files);
-    bool exists(const char* filePath);
-    bool isDir(const char* filePath);
-    int64_t fileSize(const char* filePath);
-    uint64_t modifiedTime(const char* filePath);
-    bool moveTo(const char* from, const char* to);
+    static bool mkdirs(const char* path);
+    static bool listFiles(const char* dirPath, DArray<String>& files);
+    static bool exists(const char* filePath);
+    static bool isDir(const char* filePath);
+    static int64_t fileSize(const char* filePath);
+    static uint64_t modifiedTime(const char* filePath);
+    static bool moveTo(const char* from, const char* to);
 
-    bool copyTo(const char* from, const char* to);
-    bool remove(const char* filePath);
+    static bool copyTo(const char* from, const char* to);
+    static bool remove(const char* filePath);
 
 
-    bool isAbsolute(const char* filePath);
-    String canonicalPath(const char* filePath);
-    String fileName(const char* path);
-    String getExtName(const char* path);
-    String getBaseName(const char* path);
-    String getParentPath(const char* path);
+    static bool isAbsolute(const char* filePath);
+    static String canonicalPath(const char* filePath);
+    static String fileName(const char* path);
+    static String getExtName(const char* path);
+    static String getBaseName(const char* path);
+    static String getParentPath(const char* path);
 
 };
 

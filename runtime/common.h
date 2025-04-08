@@ -29,6 +29,12 @@ namespace sric
         }
 #endif // SC_CHECK
 
+    inline void verify(bool c, const char* msg = nullptr) {
+        if (!(c)) {
+            if (msg) fprintf(stderr, "verify fail: %s\n", msg);
+            abort();
+        }
+    }
 
     class Noncopyable {
     public:

@@ -31,10 +31,10 @@ extern noncopyable struct String {
     fun toLower() const: String;
     fun toUpper() const: String;
 
-    fun toInt() const: Int32;
-    fun toLong() const: Int64;
-    fun toFloat() const: Float32;
-    fun toDouble() const: Float64;
+    fun toInt32() const: Int32;
+    fun toInt64() const: Int64;
+    fun toFloat32() const: Float32;
+    fun toFloat64() const: Float64;
 
     fun isEmpty() const: Bool;
 

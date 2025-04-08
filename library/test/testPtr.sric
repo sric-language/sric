@@ -95,6 +95,12 @@ fun testVoidPtr() {
     var p : own* A = new A;
     var p2 : own* Void = move p ;
     var p3: * Void = p2;
+
+    //TODO
+    //var pa = p2 as *? A;
+    //var pe = p2 as *? Int;
+    //verify(pa != null);
+    //verify(pe == null);
 }
 
 fun testRawCast() {
@@ -109,3 +115,15 @@ fun testRawCast() {
     var r2 = rawToRef(r1);
 }
 
+fun testPtrAll() {
+    testPtr();
+    testCompare();
+    testMove();
+    testRaw();
+    testDerivativePtr();
+    testDerivativeRefable();
+    testVoidPtr();
+    testRawCast();
+    testShare();
+    testRefable();
+}

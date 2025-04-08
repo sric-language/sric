@@ -18,3 +18,6 @@ fun clamp(v: Float, min: Float, max: Float) : Float {
     if (v > max) v = max;
     return v;
 }
+
+externc fun sc_assert(cond: Bool, msg: raw*? const Int8);
+extern fun verify(cond: Bool, msg: raw*? const Int8 = null);

@@ -478,30 +478,13 @@ public:
 
     template <class U> RefPtr<U> castTo()
     {
-        if constexpr (std::is_polymorphic<U>::value) {
-#ifndef SC_NO_CHECK
-            return RefPtr<U>(dynamic_cast<U*>(pointer), checkCode, type, offset);
-#else
-            return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
-#endif
-        }
-        else {
 #ifndef SC_NO_CHECK
             return RefPtr<U>((U*)(pointer), checkCode, type, offset);
 #else
             return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
 #endif
-        }
     }
 
-    template <class U> RefPtr<U> dynamicCastTo()
-    {
-#ifndef SC_NO_CHECK
-        return RefPtr<U>(dynamic_cast<U*>(pointer), checkCode, type, offset);
-#else
-        return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
-#endif
-    }
 };
 
 template <class T>

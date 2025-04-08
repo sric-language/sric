@@ -99,12 +99,12 @@ long FileStream::read(void* ptr, size_t size)
     return fread(ptr, 1, size, _file);
 }
 
-char* FileStream::readLine(char* str, int num)
-{
-    if (!_file)
-        return 0;
-    return fgets(str, num, _file);
-}
+//char* FileStream::readLine(char* str, int num)
+//{
+//    if (!_file)
+//        return 0;
+//    return fgets(str, num, _file);
+//}
 
 long FileStream::write(const void* ptr, size_t size)
 {
@@ -126,10 +126,8 @@ long FileStream::length()
     if (canSeek())
     {
         long int pos = position();
-        if (fseek(_file, 0, SEEK_END))
-        {
-            len = position();
-        }
+        fseek(_file, 0, SEEK_END);
+        len = position();
         fseek(_file, pos, SEEK_SET);
     }
     return len;

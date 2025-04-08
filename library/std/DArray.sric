@@ -23,7 +23,9 @@ extern noncopyable struct DArray$<T> {
     fun clear();
     fun resize(size: Int);
     fun reserve(capacity: Int);
+
     fun removeAt(i: Int);
+    fun removeRange(begin: Int, end: Int);
 
     fun swap(t: &DArray$<T>);
 
