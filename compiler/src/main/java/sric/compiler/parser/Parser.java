@@ -61,7 +61,7 @@ public class Parser {
                     unit.addDef(defNode);
                 }
                 else {
-                    consume();
+                    recoverToDef();
                 }
             } catch (Exception e) {
                 if (!recoverToDef()) {
@@ -73,13 +73,14 @@ public class Parser {
 
     private boolean recoverToDef() {
         while (curt != TokenKind.eof) {
-            if (curt == TokenKind.colon) {
-                consume();
-                return true;
-            }
-            else if (curt == TokenKind.rbrace) {
-                consume();
-                return true;
+            switch (curt) {
+                case traitKeyword:
+                case enumKeyword:
+                case structKeyword:
+                case funKeyword:
+                case varKeyword:
+                case typealiasKeyword:
+                    return true;
             }
             consume();
         }
@@ -327,6 +328,12 @@ public class Parser {
             // lookup TypeDef
             typeDef = new TypeDef(doc, flags, name);
             typeDef.kind = TypeDef.Kind.Enum;
+            
+            if (curt == TokenKind.colon) {
+                consume();
+                Type first = inheritType();
+                typeDef.enumBase = first;
+            }
         } // class
         else {
             consume(TokenKind.structKeyword);
@@ -375,7 +382,7 @@ public class Parser {
                 }
                 AstNode slot = slotDef(sdoc);
                 if (slot == null) {
-                    consume();
+                    recoverToDef();
                     continue;
                 }
                 if (isMixin) {

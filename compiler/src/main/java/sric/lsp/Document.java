@@ -51,6 +51,7 @@ public class Document {
     }
     
     private AstNode getAstNodeAt(Position pos) {
+        if (ast == null) return null;
         AstFinder sta = new AstFinder(null, log);
         int index = textBuffer.getPosIndex(pos);
         index--;//before it
@@ -95,6 +96,9 @@ public class Document {
     }
     
     public List<CompletionItem> getAutoCompletionList(Position pos) {
+        if(ast == null) {
+            return new ArrayList<CompletionItem>();
+        }
         FileUnit funit = ast;
         
         AstNode node = getAstNodeAt(pos);

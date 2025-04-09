@@ -159,6 +159,7 @@ public class AstNode {
         public ArrayList<FieldDef> fieldDefs = new ArrayList<FieldDef>();
         public ArrayList<FuncDef> funcDefs = new ArrayList<FuncDef>();
         public ArrayList<GenericParamDef> generiParamDefs = null;
+        public Type enumBase = null;
         
         private Scope instanceScope = null;
         private Scope staticScope = null;

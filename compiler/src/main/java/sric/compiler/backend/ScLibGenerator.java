@@ -411,6 +411,10 @@ public class ScLibGenerator extends BaseGenerator {
             printFlags(v.flags);
             print("enum ");
             print(v.name);
+            if (v.enumBase != null) {
+                print(" : ");
+                this.printType(v.enumBase);
+            }
             print(" {").newLine();
             indent();
 

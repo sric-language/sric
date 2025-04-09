@@ -28,6 +28,9 @@ public:
         return String(this->str);
     }
 
+    operator const std::string&() const { return str; }
+    operator std::string&() { return str; }
+
     const std::string& cpp_str() const {
         return str;
     }

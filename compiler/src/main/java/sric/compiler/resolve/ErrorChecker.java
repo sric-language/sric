@@ -565,6 +565,13 @@ public class ErrorChecker extends CompilePass {
                 err("Unsupport reflection for generic type", v.loc);
             }
         }
+        
+        if (v.isEnum() && v.enumBase != null) {
+            if (!v.enumBase.isInt()) {
+                err("Enum base must be Int", v.enumBase.loc);
+            }
+        }
+        
         //}
         v.walkChildren(this);
 

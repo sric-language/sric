@@ -5,10 +5,11 @@
 }
 
 .index {
-    float: left;
     width: 200px;
-    position:fixed;
-    margin-top: 70px;
+    position: fixed;
+    overflow-y: scroll;
+    top: 80px;
+    bottom: 20px;
 }
 
 .content {
@@ -25,6 +26,7 @@
 
 .module {
     position:fixed;
+    top: 2px;
 }
 
 .typealias {
@@ -79,7 +81,8 @@
 }
 
 .doc {
-    padding: 20px;
+    padding: 1px 20px 30px 20px;
+    color: rgb(136, 136, 138);
 }
 
 .flags {

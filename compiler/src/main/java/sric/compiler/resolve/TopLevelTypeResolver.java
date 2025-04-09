@@ -170,6 +170,9 @@ public class TopLevelTypeResolver extends TypeResolver {
                 this.resolveTopLevelType(inh, inh.loc);
             }
         }
+        if (v.enumBase != null) {
+            this.resolveTopLevelType(v.enumBase, v.enumBase.loc);
+        }
         //}
         v.walkChildren(this);
         

@@ -153,10 +153,18 @@ public class CppGenerator extends BaseGenerator {
                     printGenericParamDefs(type.generiParamDefs);
                     
                     if (type.isEnum()) {
-                        print("enum ");
+                        print("enum struct ");
+                        print(getSymbolName(type));
+                        if (type.enumBase != null) {
+                            print(" : ");
+                            this.printType(type.enumBase);
+                        }
+                        print(";").newLine();
                     }
-                    print("struct ");
-                    print(getSymbolName(type)).print(";").newLine();
+                    else {
+                        print("struct ");
+                        print(getSymbolName(type)).print(";").newLine();
+                    }
                 }
             }
             
@@ -1061,6 +1069,10 @@ public class CppGenerator extends BaseGenerator {
             if (v.isEnum()) {
                 print("enum struct ");
                 print(getSymbolName(v));
+                if (v.enumBase != null) {
+                    print(" : ");
+                    this.printType(v.enumBase);
+                }
                 print(" {").newLine();
                 indent();
 
@@ -1607,13 +1619,21 @@ public class CppGenerator extends BaseGenerator {
                         print(")");
                         processed = true;
                     }
+                    else {
+                        print("(");
+                        printType(targetType);
+                        print(")(");
+                        this.visit(e.lhs);
+                        print(")");
+                        processed = true;
+                    }
                     
                     if (!pinfo.isNullable) {
                         print(")");
                     }
                 }
             }
-            if (!processed) {
+            else {
                 print("(");
                 printType(targetType);
                 print(")(");
