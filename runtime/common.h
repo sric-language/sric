@@ -44,6 +44,10 @@ namespace sric
         Noncopyable& operator=(const Noncopyable&) = delete;
     };
 
+    class Reflectable {
+    public:
+        virtual const char* __typeof() const = 0;
+    };
 }
 
 #endif

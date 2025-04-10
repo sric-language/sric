@@ -1,0 +1,144 @@
+import sric::*;
+import jsonc::*;
+
+struct Decoder {
+    unsafe fun decode(str: &String): own*? Void {
+        var allocator: JsonAllocator;
+        var parser = HimlParser { .init(&allocator); };
+
+        // var stream = FileStream::open("test.himl", "rb");
+        // var str = stream.readAllStr();
+        var value0 = parser.parse(str.c_str() as raw* Int8);
+
+        //check error
+        if (value0 == null || parser.get_error()[0] != 0) {
+            printf("parser json error: %s\n", parser.get_error());
+            return null;
+        }
+
+        var node = value0.children();
+        for (var b = node.begin(); b.not_eq(node.end()); b.next()) {
+            var n = b.get();
+            if (n.type() == Type::Object) {
+                return decodeObj(b.get());
+            }
+        }
+        return null;
+    }
+
+    private unsafe fun decodeAny(node: raw*Value, obj: raw*? Int8, typeName: raw* const Int8, offset: Int = 0, extType: raw* const Int8 = null): Bool {
+        if (strcmp(typeName, "Int") == 0 || strcmp(typeName, "Int32") == 0) {
+            var v = (obj+offset) as raw*Int32;
+            *v = node.as_int();
+        }
+        else if (strcmp(typeName, "Int64") == 0) {
+            var v = (obj+offset) as raw*Int64;
+            *v = node.as_int();
+        }
+        else if (strcmp(typeName, "Int16") == 0) {
+            var v = (obj+offset) as raw*Int16;
+            *v = node.as_int();
+        }
+        else if (strcmp(typeName, "Int8") == 0) {
+            var v = (obj+offset) as raw*Int8;
+            *v = node.as_int();
+        }
+        else if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
+            var v = (obj+offset) as raw* Float64;
+            *v = node.as_float();
+        }
+        else if (strcmp(typeName, "Float32") == 0) {
+            var v = (obj+offset) as raw* Float32;
+            *v = node.as_float();
+        }
+        else if (strcmp(typeName, "String") == 0) {
+            var v = unsafeCast$<String>(obj+offset);
+            *v = node.as_str();
+        }
+        // else if (strcmp(typeName, "raw* Int8") == 0) {
+        //     var v = (obj+offset) as raw* raw*? Int8;
+        //     *v = node.as_str();
+        // }
+        else if (asStr(typeName).startsWith("DArray")) {
+            if (extType == null) return false;
+            var v = unsafeCast$<List>(obj+offset);
+            decodeDArray(node, v, extType);
+        }
+        else if (asStr(typeName).startsWith("own*")) {
+            var v = unsafeCast$<own*? Void>(obj+offset);
+            var d = decodeObj(node);
+            if (d == null) {
+                *v = move d;
+            }
+        }
+    }
+
+    private unsafe fun decodeDArray(node: raw*Value, arr: raw* List, elemType: raw* const Int8) {
+        var elemSize = sizeOfType(elemType);
+        var size = node.size();
+        arr.clear();
+        arr.resize(size);
+        
+        var p = unsafeCast$<Int8>(arr.data());
+        var i = 0;
+        for (var b = node.begin(); b.not_eq(node.end()); b.next()) {
+            var elem = p + elemSize * i;
+            var subNode = b.get();
+            decodeAny(subNode, elem, elemType);
+            ++i;
+        }
+    }
+
+    private unsafe fun decodeObj(node: raw*Value): own*? Void {
+        var objType = node.objectType();
+        if (objType == null) {
+            return null;
+        }
+        var name: String = objType.as_str();
+        var fs = name.split("::");
+        if (fs.size() != 2) {
+            return null;
+        }
+
+        var ns = fs[0];
+        var typeName = fs[1];
+        var module = findModule(ns.c_str());
+        if (module == null) {
+            scError("serial", "unknow module: %s", ns.c_str());
+            return null;
+        }
+        var rtype: *? RType;
+        for (var i=0; i<module.types.size(); ++i) {
+            if (strcmp(module.types[i].name, typeName.c_str()) == 0) {
+                rtype = module.types.getPtr(i);
+                break;
+            }
+        }
+        if (rtype == null) {
+            scError("serial", "unknow type: %s", typeName.c_str());
+            return null;
+        }
+        if (rtype.ctor == null) {
+            scError("serial", "can't create: %s", typeName.c_str());
+            return null;
+        }
+        var obj = newInstance(*rtype);
+        for (var i = 0; i<rtype.fields.size(); ++i) {
+            var f = rtype.fields[i];
+            //static
+            if ((f.flags & 0x00008000) != 0) {
+                continue;
+            }
+            var fname = f.name;
+            if (strcmp(f.name, "children") == 0) {
+                fname = "_children";
+            }
+            var subNode = node.get(fname);
+            if (subNode == null) {
+                continue;
+            }
+            decodeAny(subNode, unsafeCast$<Int8>(obj), f.baseType, f.offset, f.extType);
+        }
+        return obj;
+    }
+}

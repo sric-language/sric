@@ -6,8 +6,10 @@
 
 namespace sric {
 	struct RModule;
+	struct RType;
 	void registModule(RModule* m);
 	RefPtr<RModule> findModule(const char* name);
+	OwnPtr<void> newInstance(RType& type);
 }
 
 #define SC_AUTO_REGIST_MODULE(name) \

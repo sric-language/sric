@@ -266,6 +266,14 @@ public class CppGenerator extends BaseGenerator {
         print("sric::RField param;");
         print("param.name = \"").print(f.name).print("\";");
         print("param.fieldType = ");printStringLiteral(f.fieldType.toString());print(";");
+        print("param.baseType = ");printStringLiteral(f.fieldType.id.toString());print(";").newLine();
+        if (f.fieldType.genericArgs != null && f.fieldType.genericArgs.size() > 0) {
+            Type extType = f.fieldType.genericArgs.get(0);
+            print("param.extType = ");printStringLiteral(extType.id.toString());print(";").newLine();
+        }
+        else {
+            print("param.extType = nullptr;").newLine();
+        }
         print("param.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";");
         print(parentName).print(".params.add(std::move(param));");
         print("}");
@@ -300,6 +308,14 @@ public class CppGenerator extends BaseGenerator {
         }
         
         print("f.fieldType = ");printStringLiteral(f.fieldType.toString());print(";").newLine();
+        print("f.baseType = ");printStringLiteral(f.fieldType.id.toString());print(";").newLine();
+        if (f.fieldType.genericArgs != null && f.fieldType.genericArgs.size() > 0) {
+            Type extType = f.fieldType.genericArgs.get(0);
+            print("f.extType = ");printStringLiteral(extType.id.toString());print(";").newLine();
+        }
+        else {
+            print("f.extType = nullptr;").newLine();
+        }
         print("f.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";").newLine();
         
         print("f.enumValue = ").print(""+f._enumValue).print(";").newLine();
@@ -1125,6 +1141,21 @@ public class CppGenerator extends BaseGenerator {
                     printType(inh);
                     ++i;
                 }
+                if (v.isStruct() && (v.flags & FConst.Reflect) != 0) {
+                    print(", ");
+                    print("public sric::Reflectable");
+                }
+            }
+            else {
+                if (v.isStruct() && (v.flags & FConst.Reflect) != 0) {
+                    if (isSafeInherit) {
+                        print(" SC_BEGIN_INHERIT ");
+                    }
+                    else {
+                        print(" : ");
+                    }
+                    print("public sric::Reflectable");
+                }
             }
             
             if ((v.flags & FConst.Noncopyable) != 0) {
@@ -1148,10 +1179,23 @@ public class CppGenerator extends BaseGenerator {
 
             newLine();
             
-            if (v.isAbstractOrVirtual() && !v._hasDecotr) {
-                print("virtual ~");
-                print(getSymbolName(v));
-                print("(){}");
+            if (v.isPolymorphic()) {
+                if (!v._hasDecotr) {
+                    print("virtual ~");
+                    print(getSymbolName(v));
+                    print("(){}").newLine();
+                }
+                if (!v._hasCotr) {
+                    //print("");
+                    print(getSymbolName(v));
+                    print("(){}").newLine();
+                }
+            }
+            
+            if (v.isStruct() && (v.flags & FConst.Reflect) != 0) {
+                print("const char* __typeof() const { return \"");
+                print(this.module.name).print("::").print(v.name);
+                print("\"; }");
             }
             
             unindent();
@@ -1392,7 +1436,7 @@ public class CppGenerator extends BaseGenerator {
         }
 
         if (v.checkNonnullable) {
-            print("sric::nonNullable(");
+            print("sric::notNull(");
             parentheses++;
         }
         
@@ -1434,7 +1478,7 @@ public class CppGenerator extends BaseGenerator {
                 boolean isNullable = false;
                 if (e.target.resolvedType != null && e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
                     if (pinfo.isNullable && pinfo.pointerAttr == Type.PointerAttr.raw) {
-                        print("sric::nonNullable(");
+                        print("sric::notNull(");
                         isNullable = true;
                     }
                 }
@@ -1573,7 +1617,7 @@ public class CppGenerator extends BaseGenerator {
             printClosureExpr(e);
         }
 //        else if (v instanceof NonNullableExpr e) {
-//            print("sric::nonNullable(");
+//            print("sric::notNull(");
 //            this.visit(e.operand);
 //            print(")");
 //        }
@@ -1595,13 +1639,13 @@ public class CppGenerator extends BaseGenerator {
                 if (targetType.detail instanceof Type.PointerInfo pinfo) {
                     
                     if (!pinfo.isNullable) {
-                        print("sric::nonNullable(");
+                        print("sric::notNull(");
                     }
                     
                     Type elemType = targetType.genericArgs.get(0);
                     if (!targetType.isRawPointerType() && targetType.genericArgs != null) {
                         this.visit(e.lhs);
-                        if (elemType.id.resolvedDef instanceof TypeDef td && td.isAbstractOrVirtual()) {
+                        if (elemType.id.resolvedDef instanceof TypeDef td && td.isPolymorphic()) {
                             print(".dynamicCastTo<");
                         }
                         else {
@@ -1611,7 +1655,7 @@ public class CppGenerator extends BaseGenerator {
                         print(" >()");
                         processed = true;
                     }
-                    else if (elemType.id.resolvedDef instanceof TypeDef td && td.isAbstractOrVirtual()) {
+                    else if (elemType.id.resolvedDef instanceof TypeDef td && td.isPolymorphic()) {
                         print("dynamic_cast<");
                         printType(targetType);
                         print(" >(");

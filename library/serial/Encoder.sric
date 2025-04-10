@@ -1,0 +1,162 @@
+import sric::*;
+import jsonc::*;
+
+fun sizeOfType(typeName: raw* const Int8): Int {
+    if (strcmp(typeName, "Int") == 0 || strcmp(typeName, "Int32") == 0) {
+        return sizeof(Int);
+    }
+    else if (strcmp(typeName, "Int64") == 0) {
+        return sizeof(Int64);
+    }
+    else if (strcmp(typeName, "Int16") == 0) {
+        return sizeof(Int16);
+    }
+    else if (strcmp(typeName, "Int8") == 0) {
+        return sizeof(Int8);
+    }
+    else if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
+        return sizeof(Int64);
+    }
+    else if (strcmp(typeName, "Float32") == 0) {
+        return sizeof(Int32);
+    }
+    else if (strcmp(typeName, "String") == 0) {
+        return sizeof(String);
+    }
+    // else if (strcmp(typeName, "raw* Int8") == 0) {
+    //     var v = (obj+offset) as raw* raw*? Int8;
+    //     fnode = allocator.alloc_str(*v);
+    // }
+    else if (asStr(typeName).startsWith("DArray")) {
+        return sizeof(DArray$<Int8>);
+    }
+    else if (asStr(typeName).startsWith("own*")) {
+        return sizeof(own*Void);
+    }
+    return -1;
+}
+
+struct Encoder {
+    var allocator: JsonAllocator;
+
+    unsafe fun encode(obj: *Void, isHiml: Bool = true): String {
+        var node = encodeObj(obj);
+        var json : String;
+        if (node != null) {
+            node.to_json(json, isHiml);
+        }
+        return json;
+    }
+
+    private unsafe fun encodeAny(obj: raw*? Int8, typeName: raw* const Int8, offset: Int = 0, extType: raw* const Int8 = null): raw*? JsonNode {
+        if (obj == null) return null;
+        var fnode: raw*? JsonNode;
+        if (strcmp(typeName, "Int") == 0 || strcmp(typeName, "Int32") == 0) {
+            var v = (obj+offset) as raw*Int32;
+            fnode = allocator.alloc_int(*v);
+        }
+        else if (strcmp(typeName, "Int64") == 0) {
+            var v = (obj+offset) as raw*Int64;
+            fnode = allocator.alloc_int(*v);
+        }
+        else if (strcmp(typeName, "Int16") == 0) {
+            var v = (obj+offset) as raw*Int16;
+            fnode = allocator.alloc_int(*v);
+        }
+        else if (strcmp(typeName, "Int8") == 0) {
+            var v = (obj+offset) as raw*Int8;
+            fnode = allocator.alloc_int(*v);
+        }
+        else if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
+            var v = (obj+offset) as raw* Float64;
+            fnode = allocator.alloc_float(*v);
+        }
+        else if (strcmp(typeName, "Float32") == 0) {
+            var v = (obj+offset) as raw* Float32;
+            fnode = allocator.alloc_float(*v);
+        }
+        else if (strcmp(typeName, "String") == 0) {
+            var v = unsafeCast$<String>(obj+offset);
+            fnode = allocator.alloc_str(v.c_str());
+        }
+        // else if (strcmp(typeName, "raw* Int8") == 0) {
+        //     var v = (obj+offset) as raw* raw*? Int8;
+        //     fnode = allocator.alloc_str(*v);
+        // }
+        else if (asStr(typeName).startsWith("DArray")) {
+            if (extType == null) return null;
+            var v = unsafeCast$<List>(obj+offset);
+            fnode = encodeDArray(v, extType);
+        }
+        else if (asStr(typeName).startsWith("own*")) {
+            var v = unsafeCast$<own*? Void>(obj+offset);
+            fnode = encodeObj(*v);
+        }
+        return fnode;
+    }
+
+    private unsafe fun encodeDArray(arr: raw*List, elemType: raw* const Int8): raw*? JsonNode {
+        var node = allocator.allocNode(Type::Array);
+        var elemSize = sizeOfType(elemType);
+        for (var i=0; i<arr.size(); ++i) {
+            var p = unsafeCast$<Int8>(arr.data());
+            var elem = p + elemSize * i;
+            var elemNode = encodeAny(elem, elemType);
+            if (elemNode != null) {
+                node.insert(elemNode);
+            }
+        }
+        node.reverse();
+        return node;
+    }
+
+    private unsafe fun encodeObj(obj: raw*? Void): raw*? JsonNode {
+        if (obj == null) return null;
+
+        var name: String = typeOf(obj);
+        var fs = name.split("::");
+        if (fs.size() != 2) {
+            return null;
+        }
+
+        var ns = fs[0];
+        var typeName = fs[1];
+        var module = findModule(ns.c_str());
+        if (module == null) {
+            //scError("serial", "unknow module: %s", ns.c_str());
+            return null;
+        }
+        var rtype: *? RType;
+        for (var i=0; i<module.types.size(); ++i) {
+            if (strcmp(module.types[i].name, typeName.c_str()) == 0) {
+                rtype = module.types.getPtr(i);
+                break;
+            }
+        }
+        if (rtype == null) {
+            //scError("serial", "unknow type: %s", typeName.c_str());
+            return null;
+        }
+
+        var node = allocator.allocNode(Type::Object);
+        for (var i = 0; i<rtype.fields.size(); ++i) {
+            var f = rtype.fields[i];
+            //static
+            if ((f.flags & 0x00008000) != 0) {
+                continue;
+            }
+            var vn = encodeAny(unsafeCast$<Int8>(obj), f.baseType, f.offset, f.extType);
+            if (vn != null) {
+                var fname = f.name;
+                if (strcmp(f.name, "children") == 0) {
+                    fname = "_children";
+                }
+                node.insert_pair(fname, vn);
+            }
+        }
+
+        node.insert_pair("_type", allocator.alloc_str(name.c_str()));
+
+        return node;
+    }
+}

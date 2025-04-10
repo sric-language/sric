@@ -8,13 +8,24 @@
 
 namespace sric
 {
+
+class List {
+public:
+    virtual ~List() {}
+    virtual void clear() = 0;
+    virtual void resize(int size) = 0;
+    virtual void* data() = 0;
+    virtual int size() const = 0;
+};
+
 template <typename T>
-class DArray : public Noncopyable {
+class DArray : public List, public Noncopyable {
+
     T* _data = nullptr;
     int _size = 0;
     int _capacity = 0;
 public:
-    DArray() = default;
+    DArray() {}
 
     DArray(DArray&& other) {
         _data = other._data;
@@ -35,9 +46,11 @@ public:
         return *this;
     }
 
+    void* data() { return _data; }
+
     void resize(int size) {
         if (size == _size) return;
-        tryGrow(size);
+        tryGrow(size, true);
         if (size > _size) {
             for (int i = _size; i < size; ++i) {
                 new(_data + i) T();
@@ -142,7 +155,7 @@ private:
         return getRefable(_data);
     }
 
-    void tryGrow(int size) {
+    void tryGrow(int size, bool definiteSize = false) {
         if (!_data) {
             alloc(size * sizeof(T));
             _capacity = size;
@@ -152,7 +165,10 @@ private:
         if (_capacity >= size) {
             return;
         }
-        int newSize = size * 1.5;
+        int newSize = size;
+        if (!definiteSize) {
+            newSize *= 1.5;
+        }
         alloc(newSize * sizeof(T));
         _capacity = newSize;
     }
@@ -219,7 +235,7 @@ public:
     }
 
     void reserve(int capacity) {
-        tryGrow(capacity);
+        tryGrow(capacity, true);
     }
 
     void swap(DArray<T>& o) {
@@ -289,7 +305,6 @@ public:
         return b;
     }
 };
-
 
 }
 #endif

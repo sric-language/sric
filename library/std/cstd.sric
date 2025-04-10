@@ -14,3 +14,7 @@ externc var INT_MIN: const Int;
 //@#include <stdlib.h>
 externc fun rand(): Int;
 externc var RAND_MAX: const Int;
+
+//@#include <string.h>
+externc fun strcmp(s1: raw* const Int8, s2: raw* const Int8): Int;
+externc fun strlen(s1: raw* const Int8): Int;

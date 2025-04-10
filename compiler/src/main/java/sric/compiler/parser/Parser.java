@@ -64,6 +64,7 @@ public class Parser {
                     recoverToDef();
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 if (!recoverToDef()) {
                     break;
                 }
@@ -80,6 +81,18 @@ public class Parser {
                 case funKeyword:
                 case varKeyword:
                 case typealiasKeyword:
+                    return true;
+            }
+            consume();
+        }
+        return false;
+    }
+    
+    private boolean recoverToSlotDef() {
+        while (curt != TokenKind.eof) {
+            switch (curt) {
+                case funKeyword:
+                case varKeyword:
                     return true;
             }
             consume();
@@ -203,7 +216,7 @@ public class Parser {
         err("Expected var,const,fun keyword");
         return null;
     }
-            
+
     /**
      ** Identifier expression:
      **   <idExpr> =  [(<id>"::")*] <id>
@@ -239,7 +252,7 @@ public class Parser {
             consume();
             consume();
             ArrayList<GenericParamDef> gparams = new ArrayList<GenericParamDef>();
-            while (true) {
+            while (curt != TokenKind.eof) {
                 Loc gloc = curLoc();
                 String paramName = consumeId();
                 GenericParamDef param = new GenericParamDef();
@@ -375,14 +388,14 @@ public class Parser {
         }
         else {
             // slots
-            while (true) {
+            while (curt != TokenKind.eof) {
                 Comments sdoc = this.doc();
-                if (curt == TokenKind.rbrace || curt == TokenKind.eof) {
+                if (curt == TokenKind.rbrace) {
                     break;
                 }
                 AstNode slot = slotDef(sdoc);
                 if (slot == null) {
-                    recoverToDef();
+                    recoverToSlotDef();
                     continue;
                 }
                 if (isMixin) {
@@ -818,7 +831,7 @@ public class Parser {
         consume(TokenKind.lparen);
         if (curt != TokenKind.rparen) {
             prototype.paramDefs = new ArrayList<FieldDef>();
-            while (true) {
+            while (curt != TokenKind.eof) {
                 FieldDef newParam = paramDef();
                 prototype.paramDefs.add(newParam);
                 if (curt == TokenKind.rparen) {
@@ -1064,7 +1077,7 @@ public class Parser {
         consume(TokenKind.dollar);
         consume(TokenKind.lt);
         ArrayList<Type> params = new ArrayList<Type>();
-        while (true) {
+        while (curt != TokenKind.eof) {
             Type type1 = typeRef();
             params.add(type1);
             if (curt == TokenKind.gt) {
@@ -1208,7 +1221,7 @@ public class Parser {
     protected void endLoc(AstNode node, Loc loc) {
         node.loc = loc;
         
-        Token preToken = (pos > 0) ? tokens.get(pos - 1) : cur;
+        Token preToken = (pos > 0 && pos<numTokens) ? tokens.get(pos - 1) : cur;
         int end = preToken.loc.offset + preToken.len;
         int begin = loc.offset;
         int len = end - begin;

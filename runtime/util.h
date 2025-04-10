@@ -29,25 +29,25 @@ namespace sric {
 	}
 
 	template<typename T>
-	T* nonNullable(T* p) {
+	T* notNull(T* p) {
 		sc_assert(p != nullptr, "Non-Nullable");
 		return p;
 	}
 
 	template<typename T>
-	OwnPtr<T> nonNullable(OwnPtr<T>&& p) {
+	OwnPtr<T> notNull(OwnPtr<T>&& p) {
 		sc_assert(!p.isNull(), "Non-Nullable");
 		return p;
 	}
 
 	template<typename T>
-	T& nonNullable(const T& p) {
+	T& notNull(const T& p) {
 		sc_assert(!p.isNull(), "Non-Nullable");
 		return (T&)p;
 	}
 
 	template<typename T>
-	std::function<T>& nonNullable(const std::function<T>& p) {
+	std::function<T>& notNull(const std::function<T>& p) {
 		sc_assert(p != nullptr, "Non-Nullable");
 		return (std::function<T>&)p;
 	}
@@ -85,6 +85,17 @@ namespace sric {
 	template<typename T>
 	typename std::enable_if<std::is_copy_constructible<T>::value, T>::type copy(const T& b) {
 		return b;
+	}
+
+	inline const char* typeOf(void *obj) {
+		if (!obj) return "";
+		Reflectable* r = (Reflectable*)obj;
+		return r->__typeof();
+	}
+
+	template<typename T>
+	T* unsafeCast(void* b) {
+		return (T*)b;
 	}
 }
 //

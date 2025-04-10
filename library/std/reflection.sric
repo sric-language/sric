@@ -12,6 +12,8 @@ struct RField {
     readonly var offset : Int;
     readonly var pointer : raw* Void;
     readonly var fieldType : raw*const Int8;
+    readonly var baseType : raw*const Int8;
+    readonly var extType : raw*const Int8;
     readonly var hasDefaultValue : Bool;
     readonly var enumValue : Int;
 }
@@ -48,3 +50,6 @@ struct RModule {
 }
 
 extern fun findModule(name : raw*const Int8) : *? RModule;
+extern fun newInstance(type: &RType) : own* Void;
+
+unsafe extern fun typeOf(t: raw* Void): raw* const Int8;

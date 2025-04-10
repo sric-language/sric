@@ -1246,24 +1246,46 @@ public class ErrorChecker extends CompilePass {
                     verifyMetType(e.rhs);
                     if (e.rhs.resolvedType.detail instanceof Type.MetaTypeInfo minfo) {
                         Type asType = minfo.type;
-                        if (e.lhs.resolvedType.isFuncType() && !asType.isFuncType()) {
-                            err("Invalide as", e.rhs.loc);
+                        if (e.lhs.resolvedType.isFuncType() && asType.isFuncType()) {
+                            //ok
                         }
-                        else if (e.lhs.resolvedType.isPointerType() && (!asType.isPointerType() && !asType.isInt())) {
-                            err("Invalide as", e.rhs.loc);
+                        else if (e.lhs.resolvedType.isPointerType() && asType.isPointerType()) {
+                            //ok
                         }
-                        else if (asType.isPointerType() && (!e.lhs.resolvedType.isPointerType() && !e.lhs.resolvedType.isInt())) {
-                            err("Invalide as", e.rhs.loc);
+                        else if (e.lhs.resolvedType.isNum() && asType.isNum()) {
+                            //ok
                         }
+                        else if (e.lhs.resolvedType.isBool() && asType.isNum()) {
+                            //ok
+                        }
+                        else if (e.lhs.resolvedType.isEnumType() && asType.isNum()) {
+                            //ok
+                        }
+                        else {
+                            err("Invalide as", e.loc);
+                        }
+                        
                         if (asType.detail instanceof Type.PointerInfo pinfo && pinfo.pointerAttr == Type.PointerAttr.own) {
                             err("Can't cast to own pointer", e.rhs.loc);
                         }
                         
-                        if (e.lhs.resolvedType.isPointerType() && e.lhs.resolvedType.genericArgs != null && asType.isPointerType() && asType.genericArgs != null) {
-                            Type t1 = e.lhs.resolvedType.genericArgs.get(0);
-                            Type t2 = asType.genericArgs.get(0);
-                            if (t1.isVoid() && t2.id.resolvedDef instanceof TypeDef t && t.isTrait()) {
-                                err("Can't cast *void to trait", e.rhs.loc);
+                        if (e.lhs.resolvedType.isPointerType()) {
+                            if (e.lhs.resolvedType.fit(asType)) {
+                                //OK;
+                            }
+                            else if (e.lhs.resolvedType.genericArgs != null && asType.isPointerType() && asType.genericArgs != null) {
+                                Type from = e.lhs.resolvedType.genericArgs.get(0);
+                                //Type to = asType.genericArgs.get(0);
+
+                                if (from.isVoid()) {
+                                    err("Use unsafeCast", e.loc);
+                                }
+                                else if (from.id.resolvedDef instanceof TypeDef tf && !tf.isPolymorphic()) {
+                                    err("Use unsafeCast", e.loc);
+                                }
+                            }
+                            else {
+                                err("Use unsafeCast", e.loc);
                             }
                         }
                     }

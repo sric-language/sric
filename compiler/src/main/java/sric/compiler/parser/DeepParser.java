@@ -177,7 +177,7 @@ public class DeepParser extends Parser {
 
       e = makeItAdd(it, e);
       
-      while (true)
+      while (curt != TokenKind.eof)
       {
         consume(TokenKind.comma);
         if (curt == TokenKind.semicolon) break;
@@ -425,7 +425,7 @@ public class DeepParser extends Parser {
         stmt.condition = expr();
         consume(TokenKind.rparen);
         consume(TokenKind.lbrace);
-        while (curt != TokenKind.rbrace) {
+        while (curt != TokenKind.rbrace && curt != TokenKind.eof) {
             if (curt == TokenKind.caseKeyword) {
                 consume();
                 CaseBlock c = new CaseBlock();
@@ -463,7 +463,7 @@ public class DeepParser extends Parser {
         Loc loc = cur.loc;
         while (curt != TokenKind.caseKeyword && curt != TokenKind.defaultKeyword &&
                 curt != TokenKind.rbrace /*end of switch*/ &&
-                curt != TokenKind.fallthroughKeyword) {
+                curt != TokenKind.fallthroughKeyword && curt != TokenKind.eof) {
             block.stmts.add(stmt());
         }
 
@@ -762,13 +762,19 @@ public class DeepParser extends Parser {
      **/
     private Expr termExpr() {
         Expr target = primaryExpr();
+        if (target == null) {
+            IdExpr id = new IdExpr("");
+            endLoc(id, this.curLoc());
+            consume();
+            return id;
+        }
 //        if (curt == TokenKind.bang) {
 //            consume();
 //            Loc loc = target.loc;
 //            target = new NonNullableExpr(target);
 //            endLoc(target, loc);
 //        }
-        while (curt != TokenKind.semicolon) {
+        while (curt != TokenKind.semicolon && curt != TokenKind.eof) {
             Expr chained = termChainExpr(target);
             if (chained == null) {
                 break;
@@ -883,7 +889,7 @@ public class DeepParser extends Parser {
     private ArrayList<CallArg> callArgs(TokenKind right) {
         if (curt != right) {
             ArrayList<CallArg> args = new ArrayList<CallArg>();
-            while (true) {
+            while (curt != TokenKind.eof) {
                 Loc loc = curLoc();
                 CallArg arg = new CallArg();
 
@@ -974,6 +980,7 @@ public class DeepParser extends Parser {
         
         CallExpr call = new CallExpr();
         call.target = new IdExpr(TokenKind.sizeofKeyword.symbol);
+        call.args = new ArrayList<CallArg>();
         call.args.add(new CallArg(typeExpr()));
         
         consume(TokenKind.rparen);
@@ -988,7 +995,7 @@ public class DeepParser extends Parser {
         CallExpr call = new CallExpr();
         call.loc = loc;
         call.target = new IdExpr(TokenKind.offsetofKeyword.symbol);
-        
+        call.args = new ArrayList<CallArg>();
         consume(TokenKind.lparen);
         call.args.add(new CallArg(typeExpr()));
         call.args.add(new CallArg(idExpr()));
@@ -1100,9 +1107,7 @@ public class DeepParser extends Parser {
             err("Expected expression, not '" + cur + "'");
         }
         
-        IdExpr id = new IdExpr("");
-        endLoc(expr, loc);
-        return id;
+        return null;
     }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1133,7 +1138,7 @@ public class DeepParser extends Parser {
         expr.type = type;
         expr.args = new ArrayList<Expr>();
         
-        while (curt != TokenKind.rbrace) {
+        while (curt != TokenKind.rbrace && curt != TokenKind.eof) {
             Expr argExpr = expr();
             expr.args.add(argExpr);
             if (curt == TokenKind.rbrace) {

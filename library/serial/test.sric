@@ -1,0 +1,28 @@
+import sric::*;
+
+reflect struct Point {
+    var x: Int;
+    var y: Float;
+}
+
+reflect struct Elem {
+    var name : String;
+    var position: Point;
+    var size: Int;
+    var point: own*? Point;
+}
+
+unsafe fun main() {
+    var encoder: Encoder;
+    var obj = new Point { .x = 1; .y = 2; };
+    var t = obj as *Void;
+    var res = encoder.encode(t, true);
+    printf("%s\n", res.c_str());
+
+    var decoder: Decoder;
+    var p = decoder.decode(res);
+    var obj2: raw* Point = unsafeCast$<Point>(p);
+    
+    verify(obj2.x == obj.x);
+    verify(obj2.y == obj.y);
+}

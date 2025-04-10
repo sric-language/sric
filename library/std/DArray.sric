@@ -1,9 +1,17 @@
 //@#include "DArray.h"
+
+extern trait List {
+    abstract fun data(): raw* Void;
+    abstract fun size() const : Int;
+    abstract fun clear();
+    abstract fun resize(size: Int);
+}
+
 /**
 * Dynamic Array
 */
-extern noncopyable struct DArray$<T> {
-    fun data(): raw* T;
+extern noncopyable struct DArray$<T> : List {
+    fun data(): raw* Void;
 
     fun size() const : Int;
 

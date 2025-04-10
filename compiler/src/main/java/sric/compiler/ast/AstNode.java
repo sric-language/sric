@@ -226,7 +226,7 @@ public class AstNode {
             }
             return false;
         }
-        public boolean isAbstractOrVirtual() {
+        public boolean isPolymorphic() {
             if (isTrait()) {
                 return true;
             }
@@ -234,6 +234,9 @@ public class AstNode {
                 return true;
             }
             if ((this.flags & FConst.Virtual) != 0) {
+                return true;
+            }
+            if (this.inheritances != null && this.inheritances.size() > 0) {
                 return true;
             }
             return false;

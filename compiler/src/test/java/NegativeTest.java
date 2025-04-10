@@ -35,7 +35,7 @@ public class NegativeTest {
     @Test
     public void testCompletion() throws IOException {
         String libPath = "../lib";
-        File file = new File("res/negative/testCompletion.sric");
+        File file = new File("res/negative/testCompletion2.sric");
 
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file.getPath(), libPath);
         compiler.genCode = false;

@@ -23,3 +23,8 @@ sric::RefPtr<sric::RModule> sric::findModule(const char* name) {
 	sric::StackRefable<sric::RModule>& m = it->second;
 	return sric::RefPtr<sric::RModule>(m);
 }
+
+sric::OwnPtr<void> sric::newInstance(sric::RType& type) {
+	sric::OwnPtr<void> (*func)() = (sric::OwnPtr<void> (*)())type.ctor;
+	return func();
+}

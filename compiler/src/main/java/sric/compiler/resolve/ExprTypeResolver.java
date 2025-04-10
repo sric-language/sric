@@ -310,6 +310,10 @@ public class ExprTypeResolver extends TypeResolver {
                         }
                         else {
                             v._hasDecotr = true;
+                            //force to polymorphic
+                            if (v.isPolymorphic()) {
+                                v.flags |= FConst.Virtual;
+                            }
                         }
                         continue;
                     }
