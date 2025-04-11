@@ -1,7 +1,7 @@
-name = sricSerial
+name = testSerial
 summary = sric serialize library
-outType = lib
+outType = exe
 version = 1.0
-depends = sric 1.0, jsonc 2.0
+depends = sric 1.0, jsonc 2.0, sricSerial 1.0
 srcDirs = ./
 license = Academic Free License 3.0

@@ -35,6 +35,9 @@ public class AstFinder extends CompilePass {
     }
     
     boolean isContains(AstNode v) {
+        if (v.loc == null) {
+            return false;
+        }
         if (v.len == 0) {
             return pos == v.loc.offset;
         }

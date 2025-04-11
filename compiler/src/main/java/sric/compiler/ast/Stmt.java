@@ -24,6 +24,16 @@ public abstract class Stmt extends AstNode {
         public Expr condition;      // test expression
         public Block block;     // block to execute if condition true
         public Block elseBlock;   // else clause or null
+        
+        public boolean allPathReturnValue() {
+            if (block == null || elseBlock == null) {
+                return false;
+            }
+            if (block.isLastReturnValue() && elseBlock.isLastReturnValue()) {
+                return true;
+            }
+            return false;
+        }
     }
     public static class WhileStmt extends Stmt {
         public Expr condition;     // loop condition

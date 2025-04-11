@@ -173,7 +173,7 @@ public class ScLibGenerator extends BaseGenerator {
                 visit(info.sizeExpr);
             }
             print("]");
-            print(type.genericArgs.get(0).toString());
+            printType(type.genericArgs.get(0));
             return;
         }
         else if (type.isNum()) {
@@ -308,8 +308,9 @@ public class ScLibGenerator extends BaseGenerator {
         
         if (v.initExpr != null) {
             print(" = ");
-            if (isPrintAll || v.isLocalOrParam())
+            if (isPrintAll || v.isLocalOrParam() || (v.flags & FConst.ConstExpr) != 0) {
                 this.visit(v.initExpr);
+            }
             else if (v.parent instanceof TypeDef tf && tf.generiParamDefs != null) {
                 this.visit(v.initExpr);
             }

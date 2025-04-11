@@ -1,0 +1,4 @@
+
+
+fun foo(str: raw* Int8 = null) {
+}

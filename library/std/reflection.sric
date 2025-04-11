@@ -1,4 +1,44 @@
 
+struct RFlags {
+    static var Abstract   : const Int = 0x00000001;
+    static var Const      : const Int = 0x00000002;
+    static var Ctor       : const Int = 0x00000004;
+    // static var Enum       : const Int = 0x00000008;
+//    static var Facet      : const Int = 0x00000010;
+    static var Unsafe     : const Int = 0x00000020;
+//    static var Getter     : const Int = 0x00000040;
+//    static var Internal   : const Int = 0x00000080;
+    // static var Mixin      : const Int = 0x00000100;
+    static var Extern     : const Int = 0x00000200;
+    static var Override   : const Int = 0x00000400;
+    static var Private    : const Int = 0x00000800;
+    static var Protected  : const Int = 0x00001000;
+    static var Public     : const Int = 0x00002000;
+//    static var Setter     : const Int = 0x00004000;
+    static var Static     : const Int = 0x00008000;
+    static var ExternC    : const Int = 0x00010000;
+    static var Noncopyable: const Int = 0x00020000;
+    static var Virtual    : const Int = 0x00040000;
+    static var Struct     : const Int = 0x00080000;
+    static var Extension  : const Int = 0x00100000;
+    static var Mutable    : const Int = 0x00200000;
+    static var Readonly   : const Int = 0x00400000;
+    static var Async      : const Int = 0x00800000;
+    static var Overload   : const Int = 0x01000000;
+//    static var Closure    : const Int = 0x02000000;
+    static var Throws     : const Int = 0x04000000;
+    static var Reflect    : const Int = 0x08000000;
+    static var Inline     : const Int = 0x10000000;
+    static var Packed     : const Int = 0x20000000;
+    static var ConstExpr  : const Int = 0x40000000;
+    static var Operator   : const Int = 0x80000000;
+}
+
+struct RTypeKind {
+    static var Struct: const Int = 0;
+    static var Enum: const Int = 1;
+    static var Tarit: const Int = 2;
+}
 
 struct RComment {
     readonly var type: Int;
@@ -10,10 +50,10 @@ struct RField {
     readonly var comments : DArray$<RComment>;
     readonly var name : raw*const Int8;
     readonly var offset : Int;
-    readonly var pointer : raw* Void;
+    readonly var pointer : raw*? Void;
     readonly var fieldType : raw*const Int8;
     readonly var baseType : raw*const Int8;
-    readonly var extType : raw*const Int8;
+    //readonly var extType : raw*? const Int8;
     readonly var hasDefaultValue : Bool;
     readonly var enumValue : Int;
 }
@@ -24,6 +64,8 @@ struct RFunc {
     readonly var name : raw*const Int8;
     readonly var pointer : raw* Void;
     readonly var returnType: raw*const Int8;
+    readonly var returnBaseType: raw*const Int8;
+    //readonly var returnExtType: raw*? const Int8;
     readonly var params : DArray$<RField>;
     readonly var genericParams : DArray$<raw*const Int8>;
 }
@@ -34,6 +76,7 @@ struct RType {
     readonly var name : raw*const Int8;
     readonly var kind : Int;
     readonly var ctor: raw* Void;
+    readonly var enumBase: raw*? const Int8;
     readonly var fields : DArray$<RField>;
     readonly var funcs : DArray$<RFunc>;
     readonly var inheritances : DArray$<raw*const Int8>;

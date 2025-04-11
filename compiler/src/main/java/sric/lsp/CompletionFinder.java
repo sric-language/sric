@@ -57,7 +57,7 @@ public class CompletionFinder {
             if (e.resolvedType != null) {
                 resolvedDef = e.resolvedType.id.resolvedDef;
                 if (e.resolvedType.isPointerType()) {
-                    if (e.resolvedType.genericArgs == null || e.resolvedType.genericArgs.size() > 0) {
+                    if (e.resolvedType.genericArgs != null && e.resolvedType.genericArgs.size() > 0) {
                         Type type = e.resolvedType.genericArgs.get(0);
                         resolvedDef = type.id.resolvedDef;
                     }

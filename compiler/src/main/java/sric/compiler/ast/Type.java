@@ -51,7 +51,19 @@ public class Type extends AstNode {
     
     public static class ArrayInfo extends TypeInfo {
         public Expr sizeExpr;
-        //public int size;
+        //public int size = -1;
+        public int getSize() {
+            if (sizeExpr == null) return -1;
+            if (sizeExpr instanceof Expr.LiteralExpr li && li.value instanceof Long v) {
+                return v.intValue();
+            }
+            if (sizeExpr instanceof IdExpr id && id.resolvedDef instanceof FieldDef f) {
+                if (f.initExpr != null && f.initExpr instanceof Expr.LiteralExpr li && li.value instanceof Long v) {
+                    return v.intValue();
+                }
+            }
+            return -1;
+        }
     }
     
     public static class NumInfo extends TypeInfo {
@@ -373,7 +385,11 @@ public class Type extends AstNode {
         else if (this.isArray()) {
             if (this.detail instanceof ArrayInfo e && target.detail instanceof ArrayInfo a) {
                 if (e.sizeExpr != a.sizeExpr)  {
-                    return false;
+                    int s1 = e.getSize();
+                    int s2 = a.getSize();
+                    if (s1 != s2 || s1 == -1) {
+                        return false;
+                    }
                 }
             }
             else {
@@ -591,9 +607,96 @@ public class Type extends AstNode {
         return t;
     }
     
-    @java.lang.Override
-    public String toString() {
-                
+    //easy parser name for reflect
+    public String getEasyName() {
+        if (this.resolvedAlias != null) {
+            return this.resolvedAlias.getEasyName();
+        }
+        
+        if (this.isVarArgType()) {
+            return Buildin.varargTypeName;
+        }
+        
+        StringBuilder sb = new StringBuilder();
+
+        if (this.isReference) {
+            sb.append("&");
+        }
+        
+        if (isArray()) {
+            ArrayInfo info = (ArrayInfo)this.detail;
+            sb.append("[");
+            if (info.sizeExpr != null) {
+                sb.append(info.getSize());
+            }
+            sb.append("]");
+        }
+        else if (isNum()) {
+            NumInfo info = (NumInfo)this.detail;
+            if (info.isUnsigned) {
+                sb.append("U");
+            }
+
+            sb.append(id.getQName());
+
+            if (info.size != 0) {
+                sb.append(info.size);
+            }
+        }
+        else if (isPointerType()) {
+            if (this.isNullType()) {
+                sb.append("null");
+            }
+            else {
+                PointerInfo info = (PointerInfo)this.detail;
+                if (info.pointerAttr != PointerAttr.ref) {
+                    sb.append(info.pointerAttr);
+                }
+                sb.append("*");
+                //if (info.isNullable) sb.append("?");
+                //sb.append(" ");
+            }
+        }
+        else if (isFuncType()) {
+            sb.append("fun");
+        }
+        else if (isMetaType()) {
+            sb.append(Buildin.metaTypeTypeName);
+        }
+        else {
+            if (id.resolvedDef instanceof TypeDef f) {
+                if (f.parent instanceof FileUnit u) {
+                    sb.append(u.module.name);
+                    sb.append("::");
+                    sb.append(f.name);
+                }
+            }
+            else {
+                sb.append(id.getQName());
+            }
+        }
+        
+        if (this.genericArgs != null) {
+            sb.append("<");
+            int i = 0;
+            for (Type t : this.genericArgs) {
+                if (i > 0) {
+                    sb.append(",");
+                }
+                sb.append(t.getEasyName());
+                ++i;
+            }
+            sb.append(">");
+        }
+        
+        return sb.toString();
+    }
+    
+    public String getQName(boolean convertAlias) {
+        if (convertAlias && this.resolvedAlias != null) {
+            return this.resolvedAlias.getQName(convertAlias);
+        }
+        
         if (this.isVarArgType()) {
             return Buildin.varargTypeName;
         }
@@ -607,7 +710,7 @@ public class Type extends AstNode {
         if (this.isImmutable) {
             sb.append("const ");
         }
-                
+
         if (this.isReference) {
             sb.append("&");
         }
@@ -616,10 +719,10 @@ public class Type extends AstNode {
             ArrayInfo info = (ArrayInfo)this.detail;
             sb.append("[");
             if (info.sizeExpr != null) {
-                sb.append(info.sizeExpr);
+                sb.append(info.getSize());
             }
             sb.append("]");
-            sb.append(this.genericArgs.get(0).toString());
+            sb.append(this.genericArgs.get(0).getQName(convertAlias));
             return sb.toString();
         }
         else if (isNum()) {
@@ -628,7 +731,7 @@ public class Type extends AstNode {
                 sb.append("U");
             }
 
-            sb.append(id.toString());
+            sb.append(id.getQName());
 
             if (info.size != 0) {
                 sb.append(info.size);
@@ -647,21 +750,30 @@ public class Type extends AstNode {
                 sb.append("*");
                 if (info.isNullable) sb.append("?");
                 sb.append(" ");
-                sb.append(this.genericArgs.get(0).toString());
+                sb.append(this.genericArgs.get(0).getQName(convertAlias));
             }
             return sb.toString();
         }
         else if (isFuncType()) {
             sb.append("fun");
-            sb.append(((FuncInfo)this.detail).prototype.toString());
+            sb.append(((FuncInfo)this.detail).prototype.getQName(convertAlias));
             return sb.toString();
         }
         else if (isMetaType()) {
-            sb.append(((MetaTypeInfo)this.detail).type.toString());
+            sb.append(((MetaTypeInfo)this.detail).type.getQName(convertAlias));
             return sb.toString();
         }
         
-        sb.append(id.toString());
+        if (id.resolvedDef instanceof TypeDef f) {
+            if (f.parent instanceof FileUnit u) {
+                sb.append(u.module.name);
+                sb.append("::");
+                sb.append(f.name);
+            }
+        }
+        else {
+            sb.append(id.getQName());
+        }
         
         if (this.genericArgs != null) {
             sb.append("$<");
@@ -670,7 +782,7 @@ public class Type extends AstNode {
                 if (i > 0) {
                     sb.append(", ");
                 }
-                sb.append(t.toString());
+                sb.append(t.getQName(convertAlias));
                 ++i;
             }
             sb.append(">");

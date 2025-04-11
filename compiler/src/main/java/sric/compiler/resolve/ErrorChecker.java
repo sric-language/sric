@@ -26,7 +26,7 @@ public class ErrorChecker extends CompilePass {
     private int inUnsafe = 0;
     private FileUnit curUnit = null;
     private WithBlockExpr curItBlock = null;
-    private boolean hasReturn = false;
+    //private boolean hasReturn = false;
     
     public ErrorChecker(CompilerLog log, SModule module) {
         super(log);
@@ -191,7 +191,7 @@ public class ErrorChecker extends CompilePass {
             boolean allowUnsafeCast = false;
             if (!allowUnsafeCast) {
                 from.fit(to);
-                err("Type mismatch: " + from.toString() + " => " + to.toString() , loc);
+                err("Type mismatch: " + from.getQName(false) + " => " + to.getQName(false) , loc);
                 return;
             }
         }
@@ -428,6 +428,10 @@ public class ErrorChecker extends CompilePass {
             boolean hasDefaultValue = false;
             boolean hasVararg = false;
             for (FieldDef p : v.prototype.paramDefs) {
+                if (p.fieldType == null) {
+                    //error already report
+                    continue;
+                }
                 if (p.initExpr != null) {
                     hasDefaultValue = true;
                     AstNode idDef = idResolvedDef(p.initExpr);
@@ -441,6 +445,8 @@ public class ErrorChecker extends CompilePass {
                             err("Unsupport param default value", p.initExpr.loc);
                         }
                     }
+                    
+                    this.verifyTypeFit(p.initExpr, p.fieldType, p.loc);
                 }
                 else {
                     if (hasDefaultValue) {
@@ -489,11 +495,13 @@ public class ErrorChecker extends CompilePass {
             if ((v.flags & FConst.Unsafe) != 0) {
                 ++inUnsafe;
             }
-            hasReturn = false;
+
             this.visit(v.code);
             
-            if (!hasReturn && v.prototype.returnType != null && !v.prototype.returnType.isVoid()) {
-                err("Expect return value", v.loc);
+            if (v.prototype.returnType != null && !v.prototype.returnType.isVoid()) {
+                if (!v.code.isLastReturnValue()) {
+                    err("Expect return value", v.loc);
+                }
             }
             
             if ((v.flags & FConst.Unsafe) != 0) {
@@ -525,6 +533,11 @@ public class ErrorChecker extends CompilePass {
                 if (i == 0) {
                     if (inh.id.resolvedDef instanceof TypeDef superSd) {
                         if (superSd.isStruct()) {
+                            //auto reflectable
+                            if ((superSd.flags & FConst.Reflect) != 0 && v.generiParamDefs == null) {
+                                v.flags |= FConst.Reflect;
+                            }
+                            
                             if ((superSd.flags & FConst.Abstract) != 0 || (superSd.flags & FConst.Virtual) != 0) {
                                 //ok
                             }
@@ -670,7 +683,7 @@ public class ErrorChecker extends CompilePass {
             if (rets.expr != null) {
                 this.visit(rets.expr);
                 
-                hasReturn = true;
+                //hasReturn = true;
 
                 if (rets._funcReturnType.isVoid()) {
                     err("Invalid return", rets.loc);
@@ -979,7 +992,7 @@ public class ErrorChecker extends CompilePass {
             if (e.captures != null) {
                 for (IdExpr ide : e.captures) {
                     FieldDef f = (FieldDef)ide.resolvedDef;
-                    if (f.fieldType != null && !this.isCopyable(f.fieldType)) {
+                    if (f != null && f.fieldType != null && !this.isCopyable(f.fieldType)) {
                         err("Capture a noncopyable field:" + f.name, ide.loc);
                     }
                 }
@@ -1246,10 +1259,7 @@ public class ErrorChecker extends CompilePass {
                     verifyMetType(e.rhs);
                     if (e.rhs.resolvedType.detail instanceof Type.MetaTypeInfo minfo) {
                         Type asType = minfo.type;
-                        if (e.lhs.resolvedType.isFuncType() && asType.isFuncType()) {
-                            //ok
-                        }
-                        else if (e.lhs.resolvedType.isPointerType() && asType.isPointerType()) {
+                        if (e.lhs.resolvedType.isPointerType() && asType.isPointerType()) {
                             //ok
                         }
                         else if (e.lhs.resolvedType.isNum() && asType.isNum()) {

@@ -1,0 +1,113 @@
+import sric::*;
+import sricSerial::*;
+
+reflect struct Point {
+    var x: Int;
+    var y: Float;
+}
+
+reflect struct Elem {
+    var name : String;
+    var position: Point;
+    var size: Int;
+    var point: own*? Point;
+}
+
+reflect enum Color {
+    Red, Green, Blue
+}
+
+reflect struct Elem2 {
+    var line: DArray$<own*? Point>;
+}
+
+reflect struct Elem3 {
+    var color: Color;
+}
+
+reflect struct Elem4 {
+    var children: DArray$<Int>;
+}
+
+unsafe fun testSimple() {
+    var encoder: Encoder;
+    var obj = new Point { .x = 1; .y = 2; };
+    var t = obj as *Void;
+    var res = encoder.encode(t, "sricSerial::Point");
+    printf("%s\n", res.c_str());
+
+    var decoder: Decoder;
+    var p = decoder.decode(res);
+    var obj2: raw* Point = unsafeCast$<raw*Point>(p);
+    
+    verify(obj2.x == obj.x);
+    verify(obj2.y == obj.y);
+}
+
+unsafe fun testStruct() {
+    var encoder: Encoder;
+    var obj = new Elem { .name = "abc"; .position = Point {.x =1; .y=2; }; .size = 3; .point = new Point { .x = 4; .y = 5; }; };
+    var t = obj as *Void;
+    var res = encoder.encode(t, "sricSerial::Elem");
+    printf("%s\n", res.c_str());
+
+    var decoder: Decoder;
+    var p = decoder.decode(res);
+    var obj2 = unsafeCast$<raw*Elem>(p);
+    
+    verify(obj2.position.x == obj.position.x);
+    verify(obj2.point.y == obj.point.y);
+}
+
+unsafe fun testArray() {
+    var encoder: Encoder;
+    var obj = new Elem2 { .line.add(new Point { .x = 1; .y = 2; }); .line.add(new Point { .x = 4; .y = 5; }); };
+    var t = obj as *Void;
+    var res = encoder.encode(t, "sricSerial::Elem2");
+    printf("%s\n", res.c_str());
+
+    var decoder: Decoder;
+    var p = decoder.decode(res);
+    var obj2 = unsafeCast$<raw*Elem2>(p);
+    
+    verify(obj2.line.size() == 2);
+    verify(obj2.line[0].x == 1);
+}
+
+unsafe fun testEnum() {
+    var encoder: Encoder;
+    var obj = new Elem3 { .color = Color::Blue; };
+    var t = obj as *Void;
+    var res = encoder.encode(t, "sricSerial::Elem3");
+    printf("%s\n", res.c_str());
+
+    var decoder: Decoder;
+    var p = decoder.decode(res);
+    var obj2 = unsafeCast$<raw*Elem3>(p);
+    
+    verify(obj2.color == Color::Blue);
+}
+
+unsafe fun testArray2() {
+    var encoder: Encoder;
+    var obj = new Elem4 { .children.add(1); .children.add(2); };
+    var t = obj as *Void;
+    var res = encoder.encode(t, "sricSerial::Elem4");
+    printf("%s\n", res.c_str());
+
+    var decoder: Decoder;
+    var p = decoder.decode(res);
+    var obj2 = unsafeCast$<raw*Elem4>(p);
+    
+    verify(obj2.children.size() == 2);
+    verify(obj2.children[0] == 1);
+}
+
+
+unsafe fun main() {
+    testSimple();
+    testStruct();
+    testArray();
+    testEnum();
+    testArray2();
+}

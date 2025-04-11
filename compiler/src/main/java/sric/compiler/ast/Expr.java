@@ -137,10 +137,10 @@ public abstract class Expr extends AstNode {
         
         private String getNamespaceName() {
             if (this.namespace != null) {
-                return namespace.toString();
+                return namespace.getQName();
             }
             
-            if (this.resolvedDef instanceof FieldDef f) {
+            if (this.resolvedDef instanceof TopLevelDef f) {
                 if (f.parent instanceof FileUnit u) {
                     return u.module.name;
                 }
@@ -148,8 +148,7 @@ public abstract class Expr extends AstNode {
             return null;
         }
         
-        @java.lang.Override
-        public String toString() {
+        public String getQName() {
             String ns = getNamespaceName();
             if (ns != null) {
                 return ns + "::" + name;

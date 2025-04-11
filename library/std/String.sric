@@ -1,7 +1,8 @@
 //@#include "Str.h"
 
 extern noncopyable struct String {
-    fun c_str() const: raw* Int8;
+    fun c_str() const: raw* const Int8;
+    fun data() : raw* Int8;
     fun size() const: Int;
 
     fun copy() const : String;
@@ -22,6 +23,7 @@ extern noncopyable struct String {
     operator fun plus(other: &const String) const: String;
     fun addStr(str: &const String);
     fun add(cstr: raw*const Int8);
+    fun addChar(ch: Int8);
 
     fun trimEnd();
     fun trimStart();
@@ -60,7 +62,7 @@ extern noncopyable struct String {
     /**
     * read unicode char from byte position
     */
-    fun getCharAt(bytePos: Int, byteSize: raw*Int = null) const: Int;
+    fun getCharAt(bytePos: Int, byteSize: raw*? Int = null) const: Int;
 
     /**
     * get unicode char at char index

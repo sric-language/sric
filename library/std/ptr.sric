@@ -32,4 +32,4 @@ extern fun refToOwn$<T>(p: * T): own* T;
 
 extern fun rawToRef$<T>(p: raw* T): * T;
 
-extern unsafe fun unsafeCast$<T>(p: raw* Void): raw *T;
+extern unsafe fun unsafeCast$<T>(p: raw* Void): T;

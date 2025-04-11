@@ -165,7 +165,7 @@ public class DocGenerator extends BaseGenerator {
             return;
         }
 //        print(type.toString().replace(" ", "&nbsp;"));
-        print(type.toString());
+        print(type.getQName(false));
     }
     
     @Override

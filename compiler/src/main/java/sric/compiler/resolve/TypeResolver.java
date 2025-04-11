@@ -132,6 +132,12 @@ public abstract class TypeResolver  extends CompilePass {
                 this.visit(ainfo.sizeExpr);
                 boolean isConstexpr = false;
                 if (ainfo.sizeExpr instanceof Expr.LiteralExpr lexpr) {
+                    if (lexpr.value instanceof Long) {
+                        //ok
+                    }
+                    else {
+                        err("Array size must be int", ainfo.sizeExpr.loc);
+                    }
                     isConstexpr = true;
                 }
                 else if (ainfo.sizeExpr instanceof Expr.IdExpr idexpr) {

@@ -1,0 +1,135 @@
+import sric::*;
+import jsonc::*;
+
+unsafe fun sizeOfType(typeName: raw* const Int8): Int {
+    switch (typeName[0]) {
+        case 'I':
+            if (strcmp(typeName, "Int") == 0 || strcmp(typeName, "Int32") == 0) {
+                return sizeof(Int);
+            }
+            else if (strcmp(typeName, "Int64") == 0) {
+                return sizeof(Int64);
+            }
+            else if (strcmp(typeName, "Int16") == 0) {
+                return sizeof(Int16);
+            }
+            else if (strcmp(typeName, "Int8") == 0) {
+                return sizeof(Int8);
+            }
+        case 'U':
+            if (strcmp(typeName, "UInt32") == 0) {
+                return sizeof(UInt8);
+            }
+            else if (strcmp(typeName, "UInt64") == 0) {
+                return sizeof(UInt64);
+            }
+            else if (strcmp(typeName, "UInt16") == 0) {
+                return sizeof(UInt16);
+            }
+            else if (strcmp(typeName, "UInt8") == 0) {
+                return sizeof(UInt8);
+            }
+        case 'F':
+            if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
+                return sizeof(Int64);
+            }
+            else if (strcmp(typeName, "Float32") == 0) {
+                return sizeof(Int32);
+            }
+        case 's':
+            if (strcmp(typeName, "sric::String") == 0) {
+                return sizeof(String);
+            }
+            // else if (strcmp(typeName, "raw* Int8") == 0) {
+            //     var v = (obj+offset) as raw* raw*? Int8;
+            //     fnode = allocator.alloc_str(*v);
+            // }
+            else if (strcmp(typeName, "sric::DArray") == 0) {
+                return sizeof(DArray$<Int8>);
+            }
+        case 'o':
+            if (strcmp(typeName, "own*") == 0) {
+                return sizeof(own*Void);
+            }
+    }
+    return -1;
+}
+
+unsafe fun findRType(typeQname:raw* const Int8): raw*? RType {
+    var name: String = typeQname;
+    var fs = name.split("::");
+    if (fs.size() != 2) {
+        return null;
+    }
+
+    var ns = fs[0];
+    var typeName = fs[1];
+    var module = findModule(ns.c_str());
+    if (module == null) {
+        //scError("serial", "unknow module: %s", ns.c_str());
+        return null;
+    }
+    var rtype: *? RType;
+    for (var i=0; i<module.types.size(); ++i) {
+        if (strcmp(module.types[i].name, typeName.c_str()) == 0) {
+            rtype = module.types.getPtr(i);
+            break;
+        }
+    }
+    return rtype;
+}
+
+struct TypeName {
+    var name: String;
+    var genericArgs: DArray$<TypeName>;
+
+    static fun parse(name: raw* const Int8): TypeName {
+        var parser : TypeNameParser;
+        return parser.parse(name);
+    }
+}
+
+private struct TypeNameParser {
+    private var buf: raw* const Int8;
+    private var pos: Int = 0;
+    private var len: Int = 0;
+
+    fun parse(name: raw* const Int8) : TypeName {
+        buf = name;
+        len = strlen(name);
+        unsafe {
+            return parseType();
+        }
+    }
+
+    private unsafe fun parseType(): TypeName {
+        var type: TypeName;
+        while (pos < len) {
+            var ch = buf[pos];
+            if (ch == '<') {
+                ++pos;
+
+                while (pos < len && buf[pos] != '>') {
+                    type.genericArgs.add(parseType());
+                    if (pos < len && buf[pos] == ',') {
+                        ++pos;
+                    }
+                    else {
+                        break;
+                    }
+                }
+
+                ++pos;
+                break;
+            }
+            else if (ch == '>') {
+                break;
+            }
+            else {
+                type.name.addChar(buf[pos]);
+                ++pos;
+            }
+        }
+        return type;
+    }
+}

@@ -198,6 +198,13 @@ public class AstNode {
             return true;
         }
         
+        public boolean isDynamicReflect() {
+            if (isStruct() && (flags & FConst.Reflect) != 0 && this.isPolymorphic()) {
+                return true;
+            }
+            return false;
+        }
+        
         //is inherit from struct
         public boolean isConcroteInherit() {
             if (this.inheritances == null) return false;
@@ -495,8 +502,7 @@ public class AstNode {
             return true;
         }
         
-        @java.lang.Override
-        public String toString() {
+        public String getQName(boolean convertAlias) {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             if (paramDefs != null) {
@@ -507,7 +513,7 @@ public class AstNode {
                     }
                     sb.append(p.name);
                     sb.append(" : ");
-                    sb.append(p.fieldType);
+                    sb.append(p.fieldType.getQName(convertAlias));
                     ++i;
                 }
             }
@@ -515,7 +521,7 @@ public class AstNode {
 
             if (returnType != null && !returnType.isVoid()) {
                 sb.append(":");
-                sb.append(returnType);
+                sb.append(returnType.getQName(convertAlias));
             }
             return sb.toString();
         }
@@ -638,6 +644,23 @@ public class AstNode {
             for (Stmt s : stmts) {
                 visitor.visit(s);
             }
+        }
+        
+        public boolean isLastReturnValue() {
+            if (stmts.size() == 0) {
+                return false;
+            }
+            Stmt last = stmts.get(stmts.size()-1);
+            if (last instanceof ReturnStmt retStmt && retStmt.expr != null) {
+                return true;
+            }
+            else if (last instanceof UnsafeBlock unsafeStmt && unsafeStmt.block != null) {
+                return unsafeStmt.block.isLastReturnValue();
+            }
+            else if (last instanceof IfStmt ifStmt) {
+                return ifStmt.allPathReturnValue();
+            }
+            return false;
         }
     }
     

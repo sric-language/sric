@@ -1,46 +1,11 @@
 import sric::*;
 import jsonc::*;
 
-fun sizeOfType(typeName: raw* const Int8): Int {
-    if (strcmp(typeName, "Int") == 0 || strcmp(typeName, "Int32") == 0) {
-        return sizeof(Int);
-    }
-    else if (strcmp(typeName, "Int64") == 0) {
-        return sizeof(Int64);
-    }
-    else if (strcmp(typeName, "Int16") == 0) {
-        return sizeof(Int16);
-    }
-    else if (strcmp(typeName, "Int8") == 0) {
-        return sizeof(Int8);
-    }
-    else if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
-        return sizeof(Int64);
-    }
-    else if (strcmp(typeName, "Float32") == 0) {
-        return sizeof(Int32);
-    }
-    else if (strcmp(typeName, "String") == 0) {
-        return sizeof(String);
-    }
-    // else if (strcmp(typeName, "raw* Int8") == 0) {
-    //     var v = (obj+offset) as raw* raw*? Int8;
-    //     fnode = allocator.alloc_str(*v);
-    // }
-    else if (asStr(typeName).startsWith("DArray")) {
-        return sizeof(DArray$<Int8>);
-    }
-    else if (asStr(typeName).startsWith("own*")) {
-        return sizeof(own*Void);
-    }
-    return -1;
-}
-
 struct Encoder {
     var allocator: JsonAllocator;
 
-    unsafe fun encode(obj: *Void, isHiml: Bool = true): String {
-        var node = encodeObj(obj);
+    unsafe fun encode(obj: *Void, typeName: raw*? const Int8 = null, isHiml: Bool = true): String {
+        var node = encodeObj(obj, typeName);
         var json : String;
         if (node != null) {
             node.to_json(json, isHiml);
@@ -48,58 +13,90 @@ struct Encoder {
         return json;
     }
 
-    private unsafe fun encodeAny(obj: raw*? Int8, typeName: raw* const Int8, offset: Int = 0, extType: raw* const Int8 = null): raw*? JsonNode {
+    private unsafe fun encodeAny(obj: raw*? Int8, typeNameS: &TypeName, offset: Int = 0): raw*? JsonNode {
         if (obj == null) return null;
-        var fnode: raw*? JsonNode;
-        if (strcmp(typeName, "Int") == 0 || strcmp(typeName, "Int32") == 0) {
-            var v = (obj+offset) as raw*Int32;
-            fnode = allocator.alloc_int(*v);
+        var typeName = typeNameS.name.c_str();
+
+        switch (typeName[0]) {
+        case 'I':
+            if (strcmp(typeName, "Int") == 0 || strcmp(typeName, "Int32") == 0) {
+                var v = (obj+offset) as raw*Int32;
+                return allocator.alloc_int(*v);
+            }
+            else if (strcmp(typeName, "Int64") == 0) {
+                var v = (obj+offset) as raw*Int64;
+                return allocator.alloc_int(*v);
+            }
+            else if (strcmp(typeName, "Int16") == 0) {
+                var v = (obj+offset) as raw*Int16;
+                return allocator.alloc_int(*v);
+            }
+            else if (strcmp(typeName, "Int8") == 0) {
+                var v = (obj+offset) as raw*Int8;
+                return allocator.alloc_int(*v);
+            }
+        case 'U':
+            if (strcmp(typeName, "UInt32") == 0) {
+                var v = (obj+offset) as raw*UInt32;
+                return allocator.alloc_int(*v);
+            }
+            else if (strcmp(typeName, "UInt64") == 0) {
+                var v = (obj+offset) as raw*UInt64;
+                return allocator.alloc_int(*v);
+            }
+            else if (strcmp(typeName, "UInt16") == 0) {
+                var v = (obj+offset) as raw*UInt16;
+                return allocator.alloc_int(*v);
+            }
+            else if (strcmp(typeName, "UInt8") == 0) {
+                var v = (obj+offset) as raw*UInt8;
+                return allocator.alloc_int(*v);
+            }
+        case 'F':
+            if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
+                var v = (obj+offset) as raw* Float64;
+                return allocator.alloc_float(*v);
+            }
+            else if (strcmp(typeName, "Float32") == 0) {
+                var v = (obj+offset) as raw* Float32;
+                return allocator.alloc_float(*v);
+            }
+        case 's':
+            if (strcmp(typeName, "sric::String") == 0) {
+                var v = unsafeCast$<raw*String>(obj+offset);
+                return allocator.alloc_str(v.c_str());
+            }
+            // else if (strcmp(typeName, "raw* Int8") == 0) {
+            //     var v = (obj+offset) as raw* raw*? Int8;
+            //     fnode = allocator.alloc_str(*v);
+            // }
+            else if (strcmp(typeName, "sric::DArray") == 0) {
+                if (typeNameS.genericArgs.size() == 0) return null;
+                var v = unsafeCast$<raw*List>(obj+offset);
+                return encodeDArray(v, typeNameS.genericArgs[0]);
+            }
+        case 'o':
+            if (strcmp(typeName, "own*") == 0) {
+                if (typeNameS.genericArgs.size() == 0) return null;
+                var v = unsafeCast$<raw* own*? Void>(obj+offset);
+                return encodeObj(*v, typeNameS.genericArgs[0].name.c_str());
+            }
         }
-        else if (strcmp(typeName, "Int64") == 0) {
-            var v = (obj+offset) as raw*Int64;
-            fnode = allocator.alloc_int(*v);
+
+        if (typeNameS.genericArgs.size() == 0) {
+            //value type
+            var v = unsafeCast$<raw* Void>(obj+offset);
+            return encodeObj(v, typeName);
         }
-        else if (strcmp(typeName, "Int16") == 0) {
-            var v = (obj+offset) as raw*Int16;
-            fnode = allocator.alloc_int(*v);
-        }
-        else if (strcmp(typeName, "Int8") == 0) {
-            var v = (obj+offset) as raw*Int8;
-            fnode = allocator.alloc_int(*v);
-        }
-        else if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
-            var v = (obj+offset) as raw* Float64;
-            fnode = allocator.alloc_float(*v);
-        }
-        else if (strcmp(typeName, "Float32") == 0) {
-            var v = (obj+offset) as raw* Float32;
-            fnode = allocator.alloc_float(*v);
-        }
-        else if (strcmp(typeName, "String") == 0) {
-            var v = unsafeCast$<String>(obj+offset);
-            fnode = allocator.alloc_str(v.c_str());
-        }
-        // else if (strcmp(typeName, "raw* Int8") == 0) {
-        //     var v = (obj+offset) as raw* raw*? Int8;
-        //     fnode = allocator.alloc_str(*v);
-        // }
-        else if (asStr(typeName).startsWith("DArray")) {
-            if (extType == null) return null;
-            var v = unsafeCast$<List>(obj+offset);
-            fnode = encodeDArray(v, extType);
-        }
-        else if (asStr(typeName).startsWith("own*")) {
-            var v = unsafeCast$<own*? Void>(obj+offset);
-            fnode = encodeObj(*v);
-        }
-        return fnode;
+
+        return null;
     }
 
-    private unsafe fun encodeDArray(arr: raw*List, elemType: raw* const Int8): raw*? JsonNode {
+    private unsafe fun encodeDArray(arr: raw*List, elemType: &TypeName): raw*? JsonNode {
         var node = allocator.allocNode(Type::Array);
-        var elemSize = sizeOfType(elemType);
+        var elemSize = sizeOfType(elemType.name.c_str());
         for (var i=0; i<arr.size(); ++i) {
-            var p = unsafeCast$<Int8>(arr.data());
+            var p = unsafeCast$<raw*Int8>(arr.data());
             var elem = p + elemSize * i;
             var elemNode = encodeAny(elem, elemType);
             if (elemNode != null) {
@@ -110,31 +107,41 @@ struct Encoder {
         return node;
     }
 
-    private unsafe fun encodeObj(obj: raw*? Void): raw*? JsonNode {
+    private unsafe fun encodeObj(obj: raw*? Void, elemName: raw*? const Int8 = null): raw*? JsonNode {
         if (obj == null) return null;
 
-        var name: String = typeOf(obj);
-        var fs = name.split("::");
-        if (fs.size() != 2) {
+        if (elemName == null) {
+            elemName = typeOf(obj);
+        }
+
+        var rtype = findRType(elemName);
+        if (rtype == null) {
             return null;
         }
 
-        var ns = fs[0];
-        var typeName = fs[1];
-        var module = findModule(ns.c_str());
-        if (module == null) {
-            //scError("serial", "unknow module: %s", ns.c_str());
-            return null;
-        }
-        var rtype: *? RType;
-        for (var i=0; i<module.types.size(); ++i) {
-            if (strcmp(module.types[i].name, typeName.c_str()) == 0) {
-                rtype = module.types.getPtr(i);
-                break;
+        if (rtype.inheritances.size() > 0 || (rtype.flags & RFlags::Virtual) != 0 || (rtype.flags & RFlags::Abstract) != 0) {
+            var realName = typeOf(obj);
+            if (strcmp(realName, elemName) != 0) {
+                elemName = realName;
+                var rtype = findRType(elemName);
+                if (rtype == null) {
+                    return null;
+                }
             }
         }
-        if (rtype == null) {
-            //scError("serial", "unknow type: %s", typeName.c_str());
+
+        if (rtype.flags & RFlags::Reflect == 0) {
+            return null;
+        }
+
+        if ((rtype.kind & RTypeKind::Enum) != 0) {
+            var value:raw* Int = unsafeCast$<raw*Int>(obj);
+            for (var i = 0; i<rtype.fields.size(); ++i) {
+                var f = rtype.fields[i];
+                if (f.enumValue == *value) {
+                    return allocator.alloc_str(f.name);
+                }
+            }
             return null;
         }
 
@@ -142,10 +149,12 @@ struct Encoder {
         for (var i = 0; i<rtype.fields.size(); ++i) {
             var f = rtype.fields[i];
             //static
-            if ((f.flags & 0x00008000) != 0) {
+            if ((f.flags & RFlags::Static) != 0) {
                 continue;
             }
-            var vn = encodeAny(unsafeCast$<Int8>(obj), f.baseType, f.offset, f.extType);
+
+            var typeName: TypeName = TypeName::parse(f.baseType);
+            var vn = encodeAny(unsafeCast$<raw*Int8>(obj), typeName, f.offset);
             if (vn != null) {
                 var fname = f.name;
                 if (strcmp(f.name, "children") == 0) {
@@ -155,8 +164,9 @@ struct Encoder {
             }
         }
 
-        node.insert_pair("_type", allocator.alloc_str(name.c_str()));
+        node.insert_pair("_type", allocator.alloc_str(elemName));
 
+        node.reverse();
         return node;
     }
 }

@@ -73,6 +73,9 @@ public:
     String plus(const String& other) const;
     void add(const char* cstr);
     void addStr(const String& other);
+    void addChar(char ch) {
+        str += ch;
+    }
 
     void replace(const String& src, const String& dst);
     DArray<String> split(const String& sep) const;

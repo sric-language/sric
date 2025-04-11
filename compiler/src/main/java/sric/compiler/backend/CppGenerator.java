@@ -265,15 +265,9 @@ public class CppGenerator extends BaseGenerator {
         print("{");
         print("sric::RField param;");
         print("param.name = \"").print(f.name).print("\";");
-        print("param.fieldType = ");printStringLiteral(f.fieldType.toString());print(";");
-        print("param.baseType = ");printStringLiteral(f.fieldType.id.toString());print(";").newLine();
-        if (f.fieldType.genericArgs != null && f.fieldType.genericArgs.size() > 0) {
-            Type extType = f.fieldType.genericArgs.get(0);
-            print("param.extType = ");printStringLiteral(extType.id.toString());print(";").newLine();
-        }
-        else {
-            print("param.extType = nullptr;").newLine();
-        }
+        print("param.fieldType = ");printStringLiteral(f.fieldType.getQName(true));print(";");
+        print("param.baseType = ");printStringLiteral(f.fieldType.getEasyName());print(";").newLine();
+
         print("param.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";");
         print(parentName).print(".params.add(std::move(param));");
         print("}");
@@ -307,15 +301,9 @@ public class CppGenerator extends BaseGenerator {
             print("f.pointer = nullptr;").newLine();
         }
         
-        print("f.fieldType = ");printStringLiteral(f.fieldType.toString());print(";").newLine();
-        print("f.baseType = ");printStringLiteral(f.fieldType.id.toString());print(";").newLine();
-        if (f.fieldType.genericArgs != null && f.fieldType.genericArgs.size() > 0) {
-            Type extType = f.fieldType.genericArgs.get(0);
-            print("f.extType = ");printStringLiteral(extType.id.toString());print(";").newLine();
-        }
-        else {
-            print("f.extType = nullptr;").newLine();
-        }
+        print("f.fieldType = ");printStringLiteral(f.fieldType.getQName(true));print(";").newLine();
+        print("f.baseType = ");printStringLiteral(f.fieldType.getEasyName());print(";").newLine();
+
         print("f.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";").newLine();
         
         print("f.enumValue = ").print(""+f._enumValue).print(";").newLine();
@@ -375,7 +363,8 @@ public class CppGenerator extends BaseGenerator {
                 print("_").print(this.getSymbolName(f)).print(";").newLine();
         }
 
-        print("f.returnType = ");printStringLiteral(f.prototype.returnType.toString());print(";").newLine();
+        print("f.returnType = ");printStringLiteral(f.prototype.returnType.getQName(true));print(";").newLine();
+        print("f.returnBaseType = ");printStringLiteral(f.prototype.returnType.getEasyName());print(";").newLine();
 
         if (f.prototype.paramDefs != null) {
             for (FieldDef p : f.prototype.paramDefs) {
@@ -441,7 +430,7 @@ public class CppGenerator extends BaseGenerator {
 
                 if (type.inheritances != null) {
                     for (Type p : type.inheritances) {
-                        print("s.inheritances.add(");printStringLiteral(p.toString()); print(");");
+                        print("s.inheritances.add(");printStringLiteral(p.getQName(true)); print(");");
                         this.newLine();
                     }
                 }
@@ -460,6 +449,13 @@ public class CppGenerator extends BaseGenerator {
                 }
                 else {
                     print("s.ctor = nullptr;").newLine();
+                }
+                
+                if (type.isEnum() && type.enumBase != null) {
+                    print("s.enumBase = ");this.printStringLiteral(type.enumBase.getEasyName()); print(";").newLine();
+                }
+                else {
+                    print("s.enumBase = nullptr;").newLine();
                 }
                 
                 print("m.types.add(std::move(s));").newLine();
@@ -1124,11 +1120,30 @@ public class CppGenerator extends BaseGenerator {
                 print(" SC_OBJ_BASE ");
             }
 
-            //if (v instanceof StructDef sd) {
+            //must before inheritances
+            boolean isDynamicReflect = v.isDynamicReflect();
+            boolean needInheriteReflectable = isDynamicReflect;
+            if (isDynamicReflect) {
+                if (v.inheritances != null && v.inheritances.size() > 0) {
+                    if (v.inheritances.get(0).id.resolvedDef instanceof TypeDef tf && tf.isDynamicReflect()) {
+                        needInheriteReflectable = false;
+                    }
+                }
+                if (needInheriteReflectable) {
+                    if (isSafeInherit) {
+                        print(" SC_BEGIN_INHERIT ");
+                    }
+                    else {
+                        print(" : ");
+                    }
+                    print("public sric::Reflectable");
+                }
+            }
+            
             if (v.inheritances != null) {
                 int i = 0;
                 for (Type inh : v.inheritances) {
-                    if (i == 0) {
+                    if (i == 0 && !needInheriteReflectable) {
                         if (isSafeInherit) {
                             print(" SC_BEGIN_INHERIT ");
                         }
@@ -1140,21 +1155,6 @@ public class CppGenerator extends BaseGenerator {
                     print("public ");
                     printType(inh);
                     ++i;
-                }
-                if (v.isStruct() && (v.flags & FConst.Reflect) != 0) {
-                    print(", ");
-                    print("public sric::Reflectable");
-                }
-            }
-            else {
-                if (v.isStruct() && (v.flags & FConst.Reflect) != 0) {
-                    if (isSafeInherit) {
-                        print(" SC_BEGIN_INHERIT ");
-                    }
-                    else {
-                        print(" : ");
-                    }
-                    print("public sric::Reflectable");
                 }
             }
             
@@ -1192,7 +1192,7 @@ public class CppGenerator extends BaseGenerator {
                 }
             }
             
-            if (v.isStruct() && (v.flags & FConst.Reflect) != 0) {
+            if (isDynamicReflect) {
                 print("const char* __typeof() const { return \"");
                 print(this.module.name).print("::").print(v.name);
                 print("\"; }");
