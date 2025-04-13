@@ -9,8 +9,10 @@ reflect struct Point {
 reflect struct Elem {
     var name : String;
     var position: Point;
+    //@Transient
     var size: Int;
     var point: own*? Point;
+    static var s : const Int = 0;
 }
 
 reflect enum Color {
@@ -33,7 +35,7 @@ unsafe fun testSimple() {
     var encoder: Encoder;
     var obj = new Point { .x = 1; .y = 2; };
     var t = obj as *Void;
-    var res = encoder.encode(t, "sricSerial::Point");
+    var res = encoder.encode(t, "testSerial::Point");
     printf("%s\n", res.c_str());
 
     var decoder: Decoder;
@@ -48,7 +50,7 @@ unsafe fun testStruct() {
     var encoder: Encoder;
     var obj = new Elem { .name = "abc"; .position = Point {.x =1; .y=2; }; .size = 3; .point = new Point { .x = 4; .y = 5; }; };
     var t = obj as *Void;
-    var res = encoder.encode(t, "sricSerial::Elem");
+    var res = encoder.encode(t, "testSerial::Elem");
     printf("%s\n", res.c_str());
 
     var decoder: Decoder;
@@ -63,7 +65,7 @@ unsafe fun testArray() {
     var encoder: Encoder;
     var obj = new Elem2 { .line.add(new Point { .x = 1; .y = 2; }); .line.add(new Point { .x = 4; .y = 5; }); };
     var t = obj as *Void;
-    var res = encoder.encode(t, "sricSerial::Elem2");
+    var res = encoder.encode(t, "testSerial::Elem2");
     printf("%s\n", res.c_str());
 
     var decoder: Decoder;
@@ -78,7 +80,7 @@ unsafe fun testEnum() {
     var encoder: Encoder;
     var obj = new Elem3 { .color = Color::Blue; };
     var t = obj as *Void;
-    var res = encoder.encode(t, "sricSerial::Elem3");
+    var res = encoder.encode(t, "testSerial::Elem3");
     printf("%s\n", res.c_str());
 
     var decoder: Decoder;
@@ -92,7 +94,7 @@ unsafe fun testArray2() {
     var encoder: Encoder;
     var obj = new Elem4 { .children.add(1); .children.add(2); };
     var t = obj as *Void;
-    var res = encoder.encode(t, "sricSerial::Elem4");
+    var res = encoder.encode(t, "testSerial::Elem4");
     printf("%s\n", res.c_str());
 
     var decoder: Decoder;

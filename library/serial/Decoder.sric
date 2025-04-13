@@ -16,14 +16,7 @@ struct Decoder {
             return null;
         }
 
-        var node = value0.children();
-        for (var b = node.begin(); b.not_eq(node.end()); b.next()) {
-            var n = b.get();
-            if (n.type() == Type::Object) {
-                return decodeObj(b.get(), null, null);
-            }
-        }
-        return null;
+        return decodeObj(value0, null, null);
     }
 
     private unsafe fun decodeAny(node: raw*Value, obj: raw*? Int8, typeNameS: &TypeName, offset: Int = 0): Bool {
@@ -198,10 +191,11 @@ struct Decoder {
         }
         for (var i = 0; i<rtype.fields.size(); ++i) {
             var f = rtype.fields[i];
-            //static
-            if ((f.flags & RFlags::Static) != 0) {
+            
+            if (!isSerializable(f)) {
                 continue;
             }
+
             var fname = f.name;
             if (strcmp(f.name, "children") == 0) {
                 fname = "_children";

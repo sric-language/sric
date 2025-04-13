@@ -249,6 +249,7 @@ public class CppGenerator extends BaseGenerator {
         if (node.comment != null) {
             for (var c : node.comment.comments) {
                 if (c.type != TokenKind.cmdComment) {
+                    continue;
                 }
                 
                 print("{sric::RComment comment;");

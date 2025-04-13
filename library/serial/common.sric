@@ -79,6 +79,21 @@ unsafe fun findRType(typeQname:raw* const Int8): raw*? RType {
     return rtype;
 }
 
+fun isSerializable(f: &RField): Bool {
+    if ((f.flags & RFlags::Static) != 0) {
+        return false;
+    }
+
+    if (f.comments.size() > 0) {
+        for (var j = 0; j<f.comments.size(); ++j) {
+            if (strcmp(f.comments[j].content, "Transient") == 0) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 struct TypeName {
     var name: String;
     var genericArgs: DArray$<TypeName>;

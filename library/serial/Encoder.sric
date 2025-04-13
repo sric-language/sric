@@ -148,8 +148,8 @@ struct Encoder {
         var node = allocator.allocNode(Type::Object);
         for (var i = 0; i<rtype.fields.size(); ++i) {
             var f = rtype.fields[i];
-            //static
-            if ((f.flags & RFlags::Static) != 0) {
+
+            if (!isSerializable(f)) {
                 continue;
             }
 
