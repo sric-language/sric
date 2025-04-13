@@ -4,14 +4,18 @@
 //
 package sric.compiler;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -53,13 +57,17 @@ public class Util {
         List<String> lines = Files.readAllLines(Path.of(file));
         for (String line : lines) {
             line = line.trim();
+            if (line.length() == 0) {
+                continue;
+            }
             if (line.startsWith("//")) {
                 continue;
             }
             if (line.startsWith("#")) {
                 continue;
             }
-            var fs = line.split("=");
+
+            var fs = line.split("=", 2);
             if (fs.length == 1 && line.endsWith("=")) {
                 map.put(fs[0].trim(), "");
                 continue;
@@ -85,5 +93,39 @@ public class Util {
         
         String data = sb.toString();
         Files.writeString(Path.of(file), data, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+    
+    
+    public static boolean isWindows() {
+        String osName = System.getProperty("os.name");
+        return osName != null && osName.startsWith("Windows");
+    }
+    
+    
+    public static void exec(String cmd) throws IOException {
+        Process pr = Runtime.getRuntime().exec(cmd);
+        
+        InputStreamReader inst2 = new InputStreamReader(pr.getInputStream());
+        BufferedReader br2 = new BufferedReader(inst2);
+        String res2 = null;
+        while ((res2 = br2.readLine()) != null) {
+            System.err.println(res2);
+        }
+        br2.close();
+        
+        InputStreamReader inst = new InputStreamReader(pr.getErrorStream());
+        BufferedReader br = new BufferedReader(inst);
+        String res = null;
+        while ((res = br.readLine()) != null) {
+            System.err.println(res);
+        }
+        br.close();
+
+        try {
+            pr.waitFor();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        pr.destroy();
     }
 }

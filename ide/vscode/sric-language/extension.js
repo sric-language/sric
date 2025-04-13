@@ -35,7 +35,7 @@ function activate(context) {
     }
     binaryPath += " -cp "+sricHome+"/bin/gson-2.8.6.jar" + path.delimiter + sricHome+"/bin/sric-1.0.jar sric.compiler.Main";
 
-    var args = "-lib "+sricHome+"/lib -lsp";
+    var args = "-home "+sricHome+" -lsp";
 
     var debugLog = config.get("languageServerLog");
     if (debugLog) {

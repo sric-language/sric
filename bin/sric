@@ -25,4 +25,4 @@ fi
 
 #echo $SRIC_HOME
 
-java -cp $SRIC_HOME/bin/gson-2.8.6.jar:$SRIC_HOME/bin/sric-1.0.jar sric.compiler.Main -lib $SRIC_HOME/lib "$@"
+java -cp $SRIC_HOME/bin/gson-2.8.6.jar:$SRIC_HOME/bin/sric-1.0.jar sric.compiler.Main -home $SRIC_HOME "$@"

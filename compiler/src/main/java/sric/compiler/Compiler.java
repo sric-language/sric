@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sric.compiler.ast.AstNode;
@@ -45,6 +47,8 @@ public class Compiler {
     public boolean print = true;
     
     private HashMap<String, SModule> moduleCache = new HashMap<String, SModule>();
+    
+    private HashMap<String, String> fmakeArgs = null;
     
     public Compiler(SModule module, File sourceDir, String libPath, String outputDir) {
         this.module = module;
@@ -98,6 +102,17 @@ public class Compiler {
     
     public static Compiler fromProps(String propsPath, String libPath, String srcDirs) throws IOException {
         var props = Util.readProps(propsPath);
+        HashMap<String, String> fmakeArgs = new HashMap<String, String>();
+        for (Map.Entry<String, String> entry : props.entrySet()) {
+            if (entry.getKey().startsWith("fmake.")) {
+                String key = entry.getKey().substring("fmake.".length());
+                fmakeArgs.put(key, entry.getValue());
+            }
+        }
+        for (Map.Entry<String, String> entry : fmakeArgs.entrySet()) {
+            props.remove("fmake."+entry.getKey());
+        }
+        
         SModule module = SModule.fromProps(props);
         if (srcDirs == null) {
             srcDirs = props.get("srcDirs");
@@ -114,7 +129,9 @@ public class Compiler {
         module.sourcePath = new File(propsPath).getAbsolutePath();
         File sourceDir = new File(srcDirs);
         File libDir = new File(libPath);
-        return new Compiler(module, sourceDir, libPath, libDir.getParent()+"/output/");
+        Compiler c = new Compiler(module, sourceDir, libPath, libDir.getParent()+"/output/");
+        c.fmakeArgs = fmakeArgs;
+        return c;
     }
     
     public boolean run() throws IOException {
@@ -233,12 +250,15 @@ public class Compiler {
         String outputFile = outputDir + "/" + this.module.name;
         CppGenerator generator = new CppGenerator(log, outputFile+".h", true);
         generator.run(module);
+        generator.close();
         
         CppGenerator generator2 = new CppGenerator(log, outputFile+".cpp", false);
         generator2.run(module);
+        generator2.close();
         
         DocGenerator docGenerator = new DocGenerator(log, outputFile+".html");
         docGenerator.run(module);
+        docGenerator.close();
         
         genFmake();
     }
@@ -249,49 +269,48 @@ public class Compiler {
         }
         
         String fmakeFile = outputDir + "/" + this.module.name + ".fmake";
-        if (Files.exists(Path.of(fmakeFile))) {
-            return;
-        }
         
         StringBuilder depends = new StringBuilder();
-        StringBuilder src = new StringBuilder();
-        
-        if (module.outType.equals("exe")) {
-            for (Depend dp : module.depends) {
-                if (dp.name.equals("sric")) {
-                    depends.append("sric 1.0");
-                    continue;
-                }
-                if (src.length() > 0) src.append(", ");
-                src.append(dp.name).append(".cpp");
-            }
-        }
-        else {
-            for (Depend dp : module.depends) {
-                if (depends.length() > 0) {
-                    depends.append(", ");
-                }
-                depends.append(dp.toString());
-            }
-        }
-        
-        if (src.length() > 0) src.append(", ");
-        src.append(module.name).append(".cpp");
-        
-        if (this.module.name.equals("sric")) {
-            src.insert(0, "../runtime/, ");
-        }
 
-        String fmake = "name = "+this.module.name+"\n" +
-                "summary = "+this.module.name+"\n" +
-                "outType = "+module.outType+"\n" +
-                "version = 1.0\n" +
-                "depends = "+depends.toString()+"\n" +
-                "srcDirs = "+src.toString()+"\n" +
-                "incDir = ./\n" +
-                "extIncDirs = ../runtime/\n";
+        for (Depend dp : module.depends) {
+            if (depends.length() > 0) {
+                depends.append(", ");
+            }
+            depends.append(dp.toString());
+        }
         
-        Files.writeString(Path.of(fmakeFile), fmake, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        HashMap<String, String> fmakes = new LinkedHashMap <String, String>();
+        fmakes.put("name", this.module.name);
+        fmakes.put("summary", this.module.name);
+        fmakes.put("version", "1.0");
+        fmakes.put("depends", depends.toString());
+        fmakes.put("srcDirs", this.module.name+".cpp");
+        fmakes.put("incDirs", "./");
+        fmakes.put("outType", this.module.outType);
+        
+        if (fmakeArgs != null) {
+            for (Map.Entry<String, String> entry : fmakeArgs.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+
+                if (fmakes.containsKey(key) && value.length() > 0) {
+                    if (key.equals("srcDirs") || key.equals("depends") || key.equals("incDirs")) {
+                        value = value +", " + fmakes.get(key);
+                    }
+                }
+                fmakes.put(key, value);
+            }
+        }
+        
+        StringBuilder fmakeScript = new StringBuilder();
+        for (Map.Entry<String, String> entry : fmakes.entrySet()) {
+            fmakeScript.append(entry.getKey());
+            fmakeScript.append(" = ");
+            fmakeScript.append(entry.getValue());
+            fmakeScript.append("\n");
+        }
+        
+        Files.writeString(Path.of(fmakeFile), fmakeScript, StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
     
 }

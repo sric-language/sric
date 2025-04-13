@@ -22,12 +22,9 @@ sric test.scm
 ```
 
 其中.scm文件是模块定义文件，也是构建脚本。
-
 生成的 C++ 代码位置在 "sric/output" 目录。
 
-
-## 通过fmake来编译 (可选的)
+## 使用fmake构建
 ```
-fan fmake runtime/sric.fmake -debug
-fan fmake output/test.fmake -debug
+sric test.scm -fmake
 ```

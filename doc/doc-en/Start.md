@@ -27,8 +27,7 @@ The .scm file is module build script.
 The generated C++ code is located in the "sric/output" directory.
 
 
-## Compile by fmake (Option)
+## Build by fmake
 ```
-fan fmake runtime/sric.fmake -debug
-fan fmake output/test.fmake -debug
+sric test.scm -fmake
 ```
