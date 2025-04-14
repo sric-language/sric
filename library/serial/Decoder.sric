@@ -136,7 +136,7 @@ struct Decoder {
         }
     }
 
-    private unsafe fun decodeObj(node: raw*Value, dst: raw*? Void, elemType: raw*? const Int8): own*? Void {
+    private unsafe fun decodeObj(node: raw*Value, dst: raw*? Void, typeName: raw*? const Int8): own*? Void {
         var name: raw*? const Int8;
         if (node.type() == Type::Object) {
             var objType = node.objectType();
@@ -148,7 +148,7 @@ struct Decoder {
             }
         }
         else {
-            name = elemType;
+            name = typeName;
         }
 
         var rtype = findRType(name);
@@ -189,6 +189,57 @@ struct Decoder {
             obj = newInstance(*rtype);
             dst = obj;
         }
+        decodeFields(dst, rtype, node);
+
+        var onDeserialize = findInstanceMethod(rtype, "_onDeserialize");
+        if (onDeserialize != null) {
+            if (onDeserialize.params.size() == 0 && 
+                    (onDeserialize.returnBaseType == null || strcmp(onDeserialize.returnBaseType, "Void") == 0) && 
+                    onDeserialize.pointer != null) {
+                callPVFunc(onDeserialize.pointer, dst);
+            }
+            else {
+                scError("serial", "Bad _onDeserialize function", name);
+            }
+        }
+
+        return obj;
+    }
+
+    private unsafe fun findInstanceMethod(rtype: raw*? RType, name: raw* const Int8): raw*? RFunc {
+        if (rtype == null) {
+            return null;
+        }
+        if (rtype.flags & RFlags::Reflect == 0) {
+            return null;
+        }
+
+        for (var i = 0; i<rtype.funcs.size(); ++i) {
+            var f = rtype.funcs[i];
+            if (strcmp(f.name, name) == 0) {
+                return &f;
+            }
+        }
+
+        if (rtype.superType != null) {
+            var superType = findRType(rtype.superType);
+            return findInstanceMethod(superType, name);
+        }
+        return null;
+    }
+
+    private unsafe fun decodeFields(obj: raw* Void, rtype: raw*? RType, node: raw* Value) {
+        if (rtype == null) {
+            return;
+        }
+        if (rtype.flags & RFlags::Reflect == 0) {
+            return;
+        }
+        if (rtype.superType != null) {
+            var superType = findRType(rtype.superType);
+            decodeFields(obj, superType, node);
+        }
+
         for (var i = 0; i<rtype.fields.size(); ++i) {
             var f = rtype.fields[i];
             
@@ -205,8 +256,7 @@ struct Decoder {
                 continue;
             }
             var typeName: TypeName = TypeName::parse(f.baseType);
-            decodeAny(subNode, unsafeCast$<raw*Int8>(dst), typeName, f.offset);
+            decodeAny(subNode, unsafeCast$<raw*Int8>(obj), typeName, f.offset);
         }
-        return obj;
     }
 }

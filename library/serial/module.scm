@@ -1,4 +1,4 @@
-name = sricSerial
+name = serial
 summary = sric serialize library
 outType = lib
 version = 1.0

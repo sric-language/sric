@@ -79,7 +79,8 @@ struct RType {
     readonly var enumBase: raw*? const Int8;
     readonly var fields : DArray$<RField>;
     readonly var funcs : DArray$<RFunc>;
-    readonly var inheritances : DArray$<raw*const Int8>;
+    readonly var superType : raw*? const Int8;
+    readonly var traits : DArray$<raw*const Int8>;
     readonly var genericParams : DArray$<raw*const Int8>;
 }
 
@@ -93,6 +94,8 @@ struct RModule {
 }
 
 extern fun findModule(name : raw*const Int8) : *? RModule;
-extern fun newInstance(type: &RType) : own* Void;
+extern fun newInstance(type: &RType) : own*? Void;
 
 unsafe extern fun typeOf(t: raw* Void): raw* const Int8;
+unsafe extern fun callPVFunc(func: raw* Void, arg: raw* Void);
+unsafe extern fun callVPFunc(func: raw* Void): raw* Void;

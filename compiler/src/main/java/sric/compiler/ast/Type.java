@@ -664,14 +664,16 @@ public class Type extends AstNode {
             sb.append(Buildin.metaTypeTypeName);
         }
         else {
+            boolean parentResolved = false;
             if (id.resolvedDef instanceof TypeDef f) {
                 if (f.parent instanceof FileUnit u) {
                     sb.append(u.module.name);
                     sb.append("::");
                     sb.append(f.name);
+                    parentResolved = true;
                 }
             }
-            else {
+            if (!parentResolved) {
                 sb.append(id.getQName());
             }
         }
@@ -764,14 +766,16 @@ public class Type extends AstNode {
             return sb.toString();
         }
         
+        boolean parentResolved = false;
         if (id.resolvedDef instanceof TypeDef f) {
             if (f.parent instanceof FileUnit u) {
                 sb.append(u.module.name);
                 sb.append("::");
                 sb.append(f.name);
+                parentResolved = true;
             }
         }
-        else {
+        if (!parentResolved) {
             sb.append(id.getQName());
         }
         

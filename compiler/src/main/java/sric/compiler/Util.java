@@ -128,4 +128,27 @@ public class Util {
         }
         pr.destroy();
     }
+    
+    public static String convertRelativePaths(String oldDir, String newDir, String fileNames) {
+        String[] fs = fileNames.split(",");
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<fs.length; ++i) {
+            File file = new File(oldDir + "/" + fs[i].trim());
+            String srcFile;
+            try {
+                srcFile = file.getCanonicalPath();
+            } catch (IOException ex) {
+                srcFile = file.getPath();
+            }
+            if (File.separatorChar != '/') {
+                srcFile = "/"+srcFile.replace('\\', '/');
+            }
+            if (file.isDirectory()) {
+                srcFile += "/";
+            }
+            if (i > 0) sb.append(',');
+            sb.append(srcFile);
+        }
+        return sb.toString();
+    }
 }

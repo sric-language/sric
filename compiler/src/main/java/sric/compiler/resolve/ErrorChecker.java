@@ -372,6 +372,11 @@ public class ErrorChecker extends CompilePass {
     @Override
     public void visitFunc(AstNode.FuncDef v) {
         if (v.parent instanceof TypeDef sd) {
+            if (v.name.equals(TokenKind.deleteKeyword.symbol) && sd.isPolymorphic()) {
+                if ((v.flags & FConst.Virtual) == 0) {
+                    err("Excpect virtual dector", v.loc);
+                }
+            }
             if (sd.isStruct()) {
                 if ((v.flags & FConst.Virtual) != 0) {
                     if ((sd.flags & FConst.Virtual) != 0 || (sd.flags & FConst.Abstract) != 0) {
@@ -510,10 +515,13 @@ public class ErrorChecker extends CompilePass {
         }
         
         if ((v.flags & FConst.Ctor) != 0) {
+            if ((v.flags & FConst.Static) != 0) {
+                err("Invalid static", v.loc);
+            }
             if (v.prototype.paramDefs != null && v.prototype.paramDefs.size() > 0) {
                 err("Ctor unsupport paramters", v.loc);
             }
-                            
+
             if (v.prototype.returnType != null && !v.prototype.returnType.isVoid()) {
                 err("Can't return from Ctor", v.loc);
             }
@@ -533,11 +541,6 @@ public class ErrorChecker extends CompilePass {
                 if (i == 0) {
                     if (inh.id.resolvedDef instanceof TypeDef superSd) {
                         if (superSd.isStruct()) {
-                            //auto reflectable
-                            if ((superSd.flags & FConst.Reflect) != 0 && v.generiParamDefs == null) {
-                                v.flags |= FConst.Reflect;
-                            }
-                            
                             if ((superSd.flags & FConst.Abstract) != 0 || (superSd.flags & FConst.Virtual) != 0) {
                                 //ok
                             }

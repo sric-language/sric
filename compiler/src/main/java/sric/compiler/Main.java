@@ -96,7 +96,7 @@ public class Main {
         }
         
         if (lsp) {
-            LanguageServer ls = new LanguageServer(homePath, verbose);
+            LanguageServer ls = new LanguageServer(homePath+"/lib", verbose);
             ls.start();
             return;
         }
@@ -154,7 +154,7 @@ public class Main {
                 sb.append("-debug ");
             }
             sb.append("-f ");
-            sb.append("file:");
+            sb.append("/");
             sb.append(homePath);
             sb.append("/output/");
             sb.append(compiler.module.name);

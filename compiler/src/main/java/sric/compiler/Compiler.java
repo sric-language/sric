@@ -289,11 +289,15 @@ public class Compiler {
         fmakes.put("outType", this.module.outType);
         
         if (fmakeArgs != null) {
+            String srcDir = new File(this.module.sourcePath).getParent();
             for (Map.Entry<String, String> entry : fmakeArgs.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
-
+                if (key.endsWith("Dirs")) {
+                    value = Util.convertRelativePaths(srcDir, outputDir, value);
+                }
                 if (fmakes.containsKey(key) && value.length() > 0) {
+                    
                     if (key.equals("srcDirs") || key.equals("depends") || key.equals("incDirs")) {
                         value = value +", " + fmakes.get(key);
                     }

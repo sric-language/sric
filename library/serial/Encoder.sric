@@ -107,23 +107,23 @@ struct Encoder {
         return node;
     }
 
-    private unsafe fun encodeObj(obj: raw*? Void, elemName: raw*? const Int8 = null): raw*? JsonNode {
+    private unsafe fun encodeObj(obj: raw*? Void, typeName: raw*? const Int8 = null): raw*? JsonNode {
         if (obj == null) return null;
 
-        if (elemName == null) {
-            elemName = typeOf(obj);
+        if (typeName == null) {
+            typeName = typeOf(obj);
         }
 
-        var rtype = findRType(elemName);
+        var rtype = findRType(typeName);
         if (rtype == null) {
             return null;
         }
 
-        if (rtype.inheritances.size() > 0 || (rtype.flags & RFlags::Virtual) != 0 || (rtype.flags & RFlags::Abstract) != 0) {
+        if (rtype.superType != null || rtype.traits.size() > 0 || (rtype.flags & RFlags::Virtual) != 0 || (rtype.flags & RFlags::Abstract) != 0) {
             var realName = typeOf(obj);
-            if (strcmp(realName, elemName) != 0) {
-                elemName = realName;
-                var rtype = findRType(elemName);
+            if (strcmp(realName, typeName) != 0) {
+                typeName = realName;
+                var rtype = findRType(typeName);
                 if (rtype == null) {
                     return null;
                 }
@@ -146,6 +146,25 @@ struct Encoder {
         }
 
         var node = allocator.allocNode(Type::Object);
+        encodeFields(obj, rtype, node);
+
+        node.insert_pair("_type", allocator.alloc_str(typeName));
+
+        node.reverse();
+        return node;
+    }
+
+    private unsafe fun encodeFields(obj: raw* Void, rtype: raw*? RType, node: raw* JsonNode) {
+        if (rtype == null) {
+            return;
+        }
+        if (rtype.flags & RFlags::Reflect == 0) {
+            return;
+        }
+        if (rtype.superType != null) {
+            var superType = findRType(rtype.superType);
+            encodeFields(obj, superType, node);
+        }
         for (var i = 0; i<rtype.fields.size(); ++i) {
             var f = rtype.fields[i];
 
@@ -163,10 +182,5 @@ struct Encoder {
                 node.insert_pair(fname, vn);
             }
         }
-
-        node.insert_pair("_type", allocator.alloc_str(elemName));
-
-        node.reverse();
-        return node;
     }
 }

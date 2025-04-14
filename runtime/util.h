@@ -87,12 +87,6 @@ namespace sric {
 		return b;
 	}
 
-	inline const char* typeOf(void *obj) {
-		if (!obj) return "";
-		Reflectable* r = (Reflectable*)obj;
-		return r->__typeof();
-	}
-
 	template<typename T>
 	T unsafeCast(void* b) {
 		return (T)b;

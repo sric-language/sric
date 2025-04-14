@@ -257,6 +257,20 @@ public class ExprTypeResolver extends TypeResolver {
         this.curFunc = v;
         this.funcs.push(v);
         
+        if ((v.flags & FConst.Ctor) != 0) {
+            if (v.parent instanceof TypeDef td) {
+                if (v.name.equals(newKeyword.symbol)) {
+                    td._hasCotr = true;
+                }
+                else {
+                    td._hasDecotr = true;
+                }
+            }
+            else {
+                err("Invalid Ctor", v.loc);
+            }
+        }
+        
         if (v.generiParamDefs != null) {
             Scope scope = this.pushScope();
             for (GenericParamDef gp : v.generiParamDefs) {
@@ -279,12 +293,36 @@ public class ExprTypeResolver extends TypeResolver {
         funcs.pop();
         this.curFunc = null;
     }
+    
+    private boolean isIniheriReflectable(TypeDef v) {
+        if (v.inheritances != null && v.inheritances.size() > 0) {
+            if (v.inheritances.get(0).id.resolvedDef instanceof TypeDef superSd) {
+                //auto reflectable
+                if (superSd.isStruct() && v.generiParamDefs == null) {
+                    if ((superSd.flags & FConst.Reflect) != 0) {
+                        return true;
+                    }
+                    else {
+                        return isIniheriReflectable(superSd);
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     @Override
     public void visitTypeDef(TypeDef v) {
         int scopeCount = 0;
         if (v.isStruct()) {
             curStruct = v;
+            //auto reflectable
+            if ((v.flags & FConst.Reflect) == 0 && v.generiParamDefs == null) {
+                if (isIniheriReflectable(v)) {
+                    v.flags |= FConst.Reflect;
+                }
+            }
+            
             if (v.inheritances != null) {
                 Scope inhScopes = v.getInstanceInheriteScope();
                 this.scopes.add(inhScopes);
@@ -305,16 +343,6 @@ public class ExprTypeResolver extends TypeResolver {
                         continue;
                     }
                     if ((f.flags & FConst.Ctor) != 0) {
-                        if (f.name.equals(newKeyword)) {
-                            v._hasCotr = true;
-                        }
-                        else {
-                            v._hasDecotr = true;
-                            //force to polymorphic
-                            if (v.isPolymorphic()) {
-                                v.flags |= FConst.Virtual;
-                            }
-                        }
                         continue;
                     }
                     if (inhScopes.contains(f.name)) {

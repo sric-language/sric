@@ -322,11 +322,12 @@ public class CppGenerator extends BaseGenerator {
                 print("_").print(this.getSymbolName(f)).print("(");
         
         print(this.module.name).print("::").print(this.getSymbolName((TopLevelDef)f.parent)).print("* self");
-        
-        for (FieldDef p : f.prototype.paramDefs) {
-            print(", ");
-            printType(p.fieldType);
-            print(" ").print(p.name);
+        if (f.prototype.paramDefs != null) {
+            for (FieldDef p : f.prototype.paramDefs) {
+                print(", ");
+                printType(p.fieldType);
+                print(" ").print(p.name);
+            }
         }
         print(") {").newLine();
         this.indent();
@@ -336,11 +337,18 @@ public class CppGenerator extends BaseGenerator {
         }
         
         print("self->").print(this.getSymbolName(f)).print("(");
-        int i = 0;
-        for (FieldDef p : f.prototype.paramDefs) {
-            if (i>0) print(", ");
-            print(p.name);
-            ++i;
+        if (f.prototype.paramDefs != null) {
+            int i = 0;
+            for (FieldDef p : f.prototype.paramDefs) {
+                if (i>0) print(", ");
+                if (ErrorChecker.isCopyable(p.fieldType)) {
+                    print(p.name);
+                }
+                else {
+                    print("std::move(").print(p.name).print(")");
+                }
+                ++i;
+            }
         }
         print(");").newLine();
         
@@ -357,10 +365,16 @@ public class CppGenerator extends BaseGenerator {
         
         String moduleName = this.module.name;
         if (f.isStatic()) {
-            print("f.pointer = (void*) &");print(moduleName);print("::").print(this.getSymbolName(f)).print(";").newLine();
+            if (f.parent instanceof TopLevelDef) {
+                print("f.pointer = (void*) &");print(moduleName);print("::").print(this.getSymbolName((TopLevelDef)f.parent)).
+                    print("::").print(this.getSymbolName(f)).print(";").newLine();
+            }
+            else {
+                print("f.pointer = (void*) &");print(moduleName);print("::").print(this.getSymbolName(f)).print(";").newLine();
+            }
         }
         else {
-            print("f.pointer = (void*) &");print(this.module.name).print("_").print(this.getSymbolName((TopLevelDef)f.parent)).
+            print("f.pointer = (void*) &");print(moduleName).print("_").print(this.getSymbolName((TopLevelDef)f.parent)).
                 print("_").print(this.getSymbolName(f)).print(";").newLine();
         }
 
@@ -396,6 +410,8 @@ public class CppGenerator extends BaseGenerator {
                     continue;
                 }
                 for (FuncDef f : type.funcDefs) {
+                    if (f.isStatic()) continue;
+                    if ((f.flags & FConst.Ctor) != 0) continue;
                     printMethodWrapFunc(f);
                 }
             }
@@ -429,11 +445,21 @@ public class CppGenerator extends BaseGenerator {
                     }
                 }
 
+                boolean hasBaseType = false;
                 if (type.inheritances != null) {
                     for (Type p : type.inheritances) {
-                        print("s.inheritances.add(");printStringLiteral(p.getQName(true)); print(");");
+                        if (p.id.resolvedDef instanceof TypeDef tf && tf.isStruct()) {
+                            print("s.superType = ");printStringLiteral(p.getQName(true)); print(";");
+                            hasBaseType = true;
+                        }
+                        else {
+                            print("s.traits.add(");printStringLiteral(p.getQName(true)); print(");");
+                        }
                         this.newLine();
                     }
+                }
+                if (!hasBaseType) {
+                    print("s.superType = nullptr;");
                 }
 
                 for (FieldDef f : type.fieldDefs) {
@@ -441,10 +467,11 @@ public class CppGenerator extends BaseGenerator {
                 }
 
                 for (FuncDef f : type.funcDefs) {
+                    if ((f.flags & FConst.Ctor) != 0) continue;
                     reflectFuncDef(f, "s");
                 }
                 
-                if (type.generiParamDefs == null && type.isStruct()) {
+                if (type.generiParamDefs == null && type.isStruct() && (!type.isAbstract())) {
                     print("s.ctor = (void*) &");print("sric::new_<").print(this.module.name).print("::").
                             print(this.getSymbolName(type)).print(">").print(";").newLine();
                 }
@@ -1186,7 +1213,7 @@ public class CppGenerator extends BaseGenerator {
                     print(getSymbolName(v));
                     print("(){}").newLine();
                 }
-                if (!v._hasCotr) {
+                if (!v._hasCotr && v.isStruct()) {
                     //print("");
                     print(getSymbolName(v));
                     print("(){}").newLine();
