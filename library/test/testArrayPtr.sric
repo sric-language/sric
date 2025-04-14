@@ -1,0 +1,25 @@
+import sric::*;
+
+unsafe struct UnsafeStruct {
+    var x: Int = 0;
+    var y: Int = 1;
+}
+
+struct DerivativeTest {
+    var a: Int = 0;
+    var b: Int = 1;
+    var s: UnsafeStruct;
+}
+
+fun testArrayPtrCall(x: * DerivativeTest) {
+  var i = &x.s;
+  i.x = 2;
+}
+
+fun testArrayPtr() {
+  var a: DArray$<DerivativeTest>;
+  var x: DerivativeTest;
+  a.add(x);
+  a.add(x);
+  testArrayPtrCall(a.getPtr(1));
+}

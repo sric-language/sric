@@ -2,6 +2,7 @@
 import sric::*;
 
 struct C : B, I {
+  var c: Int;
   override fun foo() {
     printf("C::foo\n");
   }

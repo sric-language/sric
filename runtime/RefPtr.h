@@ -124,18 +124,18 @@ private:
         sc_assert(pointer != nullptr, "try access null pointer 0");
         switch (type) {
         case RefType::HeapRef : {
-            T* first = (T*)(((char*)pointer) - offset);
+            char* first = ((char*)toVoid(pointer) - offset);
             HeapRefable* refable = getRefable(first);
             sc_assert(checkCode == refable->_checkCode, "try access invalid pointer 1");
             break;
         }
         case RefType::StackRef: {
-            T* first = (T*)(((char*)pointer) - offset);
+            char* first = ((char*)toVoid(pointer) - offset);
             sc_assert(checkCode == *(((int32_t*)first) - 1), "try access invalid pointer 2");
             break;
         }
         case RefType::ArrayRef: {
-            T* first = (T*)(((char*)pointer) - offset);
+            char* first = ((char*)toVoid(pointer) - offset);
             HeapRefable* refable = getRefable(first);
             sc_assert(checkCode == refable->_checkCode, "try access invalid array element pointer 1");
             sc_assert(offset < refable->_dataSize, "try access invalid array element pointer 2");
@@ -147,19 +147,19 @@ private:
                     sc_assert(checkCode == pointer->__checkCode, "try access invalid pointer 3");
                 }
                 else {
-                    T* first = (T*)(((char*)pointer) - offset);
-                    int32_t* code = (int32_t*)toVoid(first);
+                    char* first = ((char*)toVoid(pointer) - offset);
+                    int32_t* code = (int32_t*)(first);
                     sc_assert(checkCode == *(code + 1), "try access invalid pointer 4");
                 }
             }
             else if constexpr (std::is_polymorphic<T>::value) {
-                T* first = (T*)(((char*)pointer) - offset);
-                ObjBase* code = (ObjBase*)dynamic_cast<ObjBase*>(first);
-                sc_assert(checkCode == code->__checkCode, "try access invalid pointer 5");
+                ObjBase* code = (ObjBase*)dynamic_cast<ObjBase*>(pointer);
+                ObjBase* first = (ObjBase*)(((char*)code) - offset);
+                sc_assert(checkCode == first->__checkCode, "try access invalid pointer 5");
             }
             else {
-                T* first = (T*)(((char*)pointer) - offset);
-                int32_t* code = (int32_t*)toVoid(first);
+                char* first = ((char*)toVoid(pointer) - offset);
+                int32_t* code = (int32_t*)first;
                 sc_assert(checkCode == *(code + 1), "try access invalid pointer 5");
             }
             break;
@@ -232,7 +232,7 @@ public:
 #ifndef SC_NO_CHECK
         sc_assert(p.get(), "try access null pointer");
         type = (RefType::HeapRef);
-        offset = (char*)ptr - (char*)p.get();
+        offset = (char*)toVoid(ptr) - (char*)toVoid(p.get());
         checkCode = getRefable(p.get())->_checkCode;
 #endif
     }
@@ -252,7 +252,7 @@ public:
 #endif
     {
 #ifndef SC_NO_CHECK
-        offset = p.offset + (char*)ptr - (char*)p.get();
+        offset = p.offset + (char*)toVoid(ptr) - (char*)toVoid(p.get());
 #endif
     }
 
@@ -422,7 +422,7 @@ public:
 #ifndef SC_NO_CHECK
         sc_assert(p.get(), "try access null pointer");
         type = (RefType::HeapRef);
-        offset = (char*)ptr - (char*)p.get();
+        offset = (char*)ptr - (char*)toVoid(p.get());
         checkCode = getRefable(p.get())->_checkCode;
 #endif
     }
@@ -442,7 +442,7 @@ public:
 #endif
     {
 #ifndef SC_NO_CHECK
-        offset = p.offset + (char*)ptr - (char*)p.get();
+        offset = p.offset + (char*)ptr - (char*)toVoid(p.get());
 #endif
     }
 

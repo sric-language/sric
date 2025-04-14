@@ -10,7 +10,8 @@ fun main(): Int {
     
     testPtrAll();
     testInherit();
-    
+    testArrayPtr();
+
     testHashMapAll();
     
     testReflection();

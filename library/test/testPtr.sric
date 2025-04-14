@@ -115,6 +115,7 @@ fun testRawCast() {
     var r2 = rawToRef(r1);
 }
 
+
 fun testPtrAll() {
     testPtr();
     testCompare();
