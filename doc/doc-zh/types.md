@@ -50,6 +50,10 @@ var p: *Int = &i;
 
 ### 引用
 引用的概念同C++，但在sric中引用只能用在函数参数和返回值中。
+```
+fun foo(a: & const Int) {
+}
+```
 
 ### 数组
 数组特指静态大小数组。如果需要动态数组，请参考标准库中的DArray。
@@ -63,7 +67,7 @@ var a = []Int { 1,3,4 };
 ```
 为了能通过变量指定数组大小，特意增加了constexpr关键字。
 ```
-constexpr var size = 15;
+constexpr var size: const Int = 15;
 var a: [size]Int;
 ```
 目前constexpr只能赋值字面量，远没有C++的constexpr强大，待改进。

@@ -5,6 +5,7 @@
 Require:
 - JDK 17+
 - C++ compier that support C++17
+- fanx/fmake (Options)
 
 Build:
 1. Add "bin" into your env path
@@ -29,5 +30,9 @@ The generated C++ code is located in the "sric/output" directory.
 
 ## Build by fmake
 ```
-sric test.scm -fmake
+sric test.scm -fmake -debug
+```
+Or:
+```
+fan fmake output/test.fmake -debug
 ```

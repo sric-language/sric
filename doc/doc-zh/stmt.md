@@ -71,8 +71,10 @@ b.foo();
 ```
 
 ### 类型转换和判断:
+as表达式用来做动态类型转换和数字类型转换。
 ```
 var a = p as own* A;
 var b = p is own* A;
 ```
 
+其他类型转换使用unsafeCast函数来完成。

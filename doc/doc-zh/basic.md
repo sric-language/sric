@@ -17,7 +17,7 @@ var s = "ab
 var s = """ab"
            cd""";
 ```
-字符串字面量的类型是raw*const Int8, 可以自动转为String
+字符串字面量的类型是raw*const Int8, 可以自动转为sric::String
 
 ### 注释
 普通注释

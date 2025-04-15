@@ -80,7 +80,8 @@ struct U {
     var data: [8]Int8;
 }
 
-var i = *((&u.data) as raw*Int);
+var i = unsafeCast$<raw*Int>(&u.data);
+
 ```
 或者使用继承多态来满足需求。
 也许将来会加入像C++一样的std::variant作为替代。
@@ -122,6 +123,18 @@ struct A {
     var p : own* Int = ...;
     fun new() {
         p = new Int;
+    }
+}
+```
+
+## 不安全结构
+
+unsafe结构完全和对应的C++类一致，不包含安全检查需要的标记位。extern结构默认是unsafe的。
+unsafe里的this的类型是裸指针，而不是安全指针。如果对象是独立分配的，可以通过rawToRef转为安全指针。
+```
+unsafe struct A {
+    fun foo() {
+        var self = rawToRef(this);
     }
 }
 ```

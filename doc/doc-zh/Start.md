@@ -5,6 +5,7 @@
 需要:
 - JDK 17+
 - C++ 编译器 支持C++17
+- fanx/fmake (可选)
 
 构建:
 1. 添加 "bin"目录 到你的环境变量
@@ -26,5 +27,10 @@ sric test.scm
 
 ## 使用fmake构建
 ```
-sric test.scm -fmake
+sric test.scm -fmake -debug
+```
+
+也可以单独手动运行fmake:
+```
+fan fmake output/test.fmake -debug
 ```
