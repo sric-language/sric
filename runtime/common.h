@@ -46,7 +46,7 @@ namespace sric
 
     class Reflectable {
     public:
-        virtual const char* __typeof() const = 0;
+        virtual const char* _typeof() const = 0;
     };
 }
 

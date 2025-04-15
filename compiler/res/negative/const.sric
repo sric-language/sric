@@ -1,6 +1,8 @@
 
 var g : const Int = 1;
 
+constexpr var arraySize : Int = 10;
+
 struct A {
     var i : Int = 0;
 

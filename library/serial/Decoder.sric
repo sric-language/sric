@@ -128,7 +128,7 @@ struct Decoder {
         
         var p = unsafeCast$<raw*Int8>(arr.data());
         var i = 0;
-        for (var b = node.begin(); b.not_eq(node.end()); b.next()) {
+        for (var b = node.begin(); b.noteq(node.end()); b.next()) {
             var elem = p + elemSize * i;
             var subNode = b.get();
             decodeAny(subNode, elem, elemType);

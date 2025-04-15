@@ -15,7 +15,7 @@ namespace sric {
 	inline const char* typeOf(void *obj) {
 		if (!obj) return "";
 		Reflectable* r = (Reflectable*)obj;
-		return r->__typeof();
+		return r->_typeof();
 	}
 
 	inline bool callPVFunc(void* func, void *arg) {
@@ -39,6 +39,6 @@ namespace sric {
 			registReflection_ ## name();\
 		}\
 	};\
-	ScAutoRegistModule ## name __scAutoRegistModuleInstance;
+	ScAutoRegistModule ## name _scAutoRegistModuleInstance_ ## name;
 
 #endif

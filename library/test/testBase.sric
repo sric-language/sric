@@ -23,7 +23,7 @@ fun testGlobal() {
     verify(globalValue == 1);
 }
 
-constexpr var arraySize : Int = 10;
+constexpr var arraySize : const Int = 10;
 
 fun testArray() {
     var a  = []Int {1,2,3,4};

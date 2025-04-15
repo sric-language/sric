@@ -341,7 +341,7 @@ public class CppGenerator extends BaseGenerator {
             int i = 0;
             for (FieldDef p : f.prototype.paramDefs) {
                 if (i>0) print(", ");
-                if (ErrorChecker.isCopyable(p.fieldType)) {
+                if (p.fieldType.isReference || ErrorChecker.isCopyable(p.fieldType)) {
                     print(p.name);
                 }
                 else {
@@ -748,6 +748,7 @@ public class CppGenerator extends BaseGenerator {
 
     @Override
     public void visitField(AstNode.FieldDef v) {
+
         if ((v.flags & FConst.ExternC) != 0) {
             return;
         }
@@ -1221,7 +1222,7 @@ public class CppGenerator extends BaseGenerator {
             }
             
             if (isDynamicReflect) {
-                print("const char* __typeof() const { return \"");
+                print("const char* _typeof() const { return \"");
                 print(this.module.name).print("::").print(v.name);
                 print("\"; }");
             }

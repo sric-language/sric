@@ -155,6 +155,24 @@ public class Type extends AstNode {
         return true;
     }
     
+    public boolean hasDefaultValue() {
+        if (this.isPointerType()) {
+            if (!this.isNullablePointerType()) {
+                return false;
+            }
+            return true;
+        }
+        if (this.isReference) {
+            return false;
+        }
+        if (this.id.resolvedDef instanceof TypeDef td) {
+            if (td.isEnum()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public boolean isEnumType() {
         if (this.id.resolvedDef instanceof TypeDef td) {
             if (td.isEnum()) {

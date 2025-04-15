@@ -291,6 +291,7 @@ public class ErrorChecker extends CompilePass {
 
     @Override
     public void visitField(AstNode.FieldDef v) {
+ 
         if (v.initExpr != null) {
             this.visit(v.initExpr);
         }
@@ -312,6 +313,9 @@ public class ErrorChecker extends CompilePass {
         
         //check constexpr
         if ((v.flags & FConst.ConstExpr) != 0) {
+            if (v.fieldType != null && v.fieldType.isImmutable == false) {
+                err("constexpr must be const", v.loc);
+            }
             if (v.initExpr == null) {
                 if (!this.module.isStubFile && !v.isExtern())
                     err("Must init constExpr", v.loc);
@@ -346,7 +350,7 @@ public class ErrorChecker extends CompilePass {
                 if (v.parent instanceof TypeDef) {
 
                 }
-                else if (v.fieldType != null && v.fieldType.isPointerType() && !v.fieldType.isNullablePointerType()) {
+                else if (v.fieldType != null && !v.fieldType.hasDefaultValue()) {
                     if (!v.unkonwInit && !v.isExtern())
                         err("Variable is not initialized", v.loc);
                 }
@@ -1071,7 +1075,7 @@ public class ErrorChecker extends CompilePass {
                         continue;
                     }
                     
-                    if (f.uninit || (f.fieldType.isPointerType() && !f.fieldType.isNullablePointerType())) {
+                    if (f.uninit || !f.fieldType.hasDefaultValue()) {
                         boolean found = false;
                         for (Stmt t : e.block.stmts) {
                             if (t instanceof ExprStmt exprStmt) {
