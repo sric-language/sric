@@ -72,7 +72,7 @@ public:
     /**
      * Destructor.
      */
-    virtual ~HeapRefable();
+    ~HeapRefable();
 
 private:
     void disposeWeakRef();

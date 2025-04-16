@@ -310,6 +310,8 @@ void dealloc(HeapRefable* p) {
 
 template<typename T>
 OwnPtr<T> new_() {
+    static_assert(alignof(HeapRefable) == 8, "HeapRefable must be 8-byte aligned");
+
     HeapRefable* p = (HeapRefable*)malloc(sizeof(HeapRefable) + sizeof(T));
     new (p) HeapRefable();
     p->dealloc = dealloc<T>;
