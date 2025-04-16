@@ -160,6 +160,9 @@ public class CppGenerator extends BaseGenerator {
                             this.printType(type.enumBase);
                         }
                         print(";").newLine();
+                        if ((type.flags & FConst.Reflect) != 0) {
+                            print("const char* ").print(type.name).print("_toString(int i);").newLine();
+                        }
                     }
                     else {
                         print("struct ");
@@ -264,10 +267,10 @@ public class CppGenerator extends BaseGenerator {
     
     private void reflectParamDef(FieldDef f, String parentName) {
         print("{");
-        print("sric::RField param;");
+        
         print("param.name = \"").print(f.name).print("\";");
         print("param.fieldType = ");printStringLiteral(f.fieldType.getQName(true));print(";");
-        print("param.baseType = ");printStringLiteral(f.fieldType.getEasyName());print(";").newLine();
+        print("param.baseType = ");printStringLiteral(f.fieldType.getEasyName());print(";");
 
         print("param.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";");
         print(parentName).print(".params.add(std::move(param));");
@@ -279,13 +282,13 @@ public class CppGenerator extends BaseGenerator {
         print("{");
         this.indent();
         newLine();
-        print("sric::RField f;").newLine();
-        reflectionTopLevelDef(f, "f");
+        
+        reflectionTopLevelDef(f, "v");
         
         String moduleName = this.module.name;
         if (f.isStatic()) {
-            print("f.offset = 0;").newLine();
-            print("f.pointer = (void*) &");print(moduleName);print("::");
+            print("v.offset = 0;").newLine();
+            print("v.pointer = (void*) &");print(moduleName);print("::");
             if (f.parent instanceof TypeDef td) {
                 print(this.getSymbolName(td));
                 print("::");
@@ -293,23 +296,23 @@ public class CppGenerator extends BaseGenerator {
             print(this.getSymbolName(f)).print(";").newLine();
         }
         else if (isEnumSlot) {
-            print("f.offset = 0;").newLine();
-            print("f.pointer = nullptr;").newLine();
+            print("v.offset = 0;").newLine();
+            print("v.pointer = nullptr;").newLine();
         }
         else {
-            print("f.offset = offsetof("); print(moduleName);print("::").print(this.getSymbolName((TopLevelDef)f.parent));
+            print("v.offset = offsetof("); print(moduleName);print("::").print(this.getSymbolName((TopLevelDef)f.parent));
                 print(",").print(this.getSymbolName(f)).print(");").newLine();
-            print("f.pointer = nullptr;").newLine();
+            print("v.pointer = nullptr;").newLine();
         }
         
-        print("f.fieldType = ");printStringLiteral(f.fieldType.getQName(true));print(";").newLine();
-        print("f.baseType = ");printStringLiteral(f.fieldType.getEasyName());print(";").newLine();
+        print("v.fieldType = ");printStringLiteral(f.fieldType.getQName(true));print(";").newLine();
+        print("v.baseType = ");printStringLiteral(f.fieldType.getEasyName());print(";").newLine();
 
-        print("f.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";").newLine();
+        print("v.hasDefaultValue = ").print(f.hasParamDefaultValue() ? "1" : "0").print(";").newLine();
         
-        print("f.enumValue = ").print(""+f._enumValue).print(";").newLine();
+        print("v.enumValue = ").print(""+f._enumValue).print(";").newLine();
         
-        print(parentName).print(".fields.add(std::move(f));").newLine();
+        print(parentName).print(".fields.add(std::move(v));").newLine();
         
         this.unindent();
         print("}");
@@ -318,8 +321,8 @@ public class CppGenerator extends BaseGenerator {
     
     private void printMethodWrapFunc(FuncDef f) {
         this.printType(f.prototype.returnType);
-        print(" ").print(this.module.name).print("_").print(this.getSymbolName((TopLevelDef)f.parent)).
-                print("_").print(this.getSymbolName(f)).print("(");
+        print(" ").print(this.module.name).print("_").print(((TopLevelDef)f.parent).name).
+                print("_").print(f.name).print("(");
         
         print(this.module.name).print("::").print(this.getSymbolName((TopLevelDef)f.parent)).print("* self");
         if (f.prototype.paramDefs != null) {
@@ -360,7 +363,7 @@ public class CppGenerator extends BaseGenerator {
         print("{");
         this.indent();
         newLine();
-        print("sric::RFunc f;").newLine();
+        
         reflectionTopLevelDef(f, "f");
         
         String moduleName = this.module.name;
@@ -374,8 +377,8 @@ public class CppGenerator extends BaseGenerator {
             }
         }
         else {
-            print("f.pointer = (void*) &");print(moduleName).print("_").print(this.getSymbolName((TopLevelDef)f.parent)).
-                print("_").print(this.getSymbolName(f)).print(";").newLine();
+            print("f.pointer = (void*) &");print(moduleName).print("_").print(((TopLevelDef)f.parent).name).
+                print("_").print(f.name).print(";").newLine();
         }
 
         print("f.returnType = ");printStringLiteral(f.prototype.returnType.getQName(true));print(";").newLine();
@@ -402,6 +405,33 @@ public class CppGenerator extends BaseGenerator {
         newLine();
     }
     
+    private void printEnumSwitch(TypeDef td) {
+        if (!td.isEnum()) {
+            return;
+        }
+        String typeName = this.getSymbolName(td);
+        print("const char* ");
+        print(this.module.name).print("::").print(td.name). print("_toString(int i) {").newLine();
+        this.indent();
+        print(this.module.name).print("::").print(typeName).print(" e = (");
+        print(this.module.name).print("::").print(typeName).print(")i;").newLine();
+        
+        print("switch (e) {").newLine();
+        
+        for (FieldDef f : td.fieldDefs) {
+            print("case ").print(this.module.name).print("::").print(typeName).print("::").print(this.getSymbolName(f)).print(":").newLine();
+            print("    return \"").print(f.name).print("\";").newLine();
+        }
+        
+        print("default: ").newLine();
+        print("    return \"\";").newLine();
+        
+        print("}").newLine();
+        this.unindent();
+        print("}");
+        newLine();
+    }
+    
     private void printReflection(SModule module) {
         //print method wrap
         for (FileUnit funit : module.fileUnits) {
@@ -409,6 +439,8 @@ public class CppGenerator extends BaseGenerator {
                 if ((type.flags & FConst.Reflect) == 0 ) {
                     continue;
                 }
+                printEnumSwitch(type);
+                
                 for (FuncDef f : type.funcDefs) {
                     if (f.isStatic()) continue;
                     if ((f.flags & FConst.Ctor) != 0) continue;
@@ -424,6 +456,11 @@ public class CppGenerator extends BaseGenerator {
         print("m.name = \"").print(module.name).print("\";").newLine();
         print("m.version = \"").print(module.version).print("\";").newLine();
         
+        print("sric::RType s;").newLine();
+        print("sric::RFunc f;").newLine();
+        print("sric::RField v;").newLine();
+        print("sric::RField param;").newLine();
+        
         for (FileUnit funit : module.fileUnits) {
             for (TypeDef type : funit.typeDefs) {
                 
@@ -434,7 +471,7 @@ public class CppGenerator extends BaseGenerator {
                 print("{");
                 this.indent();
                 newLine();
-                print("sric::RType s;").newLine();
+                
                 reflectionTopLevelDef(type, "s");
                 
 
@@ -460,6 +497,7 @@ public class CppGenerator extends BaseGenerator {
                 }
                 if (!hasBaseType) {
                     print("s.superType = nullptr;");
+                    this.newLine();
                 }
 
                 for (FieldDef f : type.fieldDefs) {
@@ -477,6 +515,13 @@ public class CppGenerator extends BaseGenerator {
                 }
                 else {
                     print("s.ctor = nullptr;").newLine();
+                }
+                
+                if (type.isEnum()) {
+                    print("s.enumToStr = (void*) &").print(this.module.name).print("::").print(type.name). print("_toString;").newLine();
+                }
+                else {
+                    print("s.enumToStr = nullptr;").newLine();
                 }
                 
                 if (type.isEnum() && type.enumBase != null) {
