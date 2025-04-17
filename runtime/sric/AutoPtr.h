@@ -10,7 +10,7 @@
 #ifndef _SRIC_AUTOPTR_H_
 #define _SRIC_AUTOPTR_H_
 
-#include "RefPtr.h"
+#include "sric/RefPtr.h"
 
 namespace sric
 {

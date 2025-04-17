@@ -15,8 +15,8 @@
 #include <type_traits>
 #include <functional>
 
-#include "Refable.h"
-#include "common.h"
+#include "sric/Refable.h"
+#include "sric/common.h"
 
 namespace sric
 {

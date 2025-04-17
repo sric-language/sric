@@ -1,4 +1,4 @@
-//@#include "Str.h"
+//@#include "sric/Str.h"
 
 extern noncopyable struct String {
     fun c_str() const: raw* const Int8;

@@ -1,6 +1,6 @@
-//@#include "FileStream.h"
-//@#include "Buffer.h"
-//@#include "FileSystem.h"
+//@#include "sric/FileStream.h"
+//@#include "sric/Buffer.h"
+//@#include "sric/FileSystem.h"
 
 extern abstract struct IOStream {
     fun canRead(): Bool;

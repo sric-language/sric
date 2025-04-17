@@ -25,9 +25,9 @@
 #include <chrono>
 #include <fstream>
 
-#include "FileSystem.h"
-#include "Stream.h"
-#include "FileStream.h"
+#include "sric/FileSystem.h"
+#include "sric/Stream.h"
+#include "sric/FileStream.h"
 
 #include <algorithm>
 #include <assert.h>

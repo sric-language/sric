@@ -2,7 +2,7 @@
 #ifndef SRIC_REFLECT_H_
 #define SRIC_REFLECT_H_
 
-#include "RefPtr.h"
+#include "sric/RefPtr.h"
 
 namespace sric {
 	struct RModule;

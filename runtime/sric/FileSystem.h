@@ -1,8 +1,8 @@
 #ifndef SRIC_FILESYSTEM_H_
 #define SRIC_FILESYSTEM_H_
 
-#include "Stream.h"
-#include "Ptr.h"
+#include "sric/Stream.h"
+#include "sric/Ptr.h"
 
 namespace sric
 {

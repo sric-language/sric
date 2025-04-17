@@ -10,7 +10,7 @@
 #ifndef SRIC_BUFFER_H_
 #define SRIC_BUFFER_H_
 
-#include "Stream.h"
+#include "sric/Stream.h"
 
 namespace sric
 {

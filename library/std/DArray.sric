@@ -1,4 +1,4 @@
-//@#include "DArray.h"
+//@#include "sric/DArray.h"
 
 extern trait List {
     abstract fun data(): raw* Void;

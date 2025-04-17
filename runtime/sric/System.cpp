@@ -7,7 +7,7 @@
  * History:
  *   2012-12-23  Jed Young  Creation
  */
-#include "System.h"
+#include "sric/System.h"
 
 #include <stdio.h>
 

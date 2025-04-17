@@ -7,7 +7,7 @@
  * History:
  *   2012-12-23  Jed Young  Creation
  */
-#include "Buffer.h"
+#include "sric/Buffer.h"
 
 using namespace sric;
 

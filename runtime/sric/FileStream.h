@@ -1,9 +1,9 @@
 #ifndef SRIC_FILESTREAM_H_
 #define SRIC_FILESTREAM_H_
 
-#include "Stream.h"
+#include "sric/Stream.h"
 #include <string>
-#include "Ptr.h"
+#include "sric/Ptr.h"
 
 namespace sric
 {

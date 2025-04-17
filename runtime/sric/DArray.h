@@ -1,10 +1,10 @@
 #ifndef _SRIC_DARRAY_H_
 #define _SRIC_DARRAY_H_
 
-#include "common.h"
+#include "sric/common.h"
 #include <vector>
-#include "RefPtr.h"
-#include "util.h"
+#include "sric/RefPtr.h"
+#include "sric/util.h"
 
 namespace sric
 {

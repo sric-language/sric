@@ -2,7 +2,7 @@
 #define _SRIC_STRING_H_
 
 #include <string>
-#include "DArray.h"
+#include "sric/DArray.h"
 
 namespace sric
 {

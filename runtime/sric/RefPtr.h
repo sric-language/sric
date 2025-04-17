@@ -10,7 +10,7 @@
 #ifndef _SRIC_REFPTR_H_
 #define _SRIC_REFPTR_H_
 
-#include "Ptr.h"
+#include "sric/Ptr.h"
 
 //#define SC_SELF_TYPE std::remove_reference<decltype(*this)>::type
 #define SC_SAFE_STRUCT

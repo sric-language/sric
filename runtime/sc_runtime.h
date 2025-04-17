@@ -2,10 +2,10 @@
 
 #include <stdint.h>
 
-#include "Array.h"
-#include "RefPtr.h"
-#include "AutoPtr.h"
-#include "util.h"
-#include "reflection.h"
+#include "sric/Array.h"
+#include "sric/RefPtr.h"
+#include "sric/AutoPtr.h"
+#include "sric/util.h"
+#include "sric/reflection.h"
 
 #include <functional>

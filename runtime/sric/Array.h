@@ -1,7 +1,7 @@
 #ifndef _SRIC_ARRAY_H_
 #define _SRIC_ARRAY_H_
 
-#include "common.h"
+#include "sric/common.h"
 
 namespace sric
 {

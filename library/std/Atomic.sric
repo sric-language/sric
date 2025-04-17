@@ -1,4 +1,4 @@
-//@#include "Atomic.h"
+//@#include "sric/Atomic.h"
 
 extern struct Atomic$<T> {
     fun get(): T;

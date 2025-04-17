@@ -2,8 +2,8 @@
 #ifndef SRIC_UTIL_H_
 #define SRIC_UTIL_H_
 
-#include "Ptr.h"
-#include "Refable.h"
+#include "sric/Ptr.h"
+#include "sric/Refable.h"
 
 namespace sric {
 

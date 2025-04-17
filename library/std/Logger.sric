@@ -1,4 +1,4 @@
-//@#include "Logger.h"
+//@#include "sric/Logger.h"
 
 externc fun scError(tag: raw*const Int8, msg: raw*const Int8, args: ...);
 externc fun scWarn(tag: raw*const Int8, msg: raw*const Int8, args: ...);

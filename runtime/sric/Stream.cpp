@@ -1,4 +1,4 @@
-#include "Stream.h"
+#include "sric/Stream.h"
 
 using namespace sric;
 

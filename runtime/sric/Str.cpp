@@ -1,4 +1,4 @@
-#include "Str.h"
+#include "sric/Str.h"
 #include <string.h>
 #include <stdlib.h>
 #include <functional>
