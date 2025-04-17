@@ -285,8 +285,9 @@ public class Compiler {
         fmakes.put("version", "1.0");
         fmakes.put("depends", depends.toString());
         fmakes.put("srcDirs", this.module.name+".cpp");
-        fmakes.put("incDirs", "./");
+        fmakes.put("incDirs", this.module.name+".h");
         fmakes.put("outType", this.module.outType);
+        fmakes.put("extIncDirs", "./");
         
         if (fmakeArgs != null) {
             String srcDir = new File(this.module.sourcePath).getParent();

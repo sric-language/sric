@@ -11,10 +11,12 @@ import sric.compiler.CompilerLog;
 import sric.compiler.ast.AstNode;
 import sric.compiler.ast.AstNode.FieldDef;
 import sric.compiler.ast.AstNode.FuncDef;
+import sric.compiler.ast.AstNode.TopLevelDef;
 import sric.compiler.ast.Expr;
 import sric.compiler.ast.FConst;
 import sric.compiler.ast.SModule;
 import sric.compiler.ast.Stmt;
+import sric.compiler.ast.Token;
 import sric.compiler.ast.Type;
 
 /**
@@ -49,7 +51,7 @@ public class DocGenerator extends BaseGenerator {
         print("<div class=\"index\">");
             for (AstNode.FileUnit v : module.fileUnits) {
                 for (AstNode.FieldDef f : v.fieldDefs) {
-                    if (!f.isPublic()) {
+                    if (!f.isPublic() || f.isNoDoc()) {
                         continue;
                     }
                     print("<a href=\"#"+f.name+"\">");
@@ -57,7 +59,7 @@ public class DocGenerator extends BaseGenerator {
                     print("</a>");
                 }
                 for (AstNode.FuncDef f : v.funcDefs) {
-                    if (!f.isPublic()) {
+                    if (!f.isPublic() || f.isNoDoc()) {
                         continue;
                     }
                     print("<a href=\"#"+f.name+"\">");
@@ -65,7 +67,7 @@ public class DocGenerator extends BaseGenerator {
                     print("</a>");
                 }
                 for (AstNode.TypeDef f : v.typeDefs) {
-                    if (!f.isPublic()) {
+                    if (!f.isPublic() || f.isNoDoc()) {
                         continue;
                     }
                     print("<a href=\"#"+f.name+"\">");
@@ -73,7 +75,7 @@ public class DocGenerator extends BaseGenerator {
                     print("</a>");
                 }
                 for (AstNode.TypeAlias f : v.typeAlias) {
-                    if (!f.isPublic()) {
+                    if (!f.isPublic() || f.isNoDoc()) {
                         continue;
                     }
                     print("<a href=\"#"+f.name+"\">");
@@ -170,7 +172,7 @@ public class DocGenerator extends BaseGenerator {
     
     @Override
     public void visitTypeAlias(AstNode.TypeAlias v) {
-        if (!v.isPublic()) {
+        if (!v.isPublic() || v.isNoDoc()) {
             return;
         }
         print("<div class=\"typealias\" id=\""+v.name+"\">");
@@ -196,7 +198,7 @@ public class DocGenerator extends BaseGenerator {
 
     @Override
     public void visitField(AstNode.FieldDef v) {
-        if (!v.isPublic()) {
+        if (!v.isPublic() || v.isNoDoc()) {
             return;
         }
         print("<div class=\"field\" id=\""+v.name+"\">");
@@ -229,7 +231,7 @@ public class DocGenerator extends BaseGenerator {
 
     @Override
     public void visitFunc(AstNode.FuncDef v) {
-        if (!v.isPublic()) {
+        if (!v.isPublic() || v.isNoDoc()) {
             return;
         }
         print("<div class=\"func\" id=\""+v.name+"\">");
@@ -319,7 +321,7 @@ public class DocGenerator extends BaseGenerator {
 
     @Override
     public void visitTypeDef(AstNode.TypeDef v) {
-        if (!v.isPublic()) {
+        if (!v.isPublic() || v.isNoDoc()) {
             return;
         }
         print("<div class=\"typedef\" id=\""+v.name+"\">");

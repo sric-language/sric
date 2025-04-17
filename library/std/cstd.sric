@@ -1,7 +1,7 @@
 
 //@#include <stdio.h>
 externc fun printf(format: raw*const Int8, args: ...): Int;
-
+externc fun sscanf(buf:raw*const Int8, format:raw*const Int8, args: ...): Int;
 
 //@#include <float.h>
 externc var FLT_MAX: const Float64;
@@ -18,3 +18,6 @@ externc var RAND_MAX: const Int;
 //@#include <string.h>
 externc fun strcmp(s1: raw* const Int8, s2: raw* const Int8): Int;
 externc fun strlen(s1: raw* const Int8): Int;
+
+externc typealias size_t = Int;
+externc typealias ssize_t = UInt32;

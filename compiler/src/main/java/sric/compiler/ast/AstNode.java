@@ -60,7 +60,20 @@ public class AstNode {
             if (comment != null) {
                 for (var c : comment.comments) {
                     if (c.type == TokenKind.cmdComment) {
-                        if (c.content.startsWith("deprecated")) {
+                        if (c.content.startsWith("Deprecated")) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        
+        public boolean isNoDoc() {
+            if (comment != null) {
+                for (var c : comment.comments) {
+                    if (c.type == TokenKind.cmdComment) {
+                        if (c.content.startsWith("NoDoc")) {
                             return true;
                         }
                     }
