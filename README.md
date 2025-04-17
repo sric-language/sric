@@ -1,6 +1,6 @@
 # Sric Language
 
-A memory safe and extremely fast programming language.
+A Memory-safe high-performance programming language.
 
 ## Features
 - Ownership based memory management without GC
