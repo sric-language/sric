@@ -64,3 +64,10 @@ fun testString() {
 
     verify(str == "HelloWorld");
 }
+
+fun testStrlen() {
+    var cstr = "Hi";
+    var len = strlen(cstr);
+    var s: size_t = len;
+    verify(s == 2, "error");
+}

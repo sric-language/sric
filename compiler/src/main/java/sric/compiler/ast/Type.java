@@ -18,7 +18,7 @@ import sric.compiler.ast.Expr.IdExpr;
 public class Type extends AstNode {
     public IdExpr id;
     public ArrayList<Type> genericArgs = null;
-    public Type resolvedAlias = null;
+    public TypeAlias resolvedAliasDef = null;
     
     public static enum PointerAttr {
         own, ref, raw
@@ -236,16 +236,6 @@ public class Type extends AstNode {
     }
     
     public boolean fit(Type target) {
-        if (this.resolvedAlias != null) {
-            if (this.resolvedAlias.fit(target)) {
-                return true;
-            }
-        }
-        if (target.resolvedAlias != null) {
-            if (this.fit(target.resolvedAlias)) {
-                return true;
-            }
-        }
         
         if (target.isVarArgType()) {
             if (this.isBool() || this.isNum() || this.isRawPointerType() || this.isNullType())
@@ -359,24 +349,26 @@ public class Type extends AstNode {
         if (this == target) {
             return true;
         }
-        
-        if (this.resolvedAlias != null) {
-            if (this.resolvedAlias.equals(target, strict, checkNumber)) {
-                return true;
-            }
-        }
-        if (target.resolvedAlias != null) {
-            if (this.equals(target.resolvedAlias, strict, checkNumber)) {
-                return true;
-            }
-        }
-        
+
         if (strict) {
             if (this.isImmutable != target.isImmutable) {
                 return false;
             }
             if (this.isReference != target.isReference) {
                 return false;
+            }
+        }
+        
+        if (strict || checkNumber) {
+            if (this.resolvedAliasDef != null) {
+                if (!this.resolvedAliasDef.type.equals(target, strict, checkNumber)) {
+                    return false;
+                }
+            }
+            if (target.resolvedAliasDef != null) {
+                if (!this.equals(target.resolvedAliasDef.type, strict, checkNumber)) {
+                    return false;
+                }
             }
         }
         
@@ -627,9 +619,6 @@ public class Type extends AstNode {
     
     //easy parser name for reflect
     public String getEasyName() {
-        if (this.resolvedAlias != null) {
-            return this.resolvedAlias.getEasyName();
-        }
         
         if (this.isVarArgType()) {
             return Buildin.varargTypeName;
@@ -713,8 +702,8 @@ public class Type extends AstNode {
     }
     
     public String getQName(boolean convertAlias) {
-        if (convertAlias && this.resolvedAlias != null) {
-            return this.resolvedAlias.getQName(convertAlias);
+        if (!convertAlias && this.resolvedAliasDef != null) {
+            return this.resolvedAliasDef.type.getQName(convertAlias);
         }
         
         if (this.isVarArgType()) {
@@ -848,6 +837,53 @@ public class Type extends AstNode {
         return nt;
     }
     
+    public void copyFrom(Type that, boolean deep) {
+        copyFrom(that, deep, false);
+    }
+    
+    public void copyFrom(Type that, boolean deep, boolean merge) {
+        Type type = this;
+        if (deep) {
+            if (that.genericArgs !=  null) {
+                type.genericArgs = new ArrayList<>();
+                for (int i=0; i<that.genericArgs.size(); ++i) {
+                    Type t = that.genericArgs.get(i);
+                    type.genericArgs.add(t);
+                }
+            }
+            else {
+                type.genericArgs = that.genericArgs;
+            }
+        }
+        else {
+            type.genericArgs = that.genericArgs;
+        }
+        
+        type.id.resolvedDef = that.id.resolvedDef;
+        type.id.resolvedType = that.id.resolvedType;
+        
+        type.resolvedAliasDef = that.resolvedAliasDef;
+        //type.explicitImmutable = this.explicitImmutable;
+        if (merge) {
+            type.isImmutable |= that.isImmutable;
+            type.isReference |= that.isReference;
+        }
+        else {
+            type.isImmutable = that.isImmutable;
+            type.isReference = that.isReference;
+        }
+        
+        if (deep && that.detail instanceof PointerInfo dinfo) {
+            PointerInfo info = new PointerInfo();
+            info.pointerAttr = dinfo.pointerAttr;
+            info.isNullable = dinfo.isNullable;
+            type.detail = info;
+        }
+        else {
+            type.detail = that.detail;
+        }
+    }
+    
     public Type toNonNullable() {
         if (!this.isPointerType()) {
             return this;
@@ -857,19 +893,10 @@ public class Type extends AstNode {
         }
         
         Type type = new Type(loc, "*");
-        type.genericArgs = new ArrayList<>();
-        type.genericArgs.add(this.genericArgs.get(0));
-        
-        type.resolvedAlias = this.resolvedAlias;
-        //type.explicitImmutable = this.explicitImmutable;
-        type.isImmutable = this.isImmutable;
-        type.isReference = this.isReference;
-        
-        PointerInfo info = new PointerInfo();
-        info.pointerAttr = ((PointerInfo)this.detail).pointerAttr;
-        info.isNullable = false;
-        type.detail = info;
-        
+        type.copyFrom(this, true);
+
+        ((PointerInfo)type.detail).isNullable = false;
+
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, type.loc, null);
         return type;
     }
@@ -881,12 +908,8 @@ public class Type extends AstNode {
         
         //shadow copy
         Type type = new Type(this.id);
-        type.genericArgs = this.genericArgs;
-        type.resolvedAlias = this.resolvedAlias;
-        //type.explicitImmutable = this.explicitImmutable;
+        type.copyFrom(this, false);
         type.isImmutable = true;
-        type.detail = this.detail;
-        type.isReference = this.isReference;
         return type;
     }
     
@@ -897,31 +920,10 @@ public class Type extends AstNode {
         
         //shadow copy
         Type type = new Type(this.id);
-        type.genericArgs = this.genericArgs;
-        type.resolvedAlias = this.resolvedAlias;
-        //type.explicitImmutable = this.explicitImmutable;
-        type.isImmutable = this.isImmutable;
-        type.detail = this.detail;
+        type.copyFrom(this, false);
         type.isReference = false;
         return type;
     }
-    
-//    public Type toDerefable() {
-//        if (!this.isRefable) {
-//            return this;
-//        }
-//        
-//        //shadow copy
-//        Type type = new Type(this.id);
-//        type.genericArgs = this.genericArgs;
-//        type.resolvedAlias = this.resolvedAlias;
-//        //type.explicitImmutable = this.explicitImmutable;
-//        type.isImmutable = this.isImmutable;
-//        type.detail = this.detail;
-//        type.isReference = this.isReference;
-//        type.isRefable = false;
-//        return type;
-//    }
     
     public Type toMutable() {
         if (this.isImmutable == false) {
@@ -930,12 +932,8 @@ public class Type extends AstNode {
         
         //shadow copy
         Type type = new Type(this.id);
-        type.genericArgs = this.genericArgs;
-        type.resolvedAlias = this.resolvedAlias;
-        //type.explicitImmutable = this.explicitImmutable;
+        type.copyFrom(this, false);
         type.isImmutable = false;
-        type.detail = this.detail;
-        type.isReference = this.isReference;
         return type;
     }
     
@@ -946,16 +944,8 @@ public class Type extends AstNode {
         
         //shadow copy
         Type type = new Type(this.id);
-        type.genericArgs = this.genericArgs;
-        type.resolvedAlias = this.resolvedAlias;
-        //type.explicitImmutable = this.explicitImmutable;
-        type.isImmutable = this.isImmutable;
-        
-        PointerInfo info = new PointerInfo();
-        info.pointerAttr = PointerAttr.raw;
-        info.isNullable = ((PointerInfo)this.detail).isNullable;
-        type.detail = info;
-        type.isReference = this.isReference;
+        type.copyFrom(this, true);
+        ((PointerInfo)type.detail).pointerAttr = PointerAttr.raw;
         return type;
     }
 }

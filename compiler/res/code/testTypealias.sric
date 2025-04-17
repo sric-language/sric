@@ -1,7 +1,19 @@
 
 
 typealias int = Int;
+externc typealias size_t = Int;
 
 fun main() {
     var i : int = 0;
+}
+
+fun foo(s: size_t): size_t {
+    var b = s + 2;
+    return s;
+}
+
+fun test() {
+    var s: size_t = 0;
+    var b: Bool = s == 2;
+    var r = foo(s);
 }

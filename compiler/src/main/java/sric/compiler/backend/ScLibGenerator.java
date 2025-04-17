@@ -147,6 +147,11 @@ public class ScLibGenerator extends BaseGenerator {
             return;
         }
         
+        if (type.resolvedAliasDef != null) {
+            printType(type.resolvedAliasDef.type);
+            return;
+        }
+        
         if (type.isVarArgType()) {
             print(Buildin.varargTypeName);
             return;

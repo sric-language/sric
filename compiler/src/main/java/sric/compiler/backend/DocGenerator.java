@@ -176,12 +176,21 @@ public class DocGenerator extends BaseGenerator {
             return;
         }
         print("<div class=\"typealias\" id=\""+v.name+"\">");
-            print("<div class=\"name\">");
-                print(v.name);
-            print("</div>");
-            print("<div class=\"value\">");
+            print("<p class=\"typeinfo\">");
+                print("<span class=\"kind\">");
+                    print("typealias");
+                print("</span>");
+                
+                print("<span class=\"name\">");
+                    print(v.name);
+                print("</span>");
+                print("<span class=\"flags\">");
+                    printFlags(v.flags);
+                print("</span>");
+
                 printType(v.type);
-            print("</div>");
+            print("</p>");
+            newLine();
             if (v.comment != null && v.comment.getDoc() != null) {
                 print("<div class=\"doc\">");
                 print(v.comment.getDoc());

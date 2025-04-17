@@ -552,6 +552,7 @@ public class ExprTypeResolver extends TypeResolver {
             return null;
         }
         AstNode resolvedDef = target.resolvedType.id.resolvedDef;
+        
         if (target.resolvedType.isPointerType() && autoDeref) {
             if (target.resolvedType.genericArgs == null || target.resolvedType.genericArgs.size() > 0) {
                 Type type = target.resolvedType.genericArgs.get(0);
@@ -567,6 +568,10 @@ public class ExprTypeResolver extends TypeResolver {
         
         if (resolvedDef == null) {
             return null;
+        }
+        
+        if (resolvedDef instanceof TypeAlias ta) {
+            resolvedDef = ta.type.id.resolvedDef;
         }
         
         if (resolvedDef instanceof GenericParamDef t) {

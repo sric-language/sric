@@ -17,7 +17,7 @@ externc var RAND_MAX: const Int;
 
 //@#include <string.h>
 externc fun strcmp(s1: raw* const Int8, s2: raw* const Int8): Int;
-externc fun strlen(s1: raw* const Int8): Int;
+externc fun strlen(s1: raw* const Int8): size_t;
 
 externc typealias size_t = Int;
 externc typealias ssize_t = UInt32;

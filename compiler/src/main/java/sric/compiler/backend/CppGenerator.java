@@ -575,15 +575,10 @@ public class CppGenerator extends BaseGenerator {
             return;
         }
         
-        if (type.resolvedAlias != null) {
-            if (type.id.resolvedDef instanceof GenericParamDef) {
-                //ok
-            }
-            else if (type.id.resolvedDef instanceof TypeAlias ta) {
-                if (!ta.isExtern()) {
-                    printType(type.resolvedAlias, isRoot);
-                    return;
-                }
+        if (type.resolvedAliasDef != null) {
+            if (type.resolvedAliasDef.isExtern()) {
+                print(this.getSymbolName(type.resolvedAliasDef));
+                return;
             }
         }
         
