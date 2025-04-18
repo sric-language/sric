@@ -916,7 +916,18 @@ public class ErrorChecker extends CompilePass {
                     //++, --
                     case increment:
                     case decrement:
-                        verifyInt(e.operand);
+                        if (e.operand.resolvedType != null) {
+                            if (e.operand.resolvedType.isInt()) {
+                            }
+                            else if (e.operand.resolvedType.isRawPointerType()) {
+                                if (!isInUnsafe()) {
+                                    err("Expect unsafe", e.loc);
+                                }
+                            }
+                            else {
+                                err("Must be Int type", e.loc);
+                            }
+                        }
                         if (e.operand.resolvedType.isImmutable) {
                             err("Const error", e.loc);
                         }
@@ -1378,6 +1389,11 @@ public class ErrorChecker extends CompilePass {
                         verifyTypeFit(e.rhs, paramType, e.rhs.loc, true, false, false);
                     }
                     verifyUnsafe(e.lhs);
+                    if (e.resolvedType != null && e.resolvedType.isRawPointerType()) {
+                        if (!isInUnsafe()) {
+                            err("Expect unsafe", e.loc);
+                        }
+                    }
                     break;
                 case assign:
                 case assignPlus:
@@ -1438,11 +1454,17 @@ public class ErrorChecker extends CompilePass {
 //                            }
                         }
                         else {
-                            if (e.lhs.resolvedType.isNum() || e.lhs.resolvedType.isRawPointerType()) {
+                            if (e.lhs.resolvedType.isNum()) {
 //                                if (!e.lhs.resolvedType.equals(e.rhs.resolvedType)) {
 //                                    err("Type mismatch", e.loc);
 //                                }
                                 this.verifyTypeFit(e.rhs, e.lhs.resolvedType, e.rhs.loc);
+                            }
+                            else if (e.lhs.resolvedType.isRawPointerType()) {
+//                                if (!e.lhs.resolvedType.equals(e.rhs.resolvedType)) {
+//                                    err("Type mismatch", e.loc);
+//                                }
+                                this.verifyInt(e.rhs);
                             }
                             else {
                                 err("Unsupport operator", e.loc);
@@ -1451,6 +1473,12 @@ public class ErrorChecker extends CompilePass {
                     }
                     else {
                         err("Not assignable", e.lhs.loc);
+                    }
+                    
+                    if (curt != Token.TokenKind.assign && e.resolvedType != null && e.resolvedType.isRawPointerType()) {
+                        if (!isInUnsafe()) {
+                            err("Expect unsafe", e.loc);
+                        }
                     }
                     break;
                 default:

@@ -1,0 +1,8 @@
+
+
+unsafe fun test() {
+    var p: raw*? Int = null;
+    ++p;
+    p = p + 1;
+    p += 1;
+}

@@ -1,4 +1,5 @@
 import sric::*;
+import cstd::*;
 
 fun testHashMap() {
     var map = HashMap$<String, Int>{};

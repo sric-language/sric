@@ -1,5 +1,6 @@
 
 import sric::*;
+import cstd::*;
 
 struct C : B, I {
   var c: Int;

@@ -13,5 +13,6 @@ else
 fi
 
 bin/sric ./library/std/module.scm
+bin/sric ./library/cstd/module.scm
 bin/sric ./library/test/module.scm
 

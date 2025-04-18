@@ -36,3 +36,4 @@ fan fmake output/test.fmake -debug
 ```
 
 [更多fmake的信息](https://github.com/chunquedong/fmake)
+

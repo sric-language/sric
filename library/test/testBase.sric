@@ -1,4 +1,5 @@
 import sric::*;
+import cstd::*;
 
 fun testCopy() {
     var a = DArray$<own*Int> { .add(new Int); };

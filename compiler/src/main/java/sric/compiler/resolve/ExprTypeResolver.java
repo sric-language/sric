@@ -462,6 +462,10 @@ public class ExprTypeResolver extends TypeResolver {
             this.loops.pop();
         }
         else if (v instanceof Stmt.SwitchStmt switchs) {
+            //avoid jump out from switchs
+            ArrayDeque<AstNode> savedLoop = this.loops;
+            this.loops = new ArrayDeque<AstNode>();
+            
             this.visit(switchs.condition);
             
             for (Stmt.CaseBlock cb : switchs.cases) {
@@ -472,6 +476,7 @@ public class ExprTypeResolver extends TypeResolver {
             if (switchs.defaultBlock != null) {
                 this.visit(switchs.defaultBlock);
             }
+            this.loops = savedLoop;
         }
         else if (v instanceof Stmt.ExprStmt exprs) {
             this.visit(exprs.expr);
@@ -1185,8 +1190,16 @@ public class ExprTypeResolver extends TypeResolver {
                     Type lt = e.lhs.resolvedType;
                     Type rt = e.rhs.resolvedType;
                     //pointer arithmetic: +,-
-                    if ((curt == plus || curt == minus) && lt.isRawPointerType() && rt.isInt()) {
-                        e.resolvedType = lt;
+                    if ((curt == plus || curt == minus)) {
+                        if (lt.isRawPointerType() && rt.isInt()) {
+                            e.resolvedType = lt;
+                        }
+                        else if (rt.isRawPointerType() && lt.isInt()) {
+                            e.resolvedType = rt;
+                        }
+                        else {
+                            resolveMathOperator(curt, e);
+                        }
                     }
                     else {
                         resolveMathOperator(curt, e);
@@ -1199,6 +1212,9 @@ public class ExprTypeResolver extends TypeResolver {
                 case assignSlash:
                 case assignPercent:
                     if (e.lhs.resolvedType.isNum() && e.rhs.resolvedType.isNum()) {
+                        //ok
+                    }
+                    else if (e.lhs.resolvedType.isRawPointerType() && e.rhs.resolvedType.isNum()) {
                         //ok
                     }
                     else {

@@ -21,3 +21,4 @@ externc fun strlen(s1: raw* const Int8): size_t;
 
 externc typealias size_t = Int;
 externc typealias ssize_t = UInt32;
+externc typealias char = Int8;

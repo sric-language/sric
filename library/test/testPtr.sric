@@ -1,5 +1,6 @@
 
 import sric::*;
+import cstd::*;
 
 virtual struct A {
     var i: Int = 1;

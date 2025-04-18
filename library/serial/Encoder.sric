@@ -1,5 +1,6 @@
 import sric::*;
 import jsonc::*;
+import cstd::*;
 
 struct Encoder {
     var allocator: JsonAllocator;

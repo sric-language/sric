@@ -15,5 +15,5 @@ A Memory-safe high-performance programming language.
 - Generic Template, Closure, Operator Overloading
 - VSCode plugin and LSP support
 
-## Documentation
-[Learn More](doc/doc-en/Index.md) | [文档](doc/doc-zh/Index.md)
+
+[Learn More](https://sric.fun/)
