@@ -37,6 +37,10 @@ public class Type extends AstNode {
     public static class FuncInfo extends TypeInfo {
         public FuncPrototype prototype;
         public FuncDef funcDef = null;
+        
+        public boolean isStatic() {
+            return funcDef == null || funcDef.isStatic();
+        }
     }
     
     public static class PointerInfo extends TypeInfo {
@@ -412,6 +416,16 @@ public class Type extends AstNode {
                     return false;
                 }
                 else if (checkNumber && (e.size != a.size))  {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else if (this.isFuncType()) {
+            if (this.detail instanceof FuncInfo e && target.detail instanceof FuncInfo a) {
+                if (e.isStatic() != a.isStatic())  {
                     return false;
                 }
             }

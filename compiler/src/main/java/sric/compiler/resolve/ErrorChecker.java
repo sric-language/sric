@@ -188,12 +188,9 @@ public class ErrorChecker extends CompilePass {
         }
         
         if (!from.fit(to)) {
-            boolean allowUnsafeCast = false;
-            if (!allowUnsafeCast) {
-                from.fit(to);
-                err("Type mismatch: " + from.getQName(false) + " => " + to.getQName(false) , loc);
-                return;
-            }
+            err("Type mismatch: " + from.getQName(false) + " => " + to.getQName(false) , loc);
+            from.fit(to);
+            return;
         }
         
         checkMove(target, isReturn, to, loc);
@@ -368,6 +365,12 @@ public class ErrorChecker extends CompilePass {
             
             if (v.fieldType.isMetaType()) {
                 err("Unsupport MetaType", v.loc);
+            }
+            
+            if (v.fieldType.detail instanceof Type.FuncInfo finfo) {
+                if (!finfo.isStatic()) {
+                    err("Unsupport Member function pointer", v.loc);
+                }
             }
         }
     }

@@ -1,0 +1,13 @@
+
+
+fun foo(v:Int): Int {
+    return v + 1;
+}
+
+fun test1() {
+    var f = foo;
+    var i = f(1);
+
+    var c: fun(v:Int):Int = foo;
+    var j = c(1);
+}

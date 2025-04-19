@@ -1,0 +1,22 @@
+
+
+fun test1(e: Int) {
+    while (true) {
+        switch (e) {
+            case 1:
+                break;
+        }
+    }
+}
+
+struct Point {
+    var x: Int;
+    var y: Int;
+}
+
+fun test2() {
+
+    while (true) {
+        var p = Point { .x = 1; break; };
+    }
+}
