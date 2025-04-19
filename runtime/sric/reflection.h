@@ -3,6 +3,7 @@
 #define SRIC_REFLECT_H_
 
 #include "sric/RefPtr.h"
+#include "sric/Str.h"
 
 namespace sric {
 	struct RModule;
@@ -12,24 +13,16 @@ namespace sric {
 	RefPtr<RModule> findModule(const char* name);
 	OwnPtr<void> newInstance(RType& type);
 
-	inline const char* typeOf(void *obj) {
-		if (!obj) return "";
-		Reflectable* r = (Reflectable*)obj;
-		return r->_typeof();
-	}
+	const char* typeOf(void *obj);
 
-	inline bool callPVFunc(void* func, void *arg) {
-		if (!func) return false;
-		void (*f)(void *a) = (void (*)(void *a))func;
-		f(arg);
-		return true;
-	}
+	bool callPtrToVoid(void* func, void *arg);
 
-	inline void* callVPFunc(void* func) {
-		if (!func) return nullptr;
-		void* (*f)() = (void* (*)())func;
-		return f();
-	}
+	void* callVoidToPtr(void* func);
+
+	String callInstanceToString(void* func, void *instance);
+
+	bool callInstanceStringToBool(void* func, void *instance, String s);
+
 }
 
 #define SC_AUTO_REGIST_MODULE(name) \

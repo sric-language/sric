@@ -98,5 +98,7 @@ extern fun findModule(name : raw*const Int8) : *? RModule;
 extern fun newInstance(type: &RType) : own*? Void;
 
 unsafe extern fun typeOf(t: raw* Void): raw* const Int8;
-unsafe extern fun callPVFunc(func: raw* Void, arg: raw* Void);
-unsafe extern fun callVPFunc(func: raw* Void): raw* Void;
+unsafe extern fun callPtrToVoid(func: raw* Void, arg: raw* Void);
+unsafe extern fun callVoidToPtr(func: raw* Void): raw* Void;
+unsafe extern fun callInstanceToString(func: raw* Void, instance: raw* Void): String;
+unsafe extern fun callInstanceStringToBool(func: raw* Void, instance: raw* Void, s: String): Bool;

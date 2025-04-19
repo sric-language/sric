@@ -1,4 +1,5 @@
 import sric::*;
+import cstd::*;
 import serial::*;
 
 reflect struct Point {
@@ -29,6 +30,34 @@ reflect struct Elem3 {
 
 reflect struct Elem4 {
     var children: DArray$<Int>;
+}
+
+//@SimpleSerial
+reflect struct Insets {
+    var top: Int = 0;
+    var right: Int = 0;
+    var bottom: Int = 0;
+    var left: Int = 0;
+
+    fun toString() : String {
+        return String::format("%d %d %d %d", top, right, bottom, left);
+    }
+
+    fun fromString(str: String): Bool {
+        var fs = str.split(" ");
+        if (fs.size() == 4) {
+            top = fs[0].toInt32();
+            right = fs[1].toInt32();
+            bottom = fs[2].toInt32();
+            left = fs[3].toInt32();
+            return true;
+        }
+        return false;
+    }
+}
+
+reflect struct Elem5 {
+    var padding: Insets;
 }
 
 unsafe fun testSimple() {
@@ -105,6 +134,22 @@ unsafe fun testArray2() {
     verify(obj2.children[0] == 1);
 }
 
+unsafe fun testSimpleSerial() {
+    var encoder: Encoder;
+    var obj = new Elem5 { .padding.top = 1; .padding.right = 2; .padding.bottom = 3; .padding.left = 4; };
+    var t = obj as *Void;
+    var res = encoder.encode(t, "testSerial::Elem5");
+    printf("%s\n", res.c_str());
+
+    var decoder: Decoder;
+    var p = decoder.decode(res);
+    var obj2 = unsafeCast$<raw*Elem5>(p);
+    
+    verify(obj2.padding.top == 1);
+    verify(obj2.padding.right == 2);
+    verify(obj2.padding.bottom == 3);
+    verify(obj2.padding.left == 4);
+}
 
 unsafe fun main() {
     testSimple();
@@ -112,4 +157,5 @@ unsafe fun main() {
     testArray();
     testEnum();
     testArray2();
+    testSimpleSerial();
 }

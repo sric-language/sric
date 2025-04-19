@@ -80,6 +80,17 @@ unsafe fun findRType(typeQname:raw* const Int8): raw*? RType {
     return rtype;
 }
 
+fun isSimpleSerial(f: &RType): Bool {
+    if (f.comments.size() > 0) {
+        for (var j = 0; j<f.comments.size(); ++j) {
+            if (strcmp(f.comments[j].content, "SimpleSerial") == 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 fun isSerializable(f: &RField): Bool {
     if ((f.flags & RFlags::Static) != 0) {
         return false;
@@ -148,4 +159,26 @@ private struct TypeNameParser {
         }
         return type;
     }
+}
+
+unsafe fun findInstanceMethod(rtype: raw*? RType, name: raw* const Int8): raw*? RFunc {
+    if (rtype == null) {
+        return null;
+    }
+    if (rtype.flags & RFlags::Reflect == 0) {
+        return null;
+    }
+
+    for (var i = 0; i<rtype.funcs.size(); ++i) {
+        var f = rtype.funcs[i];
+        if (strcmp(f.name, name) == 0) {
+            return &f;
+        }
+    }
+
+    if (rtype.superType != null) {
+        var superType = findRType(rtype.superType);
+        return findInstanceMethod(superType, name);
+    }
+    return null;
 }

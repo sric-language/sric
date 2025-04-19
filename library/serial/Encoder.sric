@@ -146,6 +146,24 @@ struct Encoder {
             return null;
         }
 
+        if (isSimpleSerial(*rtype)) {
+            var toStringFunc = findInstanceMethod(rtype, "toString");
+            if (toStringFunc != null) {
+                if (toStringFunc.params.size() == 0 && 
+                        (toStringFunc.returnBaseType != null && strcmp(toStringFunc.returnBaseType, "sric::String") == 0) && 
+                        toStringFunc.pointer != null) {
+                    var str = callInstanceToString(toStringFunc.pointer, obj);
+                    return allocator.alloc_str(str.c_str());
+                }
+                else {
+                    scError("serial", "Bad toString function: %s", typeName);
+                }
+            }
+            else {
+                scError("serial", "not found toString function: %s", typeName);
+            }
+        }
+
         var node = allocator.allocNode(Type::Object);
         encodeFields(obj, rtype, node);
 

@@ -176,6 +176,29 @@ struct Decoder {
             return null;
         }
 
+        if (isSimpleSerial(*rtype)) {
+            var fromStringFunc = findInstanceMethod(rtype, "fromString");
+            if (fromStringFunc != null) {
+                if (fromStringFunc.params.size() == 1 && strcmp(fromStringFunc.params[0].baseType, "sric::String") == 0 &&
+                        (fromStringFunc.returnBaseType != null && strcmp(fromStringFunc.returnBaseType, "Bool") == 0) && 
+                        fromStringFunc.pointer != null) {
+                    var str: String = node.as_str();
+                    var rc = callInstanceStringToBool(fromStringFunc.pointer, dst, move str);
+                    if (rc != true) {
+                        scError("serial", "fromString fail: %s", typeName);
+                    }
+                    return null;
+                }
+                else {
+                    scError("serial", "Bad fromString function: %s", typeName);
+                }
+            }
+            else {
+                scError("serial", "not found fromString function: %s", typeName);
+            }
+        }
+
+
         if (node.type() != Type::Object) {
             return null;
         }
@@ -197,36 +220,14 @@ struct Decoder {
             if (onDeserialize.params.size() == 0 && 
                     (onDeserialize.returnBaseType == null || strcmp(onDeserialize.returnBaseType, "Void") == 0) && 
                     onDeserialize.pointer != null) {
-                callPVFunc(onDeserialize.pointer, dst);
+                callPtrToVoid(onDeserialize.pointer, dst);
             }
             else {
-                scError("serial", "Bad _onDeserialize function", name);
+                scError("serial", "Bad _onDeserialize function %s", name);
             }
         }
 
         return obj;
-    }
-
-    private unsafe fun findInstanceMethod(rtype: raw*? RType, name: raw* const Int8): raw*? RFunc {
-        if (rtype == null) {
-            return null;
-        }
-        if (rtype.flags & RFlags::Reflect == 0) {
-            return null;
-        }
-
-        for (var i = 0; i<rtype.funcs.size(); ++i) {
-            var f = rtype.funcs[i];
-            if (strcmp(f.name, name) == 0) {
-                return &f;
-            }
-        }
-
-        if (rtype.superType != null) {
-            var superType = findRType(rtype.superType);
-            return findInstanceMethod(superType, name);
-        }
-        return null;
     }
 
     private unsafe fun decodeFields(obj: raw* Void, rtype: raw*? RType, node: raw* Value) {

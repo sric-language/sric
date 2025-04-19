@@ -1,7 +1,14 @@
 
-mkdir temp
+if [ "$1" = "mvn" ]; then
+    rm -rf goldenFile
+    mvn package
+    cp target/sric-1.0-SNAPSHOT.jar ../bin/sric-1.0.jar
 
-find src/main/java -name '*.java' | xargs javac -g -d temp -cp ../bin/gson-2.8.6.jar
-jar cvf ../bin/sric-1.0.jar -C temp .
+else
+    mkdir temp
 
-rm -r temp
+    find src/main/java -name '*.java' | xargs javac -g -d temp -cp ../bin/gson-2.8.6.jar
+    jar cvf ../bin/sric-1.0.jar -C temp .
+
+    rm -r temp
+fi

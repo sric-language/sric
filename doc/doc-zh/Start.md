@@ -5,7 +5,7 @@
 需要:
 - JDK 17+
 - C++ 编译器 支持C++17
-- fanx/fmake (可选)
+- fanx 和 fmake
 
 构建:
 1. 添加 "bin"目录 到你的环境变量

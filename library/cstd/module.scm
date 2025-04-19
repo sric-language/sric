@@ -6,3 +6,4 @@ depends =
 srcDirs = ./
 license = Academic Free License 3.0
 
+fmake.extIncDirs = ../../runtime/

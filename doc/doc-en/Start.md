@@ -5,7 +5,7 @@
 Require:
 - JDK 17+
 - C++ compier that support C++17
-- fanx/fmake (Options)
+- fanx and fmake
 
 Build:
 1. Add "bin" into your env path
