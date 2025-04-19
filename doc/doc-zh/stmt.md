@@ -42,11 +42,7 @@ if (i & Mask != 0) {}
 if ((i & Mask) != 0) {}
 ```
 - 只支持`++i`，不支持`i++`
-- 类型转换和类型检查用as和is
-```
-if (a is String) ...
-var b = a as String;
-```
+
 
 ### With块
 

@@ -5,7 +5,7 @@
 Require:
 - JDK 17+
 - C++ compier that support C++17
-- fanx and fmake
+- fanx and [fmake](https://github.com/chunquedong/fmake)
 
 Build:
 1. Add "bin" into your env path
@@ -36,4 +36,3 @@ Or:
 ```
 fan fmake output/test.fmake -debug
 ```
-[Abount fmake](https://github.com/chunquedong/fmake)

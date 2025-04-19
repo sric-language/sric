@@ -89,7 +89,7 @@ var i = unsafeCast$<raw*Int>(&u.data);
 ## 继承
 - 不支持多继承，类似于Java
 - 被继承的类需要标记为virtual或者abstract
-- Trait相对与Java的interface，不能有数据成员和方法实现。
+- Trait相当与Java的interface，不能有数据成员和方法实现。
 - 继承的分号后面必须先写类（如果有）再写Trait。
 - 重写父类的virutal或者abstract方法时，需要加override标记。
 - 使用super关键字调用父类方法。

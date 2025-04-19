@@ -1,6 +1,6 @@
 
 
-## 泛型
+### 泛型
 泛型和C++不同的是使用'$<'开头，这是为了消除泛型参数和小于运算符的歧义。
 ```
 struct Tree$<T> {
@@ -8,7 +8,7 @@ struct Tree$<T> {
 ```
 泛型参数可以有示例类型，编译时以示例类型来做类型检查。
 ```
-struct Compareable$<T> {
+private struct Compareable$<T> {
     operator fun compare(t: *T): Int;
 }
 strcut Tree$<T : Compareable> {
@@ -18,13 +18,7 @@ strcut Tree$<T : Compareable> {
 ```
 var tree = Tree$<Int> {};
 ```
-暂不支持泛型函数的泛型参数类型推断，需要显式写出泛型参数。
-```
-fun max$<T: Int>(a: T, b: T) {
-    return a > b ? a : b;
-}
-var m = max$<Int>(0, 1);
-```
+
 
 ## 闭包
 匿名函数使用fun关键字定义
@@ -77,6 +71,7 @@ div        a / b
 get        a[b] 
 set        a[b] = c
 compare    == != < > <= >=
+add        a,b,c;
 ```
 
 ### 逗号运算符
@@ -91,9 +86,17 @@ x { .add(a).add(b).add(c); }
 ```
 
 
-## 反射
-默认启用反射，需要手动添加reflect标记。
+### 反射
+默认不启用反射，需要手动添加reflect标记。
 ```
+reflect struct Point {
+    var x: Int;
+    var y: Int;
+}
+```
+注解可以在反射API中获取
+```
+//@SimpleSerial
 reflect struct Point {
     var x: Int;
     var y: Int;

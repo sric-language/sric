@@ -1,5 +1,63 @@
 
 
+## 从C++到Sric
+### 类型比较
+
+| C++  | Sric  |
+| ----- | ---- |
+| int | Int |
+| short | Int16 |
+| int64_t | Int32 |
+| unsigned int | UInt32 |
+| int64_t | Int32 |
+| float | Float32 |
+| double | Float/Float64 |
+| void | Void |
+| char | Int8 |
+| char[4] | [4]Int8 |
+| int* | raw* Int8 |
+| const int& | & const int |
+
+### 定义
+| C++  | Sric  |
+| ----- | ---- |
+| const char* str | var str: raw* Int8 |
+| void foo(int i) {} | fun foo(i: Int) {} |
+
+### 类型定义
+
+C++
+```
+#include <math.h>
+
+class Point {
+public:
+    int x;
+    int y;
+    double dis(const Point &t) const {
+        int dx = t.x - x;
+        int dy = t.y - y;
+        return sqrt(dx*dx + dy*dy);
+    }
+};
+```
+Sric:
+```
+import cstd::*;
+
+struct Point {
+    var x: Int;
+    var y: Int;
+    fun dis(t: & const Point) const: Float {
+        var dx = t.x - x;
+        var dy = t.y - y;
+        return sqrt(dx*dx + dy*dy);
+    }
+};
+```
+
+## 特性比较
+
 ### 从C++移除的功能
 
 - 没有函数重载
