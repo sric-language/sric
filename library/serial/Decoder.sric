@@ -20,6 +20,37 @@ struct Decoder {
         return decodeObj(value0, null, null);
     }
 
+    unsafe fun decodeMap(str: &String): HashMap$<String, own* Void> {
+        var allocator: JsonAllocator;
+        var parser = HimlParser { .init(&allocator); };
+        parser.insertTopLevelObject = true;
+
+        var result: HashMap$<String, own* Void>;
+        // var stream = FileStream::open("test.himl", "rb");
+        // var str = stream.readAllStr();
+        var value0 = parser.parse(str.data() as raw* Int8);
+
+        //check error
+        if (value0 == null || parser.get_error()[0] != 0) {
+            printf("parser json error: %s\n", parser.get_error());
+            return result;
+        }
+
+        for (var itr = value0.begin(); itr.noteq(value0.end()); itr.next()) {
+            var key = itr.get_name();
+            if (key == null) {
+                scError("serial", "key is null");
+            }
+            if (itr.get().type() == Type::Array) {
+                continue;
+            }
+            var obj = decodeObj(itr.get(), null, null);
+            result.set(key, move obj);
+        }
+
+        return result;
+    }
+
     private unsafe fun decodeAny(node: raw*Value, obj: raw*? Int8, typeNameS: &TypeName, offset: Int = 0): Bool {
         var typeName = typeNameS.name.c_str();
         switch (typeName[0]) {
