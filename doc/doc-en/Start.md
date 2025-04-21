@@ -7,6 +7,7 @@
 - C++ compiler (supporting C++17)
 - [fanx](https://github.com/fanx-dev/fanx/releases)
 - CMake
+- git
 
 Install the above software and configure the environment variables to ensure that commands such as java, jar, fan, and cmake are available in gitbash.
 
@@ -20,7 +21,7 @@ fanb pod.props
 Use the Microsoft C++ compiler toolchain on Windows:
 ```
 cd fmake
-./vsvars.sh
+source vsvars.sh
 cd -
 ```
 [About fmake](https://github.com/chunquedong/fmake)

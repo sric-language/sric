@@ -7,6 +7,7 @@
 - C++ 编译器(支持C++17)
 - [fanx](https://github.com/fanx-dev/fanx/releases)
 - CMake
+- git
 
 安装以上软件，并配置环境变量，确保java、jar、fan、cmake等命令在gitbash中可用。
 
@@ -20,7 +21,7 @@ fanb pod.props
 在Windows系统上使用微软C++编译器工具集:
 ```
 cd fmake
-./vsvars.sh
+source vsvars.sh
 cd -
 ```
 

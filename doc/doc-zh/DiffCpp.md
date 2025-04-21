@@ -53,7 +53,7 @@ struct Point {
         var dy = t.y - y;
         return sqrt(dx*dx + dy*dy);
     }
-};
+}
 ```
 
 ## 特性比较
