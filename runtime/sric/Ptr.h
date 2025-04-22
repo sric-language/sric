@@ -112,6 +112,7 @@ public:
 
     const T& operator*() const { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
 
+    operator T* () const { return pointer; }
     operator T* () { return pointer; }
 
     //template <class U>
@@ -241,6 +242,8 @@ public:
     // const T& operator*() const { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
 
     operator void* () { return pointer; }
+
+    operator void* () const { return pointer; }
 
     //template <class U>
     //operator RefPtr<U>() { return RefPtr<U>(this); }
