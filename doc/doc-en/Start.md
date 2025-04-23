@@ -47,6 +47,37 @@ Add sric/bin to your PATH (restart gitbash afterward).
 1. Search 'sric-language' in vscode marketplace, install it.
 2. Configure sricHome to point to the sric directory (the parent directory of bin).
 
+# Hello World
+
+1. Create an empty folder as the workspace
+
+2. Create a file named main.sric with the following content:
+```
+import cstd::*;
+
+fun main(): Int {
+    printf("Hello World\n");
+    return 0;
+}
+```
+3. Create a module.scm file with the following content:
+```
+name = hello  
+summary = hello  
+outType = exe  
+version = 1.0  
+depends = sric 1.0, cstd 1.0  
+srcDirs = ./
+```
+4. Compile
+```
+sric module.scm -fmake
+```
+5. Run
+After successful compilation, the output executable filename will be printed. Execute it by enclosing it in quotes. For example:
+```
+'C:\Users\user\fmakeRepo\msvc\hello-1.0-release\bin\hello'
+```
 
 # Usage
 

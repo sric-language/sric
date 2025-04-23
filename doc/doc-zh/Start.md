@@ -47,6 +47,42 @@ cd sric
 1. 在vscode插件市场中搜索'sric-language',并安装。
 2. 在插件的设置页配置sricHome指向sric目录(bin的上一级)。
 
+# Hello World
+
+1. 创建一个空文件夹作为工作空间
+2. 创建文件main.sric，内容如下:
+```
+import cstd::*;
+
+fun main(): Int {
+    printf("Hello World\n");
+    return 0;
+}
+
+```
+
+3. 创建module.scm文件，内容如下:
+```
+name = hello
+summary = hello
+outType = exe
+version = 1.0
+depends = sric 1.0, cstd 1.0
+srcDirs = ./
+```
+
+4. 编译
+```
+sric module.scm -fmake
+```
+
+5. 运行
+编译成功后会打印输出的可执行文件名，加上引号来执行。例如:
+```
+'C:\Users\user\fmakeRepo\msvc\hello-1.0-release\bin\hello'
+```
+
+
 # 用法
 
 ```
