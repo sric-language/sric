@@ -21,7 +21,7 @@ public class TopoSorter {
     private SModule module;
     
     public void visitTypeDef(AstNode.TypeDef v) {
-        if ((v.flags & FConst.ExternC) != 0 || (v.flags & FConst.Extern) != 0) {
+        if (v.isExtern()) {
             return;
         }
 

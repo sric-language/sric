@@ -1147,70 +1147,76 @@ public class ErrorChecker extends CompilePass {
             }
         }
 
-        if (e.target.isResolved()) {
-            if (e.target instanceof IdExpr ide) {
-                if (ide.resolvedDef instanceof FieldDef f) {
-                    e.target.checkNonnullable = true;
-                }
-            }
-            if (e.target.resolvedType.detail instanceof Type.FuncInfo f) {
-                
-                if (e.args != null) {
-                    if (f.prototype.paramDefs == null) {
-                        err("Args error", e.loc);
-                    }
-                    else {
-                        int i = 0;
-                        for (Expr.CallArg t : e.args) {
-                            if (i >= f.prototype.paramDefs.size()) {
-                                break;
-                            }
-                            if (t.name != null) {
-                                if (!t.name.equals(f.prototype.paramDefs.get(i).name)) {
-                                    err("Arg name error", t.loc);
-                                }
-                            }
-                            verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).fieldType, t.loc, true, false, false);
-                            ++i;
-                        }
-                        if (i < e.args.size()) {
-                            Type lastParamType = f.prototype.paramDefs.get(f.prototype.paramDefs.size()-1).fieldType;
-                            if (!lastParamType.isVarArgType()) {
-                                err("Too many args", e.loc);
-                            }
-                            else {
-                                for (; i<e.args.size(); ++i) {
-                                    Expr.CallArg t = e.args.get(i);
-                                    verifyTypeFit(t.argExpr, lastParamType, t.loc, true, false, false);
-                                }
-                            }
-                        }
-                        
-                        if (i < f.prototype.paramDefs.size()) {
-                            if (!f.prototype.paramDefs.get(i).hasParamDefaultValue() && !f.prototype.paramDefs.get(i).fieldType.isVarArgType()) {
-                                err("Too few args", e.loc);
-                            }
-                        }
-                    }
-                }
-                else if (f.prototype.paramDefs != null) {
-                    if (!f.prototype.paramDefs.get(0).hasParamDefaultValue()) {
-                        err("Arg number error", e.loc);
-                    }
-                }
-                
-                if (f.funcDef != null) {
-                    if (f.funcDef.generiParamDefs != null && !(e.target instanceof GenericInstance)) {
-                        err("Miss generic args", e.target.loc);
-                    }
-                }
-            }
-            else {
-                err("Call a non-function type:"+e.target, e.loc);
+        if (!e.target.isResolved()) {
+            return;
+        }
+        
+        if (e.target instanceof IdExpr ide) {
+            if (ide.resolvedDef instanceof FieldDef f) {
+                e.target.checkNonnullable = true;
             }
         }
-        else {
+        
+        if (!(e.target.resolvedType.detail instanceof Type.FuncInfo f)) {
+            err("Call a non-function type:"+e.target, e.loc);
             return;
+        }
+        
+        if (f.funcDef != null) {
+            if (f.funcDef.generiParamDefs != null && !(e.target instanceof GenericInstance)) {
+                err("Miss generic args", e.target.loc);
+            }
+        }
+        
+        if (f.funcDef != null && f.funcDef.parent instanceof FileUnit funit && funit.module.name.equals("sric")) {
+            if (f.funcDef.name.equals("new_") || f.funcDef.name.equals("makeValue")) {
+                //skip args check
+                return;
+            }
+        }
+        
+        if (e.args != null) {
+            if (f.prototype.paramDefs == null) {
+                err("Args error", e.loc);
+            }
+            else {
+                int i = 0;
+                for (Expr.CallArg t : e.args) {
+                    if (i >= f.prototype.paramDefs.size()) {
+                        break;
+                    }
+                    if (t.name != null) {
+                        if (!t.name.equals(f.prototype.paramDefs.get(i).name)) {
+                            err("Arg name error", t.loc);
+                        }
+                    }
+                    verifyTypeFit(t.argExpr, f.prototype.paramDefs.get(i).fieldType, t.loc, true, false, false);
+                    ++i;
+                }
+                if (i < e.args.size()) {
+                    Type lastParamType = f.prototype.paramDefs.get(f.prototype.paramDefs.size()-1).fieldType;
+                    if (!lastParamType.isVarArgType()) {
+                        err("Too many args", e.loc);
+                    }
+                    else {
+                        for (; i<e.args.size(); ++i) {
+                            Expr.CallArg t = e.args.get(i);
+                            verifyTypeFit(t.argExpr, lastParamType, t.loc, true, false, false);
+                        }
+                    }
+                }
+
+                if (i < f.prototype.paramDefs.size()) {
+                    if (!f.prototype.paramDefs.get(i).hasParamDefaultValue() && !f.prototype.paramDefs.get(i).fieldType.isVarArgType()) {
+                        err("Too few args", e.loc);
+                    }
+                }
+            }
+        }
+        else if (f.prototype.paramDefs != null) {
+            if (!f.prototype.paramDefs.get(0).hasParamDefaultValue()) {
+                err("Arg number error", e.loc);
+            }
         }
     }
     

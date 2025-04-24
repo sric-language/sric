@@ -20,5 +20,8 @@ fun main(): Int {
     testStatic();
     testClosure();
     testStream();
+
+    testExtern();
+    testExtern2();
     return 0;
 }

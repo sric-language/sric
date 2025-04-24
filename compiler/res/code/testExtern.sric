@@ -1,0 +1,12 @@
+
+
+
+//@#include <vector>
+//@extern symbol: std::vector
+extern struct vector$<T> {
+    fun size(): Int;
+}
+
+fun testExtern() {
+    var v: vector$<Int>;
+}

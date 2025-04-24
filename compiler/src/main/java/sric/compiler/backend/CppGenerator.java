@@ -92,7 +92,7 @@ public class CppGenerator extends BaseGenerator {
     }
     
     private String getExternSymbol(TopLevelDef type) {
-        if ((type.flags & FConst.Extern) != 0 && type.comment != null) {
+        if (type.isExtern() && type.comment != null) {
             for (Comment comment : type.comment.comments) {
                String key = "extern symbol:";
                if (comment.content.startsWith(key)) {
@@ -146,7 +146,7 @@ public class CppGenerator extends BaseGenerator {
             //types decleartion
             for (FileUnit funit : module.fileUnits) {
                 for (TypeDef type : funit.typeDefs) {
-                    if ((type.flags & FConst.ExternC) != 0) {
+                    if ((type.flags & FConst.ExternC) != 0 || this.getExternSymbol(type) != null) {
                         continue;
                     }
                     

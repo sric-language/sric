@@ -48,7 +48,7 @@ class OwnPtr {
     template <class U> friend class OwnPtr;
     template <class U> friend class SharedPtr;
     template <class U> friend class WeakPtr;
-    template <class U> friend OwnPtr<U> new_();
+    template<typename U, typename... Args> friend OwnPtr<U> new_(Args&&... args);
     template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
     template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
@@ -176,7 +176,7 @@ class OwnPtr<void> {
     template <class U> friend class OwnPtr;
     template <class U> friend class SharedPtr;
     template <class U> friend class WeakPtr;
-    template <class U> friend OwnPtr<U> new_();
+    template<typename U, typename... Args> friend OwnPtr<U> new_(Args&&... args);
     template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
     template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
@@ -311,8 +311,8 @@ void dealloc(HeapRefable* p) {
     }
 }
 
-template<typename T>
-OwnPtr<T> new_() {
+template<typename T, typename... Args>
+OwnPtr<T> new_(Args&&... args) {
     static_assert(sizeof(HeapRefable) % 8 == 0, "HeapRefable must be 8-byte aligned");
 
     HeapRefable* p = (HeapRefable*)malloc(sizeof(HeapRefable) + sizeof(T));
@@ -320,8 +320,13 @@ OwnPtr<T> new_() {
     p->dealloc = dealloc<T>;
     p->freeMemory = free;
     void* m = (p + 1);
-    T* t = new(m) T();
+    T* t = new(m) T(std::forward<Args>(args)...);
     return OwnPtr<T>(t);
+}
+
+template<typename T, typename... Args>
+T makeValue(Args&&... args) {
+    return T(std::forward<Args>(args)...);
 }
 
 template<typename T>

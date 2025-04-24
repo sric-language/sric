@@ -57,11 +57,42 @@ extern fun hello();
 //@#include "test.h"
 ```
 
-### 生成C++接口
+### 有参构造函数
+
+由于Sric不支持有参数的构造函数，所以使用下面两个方式来调用有参数的构造函数：
+```
+new_$<vector$<Int>>(3);
+makeValue$<vector$<Int>>(3);
+```
+
+### 完整示例
+
+```
+import sric::*;
+
+
+//@#include <vector>
+//@extern symbol: std::vector
+extern struct vector$<T> {
+    fun size(): Int;
+}
+
+fun testExtern() {
+    var v = new_$<vector$<Int>>(3);
+    verify(v.size() == 3);
+}
+
+fun testExtern2() {
+    var v2 = makeValue$<vector$<Int>>(3);
+    verify(v2.size() == 3);
+}
+```
+
+## 生成C++接口
 使用tool目录的python脚本，可以由C++头文件生成的sric原型。
 
 
-### 不使用fmake进行编译
+## 不使用fmake进行编译
 可以自己编译生成的C++代码，位于sric/output目录下。
 
 可以定义SC_NO_CHECK和SC_CHECK宏。

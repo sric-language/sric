@@ -1,0 +1,18 @@
+import sric::*;
+
+
+//@#include <vector>
+//@extern symbol: std::vector
+extern struct vector$<T> {
+    fun size(): Int;
+}
+
+fun testExtern() {
+    var v = new_$<vector$<Int>>(3);
+    verify(v.size() == 3);
+}
+
+fun testExtern2() {
+    var v2 = makeValue$<vector$<Int>>(3);
+    verify(v2.size() == 3);
+}
