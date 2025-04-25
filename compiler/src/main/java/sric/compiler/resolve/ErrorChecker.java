@@ -1169,7 +1169,7 @@ public class ErrorChecker extends CompilePass {
         }
         
         if (f.funcDef != null && f.funcDef.parent instanceof FileUnit funit && funit.module.name.equals("sric")) {
-            if (f.funcDef.name.equals("new_") || f.funcDef.name.equals("makeValue")) {
+            if (f.funcDef.name.equals("makePtr") || f.funcDef.name.equals("makeValue")) {
                 //skip args check
                 return;
             }

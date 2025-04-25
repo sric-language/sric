@@ -54,6 +54,9 @@ public class SModule extends AstNode {
         if (m.name == null) {
             throw new RuntimeException("Unknow name");
         }
+        if (!Util.isValidIdentifier(m.name)) {
+            throw new RuntimeException("Invalid module name: "+m.name);
+        }
         m.version = props.get("version");
         if (m.version == null) {
             throw new RuntimeException("Unknow version");

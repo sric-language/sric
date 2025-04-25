@@ -316,12 +316,21 @@ OwnPtr<T> new_(Args&&... args) {
     static_assert(sizeof(HeapRefable) % 8 == 0, "HeapRefable must be 8-byte aligned");
 
     HeapRefable* p = (HeapRefable*)malloc(sizeof(HeapRefable) + sizeof(T));
+    if (!p) {
+        fprintf(stderr, "ERROR: alloc memory fail\n");
+        return OwnPtr<T>();
+    }
     new (p) HeapRefable();
     p->dealloc = dealloc<T>;
     p->freeMemory = free;
     void* m = (p + 1);
     T* t = new(m) T(std::forward<Args>(args)...);
     return OwnPtr<T>(t);
+}
+
+template<typename T, typename... Args>
+OwnPtr<T> makePtr(Args&&... args) {
+    return new_<T>(std::forward<Args>(args)...);
 }
 
 template<typename T, typename... Args>

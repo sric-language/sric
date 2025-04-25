@@ -151,4 +151,40 @@ public class Util {
         }
         return sb.toString();
     }
+    
+    public static boolean isValidIdentifier(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        String regex = "^[a-zA-Z_][a-zA-Z\\d_]*$";
+
+        boolean isValid = str.matches(regex);
+
+        if (isValid && isJavaKeyword(str)) {
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private static boolean isJavaKeyword(String str) {
+        String[] keywords = {
+            "abstract", "assert", "boolean", "break", "byte", "case", "catch", 
+            "char", "class", "const", "continue", "default", "do", "double", 
+            "else", "enum", "extends", "final", "finally", "float", "for", 
+            "goto", "if", "implements", "import", "instanceof", "int", 
+            "interface", "long", "native", "new", "package", "private", 
+            "protected", "public", "return", "short", "static", "strictfp", 
+            "super", "switch", "synchronized", "this", "throw", "throws", 
+            "transient", "try", "void", "volatile", "while", "true", "false", "null"
+        };
+
+        for (String keyword : keywords) {
+            if (keyword.equals(str)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

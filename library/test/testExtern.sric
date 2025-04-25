@@ -8,7 +8,7 @@ extern struct vector$<T> {
 }
 
 fun testExtern() {
-    var v = new_$<vector$<Int>>(3);
+    var v = makePtr$<vector$<Int>>(3);
     verify(v.size() == 3);
 }
 

@@ -22,5 +22,5 @@ fun clamp(v: Float, min: Float, max: Float) : Float {
 externc fun sc_assert(cond: Bool, msg: raw*? const Int8);
 extern fun verify(cond: Bool, msg: raw*? const Int8 = null);
 
-extern fun new_$<T>(args: ...): own* T;
+extern fun makePtr$<T>(args: ...): own* T;
 extern fun makeValue$<T>(args: ...): T;

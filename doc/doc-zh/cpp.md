@@ -59,11 +59,7 @@ extern fun hello();
 
 ### 有参构造函数
 
-由于Sric不支持有参数的构造函数，所以使用下面两个方式来调用有参数的构造函数：
-```
-new_$<vector$<Int>>(3);
-makeValue$<vector$<Int>>(3);
-```
+由于Sric不支持有参数的构造函数，所以使用makePtr,makeValue来调用有参数的构造函数。
 
 ### 完整示例
 
@@ -78,7 +74,7 @@ extern struct vector$<T> {
 }
 
 fun testExtern() {
-    var v = new_$<vector$<Int>>(3);
+    var v = makePtr$<vector$<Int>>(3);
     verify(v.size() == 3);
 }
 

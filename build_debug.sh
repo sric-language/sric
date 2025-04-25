@@ -1,3 +1,4 @@
+set -e
 
 cd compiler
 sh build.sh

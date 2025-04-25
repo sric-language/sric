@@ -79,22 +79,23 @@ After successful compilation, the output executable filename will be printed. Ex
 'C:\Users\user\fmakeRepo\msvc\hello-1.0-release\bin\hello'
 ```
 
-# Usage
-
-```
-sric test.scm
-```
-
-The .scm file is module build script.
-
-The generated C++ code is located in the "sric/output" directory.
-
 
 ## Build by fmake
+
+The build process without -fmake solely outputs C++ code (under "sric/output").
 ```
-sric test.scm -fmake -debug
+sric hello.scm
 ```
-Or:
+
+Then compile it separately by manually running fmake:
 ```
-fan fmake output/test.fmake -debug
+fan fmake output/hello.fmake -debug
 ```
+
+## Debug
+
+Debugging the generated C++ code is supported via IDE project generation.
+```
+fan fmake output/hello.fmake -debug -G
+```
+The generated project files are located in the build folder under the parent directory.

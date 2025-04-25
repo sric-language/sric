@@ -16,7 +16,7 @@
 | char | Int8 |
 | char[4] | [4]Int8 |
 | int* | raw* Int8 |
-| const int& | & const int |
+| const int& | & const Int |
 
 ### 定义
 | C++  | Sric  |
