@@ -71,21 +71,10 @@ depends = sric 1.0, cstd 1.0
 srcDirs = ./
 ```
 
-4. 编译
+4. 编译和运行
 ```
-sric module.scm -fmake
+sric module.scm -fmake -run
 ```
-
-5. 运行
-编译成功后会打印输出的可执行文件名，加上引号来执行。例如:
-```
-'C:\Users\user\fmakeRepo\msvc\hello-1.0-release\bin\hello'
-```
-
-
-其中.scm文件是模块定义文件，也是构建脚本。
-生成的 C++ 代码位置在 "sric/output" 目录。
-
 
 
 ## 使用fmake构建

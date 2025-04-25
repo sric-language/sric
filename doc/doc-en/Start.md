@@ -69,14 +69,9 @@ version = 1.0
 depends = sric 1.0, cstd 1.0  
 srcDirs = ./
 ```
-4. Compile
+4. Build And Run
 ```
-sric module.scm -fmake
-```
-5. Run
-After successful compilation, the output executable filename will be printed. Execute it by enclosing it in quotes. For example:
-```
-'C:\Users\user\fmakeRepo\msvc\hello-1.0-release\bin\hello'
+sric module.scm -fmake -run
 ```
 
 

@@ -356,9 +356,9 @@ public class ErrorChecker extends CompilePass {
             //check const is static
             if ((v.flags & FConst.ConstExpr) == 0) {
                 boolean isStatic = v.isStatic();
-                if (isStatic && !v.fieldType.isImmutable) {
+                if (isStatic && !v.fieldType.isDeepImmutable()) {
                     if ((v.flags & FConst.Unsafe) == 0) {
-                        err("Static var must be const", v.loc);
+                        err("Static var must be deep immutable", v.loc);
                     }
                 }
             }

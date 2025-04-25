@@ -92,7 +92,7 @@ public class CppGenerator extends BaseGenerator {
     }
     
     private String getExternSymbol(TopLevelDef type) {
-        if (type.isExtern() && type.comment != null) {
+        if ((type.flags & FConst.Extern) != 0 && type.comment != null) {
             for (Comment comment : type.comment.comments) {
                String key = "extern symbol:";
                if (comment.content.startsWith(key)) {

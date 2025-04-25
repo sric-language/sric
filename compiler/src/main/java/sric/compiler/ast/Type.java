@@ -89,6 +89,18 @@ public class Type extends AstNode {
         this.id.loc = loc;
     }
     
+    public boolean isDeepImmutable() {
+        if (!this.isImmutable) {
+            return false;
+        }
+        if (this.isPointerType()) {
+            if (this.genericArgs != null) {
+                return this.genericArgs.get(0).isDeepImmutable();
+            }
+        }
+        return true;
+    }
+    
     public boolean isVoid() {
         if (id.namespace != null) {
             return false;

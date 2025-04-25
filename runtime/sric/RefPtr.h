@@ -164,6 +164,8 @@ private:
             }
             break;
         }
+        default:
+            break;
         }
     }
 #endif
@@ -361,6 +363,8 @@ private:
             sc_assert(checkCode == *(code + 1), "try access invalid pointer");*/
             break;
         }
+        default:
+            break;
         }
     }
 #endif

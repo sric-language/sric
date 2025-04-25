@@ -27,6 +27,7 @@ public class Main {
     boolean scriptMode = false;
     boolean compileNative = false;
     boolean debug = false;
+    boolean execute = false;
     
     static private void printHelp() {
         System.out.println("Sric compiler");
@@ -34,12 +35,13 @@ public class Main {
         System.out.println("  sric [options] <filename>");
         System.out.println("Options:");
         System.out.println("  -help,-? \tprint help");
-        System.out.println("  -home \t\tsric home path");
+        System.out.println("  -home \tsric home path");
         System.out.println("  -lsp \t\tstart LanguageServer");
         System.out.println("  -r \t\trecursively build depends");
         System.out.println("  -version \tprint version");
         System.out.println("  -fmake \tbuild native by fmake");
         System.out.println("  -debug \tdebug build");
+        System.out.println("  -run   \texecute build result");
     }
     
     static private void printVersion() {
@@ -86,6 +88,9 @@ public class Main {
             }
             else if (args[i].equals("-debug")) {
                 debug = true;
+            }
+            else if (args[i].equals("-run")) {
+                execute = true;
             }
             else if (args[i].startsWith("-")) {
                 System.err.print("unknow flags:"+ args[i]);
@@ -152,6 +157,9 @@ public class Main {
             sb.append("fmake ");
             if (debug) {
                 sb.append("-debug ");
+            }
+            if (execute) {
+                sb.append("-execute ");
             }
             sb.append("-f ");
             sb.append("/");
