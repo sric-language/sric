@@ -67,6 +67,9 @@ public class MessageSender {
     
     public void sendDiagnostics(Workspace workspace, String documentUri) {
         Document doc = workspace.getDocument(documentUri);
+        if (doc == null || doc.compiler == null) {
+            return;
+        }
         ArrayList<CompilerErr> errors = doc.compiler.log.errors;
         
         PublishDiagnosticsParams params = new PublishDiagnosticsParams();
