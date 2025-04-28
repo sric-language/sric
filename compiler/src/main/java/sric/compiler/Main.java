@@ -108,11 +108,13 @@ public class Main {
         
         if (sourcePath == null) {
             printHelp();
+            System.exit(2);
             return;
         }
         
-        if ( !compile(sourcePath)) {
+        if (!compile(sourcePath)) {
             System.err.println("Compile Fail");
+            System.exit(1);
         }
     }
     
@@ -173,7 +175,10 @@ public class Main {
                 System.out.println("exec: "+cmd);
             }
 
-            Util.exec(cmd);
+            int error = Util.exec(cmd);
+            if (error != 0) {
+                rc = false;
+            }
         }
         return rc;
     }

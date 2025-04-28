@@ -102,7 +102,7 @@ public class Util {
     }
     
     
-    public static void exec(String cmd) throws IOException {
+    public static int exec(String cmd) throws IOException {
         Process pr = Runtime.getRuntime().exec(cmd);
         
         InputStreamReader inst2 = new InputStreamReader(pr.getInputStream());
@@ -121,12 +121,14 @@ public class Util {
         }
         br.close();
 
+        int rc = 1;
         try {
-            pr.waitFor();
+            rc = pr.waitFor();
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         pr.destroy();
+        return rc;
     }
     
     public static String convertRelativePaths(String oldDir, String newDir, String fileNames) {
