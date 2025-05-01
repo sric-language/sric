@@ -289,8 +289,8 @@ public class Compiler {
         fmakes.put("outType", this.module.outType);
         fmakes.put("extIncDirs", "./");
         
-        fmakes.put("fmake.msvc.extConfigs.cppflags", "/std:c++17");
-        fmakes.put("fmake.gcc.extConfigs.cppflags", "-std=c++17");
+        fmakes.put("msvc.extConfigs.cppflags", "/std:c++17");
+        fmakes.put("gcc.extConfigs.cppflags", "-std=c++17");
         
         if (fmakeArgs != null) {
             String srcDir = new File(this.module.sourcePath).getParent();

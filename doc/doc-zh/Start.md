@@ -35,12 +35,16 @@ cd jsonc
 ```
 
 ### 4.构建Sric
+
 ```
 git clone https://github.com/sric-language/sric.git
 cd sric
+chmod a+x bin/sric
 ./build.sh
 ```
+
 添加sric的"bin"目录到你的环境变量（配置完环境变量需要重启gitbash）
+
 
 # IDE
 
