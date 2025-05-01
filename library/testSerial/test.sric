@@ -151,11 +151,12 @@ unsafe fun testSimpleSerial() {
     verify(obj2.padding.left == 4);
 }
 
-unsafe fun main() {
+unsafe fun main(): Int {
     testSimple();
     testStruct();
     testArray();
     testEnum();
     testArray2();
     testSimpleSerial();
+    return 0;
 }

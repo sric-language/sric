@@ -1,7 +1,7 @@
 import sric::*;
 import jsonc::*;
 
-unsafe fun main() {
+unsafe fun main(): Int {
     var allocator: JsonAllocator;
     var parser = HimlParser { .init(&allocator); };
 
@@ -23,4 +23,5 @@ unsafe fun main() {
         printf("%d\n", n as Int);
     }
     
+    return 0;
 }
