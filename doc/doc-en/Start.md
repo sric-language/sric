@@ -13,7 +13,7 @@ Install the above software and configure the environment variables to ensure tha
 
 ### 2.Build fmake
 ```
-git clone git@github.com:chunquedong/fmake.git
+git clone https://github.com/chunquedong/fmake.git
 cd fmake
 fanb pod.props
 ```
@@ -28,16 +28,18 @@ cd -
 
 ### 3.Build jsonc
 ```
-git clone git@github.com:chunquedong/jsonc.git
+git clone https://github.com/chunquedong/jsonc.git
 cd jsonc
 ./build.sh
 ```
 
 ### 6.Build Sric
 ```
-git clone git@github.com:sric-language/sric.git
+git clone https://github.com/sric-language/sric.git
 cd sric
+chmod a+x bin/sric
 ./build.sh
+./build_debug.sh
 ```
 Add sric/bin to your PATH (restart gitbash afterward).
 
