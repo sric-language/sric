@@ -1,0 +1,26 @@
+import sric::*;
+import jsonc::*;
+
+unsafe fun main() {
+    var allocator: JsonAllocator;
+    var parser = HimlParser { .init(&allocator); };
+
+    var stream = FileStream::open("test.himl", "rb");
+    var str = stream.readAllStr();
+    var value0 = parser.parse(str.c_str() as raw* Int8);
+
+    //check error
+    if (value0 == null || parser.get_error()[0] != 0) {
+        printf("parser json error: %s\n", parser.get_error());
+        return;
+    }
+
+    //get value
+    var node = value0.children();
+    
+    for (var b = node.begin(); b.not_eq(node.end()); b.next()) {
+        var n = b.get().type();
+        printf("%d\n", n as Int);
+    }
+    
+}

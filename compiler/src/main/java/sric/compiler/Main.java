@@ -164,7 +164,9 @@ public class Main {
                 sb.append("-execute ");
             }
             sb.append("-f ");
-            sb.append("/");
+            if (Util.isWindows()) {
+                sb.append("/");
+            }
             sb.append(homePath);
             sb.append("/output/");
             sb.append(compiler.module.name);

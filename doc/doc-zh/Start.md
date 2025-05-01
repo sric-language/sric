@@ -13,7 +13,7 @@
 
 ### 2.构建fmake
 ```
-git clone git@github.com:chunquedong/fmake.git
+git clone https://github.com/chunquedong/fmake.git
 cd fmake
 fanb pod.props
 ```
@@ -29,14 +29,14 @@ cd -
 
 ### 3.构建jsonc
 ```
-git clone git@github.com:chunquedong/jsonc.git
+git clone https://github.com/chunquedong/jsonc.git
 cd jsonc
 ./build.sh
 ```
 
 ### 4.构建Sric
 ```
-git clone git@github.com:sric-language/sric.git
+git clone https://github.com/sric-language/sric.git
 cd sric
 ./build.sh
 ```

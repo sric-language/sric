@@ -1,0 +1,98 @@
+import sric;
+
+//@#include "jvalue.hpp"
+extern enum Type : UInt8 {
+    Null,
+    String,
+    Array,
+    Object,
+    Integer,
+    Float,
+    Boolean
+}
+
+extern struct JsonIterator {
+    fun next();
+    fun noteq(x: &const JsonIterator) const : Bool;
+    fun get() const: raw* Value;
+    fun get_name() const: raw*? const Int8;
+}
+
+extern virtual struct Value {
+
+    fun set_int(other: Int64);
+    fun set_float(other: Float64);
+    fun set_bool(other: Bool);
+    fun set_str(str: raw* const Int8);
+    
+    fun type() : Type;
+    fun set_type(t: Type);
+    
+    fun as_str(defVal : raw* const Int8 = ""): raw* const Int8;
+    fun as_int(): Int64;
+    fun as_float(): Float64;
+    fun as_bool(): Bool;
+    fun is_null(): Bool;
+    
+    fun size(): Int32;
+    fun get(name: raw* const Int8): raw* Value;
+
+    fun get_int(name: raw* const Int8, defval: Int64 = 0): Int64;
+    fun get_float(name: raw* const Int8, defval: Float64 = 0): Float64;
+    fun get_bool(name: raw* const Int8, defval: Bool = false): Bool;
+    fun get_str(name: raw* const Int8, defVal: raw* const Int8 = ""): raw* const Int8;
+
+    fun begin(): JsonIterator;
+    fun end(): JsonIterator;
+
+    //himl
+    fun children() : raw*? Value;
+    fun objectType() : raw*? Value;
+    
+    /**
+    dump to json
+    */
+    fun to_json(json: &sric::String, isHiml: Bool = false, level: Int = 0);
+}
+
+extern struct JsonNode: Value {
+    /** insert and overwrite by key */
+    fun set(key: raw* const Int8, val: raw* JsonNode): Bool;
+    fun insert_pair(key: raw* const Int8, val: raw* JsonNode);
+
+    fun insert(val: raw* JsonNode);
+    fun reverse();
+
+    /** slow than insert */
+    fun _append(val: raw* JsonNode);
+}
+
+extern struct JsonAllocator {
+    fun swap(other: &JsonAllocator);
+    fun allocate(size: Int32): raw* Void;
+    fun allocNode(type: Type): raw* JsonNode;
+    fun strdup(s: raw* const Int8): raw* Int8;
+    fun alloc_str(s: raw* const Int8): raw* JsonNode;
+    fun alloc_float(s: Float64): raw* JsonNode;
+    fun alloc_int(s: Int64) : raw* JsonNode;
+    fun alloc_bool(s: Bool) : raw* JsonNode;
+}
+
+//@#include "jparser.hpp"
+extern struct JsonParser {
+    fun init( allocator: raw* JsonAllocator);
+    fun parse(src: raw* Int8): raw*? Value;
+    fun get_error(): raw* Int;
+    fun get_end(): raw* Int8;
+    fun has_error(): Bool;
+}
+
+//@#include "HimlParser.hpp"
+extern struct HimlParser {
+    var insertTopLevelObject: Bool = false;
+    fun init( allocator: raw* JsonAllocator);
+    fun parse(src: raw* Int8): raw*? Value;
+    fun get_error(): raw* Int;
+    fun get_end(): raw* Int8;
+    fun has_error(): Bool;
+}

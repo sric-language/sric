@@ -8,6 +8,7 @@ sric ./library/std/module.scm -fmake -debug
 sric ./library/cstd/module.scm -fmake -debug
 sric ./library/test/module.scm -fmake -debug
 
+bin/sric ./library/jsonc/module.scm
 sric library/serial/module.scm -fmake -debug
 sric library/testSerial/module.scm -fmake -debug
 
