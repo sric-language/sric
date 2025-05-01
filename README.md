@@ -9,6 +9,7 @@ A Memory-safe high-performance programming language.
 - Interoperate with existing C++ code
 - Dynamic Reflection
 - VSCode plugin and LSP support
+- Template Generic Type, Closure.
 
 
 [Learn More](https://sric.fun/)

@@ -1,6 +1,5 @@
-
 ## 结构
-类没有构造函数，需要调用者自己初始化。
+类没有有参构造函数，需要调用者自己初始化。
 ```
 struct Point {
     var x: Int = 0;
@@ -53,39 +52,6 @@ Point::foo();
 ```
 
 
-## 类型别名
-类型别名相当于C的typedef
-```
-typealias size_t = Int32;
-```
-
-
-## 枚举
-枚举和C++相同，但总是占命名空间。
-```
-enum Color {
-    Red, Green = 2, Blue
-}
-
-fun foo(c: Color) {}
-
-foo(Color::Red);
-```
-并且可以可选的设置为一个整数值。
-
-## 联合体
-sric暂不支持union。可以使用强制类型转换来替代。
-```
-struct U {
-    var data: [8]Int8;
-}
-
-var i = unsafeCast$<raw*Int>(&u.data);
-
-```
-或者使用继承多态来满足需求。
-也许将来会加入像C++一样的std::variant作为替代。
-
 ## 继承
 - 不支持多继承，类似于Java
 - 被继承的类需要标记为virtual或者abstract
@@ -115,7 +81,7 @@ struct A {
     }
 }
 ```
-Sric绝大部分情况是不需要写析构函数的，因为所有权机制会自定清理内存。
+Sric绝大部分情况是不需要写析构函数的，因为所有权机制会自动清理内存。
 
 构造函数是为了弥补原地初始化不能写复杂逻辑的问题。例如可以用三个点的语法，在构造函数中初始化。
 ```
@@ -123,18 +89,6 @@ struct A {
     var p : own* Int = ...;
     fun new() {
         p = new Int;
-    }
-}
-```
-
-## 不安全结构
-
-unsafe结构完全和对应的C++类一致，不包含安全检查需要的标记位。extern结构默认是unsafe的。
-unsafe里的this的类型是裸指针，而不是安全指针。如果对象是独立分配的，可以通过rawToRef转为安全指针。
-```
-unsafe struct A {
-    fun foo() {
-        var self = rawToRef(this);
     }
 }
 ```

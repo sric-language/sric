@@ -47,6 +47,7 @@ cd sric
 1. 在vscode插件市场中搜索'sric-language',并安装。
 2. 在插件的设置页配置sricHome指向sric目录(bin的上一级)。
 
+
 # Hello World
 
 1. 创建一个空文件夹作为工作空间
