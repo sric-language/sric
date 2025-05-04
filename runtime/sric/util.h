@@ -35,9 +35,9 @@ namespace sric {
 	}
 
 	template<typename T>
-	OwnPtr<T> notNull(OwnPtr<T>&& p) {
+	OwnPtr<T>&& notNull(OwnPtr<T>&& p) {
 		sc_assert(!p.isNull(), "Non-Nullable");
-		return p;
+		return std::move(p);
 	}
 
 	template<typename T>
