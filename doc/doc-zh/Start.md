@@ -52,6 +52,7 @@ chmod a+x bin/sric
 1. 在vscode插件市场中搜索'sric-language',并安装。
 2. 在插件的设置页配置sricHome指向sric目录(bin的上一级)。
 
+配置好后重启vscode。如果有跳转到定义、自动完成、大纲视图等功能，说明配置成功。如果重新编译sric源码，需要先关闭vscode。
 
 # Hello World
 

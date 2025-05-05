@@ -49,6 +49,8 @@ Add sric/bin to your PATH (restart gitbash afterward).
 1. Search 'sric-language' in vscode marketplace, install it.
 2. Configure sricHome to point to the sric directory (the parent directory of bin).
 
+After configuring, restart VSCode. If features such as Go to Definition, Auto Completion, and Outline View are available, it means the configuration was successful. If you recompile the Sric source code, you need to close VSCode first.
+
 # Hello World
 
 1. Create an empty folder as the workspace
