@@ -582,6 +582,9 @@ public class CppGenerator extends BaseGenerator {
                 else if (v.fieldType.isRawPointerType()) {
                     print(" = nullptr");
                 }
+                else if (v.fieldType.id.resolvedDef instanceof GenericParamDef) {
+                    print("{}");
+                }
             }
         }
         

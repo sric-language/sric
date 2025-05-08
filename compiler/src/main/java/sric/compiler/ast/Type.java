@@ -108,11 +108,11 @@ public class Type extends AstNode {
         return id.name.equals("Void");
     }
     
-    public boolean isGenericParamType() {
+    public boolean isDefaultGenericParamType() {
         if (id.namespace != null) {
             return false;
         }
-        return id.name.equals(Buildin.genericParamTypeName);
+        return id.name.equals(Buildin.defaultGenericParamTypeName);
     }
     
     public boolean isBool() {
@@ -559,8 +559,8 @@ public class Type extends AstNode {
         return type;
     }
     
-    public static Type genericParamType(Loc loc) {
-        Type type = new Type(loc, Buildin.genericParamTypeName);
+    public static Type defaultGenericParamType(Loc loc) {
+        Type type = new Type(loc, Buildin.defaultGenericParamTypeName);
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, loc, null);
         return type;
     }

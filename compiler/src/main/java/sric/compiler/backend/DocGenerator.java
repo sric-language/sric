@@ -313,7 +313,7 @@ public class DocGenerator extends BaseGenerator {
                         print(gp.name);
                         print(" : ");
                     print("</span>");
-                    if (!gp.bound.isGenericParamType()) {
+                    if (!gp.bound.isDefaultGenericParamType()) {
                         print("<span class=\"type\">");
                             printType(gp.bound);
                         print("</span>");

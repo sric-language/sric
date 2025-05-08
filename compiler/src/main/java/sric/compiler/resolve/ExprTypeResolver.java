@@ -1124,6 +1124,9 @@ public class ExprTypeResolver extends TypeResolver {
                 if (e.resolvedType != null && f.funcDef != null) {
                     if (f.funcDef.isAsync()) {
                         e.resolvedType = Type.promiseType(e.resolvedType.loc, e.resolvedType);
+                        if (!e.resolvedType.id.isResolved()) {
+                            this.resolveType(e.resolvedType, false);
+                        }
                     }
                 }
             }
