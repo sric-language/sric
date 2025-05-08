@@ -8,4 +8,6 @@
 #include "sric/util.h"
 #include "sric/reflection.h"
 
+#include "sric/Promise.h"
+
 #include <functional>

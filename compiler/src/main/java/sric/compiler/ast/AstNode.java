@@ -588,6 +588,10 @@ public class AstNode {
             }
             return false;
         }
+        
+        public boolean isAsync() {
+            return (this.flags & FConst.Async) != 0;
+        }
     }
 
     

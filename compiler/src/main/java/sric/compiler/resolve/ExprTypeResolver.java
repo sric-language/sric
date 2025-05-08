@@ -499,6 +499,9 @@ public class ExprTypeResolver extends TypeResolver {
                 FuncPrototype prototype;
                 if (func instanceof FuncDef f) {
                     prototype = f.prototype;
+                    if (f.isAsync()) {
+                        rets._isCoroutineRet = true;
+                    }
                 }
                 else {
                     ClosureExpr f = (ClosureExpr)func;
@@ -756,7 +759,26 @@ public class ExprTypeResolver extends TypeResolver {
                     }
                         break;
                     case awaitKeyword:
-                        e.resolvedType = e.operand.resolvedType;
+                        if (e.operand.resolvedType.isPromiseType() && e.operand.resolvedType.genericArgs != null) {
+                            e.resolvedType = e.operand.resolvedType.genericArgs.get(0);
+                        }
+                        else {
+                            err("Not awaitable", e.loc);
+                            e.resolvedType = e.operand.resolvedType;
+                        }
+                        
+                        boolean isAsync = false;
+                        AstNode func = this.funcs.peek();
+                        if (func != null) {
+                            if (func instanceof FuncDef f) {
+                                if (f.isAsync()) {
+                                    isAsync = true;
+                                }
+                            }
+                        }
+                        if (!isAsync) {
+                            err("Expect async func", e.loc);
+                        }
                         break;
                     case moveKeyword:
                         e.resolvedType = e.operand.resolvedType;
@@ -1097,6 +1119,12 @@ public class ExprTypeResolver extends TypeResolver {
                 
                 if (e.resolvedType == null) {
                     e.resolvedType = f.prototype.returnType;
+                }
+                
+                if (e.resolvedType != null && f.funcDef != null) {
+                    if (f.funcDef.isAsync()) {
+                        e.resolvedType = Type.promiseType(e.resolvedType.loc, e.resolvedType);
+                    }
                 }
             }
             else {

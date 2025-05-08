@@ -4,7 +4,7 @@
 
 ### 1.Required
 - JDK 17+
-- C++ compiler (supporting C++17)
+- C++ compiler (supporting C++20)
 - [fanx](https://github.com/fanx-dev/fanx/releases)
 - CMake
 - git

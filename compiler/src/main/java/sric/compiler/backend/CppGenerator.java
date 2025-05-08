@@ -644,9 +644,16 @@ public class CppGenerator extends BaseGenerator {
 //            print("extern ");
 //        }
         if ((v.flags & FConst.Ctor) == 0) {
+            if (v.isAsync()) {
+                print("sric::Promise<");
+            }
             printType(v.prototype.returnType);
+            if (v.isAsync()) {
+                print(" >");
+            }
             print(" ");
         }
+        
         if (implMode()) {
             if (v.parent instanceof TypeDef t) {
                 if (t.parent instanceof FileUnit fu) {
@@ -703,7 +710,7 @@ public class CppGenerator extends BaseGenerator {
             print(getSymbolName(v));
         }
         
-        printFuncPrototype(v.prototype, false, v.isStatic(), implMode() || inlined);
+        printFuncPrototype(v.prototype, false, v.isStatic(), implMode() || inlined, v.isAsync());
         
         if (v.code == null) {
             if ((v.flags & FConst.Abstract) != 0) {
@@ -760,7 +767,7 @@ public class CppGenerator extends BaseGenerator {
         }
     }
     
-    private void printFuncPrototype(FuncPrototype prototype, boolean isLambda, boolean isStatic, boolean isImple) {
+    private void printFuncPrototype(FuncPrototype prototype, boolean isLambda, boolean isStatic, boolean isImple, boolean isAsync) {
         print("(");
         if (prototype != null && prototype.paramDefs != null) {
             int i = 0;
@@ -1110,7 +1117,12 @@ public class CppGenerator extends BaseGenerator {
         }
         else if (v instanceof ReturnStmt rets) {
             if (rets.expr != null) {
-                print("return ");
+                if (rets._isCoroutineRet) {
+                    print("co_return ");
+                }
+                else {
+                    print("return ");
+                }
                 this.visit(rets.expr);
                 print(";").newLine();
             }
@@ -1719,7 +1731,7 @@ public class CppGenerator extends BaseGenerator {
 //        }
         print("]");
         
-        this.printFuncPrototype(expr.prototype, true, false, false);
+        this.printFuncPrototype(expr.prototype, true, false, false, false);
         
         this.visit(expr.code);
     }

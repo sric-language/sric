@@ -24,6 +24,7 @@ public abstract class Expr extends AstNode {
     public boolean implicitMove = false;
 //    public boolean implicitDereference = false;
 //    public boolean implicitGetAddress = false;
+//    public boolean isAwaitTarget = false;
         
     public boolean isResolved() {
         return resolvedType != null;

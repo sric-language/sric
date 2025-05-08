@@ -50,6 +50,8 @@ public class Compiler {
     
     private HashMap<String, String> fmakeArgs = null;
     
+    String cppVersion = null;
+    
     public Compiler(SModule module, File sourceDir, String libPath, String outputDir) {
         this.module = module;
         log = new CompilerLog();
@@ -289,8 +291,11 @@ public class Compiler {
         fmakes.put("outType", this.module.outType);
         fmakes.put("extIncDirs", "./");
         
-        fmakes.put("msvc.extConfigs.cppflags", "/std:c++17");
-        fmakes.put("gcc.extConfigs.cppflags", "-std=c++17");
+        if (cppVersion != null) {
+            fmakes.put("msvc.extConfigs.cppflags", "/std:"+cppVersion);
+            fmakes.put("gcc.extConfigs.cppflags", "-std="+cppVersion);
+            fmakes.put("emcc.extConfigs.cppflags", "-std="+cppVersion);
+        }
         
         if (fmakeArgs != null) {
             String srcDir = new File(this.module.sourcePath).getParent();

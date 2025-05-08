@@ -44,6 +44,7 @@ public abstract class Stmt extends AstNode {
         public Expr expr;           // expr to return of null if void return
         //public boolean isLocal = false;
         public Type _funcReturnType;
+        public boolean _isCoroutineRet = false;
     }
     public static class ThrowStmt extends Stmt {
         public Expr expr;

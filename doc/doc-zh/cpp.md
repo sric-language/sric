@@ -84,7 +84,7 @@ fun testExtern2() {
 }
 ```
 
-## 生成C++接口
+## 从C++头文件生成Sric接口
 使用tool目录的python脚本，可以由C++头文件生成的sric原型。
 
 
@@ -96,3 +96,11 @@ fun testExtern2() {
 - SC_NO_CHECK表示不进行安全检查。
 
 当没有这两个宏时，按照_DEBUG和NDEBUG宏来自动定义。
+
+## Sric代码和C++代码混合编译
+
+在module.scm中增加fmake的配置项，以fmake.前缀开头，例如：
+```
+fmake.srcDirs = ./
+fmake.incDirs = ./
+```

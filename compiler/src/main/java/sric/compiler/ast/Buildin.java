@@ -17,7 +17,7 @@ public class Buildin {
         
     private static Scope buildinScope;
     
-    private static Loc loc = new Loc("buildin", 0, 0, 0);
+    public static final Loc loc = new Loc("buildin", 0, 0, 0);
     
     public static final String funcTypeName = "=>";
     public static final String arrayTypeName = "[]";

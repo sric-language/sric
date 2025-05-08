@@ -28,6 +28,7 @@ public class Main {
     boolean compileNative = false;
     boolean debug = false;
     boolean execute = false;
+    String cppVersion = "c++20";
     
     static private void printHelp() {
         System.out.println("Sric compiler");
@@ -92,6 +93,9 @@ public class Main {
             else if (args[i].equals("-run")) {
                 execute = true;
             }
+            else if (args[i].startsWith("-c++")) {
+                cppVersion = args[i].trim();
+            }
             else if (args[i].startsWith("-")) {
                 System.err.print("unknow flags:"+ args[i]);
             }
@@ -127,6 +131,8 @@ public class Main {
         else {
             compiler = Compiler.fromProps(sourcePath, libPath);
         }
+        
+        compiler.cppVersion = this.cppVersion;
         
         if (recursion) {
             for (SModule.Depend dep: compiler.module.depends) {

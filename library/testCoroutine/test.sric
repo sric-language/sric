@@ -1,0 +1,27 @@
+import sric::*;
+import cstd::*;
+
+//@#include "testCo.h"
+extern async fun testCallback() : Int;
+extern fun runCoroutine(): Int;
+extern fun installCoScheduler();
+
+async fun test2() : Int {
+    var i = 0;
+    i = await testCallback();
+    printf("await result:%d\n", i);
+    return i + 1;
+}
+
+fun main(): Int {
+    installCoScheduler();
+    test2();
+
+    while (true) {
+        var i = runCoroutine();
+        if (i > 0) {
+            break;
+        }
+    }
+    return 0;
+}

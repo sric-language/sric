@@ -24,3 +24,9 @@ extern fun verify(cond: Bool, msg: raw*? const Int8 = null);
 
 extern fun makePtr$<T>(args: ...): own* T;
 extern fun makeValue$<T>(args: ...): T;
+
+extern struct Promise$<T> {
+    fun get_result(): T;
+    fun is_done(): Bool;
+    fun then(cb: fun(error:Int, value:T));
+}

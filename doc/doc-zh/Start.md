@@ -4,7 +4,7 @@
 
 ### 1.安装需要的软件
 - JDK 17+
-- C++ 编译器(支持C++17)
+- C++ 编译器(支持C++20)
 - [fanx](https://github.com/fanx-dev/fanx/releases)
 - CMake
 - git

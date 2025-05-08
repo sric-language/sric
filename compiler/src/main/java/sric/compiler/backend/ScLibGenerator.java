@@ -95,9 +95,6 @@ public class ScLibGenerator extends BaseGenerator {
         if ((flags & FConst.Reflect) != 0) {
             print("reflect ");
         }
-        if ((flags & FConst.Async) != 0) {
-            print("async ");
-        }
         if ((flags & FConst.Unsafe) != 0) {
             print("unsafe ");
         }

@@ -171,6 +171,10 @@ public class Type extends AstNode {
         return true;
     }
     
+    public boolean isPromiseType() {
+        return id == Type.promiseCache;
+    }
+    
     public boolean hasDefaultValue() {
         if (this.isPointerType()) {
             if (!this.isNullablePointerType()) {
@@ -623,6 +627,23 @@ public class Type extends AstNode {
         type.detail = info;
         
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, type.loc, null);
+        return type;
+    }
+    
+    private static IdExpr promiseCache;
+    
+    public static Type promiseType(Loc loc, Type rawType) {
+        if (promiseCache == null) {
+            IdExpr ns = new IdExpr("sric");
+            IdExpr id = new IdExpr("Promise");
+            id.loc = Buildin.loc;
+            id.namespace = ns;
+            promiseCache = id;
+        }
+        
+        Type type = new Type(promiseCache);
+        type.genericArgs = new ArrayList<>();
+        type.genericArgs.add(rawType);
         return type;
     }
     
