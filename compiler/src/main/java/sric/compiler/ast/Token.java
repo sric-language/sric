@@ -212,16 +212,10 @@ public class Token {
     }
     
     public boolean isAssign() {
-        switch (kind) {
-            case assign:
-            case assignPlus:
-            case assignMinus:
-            case assignStar:
-            case assignSlash:
-            case assignPercent:
-                return true;
-        }
-        return false;
+        return switch (kind) {
+            case assign, assignPlus, assignMinus, assignStar, assignSlash, assignPercent -> true;
+            default -> false;
+        };
     }
     
     @Override

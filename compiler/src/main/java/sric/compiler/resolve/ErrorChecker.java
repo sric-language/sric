@@ -310,7 +310,7 @@ public class ErrorChecker extends CompilePass {
         
         //check constexpr
         if ((v.flags & FConst.ConstExpr) != 0) {
-            if (v.fieldType != null && v.fieldType.isImmutable == false) {
+            if (v.fieldType != null && !v.fieldType.isImmutable) {
                 err("constexpr must be const", v.loc);
             }
             if (v.initExpr == null) {

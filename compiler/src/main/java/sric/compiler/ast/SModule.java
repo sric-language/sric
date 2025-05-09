@@ -70,7 +70,7 @@ public class SModule extends AstNode {
             throw new RuntimeException("Unknow outType");
         }
         
-        if (dependsStr.length() > 0) {
+        if (!dependsStr.isEmpty()) {
             var dependsA = dependsStr.split(",");
             for (String depStr : dependsA) {
                 depStr = depStr.trim();

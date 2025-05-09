@@ -46,7 +46,7 @@ public class Compiler {
     public boolean genCode = true;
     public boolean print = true;
     
-    private HashMap<String, SModule> moduleCache = new HashMap<String, SModule>();
+    private HashMap<String, SModule> moduleCache = new HashMap<>();
     
     private HashMap<String, String> fmakeArgs = null;
     

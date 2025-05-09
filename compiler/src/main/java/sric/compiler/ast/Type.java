@@ -973,7 +973,7 @@ public class Type extends AstNode {
     }
     
     public Type toMutable() {
-        if (this.isImmutable == false) {
+        if (!this.isImmutable) {
             return this;
         }
         
