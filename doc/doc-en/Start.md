@@ -73,11 +73,18 @@ version = 1.0
 depends = sric 1.0, cstd 1.0  
 srcDirs = ./
 ```
-4. Build And Run
+4. Build
 ```
-sric module.scm -fmake -run
+sric module.scm -fmake
 ```
 
+5. Run
+
+After compilation, the console will print the output file path. Run it with quotes. For example:
+
+```
+'C:\Users\xxx\fmakeRepo\msvc\test-1.0-debug\bin\test'
+```
 
 ## Build by fmake
 

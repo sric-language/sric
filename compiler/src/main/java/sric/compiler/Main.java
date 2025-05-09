@@ -27,7 +27,7 @@ public class Main {
     boolean scriptMode = false;
     boolean compileNative = false;
     boolean debug = false;
-    boolean execute = false;
+    //boolean execute = false;
     String cppVersion = "c++20";
     
     static private void printHelp() {
@@ -36,17 +36,16 @@ public class Main {
         System.out.println("  sric [options] <filename>");
         System.out.println("Options:");
         System.out.println("  -help,-? \tprint help");
-        System.out.println("  -home \tsric home path");
         System.out.println("  -lsp \t\tstart LanguageServer");
         System.out.println("  -r \t\trecursively build depends");
         System.out.println("  -version \tprint version");
         System.out.println("  -fmake \tbuild native by fmake");
         System.out.println("  -debug \tdebug build");
-        System.out.println("  -run   \texecute build result");
+        System.out.println("  -c++20 \tc++ std version");
     }
     
     static private void printVersion() {
-        System.out.println("Sric version 1.9");
+        System.out.println("Sric version 1.10");
         System.out.println("Copyright (c) 2022-2024, chunquedong");
         System.out.println("Licensed under the Academic Free License version 3.0");
     }
@@ -90,11 +89,8 @@ public class Main {
             else if (args[i].equals("-debug")) {
                 debug = true;
             }
-            else if (args[i].equals("-run")) {
-                execute = true;
-            }
             else if (args[i].startsWith("-c++")) {
-                cppVersion = args[i].trim();
+                cppVersion = args[i].substring(1).trim();
             }
             else if (args[i].startsWith("-")) {
                 System.err.print("unknow flags:"+ args[i]);
@@ -165,9 +161,6 @@ public class Main {
             sb.append("fmake ");
             if (debug) {
                 sb.append("-debug ");
-            }
-            if (execute) {
-                sb.append("-execute ");
             }
             sb.append("-f ");
             if (Util.isWindows()) {

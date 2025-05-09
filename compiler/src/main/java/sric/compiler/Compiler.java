@@ -292,7 +292,7 @@ public class Compiler {
         fmakes.put("extIncDirs", "./");
         
         if (cppVersion != null) {
-            fmakes.put("msvc.extConfigs.cppflags", "/std:"+cppVersion);
+            fmakes.put("msvc.extConfigs.cppflags", "/std:"+cppVersion + " /utf-8");
             fmakes.put("gcc.extConfigs.cppflags", "-std="+cppVersion);
             fmakes.put("emcc.extConfigs.cppflags", "-std="+cppVersion);
         }

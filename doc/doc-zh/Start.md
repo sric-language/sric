@@ -80,9 +80,15 @@ srcDirs = ./
 
 4. 编译和运行
 ```
-sric module.scm -fmake -run
+sric module.scm -fmake
 ```
 
+1. 运行
+
+编译后控制台会打印输出文件路径，加上引号来运行。例如:
+```
+'C:\Users\xxx\fmakeRepo\msvc\test-1.0-debug\bin\test'
+```
 
 ## 使用fmake构建
 
@@ -102,3 +108,21 @@ fan fmake output/hello.fmake -debug
 fan fmake output/hello.fmake -debug -G
 ```
 生成的项目文件在上层目录的build文件夹下。
+
+## 常见问题
+
+### 中文乱码
+gitbash中，运行下面命令：
+```
+cmd "/c chcp 65001>nul"
+```
+cmd中运行下面命令;
+```
+chcp 65001>nul
+```
+
+### 编译器不支持C++20
+由于协程需要C++20版本，可以通过参数来指定C++版本（此时协程相关代码会编译报错）。
+```
+sric module.scm -fmake -c++17
+```
