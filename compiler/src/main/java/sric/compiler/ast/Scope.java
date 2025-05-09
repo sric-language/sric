@@ -61,7 +61,7 @@ public class Scope extends AstNode {
         for (HashMap.Entry<String, ArrayList<AstNode>> entry : other.symbolTable.entrySet()) {
             for (AstNode anode : entry.getValue()) {
                 ArrayList<AstNode> nodes = symbolTable.get(entry.getKey());
-                if (nodes != null && nodes.size() > 0) {
+                if (nodes != null && !nodes.isEmpty()) {
                     continue;
                 }
                 put(entry.getKey(), anode);

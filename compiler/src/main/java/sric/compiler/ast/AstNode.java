@@ -169,8 +169,8 @@ public class AstNode {
     
     public static class TypeDef extends TopLevelDef {
         public ArrayList<Type> inheritances = null;
-        public ArrayList<FieldDef> fieldDefs = new ArrayList<FieldDef>();
-        public ArrayList<FuncDef> funcDefs = new ArrayList<FuncDef>();
+        public ArrayList<FieldDef> fieldDefs = new ArrayList<>();
+        public ArrayList<FuncDef> funcDefs = new ArrayList<>();
         public ArrayList<GenericParamDef> generiParamDefs = null;
         public Type enumBase = null;
         
@@ -256,7 +256,7 @@ public class AstNode {
             if ((this.flags & FConst.Virtual) != 0) {
                 return true;
             }
-            if (this.inheritances != null && this.inheritances.size() > 0) {
+            if (this.inheritances != null && !this.inheritances.isEmpty()) {
                 return true;
             }
             return false;
@@ -664,7 +664,7 @@ public class AstNode {
         }
         
         public boolean isLastReturnValue() {
-            if (stmts.size() == 0) {
+            if (stmts.isEmpty()) {
                 return false;
             }
             Stmt last = stmts.get(stmts.size()-1);

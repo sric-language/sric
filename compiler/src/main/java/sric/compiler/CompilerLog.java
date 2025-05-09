@@ -42,7 +42,7 @@ public class CompilerLog {
     }
     
     public boolean hasError() {
-        return errors.size() > 0;
+        return !errors.isEmpty();
     }
     
     public boolean printError() {
