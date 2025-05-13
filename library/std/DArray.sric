@@ -1,5 +1,8 @@
 //@#include "sric/DArray.h"
 
+/**
+* A Inteface for DArray for dynamic reflection
+*/
 extern trait List {
     abstract fun data(): raw* Void;
     abstract fun size() const : Int;
@@ -8,7 +11,7 @@ extern trait List {
 }
 
 /**
-* Dynamic Array
+* Dynamic Array. DArray is a sequence container that encapsulates dynamic size arrays.
 */
 extern noncopyable struct DArray$<T> : List {
     fun data(): raw* Void;

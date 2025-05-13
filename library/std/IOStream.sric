@@ -2,6 +2,9 @@
 //@#include "sric/Buffer.h"
 //@#include "sric/FileSystem.h"
 
+/**
+* IOStream is used to read write data. These abstract devices allow the same code to handle input/output to files, memory streams, or custom adaptor devices that perform arbitrary operations (e.g. compression) on the fly.
+*/
 extern abstract struct IOStream {
     fun canRead(): Bool;
     fun canWrite(): Bool;

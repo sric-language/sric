@@ -1,4 +1,7 @@
 
+/**
+* The FileSystem provides facilities for performing operations on file systems
+*/
 extern trait FileSystem {
     extern static fun mkdirs(path: const raw* const Int8): Bool;
     extern static fun listFiles(path: const raw* const Int8, files: &DArray$<String>): Bool;

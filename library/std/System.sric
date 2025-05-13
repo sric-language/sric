@@ -17,6 +17,6 @@ extern fun nanoTicks(): Int64;
 extern fun sleep(millitm: Int64);
 
 /**
-* Thread ID
+* Get current thread ID
 */
 extern fun currentThreadId(): UInt64;

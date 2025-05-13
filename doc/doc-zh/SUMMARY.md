@@ -23,6 +23,9 @@
 - [运算符重载](operator.md)
 - [模块化](module.md)
 
+# 标准库
+- [标准库基础](stdlib.md)
+
 # 高级
 - [反射](reflect.md)
 - [协程](coroutine.md)

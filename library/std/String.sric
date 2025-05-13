@@ -1,6 +1,13 @@
 //@#include "sric/Str.h"
 
+/**
+* String stores and manipulates sequences of character-like objects.
+* The String is always UTF-8 encoding.
+*/
 extern noncopyable struct String {
+    /**
+    * Get C style string
+    */
     fun c_str() const: raw* const Int8;
     fun data() : raw* Int8;
     fun size() const: Int;
@@ -75,5 +82,7 @@ extern noncopyable struct String {
     fun charCount()const: Int;
 }
 
-
+/**
+* Convert C style string to String
+*/
 extern fun asStr(cstr: raw*const Int8): String;

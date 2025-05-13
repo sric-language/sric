@@ -4,6 +4,9 @@ abstract struct Linkable$<T> {
     var previous: *? T;
 }
 
+/**
+* LinkedList is a container that supports constant time insertion and removal of elements from anywhere in the container. Fast random access is not supported. It is usually implemented as a doubly-linked list. 
+*/
 struct LinkedList$<T: Linkable$<T>> {
     private var head: own*? T = null;
     private var tail: *? T = null;

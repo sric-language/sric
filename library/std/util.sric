@@ -5,26 +5,58 @@
 extern fun hashCode$<T>(p: & const T): UInt32;
 extern fun compare$<T>(a: & const T, b: & const T): Int;
 
+/**
+* Common copy template. If own pointer call share() others call .copy() method.
+*/
 extern fun copy$<T>(a: & const T): T;
 
+/**
+* Return the larger one.
+*/
 fun max$<T:Float>(a:  T, b:  T): T {
     return a > b ? a : b;
 }
+
+/**
+* Return the smaller one.
+*/
 fun min$<T:Float>(a:  T, b:  T): T {
     return a < b ? a : b;
 }
+
+/**
+* Clamp between the min and max. If it's less than min then return min, if it's greater than max return max, otherwise return itself.
+*/
 fun clamp(v: Float, min: Float, max: Float) : Float {
     if (v < min) v = min;
     if (v > max) v = max;
     return v;
 }
 
+/**
+* Enabled in debug mode. Verify that cond is true, otherwise print msg and abort.
+*/
 externc fun sc_assert(cond: Bool, msg: raw*? const Int8);
+
+/**
+* Verify that cond is true, otherwise print msg and abort.
+*/
 extern fun verify(cond: Bool, msg: raw*? const Int8 = null);
 
+/**
+* Alloc and call C++ ctor by args.
+*/
 extern fun makePtr$<T>(args: ...): own* T;
+
+/**
+* Call C++ ctor by args.
+*/
 extern fun makeValue$<T>(args: ...): T;
 
+
+/**
+* Promise is a coroutine return type.
+*/
 extern struct Promise$<T> {
     fun get_result(): T;
     fun is_done(): Bool;

@@ -1,5 +1,8 @@
 //@#include "sric/Atomic.h"
 
+/**
+* To manage a object shared between threads with atomic updates
+*/
 extern struct Atomic$<T> {
     fun get(): T;
     fun set(t: T);

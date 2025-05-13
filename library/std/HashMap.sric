@@ -10,6 +10,9 @@ private struct MapEntryList$<K, V> {
     var list: LinkedList$<MapEntry$<K,V>>;
 }
 
+/**
+* HashMap is an associative container that contains key-value pairs with unique keys. Search, insertion, and removal of elements have average constant-time complexity.
+*/
 struct HashMap$<K, V> {
     private var table: DArray$<MapEntryList$<K,V>> = DArray$<MapEntryList$<K,V>>{ .resize(4); };
     //static var defValue: const refable V;
@@ -111,6 +114,9 @@ struct HashMap$<K, V> {
         return false;
     }
     
+    /**
+    * Return true to continue, Return false to break.
+    */
     fun eachWhile(f: fun(v:& const V, k:& const K):Bool) const {
         for (var i = 0; i<table.size(); ++i) {
             var list = table.constGetPtr(i);

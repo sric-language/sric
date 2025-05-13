@@ -3,33 +3,67 @@
 
 extern fun placementNew$<T>(p: raw* Void, freeMemory: fun(p: raw* Void)): own* T;
 
+/**
+* WeakPtr is a smart pointer that holds a non-owning ("weak") reference to an object that is managed by own*. It must be converted to own* in order to access the referenced object.
+*/
 extern struct WeakPtr$<T> {
     fun set(p: own*? T);
     fun lock(): own*? T;
 }
 
+/**
+* Auto move the ownership
+*/
 extern struct AutoMove$<T> {
     fun set(p: &T);
     fun take(): T;
     fun get(): &T;
 }
 
+/**
+* SharedPtr is a smart pointer with pointerreference counters
+*/
 extern struct SharedPtr$<T> {
     fun set(p: own*? T);
     fun get(): own*? T;
 }
 
+/**
+* Convert own* to SharedPtr
+*/
 extern fun toShared$<T>(p: & own* T): SharedPtr$<T>;
+
+/**
+* Convert own* to AutoMove
+*/
 extern fun autoMove$<T>(p: T): AutoMove$<T>;
+
+/**
+* Convert own* to WeakPtr
+*/
 extern fun toWeak$<T>(p: & own* T): WeakPtr$<T>;
 
-
+/**
+* Fork own* to share
+*/
 extern fun share$<T>(p: & own* T): own* T;
 
+/**
+* Convert raw pointer to own pointer
+*/
 extern fun rawToOwn$<T>(p: raw* T): own* T;
 
+/**
+* Convert ref pointer to own pointer
+*/
 extern fun refToOwn$<T>(p: * T): own* T;
 
+/**
+* Convert raw pointer to own pointer
+*/
 extern fun rawToRef$<T>(p: raw* T): * T;
 
+/**
+* Convert pointer type unsafely
+*/
 extern unsafe fun unsafeCast$<T>(p: raw* Void): T;
