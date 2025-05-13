@@ -1,51 +1,7 @@
 
 
 # 安装
-
-### 1.安装需要的软件
-- JDK 17+
-- C++ 编译器(支持C++20)
-- [fanx](https://github.com/fanx-dev/fanx/releases)
-- CMake
-- git
-
-安装以上软件，并配置环境变量，确保java、jar、fan、cmake等命令在gitbash中可用。
-
-### 2.构建fmake
-```
-git clone https://github.com/chunquedong/fmake.git
-cd fmake
-fanb pod.props
-```
-
-在Windows系统上使用微软C++编译器工具集:
-```
-cd fmake
-source vsvars.sh
-cd -
-```
-
-[更多关于fmake的信息](https://github.com/chunquedong/fmake)
-
-### 3.构建jsonc
-```
-git clone https://github.com/chunquedong/jsonc.git
-cd jsonc
-./build.sh
-```
-
-### 4.构建Sric
-
-```
-git clone https://github.com/sric-language/sric.git
-cd sric
-chmod a+x bin/sric
-./build.sh
-./build_debug.sh
-```
-
-添加sric的"bin"目录到你的环境变量（配置完环境变量需要重启gitbash）
-
+[从源码构建](build.md)
 
 # IDE
 
@@ -82,6 +38,10 @@ srcDirs = ./
 ```
 sric module.scm -fmake
 ```
+构建debug版本:
+```
+sric module.scm -fmake -debug
+```
 
 1. 运行
 
@@ -109,20 +69,3 @@ fan fmake output/hello.fmake -debug -G
 ```
 生成的项目文件在上层目录的build文件夹下。
 
-## 常见问题
-
-### 中文乱码
-gitbash中，运行下面命令：
-```
-cmd "/c chcp 65001>nul"
-```
-cmd中运行下面命令;
-```
-chcp 65001>nul
-```
-
-### 编译器不支持C++20
-由于协程需要C++20版本，可以通过参数来指定C++版本（此时协程相关代码会编译报错）。
-```
-sric module.scm -fmake -c++17
-```

@@ -31,7 +31,6 @@ var i = unsafeCast$<raw*Int>(&u.data);
 
 ```
 或者使用继承多态来满足需求。
-也许将来会加入像C++一样的std::variant作为替代。
 
 
 ## 不安全结构
