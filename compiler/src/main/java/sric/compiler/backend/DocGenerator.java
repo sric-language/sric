@@ -291,6 +291,10 @@ public class DocGenerator extends BaseGenerator {
         }
         print(")</span>");
         
+        print("<span class=\"flags\">");
+            printFlags(prototype.postFlags);
+        print("</span>");
+        
         print("<span class=\"returnType\">");
             print(" : ");
             printType(prototype.returnType);

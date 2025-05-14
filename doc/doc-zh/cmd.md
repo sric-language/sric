@@ -4,7 +4,7 @@
 
 ## 构建参数
 
-sric命令有一下参数：
+sric命令有以下参数：
   * -debug 在Debug模式编译（默认release模式）
   * -fmake 使用fmake编译生成的C++代码。
   * -r 递归构建所有依赖。

@@ -3,13 +3,13 @@
 
 ### 1.安装需要的软件
 - [JDK 17+](https://www.oracle.com/java/technologies/downloads/)
-- 支持C++20的C++ 编译器: gcc 10+、 clang 17+、 Xcode 16+、 Visual Studio 2022+
+- 支持C++20的C++ 编译器: gcc 11+、 clang 17+、 Xcode 16+、 Visual Studio 2022+
 - [Fanx](https://github.com/fanx-dev/fanx/releases)
 - [CMake](https://cmake.org/download/)
 - [git](https://git-scm.com/downloads)
 - [VSCode](https://code.visualstudio.com/)
 
-安装以上软件，并配置环境变量，确保java、jar、fan、cmake等命令在gitbash中可用。
+安装以上软件，并配置环境变量，确保java、jar、fan、cmake等命令在git bash中可用。
 
 ### 2.构建fmake
 ```
@@ -44,4 +44,4 @@ sh build.sh
 sh build_debug.sh
 ```
 
-添加sric的"bin"目录到你的环境变量（配置完环境变量需要重启gitbash）
+添加sric的"bin"目录到你的环境变量（配置完环境变量需要重启git bash）

@@ -3,13 +3,13 @@
 
 ### 1.Required
 - [JDK 17+](https://www.oracle.com/java/technologies/downloads/)
-- C++ compiler (supporting C++20): gcc 10+, clang 17+, Xcode 16+, Visual Studio 2022+
+- C++ compiler (supporting C++20): gcc 11+, clang 17+, Xcode 16+, Visual Studio 2022+
 - [Fanx](https://github.com/fanx-dev/fanx/releases)
 - [CMake](https://cmake.org/download/)
 - [git](https://git-scm.com/downloads)
 - [VSCode](https://code.visualstudio.com/)
 
-Install the above software and configure the environment variables to ensure that commands such as java, jar, fan, and cmake are available in gitbash.
+Install the above software and configure the environment variables to ensure that commands such as java, jar, fan, and cmake are available in git bash.
 
 ### 2.Build fmake
 ```
@@ -41,4 +41,4 @@ chmod a+x bin/sric
 sh build.sh
 sh build_debug.sh
 ```
-Add sric/bin to your PATH (restart gitbash afterward).
+Add sric/bin to your PATH (restart git bash afterward).
