@@ -181,42 +181,42 @@ namespace sric
 
     template<typename T>
     class WeakPtr {
-        WeakRefBlock* pointer;
+        RefCount* pointer;
     public:
         WeakPtr() : pointer(NULL) {
         }
 
         WeakPtr(OwnPtr<T>& p) : pointer(NULL) {
-            HeapRefable* refp = getRefable(p.get());
+            HeapRefable* refp = sc_getRefable(p.get());
             if (refp) {
-                pointer = refp->getWeakRefBlock();
+                pointer = refp->getRefCount();
                 pointer->addRef();
             }
         }
 
         void init(OwnPtr<T>& p) {
             if (pointer) {
-                pointer->release();
+                pointer->releaseWeak();
             }
 
-            HeapRefable* refp = getRefable(p.get());
+            HeapRefable* refp = sc_getRefable(p.get());
             if (refp) {
-                pointer = refp->getWeakRefBlock();
-                pointer->addRef();
+                pointer = refp->getRefCount();
+                pointer->addWeakRef();
             }
         }
 
         WeakPtr(T* other) : pointer(NULL) {
             if (other) {
-                HeapRefable* refp = getRefable(other);
-                pointer = refp->getWeakRefBlock();
-                pointer->addRef();
+                HeapRefable* refp = sc_getRefable(other);
+                pointer = refp->getRefCount();
+                pointer->addWeakRef();
             }
         }
 
         WeakPtr(const WeakPtr& other) : pointer(other.pointer) {
             if (other.pointer) {
-                other.pointer->addRef();
+                other.pointer->addWeakRef();
             }
         }
 
@@ -226,10 +226,10 @@ namespace sric
 
         WeakPtr& operator=(const WeakPtr& other) {
             if (other.pointer) {
-                other.pointer->addRef();
+                other.pointer->addWeakRef();
             }
             if (pointer) {
-                pointer->release();
+                pointer->releaseWeak();
             }
             pointer = other.pointer;
             return *this;
@@ -240,15 +240,16 @@ namespace sric
                 return OwnPtr<T>();
             }
             HeapRefable* refp = pointer->lock();
-            if (!refp) {
+            if (!pointer->lock()) {
                 return OwnPtr<T>();
             }
+            HeapRefable* refp = (HeapRefable*)pointer->_pointer;
             return OwnPtr<T>((T*)(refp + 1));
         }
 
         void clear() {
             if (pointer) {
-                pointer->release();
+                pointer->releaseWeak();
                 pointer = nullptr;
             }
         }

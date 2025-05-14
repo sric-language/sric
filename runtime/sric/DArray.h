@@ -92,14 +92,14 @@ public:
     RefPtr<T> getPtr(int i) {
         T* t = &get(i);
         HeapRefable* p = getHeader();
-        return RefPtr<T>(t, p->_checkCode, i * sizeof(T));
+        return RefPtr<T>(t, &p->_checkCode, RefType::ArrayRef);
     }
 
     RefPtr<const T> constGetPtr(int i) const {
         DArray* self = const_cast<DArray*>(this);
         T* t = &self->get(i);
         HeapRefable* p = self->getHeader();
-        return RefPtr<const T>(t, p->_checkCode, i * sizeof(T));
+        return RefPtr<const T>(t, &p->_checkCode, RefType::ArrayRef);
     }
 
     void set(int i, T&& d) {
@@ -128,8 +128,13 @@ public:
         }
         _size = 0;
         HeapRefable* refable = getHeader();
-        if (refable->release()) {
-            free(refable);
+        if (!refable->_refCount) {
+            freeMemory(refable);
+        }
+        else {
+            if (refable->_refCount->release()) {
+                freeMemory(refable);
+            }
         }
         _data = nullptr;
     }
@@ -140,11 +145,13 @@ private:
         HeapRefable* p;
         if (_data == nullptr) {
             p = (HeapRefable*)malloc(sizeof(HeapRefable) + bsize);
+            printf("malloc: %p\n", p);
             new (p) HeapRefable();
         }
         else {
             p = getHeader();
             p = (HeapRefable*)realloc(p, sizeof(HeapRefable) + bsize);
+            printf("realloc: %p\n", p);
             p->_checkCode = generateCheckCode();
         }
         //p->_capacity = bsize;
@@ -152,7 +159,7 @@ private:
     }
 
     HeapRefable* getHeader() {
-        return getRefable(_data);
+        return sc_getRefable(_data);
     }
 
     void tryGrow(int size, bool definiteSize = false) {

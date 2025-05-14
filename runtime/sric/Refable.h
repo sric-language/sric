@@ -2,6 +2,7 @@
 #define _SRIC_REF_H_
 
 #include <stdint.h>
+#include "sric/RefCount.h"
 
 #define SC_HEAP_MAGIC_CODE 0xF1780126
 #define SC_STACK_MAGIC_CODE 0xE672941A
@@ -10,106 +11,83 @@
 namespace sric
 {
 
-class HeapRefable;
+uint32_t generateCheckCode();
 
-class WeakRefBlock {
-    friend class HeapRefable;
+template<typename T>
+class RefPtr;
 
-    int _weakRefCount;
+struct ObjBase {
+    uint32_t __magicCode = SC_INTRUSIVE_MAGIC_CODE;
+    uint32_t __checkCode = sric::generateCheckCode();
 
-    HeapRefable* _pointer;
-public:
-    WeakRefBlock();
-    ~WeakRefBlock();
-
-    HeapRefable* lock();
-
-    void addRef();
-    void release();
+    ~ObjBase() {
+        __magicCode = 0;
+        __checkCode = 0;
+    }
 };
 
-
-class HeapRefable
-{
-public:
-
-    /**
-     * Increments the reference count of this object.
-     *
-     * The release() method must be called when the caller relinquishes its
-     * handle to this object in order to decrement the reference count.
-     */
-    void addRef();
-
-    /**
-     * Decrements the reference count of this object.
-     *
-     * When an object is initially created, its reference count is set to 1.
-     * Calling addRef() will increment the reference and calling release()
-     * will decrement the reference count. When an object reaches a
-     * reference count of zero, the object is destroyed.
-     */
-    bool release();
-
-    /**
-     * Returns the current reference count of this object.
-     *
-     * @return This object's reference count.
-     */
-    unsigned int getRefCount() const;
-
-    void _setRefCount(int rc);
-
-    WeakRefBlock* getWeakRefBlock();
-
-public:
-
-    /**
-     * Constructor.
-     */
-    HeapRefable();
-
-    /**
-     * Destructor.
-     */
-    ~HeapRefable();
-
-private:
-    void disposeWeakRef();
-
-private:
-    template<typename T> friend class RefPtr;
-    template <typename T> friend class DArray;
-
-    uint32_t _checkCode;
-
-    //valid array content byte size
-    uint32_t _dataSize;
-
-private:
-    //is only one reference
-    bool _isUnique;
-
-public:
+template<typename T>
+struct StackRefable {
     uint32_t _magicCode;
-private:
-    int _refCount;
+    uint32_t checkCode;
+    T value;
 
-    WeakRefBlock* _weakRefBlock;
+    StackRefable() : checkCode(generateCheckCode()), _magicCode(SC_STACK_MAGIC_CODE) {}
 
+    StackRefable(const T& v) : value(v), checkCode(generateCheckCode()), _magicCode(SC_STACK_MAGIC_CODE) {
+    }
+
+    ~StackRefable() {
+        checkCode = 0;
+        _magicCode = 0;
+    }
+
+    StackRefable& operator=(const T& v) {
+        value = v;
+        return *this;
+    }
+
+    StackRefable& operator=(T&& v) {
+        value = std::move(v);
+        return *this;
+    }
+
+    T* operator->() const { return &value; }
+
+    T* operator->() { return &value; }
+
+    T& operator*() { return value; }
+
+    const T& operator*() const { return value; }
+
+    operator T () { return value; }
+
+    RefPtr<T> operator&() { return RefPtr<T>(*this); }
+
+    RefPtr<T> getPtr() { return RefPtr<T>(*this); }
+};
+
+class HeapRefable {
 public:
-    void (*freeMemory)(void*);
-    void (*dealloc)(HeapRefable*);
-private:
-    // Memory leak diagnostic data
-#ifdef SC_USE_REF_TRACE
-    friend void* trackRef(HeapRefable* ref);
-    friend void untrackRef(HeapRefable* ref);
-    HeapRefable* _next;
-    HeapRefable* _prev;
+    RefCount* _refCount = nullptr;
 public:
-    static void printLeaks();
+#ifndef SC_NO_CHECK
+    uint32_t _magicCode = SC_HEAP_MAGIC_CODE;
+    uint32_t _checkCode = generateCheckCode();
+    int32_t _dataSize = 0;
 #endif
+
+    RefCount* getRefCount() {
+        if (_refCount == nullptr) {
+            _refCount = new RefCount();
+            _refCount->_pointer = this;
+        }
+        return _refCount;
+    }
+    
+    ~HeapRefable() {
+        _checkCode = 0;
+    }
 };
 
 }

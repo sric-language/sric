@@ -376,7 +376,7 @@ public class ReflectionGen {
                 }
                 
                 if (type.generiParamDefs == null && type.isStruct() && (!type.isAbstract())) {
-                    print("s.ctor = (void*) &");print("sric::new_<").print(this.getModule().name).print("::").
+                    print("s.ctor = (void*) &");print("sric::newVoid<").print(this.getModule().name).print("::").
                             print(this.getSymbolName(type)).print(">").print(";").newLine();
                 }
                 else {
