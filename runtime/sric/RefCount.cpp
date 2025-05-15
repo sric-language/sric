@@ -10,33 +10,23 @@ namespace sric
 std::mutex traceLock;
 
 RefCount::RefCount() :
-    _refCount(1), _isUnique(true), _pointer(NULL), freeMemory(0)
+    _refCount(1), _pointer(NULL), freeMemory(NULL), destructor(NULL)
 {
 }
 
 RefCount::~RefCount()
 {
-    if (!_isUnique) {
-        sc_assert(_refCount == 0, "ref count error");
-    }
     _refCount = SC_REFCOUNT_INVALID;
 }
 
 void RefCount::addRef()
 {
-    _isUnique = false;
     sc_assert(_refCount > 0 && _refCount < SC_REFCOUNT_INVALID, "ref count error");
     ++_refCount;
 }
 
 bool RefCount::release()
 {
-    if (_isUnique) {
-        //delete this;
-        tryDelete();
-        return true;
-    }
-
     sc_assert(_refCount > 0 && _refCount < SC_REFCOUNT_INVALID, "ref count error");
     if (--_refCount == 0)
     {

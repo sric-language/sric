@@ -21,20 +21,10 @@
 namespace sric
 {
 
-template<typename U>
-inline typename std::enable_if<std::is_polymorphic<U>::value, void*>::type toVoid(U* pointer) {
-    return dynamic_cast<void*>(pointer);
-}
-
-template<typename U>
-inline typename std::enable_if<!std::is_polymorphic<U>::value, void*>::type toVoid(U* pointer) {
-    return (void*)pointer;
-}
-
 #define sc_getRefable(pointer) (((HeapRefable*)toVoid(pointer))-1)
 
 inline void freeMemory(void* p) {
-    printf("free: %p\n", p);
+    //printf("free: %p\n", p);
     free(p);
 }
 
@@ -152,7 +142,6 @@ void callDestructor(void* p) {
 template<>
 class OwnPtr<void> {
     void* pointer;
-    void (*destructor)(void*);
 
     template <class U> friend class OwnPtr;
     template <class U> friend class SharedPtr;
@@ -161,10 +150,10 @@ class OwnPtr<void> {
     template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
     template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
-    explicit OwnPtr(void* p, void (*detor)(void*)) : pointer(p), destructor(detor) {
+    explicit OwnPtr(void* p) : pointer(p) {
     }
 public:
-    OwnPtr() : pointer(nullptr), destructor(nullptr) {
+    OwnPtr() : pointer(nullptr) {
     }
 
     ~OwnPtr() {
@@ -173,14 +162,17 @@ public:
 
     OwnPtr(const OwnPtr& other) = delete;
 
-    OwnPtr(OwnPtr<void>&& other) : pointer(other.pointer), destructor(other.destructor) {
+    OwnPtr(OwnPtr<void>&& other) : pointer(other.pointer) {
         other.pointer = nullptr;
     }
 
     template <class U>
     OwnPtr(OwnPtr<U>&& other) : pointer(other.pointer) {
         other.pointer = nullptr;
-        destructor = callDestructor<U>;
+        if (pointer) {
+            HeapRefable* p = sc_getRefable(pointer);
+            p->getRefCount()->destructor = callDestructor<U>;
+        }
     }
 
     OwnPtr& operator=(const OwnPtr& other) = delete;
@@ -189,7 +181,6 @@ public:
         if (pointer != other.pointer && pointer) {
             doFree(pointer);
         }
-        destructor = other.destructor;
         pointer = other.pointer;
         other.pointer = nullptr;
 
@@ -201,10 +192,13 @@ public:
         if (pointer != other.pointer && pointer) {
             doFree(pointer);
         }
-        destructor = callDestructor<U>;
         pointer = other.pointer;
         other.pointer = nullptr;
 
+        if (pointer) {
+            HeapRefable* p = sc_getRefable(pointer);
+            p->getRefCount()->destructor = callDestructor<U>;
+        }
         return *this;
     }
 
@@ -234,22 +228,18 @@ public:
 private:
     void doFree(void* pointer) {
         HeapRefable* p = sc_getRefable(pointer);
-        if (!p->_refCount) {
-            destructor(this->pointer);
+        sc_assert(p->_refCount, "Invalid refCount");
+
+        void (*custemFreeMemory)(void*) = p->_refCount->freeMemory;
+        void (*custemDestructor)(void*) = p->_refCount->destructor;
+        if (p->_refCount->release()) {
+            custemDestructor(this->pointer);
             p->~HeapRefable();
-            freeMemory(p);
-        }
-        else {
-            void (*custemfreeMemory)(void*) = p->_refCount->freeMemory;
-            if (p->_refCount->release()) {
-                destructor(this->pointer);
-                p->~HeapRefable();
-                if (custemfreeMemory) {
-                    custemfreeMemory(p);
-                }
-                else {
-                    freeMemory(p);
-                }
+            if (custemFreeMemory) {
+                custemFreeMemory(p);
+            }
+            else {
+                freeMemory(p);
             }
         }
     }
@@ -262,17 +252,14 @@ public:
 
     void swap(OwnPtr& other) {
         void* p = pointer;
-        auto dector = destructor;
         pointer = other.pointer;
-        destructor = other.destructor;
         other.pointer = p;
-        other.destructor = dector;
     }
 
     OwnPtr<void> share() {
         if (pointer)
             sc_getRefable(pointer)->getRefCount()->addRef();
-        return OwnPtr<void>(pointer, destructor);
+        return OwnPtr<void>(pointer);
     }
 };
 
@@ -286,7 +273,7 @@ OwnPtr<T> new_(Args&&... args) {
         fprintf(stderr, "ERROR: alloc memory fail\n");
         return OwnPtr<T>();
     }
-    printf("malloc: %p\n", p);
+    //printf("malloc: %p\n", p);
     new (p) HeapRefable();
     void* m = (p + 1);
     T* t = new(m) T(std::forward<Args>(args)...);
@@ -332,6 +319,11 @@ OwnPtr<T> rawToOwn(T* ptr) {
     }
     r->getRefCount()->addRef();
     return OwnPtr<T>(ptr);
+}
+
+template <class T>
+inline T* takeOwn(OwnPtr<T> p) {
+    return p.take();
 }
 
 }

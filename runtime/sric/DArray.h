@@ -145,13 +145,13 @@ private:
         HeapRefable* p;
         if (_data == nullptr) {
             p = (HeapRefable*)malloc(sizeof(HeapRefable) + bsize);
-            printf("malloc: %p\n", p);
+            //printf("malloc: %p\n", p);
             new (p) HeapRefable();
         }
         else {
             p = getHeader();
             p = (HeapRefable*)realloc(p, sizeof(HeapRefable) + bsize);
-            printf("realloc: %p\n", p);
+            //printf("realloc: %p\n", p);
             p->_checkCode = generateCheckCode();
         }
         //p->_capacity = bsize;

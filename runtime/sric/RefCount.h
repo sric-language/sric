@@ -17,12 +17,10 @@ private:
 
     std::atomic_int32_t _refCount;
 
-    //is only one reference
-    bool _isUnique;
 public:
     void* _pointer;
     void (*freeMemory)(void*);
-
+    void (*destructor)(void*);
 public:
     RefCount();
     ~RefCount();

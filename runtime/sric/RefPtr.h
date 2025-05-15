@@ -13,39 +13,8 @@
 #include "sric/Ptr.h"
 #include "sric/Refable.h"
 
- //#define SC_SELF_TYPE std::remove_reference<decltype(*this)>::type
-#define SC_SAFE_STRUCT
-#define SC_DEFINE_THIS_REFPTR auto __self = sric::makeRefPtr(this);
-
-#ifdef SC_NO_CHECK
-#define SC_OBJ_BASE
-#define SC_BEGIN_INHERIT :
-#else
-#define SC_OBJ_BASE : public sric::ObjBase
-#define SC_BEGIN_INHERIT ,
-#endif // SC_NO_CHECK
-
-#ifdef SC_CHECK
-#define SC_DEFINE_THIS auto __self = sric::makeRefPtr(this);
-#define sc_this __self
-#define sc_thisref __self
-#else
-#define SC_DEFINE_THIS
-#define sc_this this
-#define sc_thisref __self
-#endif
-
 namespace sric
 {
-    template <typename T, typename = void>
-    struct has_checkcode : std::false_type {};
-
-    template <typename T>
-    struct has_checkcode<T, std::void_t<decltype(std::declval<T>().__checkCode)>>
-        : std::true_type {};
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     enum struct RefType
     {
