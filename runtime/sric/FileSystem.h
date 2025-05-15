@@ -2,7 +2,7 @@
 #define SRIC_FILESYSTEM_H_
 
 #include "sric/Stream.h"
-#include "sric/Ptr.h"
+#include "sric/OwnPtr.h"
 
 namespace sric
 {

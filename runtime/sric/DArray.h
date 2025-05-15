@@ -62,7 +62,9 @@ public:
             }
         }
         _size = size;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize = _size*sizeof(T);
+#endif
     }
 
     T& operator[](int i) {
@@ -91,15 +93,23 @@ public:
 
     RefPtr<T> getPtr(int i) {
         T* t = &get(i);
+#ifndef SC_NO_CHECK
         HeapRefable* p = getHeader();
         return RefPtr<T>(t, &p->_checkCode, RefType::ArrayRef);
+#else
+        return RefPtr<T>(t, nullptr, RefType::UnsafeRef);
+#endif
     }
 
     RefPtr<const T> constGetPtr(int i) const {
         DArray* self = const_cast<DArray*>(this);
         T* t = &self->get(i);
+#ifndef SC_NO_CHECK
         HeapRefable* p = self->getHeader();
         return RefPtr<const T>(t, &p->_checkCode, RefType::ArrayRef);
+#else
+        return RefPtr<const T>(t, nullptr, RefType::UnsafeRef);
+#endif
     }
 
     void set(int i, T&& d) {
@@ -118,7 +128,9 @@ public:
             (_data + i)->~T();
         }
         _size = 0;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize = 0;
+#endif
     }
 
     ~DArray() {
@@ -152,13 +164,15 @@ private:
             p = getHeader();
             p = (HeapRefable*)realloc(p, sizeof(HeapRefable) + bsize);
             //printf("realloc: %p\n", p);
+#ifndef SC_NO_CHECK
             p->_checkCode = generateCheckCode();
+#endif
         }
         //p->_capacity = bsize;
         _data = (T*)(p + 1);
     }
 
-    HeapRefable* getHeader() {
+    inline HeapRefable* getHeader() {
         return sc_getRefable(_data);
     }
 
@@ -188,7 +202,9 @@ public:
         new(m) T();
         *m = d;
         ++_size;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize += sizeof(T);
+#endif
     }
 
     void add(T d) {
@@ -198,7 +214,9 @@ public:
         new(m) T();
         *m = std::move(d);
         ++_size;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize += sizeof(T);
+#endif
     }
 
     T pop() {
@@ -208,7 +226,9 @@ public:
         T t = std::move(_data[_size-1]);
         (_data + _size - 1)->~T();
         --_size;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize -= sizeof(T);
+#endif
         return t;
     }
 
@@ -225,7 +245,9 @@ public:
             memmove(_data + i, _data + i + 1, s * sizeof(T));
         }
         --_size;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize -= sizeof(T);
+#endif
     }
 
     void removeRange(int begin, int end) {
@@ -238,7 +260,9 @@ public:
         }
         int n = end - begin;
         _size -= n;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize -= n*sizeof(T);
+#endif
     }
 
     void reserve(int capacity) {
@@ -280,7 +304,9 @@ public:
         new(m) T();
         *m = std::move(d);
         ++_size;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize += sizeof(T);
+#endif
     }
 
     void insertAll(int i, DArray<T> o) {
@@ -300,7 +326,9 @@ public:
         }
         o._size = 0;
         _size += msize;
+#ifndef SC_NO_CHECK
         getHeader()->_dataSize += sizeof(T) * msize;
+#endif
     }
 
     DArray<T> copy() const {

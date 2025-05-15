@@ -3,7 +3,7 @@
 
 #include "sric/Stream.h"
 #include <string>
-#include "sric/Ptr.h"
+#include "sric/OwnPtr.h"
 
 namespace sric
 {

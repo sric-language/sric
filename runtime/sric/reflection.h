@@ -2,7 +2,7 @@
 #ifndef SRIC_REFLECT_H_
 #define SRIC_REFLECT_H_
 
-#include "sric/RefPtr.h"
+#include "sric/OwnPtr.h"
 #include "sric/Str.h"
 
 namespace sric {

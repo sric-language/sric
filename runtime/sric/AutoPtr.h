@@ -59,10 +59,6 @@ namespace sric
         T take() {
             return std::move(val);
         }
-
-        //T take() const {
-        //    return std::move(val);
-        //}
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,60 +71,51 @@ namespace sric
         SharedPtr() : pointer(nullptr) {
         }
 
+        inline RefCount* getRefCount() {
+            HeapRefable* refp = sc_getRefable(pointer);
+            return refp->getRefCount();
+        }
+
         template <class U>
         SharedPtr(OwnPtr<U>& other) : pointer(other.pointer) {
             if (other.pointer) {
-                HeapRefable* refp = getRefable(other.pointer);
-                refp->addRef();
+                getRefCount()->addRef();
             }
         }
 
-        SharedPtr(const SharedPtr& other) : pointer(other.pointer) {
-            if (other.pointer) {
-                HeapRefable* refp = getRefable(other.pointer);
-                refp->addRef();
-            }
+        template <class U>
+        SharedPtr(OwnPtr<U>&& other) : pointer(other.pointer) {
+            other.pointer = nullptr;
         }
 
         template <class U>
         SharedPtr(SharedPtr<U>& other) : pointer(other.pointer) {
             if (other.pointer) {
-                HeapRefable* refp = getRefable(other.pointer);
-                refp->addRef();
+                getRefCount()->addRef();
             }
+        }
+
+        template <class U>
+        SharedPtr(SharedPtr<U>&& other) : pointer(other.pointer) {
+            other.pointer = nullptr;
         }
 
         virtual ~SharedPtr() {
             clear();
         }
 
-        SharedPtr& operator=(T* other) {
-            if (other) {
-                HeapRefable* refp = getRefable(other);
-                refp->addRef();
-            }
-            if (pointer) {
-                HeapRefable* refp = getRefable(pointer);
-                refp->release();
-            }
-            pointer = other;
-            return *this;
-        }
-
         SharedPtr& operator=(const SharedPtr& other) {
             if (other.pointer) {
-                HeapRefable* refp = getRefable(other.pointer);
-                refp->addRef();
+                other.getRefCount()->addRef();
             }
             if (pointer) {
-                HeapRefable* refp = getRefable(pointer);
-                refp->release();
+                getRefCount()->release();
             }
             pointer = other.pointer;
             return *this;
         }
 
-        T* operator->() { return pointer; }
+        inline T* operator->() { return pointer; }
 
         T& operator*() { return *pointer; }
 
@@ -140,40 +127,43 @@ namespace sric
         template <class U>
         void set(OwnPtr<U>& other) {
             if (other.pointer) {
-                HeapRefable* refp = getRefable(other.pointer);
-                refp->addRef();
+                other.getRefCount()->addRef();
             }
             if (pointer) {
-                HeapRefable* refp = getRefable(pointer);
-                refp->release();
+                getRefCount()->release();
             }
             pointer = other.pointer;
         }
 
-        OwnPtr<T> get() {
+        OwnPtr<T> getOwn() {
             if (!pointer) {
                 return OwnPtr<T>();
             }
-            getRefable(pointer)->addRef();
+            getRefCount()->addRef();
             return OwnPtr<T>((T*)(pointer));
+        }
+
+        inline RefPtr<T> get() {
+            if (!pointer) {
+                return RefPtr<T>();
+            }
+            HeapRefable* refp = sc_getRefable(pointer);
+            return RefPtr<T>(refp);
         }
 
         bool isNull() const { return pointer == nullptr; }
 
         void clear() {
             if (pointer) {
-                HeapRefable* refp = getRefable(pointer);
-                refp->release();
+                getRefCount()->release();
                 pointer = nullptr;
             }
         }
 
         T* take() {
-            if (pointer) {
-                HeapRefable* refp = getRefable(pointer);
-                refp->addRef();
-            }
-            return pointer;
+            T* p = pointer;
+            pointer = nullptr;
+            return p;
         }
     };
 
@@ -206,13 +196,13 @@ namespace sric
             }
         }
 
-        WeakPtr(T* other) : pointer(NULL) {
+        /*WeakPtr(T* other) : pointer(NULL) {
             if (other) {
                 HeapRefable* refp = sc_getRefable(other);
                 pointer = refp->getRefCount();
                 pointer->addWeakRef();
             }
-        }
+        }*/
 
         WeakPtr(const WeakPtr& other) : pointer(other.pointer) {
             if (other.pointer) {
@@ -239,11 +229,10 @@ namespace sric
             if (!pointer) {
                 return OwnPtr<T>();
             }
-            HeapRefable* refp = pointer->lock();
             if (!pointer->lock()) {
                 return OwnPtr<T>();
             }
-            HeapRefable* refp = (HeapRefable*)pointer->_pointer;
+            HeapRefable* refp = pointer->_pointer;
             return OwnPtr<T>((T*)(refp + 1));
         }
 
@@ -279,6 +268,126 @@ namespace sric
     template<typename T>
     AutoMove<T> autoMove(T p) {
         return AutoMove<T>(std::move(p));
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    template<typename T>
+    class UniquePtr {
+        T* pointer;
+        template<typename U, typename... Args> friend UniquePtr<U> makeUnique(Args&&... args);
+
+        inline explicit UniquePtr(T* p) : pointer(p) {
+        }
+    public:
+        inline UniquePtr() : pointer(nullptr) {
+        }
+
+        inline ~UniquePtr() {
+            clear();
+        }
+
+        inline UniquePtr(const UniquePtr& other) = delete;
+
+        template <class U>
+        inline UniquePtr(UniquePtr<U>&& other) : pointer(other.pointer) {
+            other.pointer = nullptr;
+        }
+
+        UniquePtr& operator=(const UniquePtr& other) = delete;
+
+        inline UniquePtr& operator=(UniquePtr&& other) {
+            if (pointer) {
+                doFree(pointer);
+            }
+            pointer = other.pointer;
+            other.pointer = nullptr;
+
+            return *this;
+        }
+
+        inline T* operator->() const { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
+
+        inline T* operator->() { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
+
+        inline T& operator*() { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
+
+        inline const T& operator*() const { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
+
+        inline operator T* () const { return pointer; }
+        inline operator T* () { return pointer; }
+
+        inline T* getRaw() const { return pointer; }
+
+        inline RefPtr<T> get() {
+#ifdef SC_NO_CHECK
+            return RefPtr<T>(pointer, nullptr, RefType::UnsafeRef);
+#else
+            if (!pointer) {
+                return RefPtr<T>(pointer, nullptr, RefType::UnsafeRef);
+            }
+            uint64_t* p = (uint64_t*)toVoid(pointer) - 1;
+            return RefPtr<T>(pointer, (CheckCodeType*)p, RefType::UniqueRef);
+#endif
+        }
+
+        inline bool isNull() const { return pointer == nullptr; }
+
+        inline void clear() {
+            if (pointer) {
+                doFree(pointer);
+                pointer = nullptr;
+            }
+        }
+
+    private:
+        inline void doFree(T* pointer) {
+#ifdef SC_NO_CHECK
+            this->pointer->~T();
+            freeMemory(pointer);
+#else
+            uint64_t* p = (uint64_t*)toVoid(pointer) - 1;
+            this->pointer->~T();
+            *p = 0;
+            freeMemory(p);
+#endif
+        }
+    public:
+        T* take() {
+            T* p = pointer;
+            pointer = nullptr;
+            return p;
+        }
+
+        void swap(UniquePtr& other) {
+            T* p = pointer;
+            pointer = other.pointer;
+            other.pointer = p;
+        }
+    };
+
+    template<typename T, typename... Args>
+    UniquePtr<T> makeUnique(Args&&... args) {
+#ifdef SC_NO_CHECK
+        void* p = (void*)malloc(sizeof(T));
+        if (!p) {
+            fprintf(stderr, "ERROR: alloc memory fail\n");
+            return UniquePtr<T>();
+        }
+        T* t = new(p) T(std::forward<Args>(args)...);
+        return UniquePtr<T>(t);
+#else
+        uint64_t* p = (uint64_t*)malloc(sizeof(uint64_t) + sizeof(T));
+        if (!p) {
+            fprintf(stderr, "ERROR: alloc memory fail\n");
+            return UniquePtr<T>();
+        }
+        //printf("malloc: %p\n", p);
+        *((CheckCodeType*)p) = generateCheckCode();
+        void* m = (p + 1);
+        T* t = new(m) T(std::forward<Args>(args)...);
+        return UniquePtr<T>(t);
+#endif
     }
 }
 #endif

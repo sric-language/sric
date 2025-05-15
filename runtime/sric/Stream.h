@@ -2,7 +2,7 @@
 #define SRIC_Stream_H_
 
 #include <stdint.h>
-#include "sric/Ptr.h"
+#include "sric/OwnPtr.h"
 #include "sric/Str.h"
 
 namespace sric

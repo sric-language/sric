@@ -1,7 +1,6 @@
 
-//extern fun alloc$<T>(): own* T;
 
-extern fun placementNew$<T>(p: raw* Void, freeMemory: fun(p: raw* Void)): own* T;
+//extern fun placementNew$<T>(p: raw* Void, freeMemory: fun(p: raw* Void)): own* T;
 
 /**
 * WeakPtr is a smart pointer that holds a non-owning ("weak") reference to an object that is managed by own*. It must be converted to own* in order to access the referenced object.
@@ -25,8 +24,19 @@ extern struct AutoMove$<T> {
 */
 extern struct SharedPtr$<T> {
     fun set(p: own*? T);
-    fun get(): own*? T;
+    fun getOwn(): own*? T;
+    fun get(): *? T;
 }
+
+/**
+* smart pointer with unique object ownership semantics
+*/
+extern noncopyable struct UniquePtr$<T> {
+    fun get(): *? T;
+    fun getRaw(): raw*? T;
+}
+
+extern fun makeUnique$<T>(): UniquePtr$<T>;
 
 /**
 * Convert own* to SharedPtr
