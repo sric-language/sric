@@ -78,7 +78,7 @@ namespace sric
 
         template <class U>
         SharedPtr(OwnPtr<U>& other) : pointer(other.pointer) {
-            if (other.pointer) {
+            if (pointer) {
                 getRefCount()->addRef();
             }
         }
@@ -88,20 +88,64 @@ namespace sric
             other.pointer = nullptr;
         }
 
-        template <class U>
-        SharedPtr(SharedPtr<U>& other) : pointer(other.pointer) {
-            if (other.pointer) {
+        SharedPtr(SharedPtr& other) : pointer(other.pointer) {
+            if (pointer) {
                 getRefCount()->addRef();
             }
         }
 
         template <class U>
-        SharedPtr(SharedPtr<U>&& other) : pointer(other.pointer) {
+        SharedPtr(SharedPtr<U>& other) : pointer(other.pointer) {
+            if (pointer) {
+                getRefCount()->addRef();
+            }
+        }
+
+        SharedPtr(SharedPtr&& other) : pointer(other.pointer) {
             other.pointer = nullptr;
+        }
+
+        SharedPtr(const SharedPtr& other) : pointer(other.pointer) {
+            if (pointer) {
+                getRefCount()->addRef();
+            }
+        }
+
+        template <class U>
+        SharedPtr(const SharedPtr<U>& other) : pointer(other.pointer) {
+            if (pointer) {
+                getRefCount()->addRef();
+            }
+        }
+
+        SharedPtr(const SharedPtr&& other) : pointer(other.pointer) {
+            if (pointer) {
+                getRefCount()->addRef();
+            }
         }
 
         virtual ~SharedPtr() {
             clear();
+        }
+
+        SharedPtr& operator=(SharedPtr& other) {
+            if (other.pointer) {
+                other.getRefCount()->addRef();
+            }
+            if (pointer) {
+                getRefCount()->release();
+            }
+            pointer = other.pointer;
+            return *this;
+        }
+
+        SharedPtr& operator=(SharedPtr&& other) {
+            if (pointer) {
+                getRefCount()->release();
+            }
+            pointer = other.pointer;
+            other.pointer = nullptr;
+            return *this;
         }
 
         SharedPtr& operator=(const SharedPtr& other) {
@@ -112,6 +156,17 @@ namespace sric
                 getRefCount()->release();
             }
             pointer = other.pointer;
+            return *this;
+        }
+
+        SharedPtr& operator=(const SharedPtr&& other) {
+            if (pointer) {
+                getRefCount()->release();
+            }
+            pointer = other.pointer;
+            if (pointer) {
+                getRefCount()->addRef();
+            }
             return *this;
         }
 
@@ -210,6 +265,10 @@ namespace sric
             }
         }
 
+        WeakPtr(WeakPtr&& other) : pointer(other.pointer) {
+            other.pointer = nullptr;
+        }
+
         virtual ~WeakPtr() {
             clear();
         }
@@ -222,6 +281,15 @@ namespace sric
                 pointer->releaseWeak();
             }
             pointer = other.pointer;
+            return *this;
+        }
+
+        WeakPtr& operator=(WeakPtr&& other) {
+            if (pointer) {
+                pointer->releaseWeak();
+            }
+            pointer = other.pointer;
+            other.pointer = nullptr;
             return *this;
         }
 

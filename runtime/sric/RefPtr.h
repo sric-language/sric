@@ -163,8 +163,8 @@ namespace sric
         inline bool isNull() const { return pointer == nullptr; }
 
         bool operator==(const T* other) { return this->pointer == other; }
-        bool operator==(const RefPtr<T>& other) { return this->pointer == other.pointer; }
-        bool operator<(const RefPtr<T>& other) { return this->pointer < other.pointer; }
+        bool operator==(const RefPtr<T> other) { return this->pointer == other.pointer; }
+        bool operator<(const RefPtr<T> other) { return this->pointer < other.pointer; }
 
         template <class U> 
         inline RefPtr<U> castTo()
@@ -314,8 +314,8 @@ namespace sric
         inline bool isNull() const { return pointer == nullptr; }
 
         bool operator==(const void* other) { return this->pointer == other; }
-        bool operator==(const RefPtr<void>& other) { return this->pointer == other.pointer; }
-        bool operator<(const RefPtr<void>& other) { return this->pointer < other.pointer; }
+        bool operator==(const RefPtr<void> other) { return this->pointer == other.pointer; }
+        bool operator<(const RefPtr<void> other) { return this->pointer < other.pointer; }
 
         template <class U> 
         inline RefPtr<U> castTo()
@@ -331,7 +331,7 @@ namespace sric
 
     template <class T>
     OwnPtr<T> refToOwn(RefPtr<T> ptr) {
-        HeapRefable* r = getRefable(ptr.get());
+        HeapRefable* r = sc_getRefable(ptr.get());
 #ifndef SC_NO_CHECK
         if (r->_magicCode != SC_HEAP_MAGIC_CODE) {
             fprintf(stderr, "ERROR: Can't cast ref pointer to own pointer\n");
