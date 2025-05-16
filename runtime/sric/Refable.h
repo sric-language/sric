@@ -112,6 +112,7 @@ struct StackRefable {
 class HeapRefable {
 public:
     RefCount* _refCount = nullptr;
+    void (*destructor)(void*) = nullptr;
 public:
 #ifndef SC_NO_CHECK
     MagicCodeType _magicCode = SC_HEAP_MAGIC_CODE;

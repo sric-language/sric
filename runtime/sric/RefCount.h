@@ -26,9 +26,9 @@ private:
 
     HeapRefable* _pointer;
     //void (*freeMemory)(void*);
-    void (*destructor)(void*);
+    
 public:
-    inline RefCount() : _refCount(1), _pointer(NULL), destructor(NULL) {}
+    inline RefCount() : _refCount(1), _pointer(NULL) {}
     inline ~RefCount() {
         _refCount = SC_REFCOUNT_INVALID;
     }

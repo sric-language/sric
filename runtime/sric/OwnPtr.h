@@ -164,10 +164,6 @@ public:
     template <class U>
     inline OwnPtr(OwnPtr<U>&& other) : pointer(other.pointer) {
         other.pointer = nullptr;
-        if (pointer) {
-            HeapRefable* p = sc_getRefable(pointer);
-            p->getRefCount()->destructor = callDestructor<U>;
-        }
     }
 
     OwnPtr& operator=(const OwnPtr& other) = delete;
@@ -189,11 +185,6 @@ public:
         }
         pointer = other.pointer;
         other.pointer = nullptr;
-
-        if (pointer) {
-            HeapRefable* p = sc_getRefable(pointer);
-            p->getRefCount()->destructor = callDestructor<U>;
-        }
         return *this;
     }
 
@@ -226,9 +217,8 @@ private:
         sc_assert(p->_refCount, "Invalid refCount");
 
         //void (*custemFreeMemory)(void*) = p->_refCount->freeMemory;
-        void (*custemDestructor)(void*) = p->_refCount->destructor;
         if (p->_refCount->release()) {
-            custemDestructor(this->pointer);
+            p->destructor(this->pointer);
             p->~HeapRefable();
             freeMemory(p);
         }
@@ -265,6 +255,7 @@ OwnPtr<T> new_(Args&&... args) {
     }
     //printf("malloc: %p\n", p);
     new (p) HeapRefable();
+    p->destructor = callDestructor<T>;
     void* m = (p + 1);
     T* t = new(m) T(std::forward<Args>(args)...);
     return OwnPtr<T>(t);

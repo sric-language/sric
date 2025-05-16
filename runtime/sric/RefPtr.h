@@ -115,10 +115,17 @@ namespace sric
 #endif
         }
 
+        inline RefPtr(const RefPtr& p) : pointer(p.pointer)
+#ifndef SC_NO_CHECK
+            , checkCode(p.checkCode), offset(p.offset), type(p.type)
+#endif
+        {
+        }
+
         template <class U>
         inline RefPtr(const RefPtr<U>& p) : pointer(p.pointer)
 #ifndef SC_NO_CHECK
-            , checkCode(p.checkCode), offset(p.offset), type(p.type)
+            , checkCode(p.checkCode), offset(p.offset - ((char*)pointer - (char*)p.pointer)), type(p.type)
 #endif
         {
         }
@@ -172,7 +179,7 @@ namespace sric
             if constexpr (std::is_polymorphic<U>::value) {
 #ifndef SC_NO_CHECK
                 U* np = dynamic_cast<U*>(pointer);
-                return RefPtr<U>(dynamic_cast<U*>(pointer), checkCode, type, offset + ((char*)np - (char*)pointer));
+                return RefPtr<U>(np, checkCode, type, offset - ((char*)np - (char*)pointer));
 #else
                 return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
 #endif

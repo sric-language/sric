@@ -1193,7 +1193,7 @@ public class CppGenerator extends BaseGenerator {
         }
 
         if (v.checkNonnullable) {
-            print("sric::notNull(");
+            print("sc_notNull(");
             parentheses++;
         }
         
@@ -1235,7 +1235,7 @@ public class CppGenerator extends BaseGenerator {
                 boolean isNullable = false;
                 if (e.target.resolvedType != null && e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
                     if (pinfo.isNullable && pinfo.pointerAttr == Type.PointerAttr.raw) {
-                        print("sric::notNull(");
+                        print("sc_notNull(");
                         isNullable = true;
                     }
                 }
@@ -1374,7 +1374,7 @@ public class CppGenerator extends BaseGenerator {
             printClosureExpr(e);
         }
 //        else if (v instanceof NonNullableExpr e) {
-//            print("sric::notNull(");
+//            print("sc_notNull(");
 //            this.visit(e.operand);
 //            print(")");
 //        }
@@ -1396,7 +1396,7 @@ public class CppGenerator extends BaseGenerator {
                 if (targetType.detail instanceof Type.PointerInfo pinfo) {
                     
                     if (!pinfo.isNullable) {
-                        print("sric::notNull(");
+                        print("sc_notNull(");
                     }
                     
                     Type elemType = targetType.genericArgs.get(0);
