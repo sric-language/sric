@@ -214,13 +214,18 @@ public:
 private:
     void doFree(void* pointer) {
         HeapRefable* p = sc_getRefable(pointer);
-        sc_assert(p->_refCount, "Invalid refCount");
-
-        //void (*custemFreeMemory)(void*) = p->_refCount->freeMemory;
-        if (p->_refCount->release()) {
+        if (!p->_refCount) {
             p->destructor(this->pointer);
             p->~HeapRefable();
             freeMemory(p);
+        }
+        else {
+            //void (*custemFreeMemory)(void*) = p->_refCount->freeMemory;
+            if (p->_refCount->release()) {
+                p->destructor(this->pointer);
+                p->~HeapRefable();
+                freeMemory(p);
+            }
         }
     }
 public:
