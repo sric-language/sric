@@ -18,8 +18,21 @@ fun testWeakPtr() {
     *np = 1;
 }
 
+fun testWeakPtr2() {
+    var p = new Int;
+    var sp : WeakPtr$<Int>;
+
+    if (true) {
+        var p = new Int;
+        sp = toWeak(p);
+    }
+    var np = sp.lock();
+    verify(np == null);
+}
+
 fun testAutoPtr() {
     testSharedPtr();
     testUniquePtr();
     testWeakPtr();
+    testWeakPtr2();
 }

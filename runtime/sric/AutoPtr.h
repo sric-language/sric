@@ -133,7 +133,7 @@ namespace sric
                 other.getRefCount()->addRef();
             }
             if (pointer) {
-                getRefCount()->release();
+                doFree();
             }
             pointer = other.pointer;
             return *this;
@@ -141,7 +141,7 @@ namespace sric
 
         SharedPtr& operator=(SharedPtr&& other) {
             if (pointer) {
-                getRefCount()->release();
+                doFree();
             }
             pointer = other.pointer;
             other.pointer = nullptr;
@@ -153,20 +153,20 @@ namespace sric
                 other.getRefCount()->addRef();
             }
             if (pointer) {
-                getRefCount()->release();
+                doFree();
             }
             pointer = other.pointer;
             return *this;
         }
 
         SharedPtr& operator=(const SharedPtr&& other) {
+            if (other.pointer) {
+                other.getRefCount()->addRef();
+            }
             if (pointer) {
-                getRefCount()->release();
+                doFree();
             }
             pointer = other.pointer;
-            if (pointer) {
-                getRefCount()->addRef();
-            }
             return *this;
         }
 
@@ -185,7 +185,7 @@ namespace sric
                 other.getRefCount()->addRef();
             }
             if (pointer) {
-                getRefCount()->release();
+                doFree();
             }
             pointer = other.pointer;
         }
@@ -210,8 +210,7 @@ namespace sric
 
         void clear() {
             if (pointer) {
-                getRefCount()->release();
-                pointer = nullptr;
+                doFree();
             }
         }
 
@@ -219,6 +218,16 @@ namespace sric
             T* p = pointer;
             pointer = nullptr;
             return p;
+        }
+    private:
+        void doFree() {
+            HeapRefable* p = sc_getRefable(pointer);
+            if (getRefCount()->release()) {
+                this->pointer->~T();
+                p->~HeapRefable();
+                freeMemory(p);
+            }
+            pointer = nullptr;
         }
     };
 

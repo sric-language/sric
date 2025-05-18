@@ -8,16 +8,18 @@ namespace sric
 std::mutex traceLock;
 
 bool RefCount::lock() {
+    sc_assert(_weakRefCount > 0, "weak ref count error");
+
     if (_refCount == 0) {
         return false;
     }
     std::lock_guard<std::mutex> guard(traceLock);
     ++_refCount;
-    if (_refCount > 1) {
-        return true;
+    if (_refCount == 1) {
+        _refCount = 0;
+        return false;
     }
-    _refCount = 0;
-    return false;
+    return true;
 }
 
 bool RefCount::tryDelete() {

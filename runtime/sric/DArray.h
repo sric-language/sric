@@ -141,10 +141,12 @@ public:
         _size = 0;
         HeapRefable* refable = getHeader();
         if (!refable->_refCount) {
+            refable->~HeapRefable();
             freeMemory(refable);
         }
         else {
             if (refable->_refCount->release()) {
+                refable->~HeapRefable();
                 freeMemory(refable);
             }
         }

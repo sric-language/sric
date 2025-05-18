@@ -28,7 +28,7 @@ private:
     //void (*freeMemory)(void*);
     
 public:
-    inline RefCount() : _refCount(1), _pointer(NULL) {}
+    inline RefCount() : _refCount(1), _pointer(nullptr) {}
     inline ~RefCount() {
         _refCount = SC_REFCOUNT_INVALID;
     }
@@ -41,6 +41,7 @@ public:
         sc_assert(_refCount > 0 && _refCount < SC_REFCOUNT_INVALID, "ref count error");
         if (--_refCount == 0)
         {
+            _pointer = nullptr;
             //delete this;
             tryDelete();
             return true;
