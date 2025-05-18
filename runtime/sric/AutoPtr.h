@@ -235,7 +235,7 @@ namespace sric
             HeapRefable* refp = sc_getRefable(p.get());
             if (refp) {
                 pointer = refp->getRefCount();
-                pointer->addRef();
+                pointer->addWeakRef();
             }
         }
 

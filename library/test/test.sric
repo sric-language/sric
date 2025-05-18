@@ -23,5 +23,7 @@ fun main(): Int {
 
     testExtern();
     testExtern2();
+
+    testAutoPtr();
     return 0;
 }

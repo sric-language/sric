@@ -1,0 +1,25 @@
+import sric::*;
+
+fun testSharedPtr() {
+    var p = new Int;
+    var sp : SharedPtr$<Int> = toShared(p);
+    var sp2 = sp;
+}
+
+fun testUniquePtr() {
+    var p = makeUnique$<Int>();
+    var p2 = move p;
+}
+
+fun testWeakPtr() {
+    var p = new Int;
+    var sp : WeakPtr$<Int> = toWeak(p);
+    var np = sp.lock();
+    *np = 1;
+}
+
+fun testAutoPtr() {
+    testSharedPtr();
+    testUniquePtr();
+    testWeakPtr();
+}
