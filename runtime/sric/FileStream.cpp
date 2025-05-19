@@ -65,7 +65,7 @@ OwnPtr<FileStream> FileStream::open(const char* filePath, const char* mode)
         return stream;
     }
     else {
-        fprintf(stderr, "open file fail:%s", filePath);
+        fprintf(stderr, "open file fail:%s\n", filePath);
     }
     return OwnPtr<FileStream>();
 }

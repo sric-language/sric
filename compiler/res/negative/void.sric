@@ -1,0 +1,18 @@
+
+
+struct C : B, I {
+}
+
+trait I {
+}
+
+virtual struct B {
+}
+
+
+fun testCast2() {
+  var i: *? I;
+  var v: *? Void;
+  var i2 = v as *I;
+  var i3 = i as *Void;
+}

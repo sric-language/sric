@@ -120,6 +120,11 @@ struct Encoder {
             return null;
         }
 
+        //unsupport serialize tarit
+        if (rtype.kind == RTypeKind::Tarit) {
+            return null;
+        }
+
         if (rtype.superType != null || rtype.traits.size() > 0 || (rtype.flags & RFlags::Virtual) != 0 || (rtype.flags & RFlags::Abstract) != 0) {
             var realName = typeOf(obj);
             if (strcmp(realName, typeName) != 0) {
@@ -135,7 +140,7 @@ struct Encoder {
             return null;
         }
 
-        if ((rtype.kind & RTypeKind::Enum) != 0) {
+        if (rtype.kind == RTypeKind::Enum) {
             var value:raw* Int = unsafeCast$<raw*Int>(obj);
             for (var i = 0; i<rtype.fields.size(); ++i) {
                 var f = rtype.fields[i];

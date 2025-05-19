@@ -129,8 +129,9 @@ struct Decoder {
             }
         case 'o':
             if (strcmp(typeName, "own*") == 0) {
+                if (typeNameS.genericArgs.size() == 0) return false;
                 var v = unsafeCast$<raw* own*? Void>(obj+offset);
-                var d = decodeObj(node, null, typeName);
+                var d = decodeObj(node, null, typeNameS.genericArgs[0].name.c_str());
                 if (d != null) {
                     *v = move d;
                     return true;
@@ -188,13 +189,29 @@ struct Decoder {
             scError("serial", "unknow type: %s", name);
             return null;
         }
+        if (rtype.kind == RTypeKind::Tarit) {
+            scError("serial", "unsupport serialize tarit type %s", name);
+            return null;
+        }
+
+        if (typeName != null && strcmp(name, typeName) != 0) {
+            var crtype = findRType(typeName);
+            if (crtype == null) {
+                scError("serial", "unknow type: %s", typeName);
+                return null;
+            }
+            if (crtype.kind == RTypeKind::Tarit) {
+                scError("serial", "type not match %s != %s", name, typeName);
+                return null;
+            }
+        }
 
         if (rtype.flags & RFlags::Reflect == 0) {
             //scError("serial", "unsupport type: %s", name);
             return null;
         }
 
-        if ((rtype.kind & RTypeKind::Enum) != 0) {
+        if (rtype.kind == RTypeKind::Enum) {
             var str = node.as_str();
             for (var i = 0; i<rtype.fields.size(); ++i) {
                 var f = rtype.fields[i];
@@ -216,16 +233,16 @@ struct Decoder {
                     var str: String = node.as_str();
                     var rc = callInstanceStringToBool(fromStringFunc.pointer, dst, move str);
                     if (rc != true) {
-                        scError("serial", "fromString fail: %s", typeName);
+                        scError("serial", "fromString fail: %s", name);
                     }
                     return null;
                 }
                 else {
-                    scError("serial", "Bad fromString function: %s", typeName);
+                    scError("serial", "Bad fromString function: %s", name);
                 }
             }
             else {
-                scError("serial", "not found fromString function: %s", typeName);
+                scError("serial", "not found fromString function: %s", name);
             }
         }
 

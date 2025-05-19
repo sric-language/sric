@@ -60,6 +60,17 @@ reflect struct Elem5 {
     var padding: Insets;
 }
 
+reflect trait I {
+}
+
+reflect struct A : I {
+    var a: Int;
+}
+
+reflect struct Elem6 {
+    var i : own*? I;
+}
+
 unsafe fun testSimple() {
     var encoder: Encoder;
     var obj = new Point { .x = 1; .y = 2; };
@@ -151,6 +162,21 @@ unsafe fun testSimpleSerial() {
     verify(obj2.padding.left == 4);
 }
 
+unsafe fun testTrait() {
+    var encoder: Encoder;
+    var obj = new Elem6 { .i = new A {.a = 1;}; };
+    var t = obj as *Void;
+    var res = encoder.encode(t, "testSerial::Elem6");
+    printf("%s\n", res.c_str());
+
+    //var str = "testSerial::Elem6 { i = testSerial::A }";
+    var decoder: Decoder;
+    var p = decoder.decode(res);
+    var obj2 = unsafeCast$<raw*Elem6>(p);
+    
+    verify(obj2.i == null);
+}
+
 unsafe fun main(): Int {
     testSimple();
     testStruct();
@@ -158,5 +184,6 @@ unsafe fun main(): Int {
     testEnum();
     testArray2();
     testSimpleSerial();
+    testTrait();
     return 0;
 }
