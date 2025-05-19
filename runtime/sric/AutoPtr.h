@@ -133,7 +133,7 @@ namespace sric
                 other.getRefCount()->addRef();
             }
             if (pointer) {
-                doFree();
+                dealloc(pointer);
             }
             pointer = other.pointer;
             return *this;
@@ -141,7 +141,7 @@ namespace sric
 
         SharedPtr& operator=(SharedPtr&& other) {
             if (pointer) {
-                doFree();
+                dealloc(pointer);
             }
             pointer = other.pointer;
             other.pointer = nullptr;
@@ -153,7 +153,7 @@ namespace sric
                 other.getRefCount()->addRef();
             }
             if (pointer) {
-                doFree();
+                dealloc(pointer);
             }
             pointer = other.pointer;
             return *this;
@@ -164,7 +164,7 @@ namespace sric
                 other.getRefCount()->addRef();
             }
             if (pointer) {
-                doFree();
+                dealloc(pointer);
             }
             pointer = other.pointer;
             return *this;
@@ -185,7 +185,7 @@ namespace sric
                 other.getRefCount()->addRef();
             }
             if (pointer) {
-                doFree();
+                dealloc(pointer);
             }
             pointer = other.pointer;
         }
@@ -210,7 +210,8 @@ namespace sric
 
         void clear() {
             if (pointer) {
-                doFree();
+                dealloc(pointer);
+                pointer = nullptr;
             }
         }
 
@@ -219,16 +220,7 @@ namespace sric
             pointer = nullptr;
             return p;
         }
-    private:
-        void doFree() {
-            HeapRefable* p = sc_getRefable(pointer);
-            if (getRefCount()->release()) {
-                this->pointer->~T();
-                p->~HeapRefable();
-                freeMemory(p);
-            }
-            pointer = nullptr;
-        }
+
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,12 +413,12 @@ namespace sric
         inline void doFree(T* pointer) {
 #ifdef SC_NO_CHECK
             this->pointer->~T();
-            freeMemory(pointer);
+            free(pointer);
 #else
             uint64_t* p = (uint64_t*)toVoid(pointer) - 1;
             this->pointer->~T();
             *p = 0;
-            freeMemory(p);
+            free(p);
 #endif
         }
     public:

@@ -23,9 +23,29 @@ namespace sric
 
 #define sc_getRefable(pointer) (((HeapRefable*)toVoid(pointer))-1)
 
-inline void freeMemory(void* p) {
-    //printf("free: %p\n", p);
-    free(p);
+
+template <typename T>
+void callDestructor(void* p) {
+    ((T*)p)->~T();
+}
+
+template<typename T>
+void dealloc(T* pointer) {
+    void *v = toVoid(pointer);
+    HeapRefable* p = ((HeapRefable*)v)-1;
+    if (!p->_refCount) {
+        p->destructor(v);
+        p->~HeapRefable();
+        free(p);
+    }
+    else {
+        //void (*custemFreeMemory)(void*) = p->_refCount->freeMemory;
+        if (p->_refCount->release()) {
+            p->destructor(v);
+            p->~HeapRefable();
+            free(p);
+        }
+    }
 }
 
 template<typename T>
@@ -62,7 +82,7 @@ public:
 
     inline OwnPtr& operator=(OwnPtr&& other) {
         if (pointer != other.pointer && pointer) {
-            doFree(pointer);
+            dealloc(pointer);
         }
         pointer = other.pointer;
         other.pointer = nullptr;
@@ -87,28 +107,11 @@ public:
 
     inline void clear() {
         if (pointer) {
-            doFree(pointer);
+            dealloc(pointer);
             pointer = nullptr;
         }
     }
 
-private:
-    void doFree(T* pointer) {
-        HeapRefable* p = sc_getRefable(pointer);
-        if (!p->_refCount) {
-            this->pointer->~T();
-            p->~HeapRefable();
-            freeMemory(p);
-        }
-        else {
-            //void (*custemfreeMemory)(void*) = p->_refCount->freeMemory;
-            if (p->_refCount->release()) {
-                this->pointer->~T();
-                p->~HeapRefable();
-                freeMemory(p);
-            }
-        }
-    }
 public:
     T* take() {
         T* p = pointer;
@@ -129,10 +132,6 @@ public:
     }
 };
 
-template <typename T>
-void callDestructor(void* p) {
-    ((T*)p)->~T();
-}
 
 template<>
 class OwnPtr<void> {
@@ -170,7 +169,7 @@ public:
 
     inline OwnPtr& operator=(OwnPtr<void>&& other) {
         if (pointer != other.pointer && pointer) {
-            doFree(pointer);
+            dealloc(pointer);
         }
         pointer = other.pointer;
         other.pointer = nullptr;
@@ -181,7 +180,7 @@ public:
     template <class U>
     inline OwnPtr& operator=(OwnPtr<U>&& other) {
         if (pointer != other.pointer && pointer) {
-            doFree(pointer);
+            dealloc(pointer);
         }
         pointer = other.pointer;
         other.pointer = nullptr;
@@ -206,28 +205,11 @@ public:
 
     inline void clear() {
         if (pointer) {
-            doFree(pointer);
+            dealloc(pointer);
             pointer = nullptr;
         }
     }
 
-private:
-    void doFree(void* pointer) {
-        HeapRefable* p = sc_getRefable(pointer);
-        if (!p->_refCount) {
-            p->destructor(this->pointer);
-            p->~HeapRefable();
-            freeMemory(p);
-        }
-        else {
-            //void (*custemFreeMemory)(void*) = p->_refCount->freeMemory;
-            if (p->_refCount->release()) {
-                p->destructor(this->pointer);
-                p->~HeapRefable();
-                freeMemory(p);
-            }
-        }
-    }
 public:
     void* take() {
         void* p = pointer;

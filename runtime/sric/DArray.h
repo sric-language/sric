@@ -142,12 +142,12 @@ public:
         HeapRefable* refable = getHeader();
         if (!refable->_refCount) {
             refable->~HeapRefable();
-            freeMemory(refable);
+            free(refable);
         }
         else {
             if (refable->_refCount->release()) {
                 refable->~HeapRefable();
-                freeMemory(refable);
+                free(refable);
             }
         }
         _data = nullptr;

@@ -1158,7 +1158,7 @@ public class ErrorChecker extends CompilePass {
         }
         
         if (!(e.target.resolvedType.detail instanceof Type.FuncInfo f)) {
-            err("Call a non-function type:"+e.target, e.loc);
+            err("Call a non-function type", e.loc);
             return;
         }
         

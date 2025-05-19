@@ -1,0 +1,5 @@
+
+
+fun test() {
+    var x : own*Int = new Int();
+}

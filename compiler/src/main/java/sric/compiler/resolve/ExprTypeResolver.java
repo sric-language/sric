@@ -1131,7 +1131,16 @@ public class ExprTypeResolver extends TypeResolver {
                 }
             }
             else {
-                err("Invalid call target", e.loc);
+                boolean report = false;
+                if (e.target instanceof UnaryExpr ue) {
+                    if (ue.opToken == TokenKind.newKeyword) {
+                        err("Unxpected '()' after new T", e.loc);
+                        report = true;
+                    }
+                }
+                if (!report) {
+                    err("Invalid call target", e.loc);
+                }
             }
         }
     }
