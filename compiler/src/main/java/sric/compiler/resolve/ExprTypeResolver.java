@@ -1262,6 +1262,19 @@ public class ExprTypeResolver extends TypeResolver {
                             err("Unsupport operator:"+curt, e.loc);
                         }
                     }
+                    
+                    //assinable closure captures
+                    ClosureExpr closure = getCurClosure();
+                    if (closure != null) {
+                        if (e.lhs instanceof Expr.IdExpr idExpr && idExpr.resolvedDef != null) {
+                            if (idExpr.resolvedDef instanceof FieldDef f) {
+                                if (f.parent != closure) {
+                                    err("Not assignable", e.lhs.loc);
+                                }
+                            }
+                        }
+                    }
+                    
                     e.resolvedType = e.lhs.resolvedType;
 
                     break;
