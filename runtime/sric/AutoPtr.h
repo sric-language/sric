@@ -198,12 +198,17 @@ namespace sric
             return OwnPtr<T>((T*)(pointer));
         }
 
-        inline RefPtr<T> get() {
+        inline RefPtr<T> getPtr() {
             if (!pointer) {
                 return RefPtr<T>();
             }
             HeapRefable* refp = sc_getRefable(pointer);
             return RefPtr<T>(refp);
+        }
+
+        inline T& get() {
+            sc_assert(pointer, "try deref null pointer");
+            return *pointer;
         }
 
         bool isNull() const { return pointer == nullptr; }
@@ -388,7 +393,7 @@ namespace sric
 
         inline T* getRaw() const { return pointer; }
 
-        inline RefPtr<T> get() {
+        inline RefPtr<T> getPtr() {
 #ifdef SC_NO_CHECK
             return RefPtr<T>(pointer, nullptr, RefType::UnsafeRef);
 #else
@@ -398,6 +403,11 @@ namespace sric
             uint64_t* p = (uint64_t*)toVoid(pointer) - 1;
             return RefPtr<T>(pointer, (CheckCodeType*)p, RefType::UniqueRef);
 #endif
+        }
+
+        inline T& get() {
+            sc_assert(pointer, "try deref null pointer");
+            return *pointer;
         }
 
         inline bool isNull() const { return pointer == nullptr; }

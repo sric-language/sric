@@ -25,15 +25,19 @@ extern struct AutoMove$<T> {
 extern struct SharedPtr$<T> {
     fun set(p: own*? T);
     fun getOwn(): own*? T;
-    fun get(): *? T;
+    fun getPtr(): *? T;
+    fun get(): &T;
+    fun isNull(): Bool;
 }
 
 /**
 * smart pointer with unique object ownership semantics
 */
 extern noncopyable struct UniquePtr$<T> {
-    fun get(): *? T;
+    fun get(): &T;
+    fun getPtr(): *? T;
     fun getRaw(): raw*? T;
+    fun isNull(): Bool;
 }
 
 extern fun makeUnique$<T>(): UniquePtr$<T>;
