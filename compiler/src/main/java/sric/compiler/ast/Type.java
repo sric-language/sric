@@ -949,13 +949,17 @@ public class Type extends AstNode {
     }
     
     public Type toImmutable() {
-        if (this.isImmutable) {
+        if (this.isDeepImmutable()) {
             return this;
         }
         
         //shadow copy
         Type type = new Type(this.id);
-        type.copyFrom(this, false);
+        type.copyFrom(this, true);
+        if (type.isPointerType() && type.genericArgs != null) {
+            Type t = type.genericArgs.get(0).toImmutable();
+            type.genericArgs.set(0, t);
+        }
         type.isImmutable = true;
         return type;
     }

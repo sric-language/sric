@@ -1412,7 +1412,10 @@ public class ErrorChecker extends CompilePass {
                 case assignPercent:
                     boolean assignable = false;
                     if (e.lhs instanceof Expr.IdExpr idExpr) {
-                        if (idExpr.resolvedDef instanceof AstNode.FieldDef f) {
+                        if (idExpr.name.equals(TokenKind.thisKeyword.symbol) || idExpr.name.equals(TokenKind.superKeyword.symbol)) {
+                            //assignable = false;
+                        }
+                        else if (idExpr.resolvedDef instanceof AstNode.FieldDef f) {
                             assignable = true;
                         }
                     }
