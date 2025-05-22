@@ -241,3 +241,12 @@ fun main() {
     foo(a : 10);
 }
 ```
+
+### Coroutine
+```
+async fun test2() : Int {
+    var i = 0;
+    i = await testCallback();
+    return i + 1;
+}
+```

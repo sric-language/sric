@@ -487,6 +487,10 @@ public class AstNode {
             return (postFlags & FConst.Const) != 0;
         }
         
+        public boolean isStaticClosure() {
+            return (postFlags & FConst.Static) != 0;
+        }
+        
         public boolean match(FuncPrototype p) {
             if (!this.returnType.strictEquals(p.returnType)) {
                 return false;
@@ -531,6 +535,13 @@ public class AstNode {
                 }
             }
             sb.append(")");
+            
+            if ((postFlags & FConst.Const) != 0) {
+                sb.append(" const ");
+            }
+            if ((postFlags & FConst.Static) != 0) {
+                sb.append(" static ");
+            }
 
             if (returnType != null && !returnType.isVoid()) {
                 sb.append(":");

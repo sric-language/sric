@@ -20,7 +20,7 @@ public class NegativeTest {
     @Test
     public void test() throws IOException {
         String libPath = "../lib";
-        File file = new File("res/negative/new.sric");
+        File file = new File("res/negative/closure4.sric");
 
         sric.compiler.Compiler compiler = sric.compiler.Compiler.makeDefault(file.getPath(), libPath);
         compiler.genCode = false;

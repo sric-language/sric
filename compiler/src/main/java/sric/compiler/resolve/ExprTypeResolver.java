@@ -110,6 +110,15 @@ public class ExprTypeResolver extends TypeResolver {
                             curFunc._useThisAsRefPtr = true;
                         }
                     }
+                    
+                    //check closure captures
+                    ClosureExpr closure = getCurClosure();
+                    if (closure != null) {
+                        if (closure.captures == null) {
+                            closure.captures = new ArrayList<>();
+                        }
+                        closure.captures.add(idExpr);
+                    }
                 }
                 else {
                     err("Use this/super out of struct", idExpr.loc);
@@ -154,7 +163,8 @@ public class ExprTypeResolver extends TypeResolver {
         if (closure != null) {
             if (idExpr.resolvedDef != null) {
                 if (idExpr.resolvedDef instanceof FieldDef f) {
-                    if (f.parent != closure) {
+                    //f.parent assigned in visitField
+                    if (!f.isStatic() && f.parent != closure) {
                         if (closure.captures == null) {
                             closure.captures = new ArrayList<>();
                         }
@@ -866,6 +876,7 @@ public class ExprTypeResolver extends TypeResolver {
             
             if (e.captures == null) {
                 e.prototype.postFlags |= FConst.Const;
+                e.prototype.postFlags |= FConst.Static;
             }
             
             e.resolvedType = Type.funcType(e);
@@ -1268,7 +1279,7 @@ public class ExprTypeResolver extends TypeResolver {
                     if (closure != null) {
                         if (e.lhs instanceof Expr.IdExpr idExpr && idExpr.resolvedDef != null) {
                             if (idExpr.resolvedDef instanceof FieldDef f) {
-                                if (f.parent != closure) {
+                                if (f.isLocalOrParam() && f.parent != closure) {
                                     err("Not assignable", e.lhs.loc);
                                 }
                             }

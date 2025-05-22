@@ -1,0 +1,18 @@
+
+
+fun foo(f: fun(i:Int) static) {
+}
+
+fun foo2(f: fun(i:Int)) {
+}
+
+fun test() {
+    var x = 0;
+    var c = fun(i:Int){
+        if (x != 0) test();
+    };
+    foo(c);
+
+    foo2(fun(i:Int) static{
+    });
+}

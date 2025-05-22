@@ -541,6 +541,9 @@ public class Parser {
 //                case mutKeyword:
 //                    flags = flags | (FConst.Mutable);
 //                    break;
+                case staticKeyword:
+                    flags = flags | (FConst.Static);
+                    break;
                 default:
                     done = true;
             }

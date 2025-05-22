@@ -332,12 +332,13 @@ public class ErrorChecker extends CompilePass {
         }
         else {
             if (v.initExpr != null) {
-                boolean ok = false;
                 if (v.isEnumField()) {
                     //already checked in ExprTypeResolver
-                    ok = true;
                 }
-                if (!ok) {
+                else if (v.initExpr.resolvedType == v.fieldType) {
+                    //infered
+                }
+                else {
                     verifyTypeFit(v.initExpr, v.fieldType, v.loc);
                 }
             }
@@ -368,7 +369,7 @@ public class ErrorChecker extends CompilePass {
             }
             
             if (v.fieldType.detail instanceof Type.FuncInfo finfo) {
-                if (!finfo.isStatic()) {
+                if (finfo.isInstanceMethod()) {
                     err("Unsupport Member function pointer", v.loc);
                 }
             }
@@ -1016,6 +1017,9 @@ public class ErrorChecker extends CompilePass {
                     if (f != null && f.fieldType != null && !this.isCopyable(f.fieldType)) {
                         err("Capture a noncopyable field:" + f.name, ide.loc);
                     }
+                }
+                if (e.prototype.isStaticClosure()) {
+                    err("Can't capture in static closure", e.loc);
                 }
             }
         }

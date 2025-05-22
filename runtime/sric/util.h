@@ -97,6 +97,14 @@ namespace sric {
 	inline T unsafeCast(void* b) {
 		return (T)b;
 	}
+
+	template<typename T>
+	struct Func;
+	template<typename R, typename... Args>
+	struct Func<R(Args...)>
+	{
+		typedef R(*Type)(Args...);
+	};
 }
 //
 //inline bool isNull(void* p) {

@@ -38,8 +38,8 @@ public class Type extends AstNode {
         public FuncPrototype prototype;
         public FuncDef funcDef = null;
         
-        public boolean isStatic() {
-            return funcDef == null || funcDef.isStatic();
+        public boolean isInstanceMethod() {
+            return funcDef != null && !funcDef.isStatic();
         }
     }
     
@@ -256,6 +256,9 @@ public class Type extends AstNode {
     }
     
     public boolean fit(Type target) {
+        if (this == target) {
+            return true;
+        }
         
         if (target.isVarArgType()) {
             if (this.isBool() || this.isNum() || this.isRawPointerType() || this.isNullType())
@@ -273,6 +276,13 @@ public class Type extends AstNode {
 //            }
         }
         
+        //closure static fit
+        if (this.detail instanceof FuncInfo e && target.detail instanceof FuncInfo a) {
+            if (!e.prototype.isStaticClosure() && a.prototype.isStaticClosure()) {
+                return false;
+            }
+        }
+        
         if (semanticEquals(target)) {
             return true;
         }
@@ -287,7 +297,7 @@ public class Type extends AstNode {
         if (this.isNullType() && target.isFuncType()) {
             return true;
         }
-        
+
 
         //pointer fit
         if (this.detail instanceof PointerInfo e && target.detail instanceof PointerInfo a) {
@@ -441,7 +451,7 @@ public class Type extends AstNode {
         }
         else if (this.isFuncType()) {
             if (this.detail instanceof FuncInfo e && target.detail instanceof FuncInfo a) {
-                if (e.isStatic() != a.isStatic())  {
+                if (e.isInstanceMethod() != a.isInstanceMethod())  {
                     return false;
                 }
             }

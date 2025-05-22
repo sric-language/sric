@@ -335,18 +335,34 @@ public class CppGenerator extends BaseGenerator {
                 break;
             case Buildin.funcTypeName:
                 FuncInfo ft = (FuncInfo)type.detail;
-                print("std::function<");
-                printType(ft.prototype.returnType);
-                print("(");
-                if (ft.prototype.paramDefs != null) {
-                    int i = 0;
-                    for (FieldDef p : ft.prototype.paramDefs) {
-                        if (i > 0) print(", ");
-                        printType(p.fieldType, false);
-                        ++i;
+                if (ft.prototype.isStaticClosure()) {
+                    print("sric::Func<");
+                    printType(ft.prototype.returnType);
+                    print("(");
+                    if (ft.prototype.paramDefs != null) {
+                        int i = 0;
+                        for (FieldDef p : ft.prototype.paramDefs) {
+                            if (i > 0) print(", ");
+                            printType(p.fieldType, false);
+                            ++i;
+                        }
                     }
+                    print(")>::Type");
                 }
-                print(")>");
+                else {
+                    print("std::function<");
+                    printType(ft.prototype.returnType);
+                    print("(");
+                    if (ft.prototype.paramDefs != null) {
+                        int i = 0;
+                        for (FieldDef p : ft.prototype.paramDefs) {
+                            if (i > 0) print(", ");
+                            printType(p.fieldType, false);
+                            ++i;
+                        }
+                    }
+                    print(")>");
+                }
                 printGenericParam = false;
                 break;
             default:
@@ -580,6 +596,9 @@ public class CppGenerator extends BaseGenerator {
                     print(" = {}");
                 }
                 else if (v.fieldType.isRawPointerType()) {
+                    print(" = nullptr");
+                }
+                else if (v.fieldType.detail instanceof Type.FuncInfo finfo && finfo.prototype.isStaticClosure()) {
                     print(" = nullptr");
                 }
                 else if (v.fieldType.id.resolvedDef instanceof GenericParamDef) {
@@ -1719,20 +1738,24 @@ public class CppGenerator extends BaseGenerator {
     }
     
     void printClosureExpr(ClosureExpr expr) {
-        print("[=");
-        
-//        int i = 0;
-//        if (expr.defaultCapture != null) {
-//            print(expr.defaultCapture.symbol);
-//            ++i;
-//        }
-//        
-//        for (Expr t : expr.captures) {
-//            if (i > 0) print(", ");
-//            this.visit(t);
-//            ++i;
-//        }
-        print("]");
+        if (expr.captures != null) {
+            print("[=");
+    //        int i = 0;
+    //        if (expr.defaultCapture != null) {
+    //            print(expr.defaultCapture.symbol);
+    //            ++i;
+    //        }
+    //        
+    //        for (Expr t : expr.captures) {
+    //            if (i > 0) print(", ");
+    //            this.visit(t);
+    //            ++i;
+    //        }
+            print("]");
+        }
+        else {
+            print("[]");
+        }
         
         this.printFuncPrototype(expr.prototype, true, false, false, false);
         
