@@ -36,5 +36,6 @@ var wp: WeakPtr$<Int> = toWeak(p);
 ```
 使用时通过lock方法转化为own*，然后进行使用。
 ```
-var sp : own* Int = wp.lock();
+var sp : own*? Int = wp.lock();
 ```
+如果WeakPtr引用的对象已经被释放，则lock方法返回null。

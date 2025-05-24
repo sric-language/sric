@@ -1,6 +1,8 @@
 
 ### 操作符重载
 
+使用operator关键字来实现操作符重载。
+
 ```
 struct A {
     operator fun mult(a: A): A { ... }

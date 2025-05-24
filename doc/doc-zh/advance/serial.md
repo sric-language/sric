@@ -53,8 +53,7 @@ reflect struct Point {
 ```
 
 ### 简单模式序列化
-正常情况下自定义类被序列化对象，可通过SimpleSerial注解将其序列化为字符串。
-例如我们想要把Insets序列化为"1 2 3 4"而不是"Insets{top=1,right=2,bottom=3,left=4}"
+正常情况下自定义类被序列化为HiML对象，可通过SimpleSerial注解将其序列化为字符串。例如我们想要把Insets序列化为"1 2 3 4"而不是"Insets{top=1,right=2,bottom=3,left=4}"
 
 ```
 //@SimpleSerial

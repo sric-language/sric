@@ -1,5 +1,5 @@
 
-## 闭包
+## 闭包/Lambda
 匿名函数使用fun关键字定义
 ```
 fun foo(f: fun(a:Int):Int) {
@@ -11,8 +11,9 @@ foo(fun(a:Int):Int{
     return a + 1;
 });
 ```
-暂不支持闭包的返回类型推断，需要显式制定返回类型。
+暂不支持闭包的返回类型推断，需要显式指定返回类型。
 
+## 捕获变量
 默认通过值来捕获外部变量。
 ```
 var i = 0;
@@ -22,7 +23,7 @@ var f = fun(a:Int):Int{
 ```
 
 ## 静态闭包
-静态闭包指无状态的闭包，用static修饰，等于函数指针。
+静态闭包指无状态的闭包，用static修饰。不可捕获变量。
 ```
 var f : fun(a:Int) static : Int;
 ```
@@ -39,7 +40,7 @@ var f = fun(a:Int):Int{
 
 ## 移动捕获
 
-不支持C++的移动捕获。AutoMove用来包装对象，避免显示使用move指令。可用用来让闭包不过不可拷贝对象：
+不支持C++的移动捕获。AutoMove用来包装对象，避免显式使用move指令：
 
 ```
 var arr: DArray;

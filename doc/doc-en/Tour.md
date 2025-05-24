@@ -190,12 +190,12 @@ A module contains several source files and folders.
 
 The module is defined in build scripts:
 ```
-name = std
-summary = standard library
-outType = lib
+name = hello
+summary = hello
+outType = exe
 version = 1.0
-depends = sys 1.0
-srcDirs = src/
+depends = sric 1.0, cstd 1.0
+srcDirs = ./
 ```
 
 import external module in code:

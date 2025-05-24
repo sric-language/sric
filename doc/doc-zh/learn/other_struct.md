@@ -18,25 +18,22 @@ fun foo(c: Color) {}
 
 foo(Color::Red);
 ```
-并且可以可选的设置为一个整数值。
+可以设置大小:
+```
+enum Color : UInt8 {
+    Red, Green = 2, Blue
+}
+```
 
 ## 联合体
-sric暂不支持union。可以使用强制类型转换来替代。
-```
-struct U {
-    var data: [8]Int8;
-}
-
-var i = unsafeCast$<raw*Int>(&u.data);
-
-```
-或者使用继承多态来满足需求。
+sric暂不支持union。可使用继承多态来满足需求。
 
 
 ## 不安全结构
 
 unsafe结构完全和对应的C++类一致，不包含安全检查需要的标记位。extern结构默认是unsafe的。
-unsafe里的this的类型是裸指针，而不是安全指针。如果对象是独立分配的，可以通过rawToRef转为安全指针。
+
+unsafe里的this的类型是裸指针，而不是安全指针。如果对象是独立用new关键字分配的，可以通过rawToRef转为安全指针。
 ```
 unsafe struct A {
     fun foo() {

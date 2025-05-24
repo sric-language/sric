@@ -8,7 +8,7 @@ struct Point {
 }
 var p = Point { .y = 1; };
 ```
-初始化的语法叫做with块，不同于C的命名初始化。with块可以保护任何语句，并且可以用在非初始化场景。例如
+初始化的语法叫做with块，不同于C的命名初始化。with块可以包含任何语句，并且可以用在非初始化场景。例如
 ```
 var point = Point { .y = 1; };
 point {
@@ -32,7 +32,7 @@ var p = Point { .init(1); };
 ## 方法
 - 类型可以由方法，非静态成员函数，有一个隐藏的this指针。
 - 方法必须出现在数据成员之后。
-- this的可变性修饰在函数后部，返回类型之前，例如:
+- this的可变性修饰在函数名称后，例如:
 ```
 struct Point {
     fun length() const : Float {
@@ -41,7 +41,7 @@ struct Point {
 }
 ```
 
-struct可以包含静态函数，但不能保护静态字段。静态函数没有隐式的this指针。
+struct可以包含静态函数和字段。静态函数没有隐式的this指针。
 ```
 strcut Point {
     static fun foo() {

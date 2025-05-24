@@ -190,12 +190,12 @@ add        a,b,c;
 
 模块通过构建脚本来定义:
 ```
-name = std
-summary = standard library
-outType = lib
+name = hello
+summary = hello
+outType = exe
 version = 1.0
-depends = sys 1.0
-srcDirs = src/
+depends = sric 1.0, cstd 1.0
+srcDirs = ./
 ```
 
 在代码里面导入外部模块:
