@@ -300,11 +300,11 @@ public class ErrorChecker extends CompilePass {
         if (v.fieldType != null && v.fieldType.isReference) {
 //            if (pinfo.pointerAttr == Type.PointerAttr.inst) {
 //                if (!isInUnsafe()) {
-//                    err("Can't be inst pointer", v.loc);
+//                    err("Cannot be inst pointer", v.loc);
 //                }
 //            }
             if (!isInUnsafe()) {
-                err("Can't define reference in safe mode", v.loc);
+                err("Cannot define reference in safe mode", v.loc);
             }
         }
         
@@ -478,6 +478,7 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
+        
         if ((v.flags & FConst.Reflect) != 0 ) {
             if (v.generiParamDefs != null) {
                 err("Unsupport reflection for generic type", v.loc);
@@ -486,6 +487,10 @@ public class ErrorChecker extends CompilePass {
         
         if ((v.flags & FConst.Static) != 0 && ((v.flags & FConst.Abstract) != 0 || (v.flags & FConst.Virtual) != 0)) {
             err("Invalid flags", v.loc);
+        }
+        
+        if ((v.flags & FConst.Private) != 0 && ((v.flags & FConst.Abstract) != 0 || (v.flags & FConst.Virtual) != 0)) {
+            err("Invalid private", v.loc);
         }
         
         if ((v.flags & FConst.Static) != 0 && v.parent instanceof FileUnit) {
@@ -531,7 +536,7 @@ public class ErrorChecker extends CompilePass {
             }
 
             if (v.prototype.returnType != null && !v.prototype.returnType.isVoid()) {
-                err("Can't return from Ctor", v.loc);
+                err("Cannot return from Ctor", v.loc);
             }
         }
     }
@@ -753,7 +758,7 @@ public class ErrorChecker extends CompilePass {
     private void verifyOperatorDef(AstNode.FuncDef f) {
         
         if (f.isStatic()) {
-            err("Can't be static", f.loc);
+            err("Cannot be static", f.loc);
         }
         
         if (f.name.equals("plus") || f.name.equals("minus") || 
@@ -947,7 +952,7 @@ public class ErrorChecker extends CompilePass {
                             if (defNode instanceof AstNode.FieldDef f) {
                                 if (!f.isLocalOrParam()) {
                                     if (!isMoveable(f.fieldType)) {
-                                        err("Can't move", e.loc);
+                                        err("Cannot move", e.loc);
                                     }
                                 }
                             }
@@ -966,7 +971,7 @@ public class ErrorChecker extends CompilePass {
                         if (e.operand.resolvedType.detail instanceof Type.MetaTypeInfo typeInfo) {
                             if (typeInfo.type.id.resolvedDef instanceof TypeDef td) {
                                 if (td.isAbstract()) {
-                                    err("Can't new abstract struct: " + td.name, e.loc);
+                                    err("Cannot new abstract struct: " + td.name, e.loc);
                                 }
                             }
                         }
@@ -1019,7 +1024,7 @@ public class ErrorChecker extends CompilePass {
                     }
                 }
                 if (e.prototype.isStaticClosure()) {
-                    err("Can't capture in static closure", e.loc);
+                    err("Cannot capture in static closure", e.loc);
                 }
             }
         }
@@ -1307,7 +1312,7 @@ public class ErrorChecker extends CompilePass {
                         }
                         
                         if (asType.detail instanceof Type.PointerInfo pinfo && pinfo.pointerAttr == Type.PointerAttr.own) {
-                            err("Can't cast to own pointer", e.rhs.loc);
+                            err("Cannot cast to own pointer", e.rhs.loc);
                         }
                         
                         if (e.lhs.resolvedType.isPointerType()) {
@@ -1463,7 +1468,7 @@ public class ErrorChecker extends CompilePass {
 //                                    && e.lhs.resolvedType.detail instanceof Type.PointerInfo lpinfo) {
 //                                if (lpinfo.pointerAttr != Type.PointerAttr.raw && pinfo.pointerAttr == Type.PointerAttr.inst) {
 //                                    if (!isInUnsafe()) {
-//                                        err("Can't store instant pointer", e.loc);
+//                                        err("Cannot store instant pointer", e.loc);
 //                                        //e._refSafeCheck = true;
 //                                    }
 //                                }

@@ -310,6 +310,7 @@ public class ReflectionGen {
                 for (AstNode.FuncDef f : type.funcDefs) {
                     if (f.isStatic()) continue;
                     if ((f.flags & FConst.Ctor) != 0) continue;
+                    if ((f.flags & FConst.Private) != 0) continue;
                     printMethodWrapFunc(f);
                 }
             }
@@ -372,6 +373,7 @@ public class ReflectionGen {
 
                 for (AstNode.FuncDef f : type.funcDefs) {
                     if ((f.flags & FConst.Ctor) != 0) continue;
+                    if ((f.flags & FConst.Private) != 0) continue;
                     reflectFuncDef(f, "s");
                 }
                 

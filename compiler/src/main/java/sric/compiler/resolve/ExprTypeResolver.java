@@ -85,7 +85,7 @@ public class ExprTypeResolver extends TypeResolver {
                     }
                     if (idExpr.name.equals(TokenKind.superKeyword.symbol)) {
                         if (this.getCurClosure() != null) {
-                            err("Can't capture super", idExpr.loc);
+                            err("Cannot capture super", idExpr.loc);
                         }
                         if (curStruct.inheritances == null) {
                             err("Invalid super", idExpr.loc);
@@ -142,7 +142,7 @@ public class ExprTypeResolver extends TypeResolver {
                 if (idExpr.resolvedDef instanceof FieldDef f) {
                     if (!f.isStatic() && !f.isLocalOrParam()) {
                         if (inStaticScope) {
-                            err("Can't access from static scope", idExpr.loc);
+                            err("Cannot access from static scope", idExpr.loc);
                         }
                         idExpr.implicitThis = true;
                     }
@@ -150,7 +150,7 @@ public class ExprTypeResolver extends TypeResolver {
                 else if (idExpr.resolvedDef instanceof FuncDef f) {
                     if (!f.isStatic()) {
                         if (inStaticScope) {
-                            err("Can't access from static scope", idExpr.loc);
+                            err("Cannot access from static scope", idExpr.loc);
                         }
                         idExpr.implicitThis = true;
                     }
@@ -360,7 +360,7 @@ public class ExprTypeResolver extends TypeResolver {
                             AstNode old = inhScopes.get(f.name, v.loc, null);
                             if (old instanceof FuncDef oldF) {
                                 if ((oldF.flags & FConst.Abstract) == 0 && (oldF.flags & FConst.Virtual) == 0 && (oldF.flags & FConst.Override) == 0) {
-                                    err("Can't override non-virtual method", f.loc);
+                                    err("Cannot override non-virtual method", f.loc);
                                 }
                                 if (!oldF.prototype.match(f.prototype)) {
                                     err("Invalide override. funtion prototype not match", f.loc);
@@ -657,7 +657,7 @@ public class ExprTypeResolver extends TypeResolver {
             }
             else {
                 if (e.target.resolvedType != null && e.target.resolvedType.isMetaType()) {
-                    err("Can't call method on Type", e.loc);
+                    err("Cannot call method on Type", e.loc);
                 }
                 else {
                     err("Unknow access:"+e.name, e.loc);

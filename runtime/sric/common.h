@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#if !defined(SC_NO_CHECK) && !defined(SC_CHECK)
+#if !defined(SC_NO_CHECK) && !defined(SC_CHECK) && !defined(SC_NO_AUTO_DEFINE)
 
 #ifdef _DEBUG
     #define SC_CHECK
@@ -15,6 +15,9 @@
 #endif
 
 #endif
+
+#define SC_NOTHROW noexcept
+//#define SC_NOTHROW 
 
 namespace sric
 {

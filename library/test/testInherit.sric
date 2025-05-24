@@ -18,6 +18,17 @@ virtual struct B {
   virtual fun foo() { printf("B::foo\n"); }
 }
 
+virtual struct C1 {
+  private var a: Int = 1;
+  private fun foo() { printf("%d\n", a); }
+  fun foo2() { foo(); }
+}
+
+struct C2 : C1 {
+  private var a: Int = 2;
+  private fun foo() { printf("%d\n", a); }
+}
+
 fun testInherit() {
     var x = new C { .a = 1; };
     x.foo();
@@ -53,4 +64,9 @@ fun testCast() : own* I {
   var x: own*? C;
   //var a: own* C = move x;
   return x;
+}
+
+fun testPrivate() {
+  var c = new C2;
+  c.foo2();
 }

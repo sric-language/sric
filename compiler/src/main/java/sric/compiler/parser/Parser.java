@@ -403,7 +403,7 @@ public class Parser {
                         typeDef.addSlot((FuncDef)slot);
                     }
                     else {
-                        err("Can't define field in trait");
+                        err("Cannot define field in trait");
                     }
                 }
                 else {

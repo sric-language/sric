@@ -654,6 +654,18 @@ public class CppGenerator extends BaseGenerator {
         printGenericParamDefs(v.generiParamDefs);
         
         if (headMode) {
+            if (v.parent instanceof TypeDef sd && !sd.isEnum()) {
+                if ((v.flags & FConst.Private) != 0) {
+                    print("private: ");
+                }
+                else {
+                    print("public: ");
+                }
+            }
+            
+            if ((v.flags & FConst.Inline) != 0) {
+                print("inline ");
+            }
             if ((v.flags & FConst.Virtual) != 0 || (v.flags & FConst.Abstract) != 0) {
                 print("virtual ");
             }
@@ -815,10 +827,14 @@ public class CppGenerator extends BaseGenerator {
         print(")");
         
         if (!isLambda && !isStatic && prototype.isThisImmutable()) {
-            print(" const ");
+            print(" const");
         }
         else if (isLambda && !prototype.isThisImmutable()) {
-            print(" mutable ");
+            print(" mutable");
+        }
+        
+        if (!isLambda) {
+            print(" SC_NOTHROW");
         }
         
         if (isLambda && prototype != null) {
@@ -952,19 +968,19 @@ public class CppGenerator extends BaseGenerator {
             
             if (v.isPolymorphic()) {
                 if (!v._hasDecotr) {
-                    print("virtual ~");
+                    print("public: virtual ~");
                     print(getSymbolName(v));
                     print("(){}").newLine();
                 }
                 if (!v._hasCotr && v.isStruct()) {
-                    //print("");
+                    print("public: ");
                     print(getSymbolName(v));
                     print("(){}").newLine();
                 }
             }
             
             if (isDynamicReflect) {
-                print("const char* _typeof() const { return \"");
+                print("public: const char* _typeof() const { return \"");
                 print(this.module.name).print("::").print(v.name);
                 print("\"; }");
             }
