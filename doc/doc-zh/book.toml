@@ -1,6 +1,6 @@
 [book]
 authors = ["yangjiandong"]
-language = "en"
+language = "zh"
 multilingual = false
-src = "doc-zh"
+src = "src"
 title = "sric doc"

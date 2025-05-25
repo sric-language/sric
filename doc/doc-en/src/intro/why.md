@@ -9,7 +9,8 @@ The design of Sric draws heavily from C++, but it makes two key improvements:
 The notion that "modern computers are fast enough" is a childhood myth. Hardware advancements can’t keep up with the growing complexity of problems. Every industry I’ve encountered faces performance issues. To solve performance problems, the first step is to eliminate garbage collection (GC). Languages with GC inherently have an invisible performance ceiling. A high-performance language must provide low-level memory manipulation and flexible stack allocation. From the outset, Sric has been designed to match the performance of C/C++.
 
 #### Memory Safety
-Memory safety and performance are not mutually exclusive. However, Rust’s approach restricts code functionality, forces users to adapt their programming style, and increases the learning curve. Sric takes a different path—it introduces runtime memory safety checks, trading a slight performance overhead for safe. These checks are only enabled in debug mode. In release mode, Sric runs as fast as hand-written C++ code.
+Memory safety and performance can coexist. However, Rust's mechanisms impose restrictions on code functionality, forcing developers to write complex and inefficient code while increasing the learning curve.  
+In contrast, Sric takes a different approach—developers don’t need to do anything extra to achieve memory safety. [How Memory Safety Works](memory.md) 
 
 #### Abstraction Capabilities
 Object-oriented programming (OOP) is a key measure of a language’s abstraction power. Although misuse of inheritance has given OOP a bad reputation, I believe it remains useful in certain scenarios. Sric supports OOP but imposes language-level restrictions on inheritance.

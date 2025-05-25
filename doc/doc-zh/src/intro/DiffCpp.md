@@ -14,15 +14,15 @@
 | double | Float/Float64 |
 | void | Void |
 | char | Int8 |
-| char[4] | [4]Int8 |
-| int* | raw* Int8 |
-| const int& | & const Int |
+
 
 ### 定义
 | C++  | Sric  |
 | ----- | ---- |
 | const char* str | var str: raw* Int8 |
 | void foo(int i) {} | fun foo(i: Int) {} |
+| char a[4] | var a: [4]Int8 |
+| const int& a | var a: & const Int |
 
 ### 类型定义
 
