@@ -970,17 +970,17 @@ public class CppGenerator extends BaseGenerator {
                 if (!v._hasDecotr) {
                     print("public: virtual ~");
                     print(getSymbolName(v));
-                    print("(){}").newLine();
+                    print("() SC_NOTHROW {}").newLine();
                 }
                 if (!v._hasCotr && v.isStruct()) {
                     print("public: ");
                     print(getSymbolName(v));
-                    print("(){}").newLine();
+                    print("() SC_NOTHROW {}").newLine();
                 }
             }
             
             if (isDynamicReflect) {
-                print("public: const char* _typeof() const { return \"");
+                print("public: const char* _typeof() const SC_NOTHROW { return \"");
                 print(this.module.name).print("::").print(v.name);
                 print("\"; }");
             }
@@ -1775,6 +1775,7 @@ public class CppGenerator extends BaseGenerator {
         
         this.printFuncPrototype(expr.prototype, true, false, false, false);
         
+        print(" ");
         this.visit(expr.code);
     }
 }

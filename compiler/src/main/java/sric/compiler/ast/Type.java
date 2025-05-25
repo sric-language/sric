@@ -255,13 +255,17 @@ public class Type extends AstNode {
         return id.name.equals(Buildin.varargTypeName);
     }
     
+    public boolean isPrimitiveType() {
+        return this.isBool() || this.isNum() || this.isRawPointerType() || this.isNullType();
+    }
+    
     public boolean fit(Type target) {
         if (this == target) {
             return true;
         }
         
         if (target.isVarArgType()) {
-            if (this.isBool() || this.isNum() || this.isRawPointerType() || this.isNullType())
+            if (this.isPrimitiveType())
                 return true;
             else
                 return false;

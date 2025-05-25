@@ -62,7 +62,7 @@ struct ObjBase {
     MagicCodeType __magicCode = SC_INTRUSIVE_MAGIC_CODE;
     CheckCodeType __checkCode = sric::generateCheckCode();
 
-    ~ObjBase() {
+    ~ObjBase() SC_NOTHROW {
         __magicCode = 0;
         __checkCode = 0;
     }

@@ -1311,6 +1311,16 @@ public class ErrorChecker extends CompilePass {
                             err("Invalide as", e.loc);
                         }
                         
+                        if (!asType.isPrimitiveType() || !e.lhs.resolvedType.isPrimitiveType()) {
+                            if (e.lhs.resolvedType.isImmutable && !asType.isImmutable) {
+                                err("Use unsafeCast", e.loc);
+                            }
+                        }
+                        
+//                        if (asType.isReference != e.lhs.resolvedType.isReference) {
+//                            err("Invalide as", e.loc);
+//                        }
+                        
                         if (asType.detail instanceof Type.PointerInfo pinfo && pinfo.pointerAttr == Type.PointerAttr.own) {
                             err("Cannot cast to own pointer", e.rhs.loc);
                         }
@@ -1321,7 +1331,11 @@ public class ErrorChecker extends CompilePass {
                             }
                             else if (e.lhs.resolvedType.genericArgs != null && asType.isPointerType() && asType.genericArgs != null) {
                                 Type from = e.lhs.resolvedType.genericArgs.get(0);
-                                //Type to = asType.genericArgs.get(0);
+                                Type to = asType.genericArgs.get(0);
+                                
+                                if (from.isImmutable && !to.isImmutable) {
+                                    err("Use unsafeCast", e.loc);
+                                }
 
                                 if (from.isVoid()) {
                                     err("Use unsafeCast", e.loc);

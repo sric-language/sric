@@ -1,0 +1,27 @@
+virtual struct A {
+}
+
+struct B : A {
+}
+
+
+fun testCast1() {
+    var i : own*? B;
+    var j = i as * A;
+    var k = i as const * A;
+    var l = i as  *const A;
+}
+
+fun testCast2() {
+    var i : const own * const B = new B;
+    var j = i as * A;
+    var k = i as const * A;
+    var l = i as  *const A;
+}
+
+fun testCast3() {
+    var i : own * const B = new B;
+    var j = i as * A;
+    var k = i as const * A;
+    var l = i as  *const A;
+}
