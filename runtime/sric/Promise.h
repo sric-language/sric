@@ -25,7 +25,7 @@ extern std::function<void(Resume)> call_later;
 
 template<typename T>
 struct Promise {
-    struct ResultData {
+    struct ResultData  : public std::enable_shared_from_this<ResultData> {
         std::coroutine_handle<> continuation;
         bool is_ready = false;
         int error = 0;
@@ -36,11 +36,14 @@ struct Promise {
         void on_done(T r) {
             value = r;
             is_ready = true;
+            auto self = this->shared_from_this();
             call_later([=]{
-                if (this->then) {
-                    this->then(this->error, this->value);
+                if (self->then) {
+                    self->then(self->error, self->value);
                 }
-                this->continuation.resume();
+                if (self->continuation) {
+                    self->continuation.resume();
+                }
             });
         }
     };
