@@ -115,7 +115,7 @@ var a: [15]Int;
 
 
 ### 泛型类型
-泛型类型通过'$<'开头
+泛型类型通过`$<`开头
 ```
 struct Bar$<T> {
     fun foo() {
@@ -156,7 +156,7 @@ private
 protected
 readonly
 ```
-'readonly' 的意思是公开读，私有写。
+`readonly` 的意思是公开读，私有写。
 
 ### 操作符重载
 

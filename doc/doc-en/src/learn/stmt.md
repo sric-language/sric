@@ -72,4 +72,4 @@ var b = p is own* A;
 Other conversions use unsafeCast.
 
 ### Error Handling
-Sric has no exception handling (won't catch C++ exceptions either).
+Sric has no exception handling.

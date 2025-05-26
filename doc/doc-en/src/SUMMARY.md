@@ -26,6 +26,7 @@
 # Library
 - [Std Lib](stdlib/stdlib.md)
 - [Auto Pointer](stdlib/autoptr.md)
+- [GUI](stdlib/gui.md)
 
 # Advance
 - [Reflect](advance/reflect.md)

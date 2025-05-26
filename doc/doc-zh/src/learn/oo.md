@@ -16,18 +16,6 @@ point {
 }
 ```
 
-也可以提供一个初始化的方法，约定名称为init。
-```
-struct Point {
-    var x: Int;
-    var y: Int;
-
-    fun init(a: Int) {
-        this { .y = a; }
-    }
-}
-var p = Point { .init(1); };
-```
 
 ## 方法
 - 类型可以由方法，非静态成员函数，有一个隐藏的this指针。
@@ -41,6 +29,7 @@ struct Point {
 }
 ```
 
+## 静态成员
 struct可以包含静态函数和字段。静态函数没有隐式的this指针。
 ```
 strcut Point {
@@ -54,11 +43,11 @@ Point::foo();
 
 ## 继承
 - 不支持多继承，类似于Java
-- 被继承的类需要标记为virtual或者abstract
+- 被继承的类需要标记为`virtual`或者`abstract`
 - Trait相当与Java的interface，不能有数据成员和方法实现。
 - 继承的分号后面必须先写类（如果有）再写Trait。
-- 重写父类的virutal或者abstract方法时，需要加override标记。
-- 使用super关键字调用父类方法。
+- 重写父类的virutal或者abstract方法时，需要加`override`标记。
+- 使用`super`关键字调用父类方法。
 ```
 virtual strcut B {
     virtual fun foo() {}

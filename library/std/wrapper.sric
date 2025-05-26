@@ -1,0 +1,43 @@
+
+
+struct Tuple2$<T1,T2> {
+    var _0: T1;
+    var _1: T2;
+}
+
+struct Tuple3$<T1,T2,T3> {
+    var _0: T1;
+    var _1: T2;
+    var _2: T3;
+}
+
+struct Tuple4$<T1,T2,T3,T4> {
+    var _0: T1;
+    var _1: T2;
+    var _2: T3;
+    var _3: T4;
+}
+
+
+
+/**
+* Optional represent either an expected value of type T or an unexpected error
+*/
+extern struct Optional$<T> {
+    fun value(): &T;
+    fun hasValue() const : Bool;
+    fun getError(): Int;
+    fun setValue(t: T);
+    fun setError(e: Int);
+}
+
+
+extern struct ArrayRef$<T> {    
+    fun init(d: raw*T, s:Int);
+
+    fun data(): raw*? T;
+    fun size(): Int;
+
+    unsafe operator fun get(i: Int): & T;
+    unsafe operator fun set(i: Int, d: T);
+}

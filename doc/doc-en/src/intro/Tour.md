@@ -91,7 +91,7 @@ var a: own* A = new A { .i = 0; };
 
 ### Pointer Usage
 
-Always access by '.'
+Always access by `.`
 ```
 var a: A;
 var b: own* A;
@@ -115,7 +115,7 @@ var a: [15]Int;
 
 
 ### Generic Type
-Generic params start with '$<'
+Generic params start with `$<`
 ```
 struct Bar$<T> {
     fun foo() {
@@ -156,7 +156,7 @@ private
 protected
 readonly
 ```
-'readonly' means public read access, private write access.
+`readonly` means public read access, private write access.
 
 ### Operator Overloading
 

@@ -26,6 +26,7 @@
 # 标准库
 - [标准库基础](stdlib/stdlib.md)
 - [智能指针](stdlib/autoptr.md)
+- [图形用户界面](stdlib/gui.md)
 
 # 高级
 - [反射](advance/reflect.md)

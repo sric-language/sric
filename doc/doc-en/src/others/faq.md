@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-### Chinese Character Encoding Issues
+### Unicode Character Encoding Issues
 In Git Bash, run:
 ```
 cmd "/c chcp 65001>nul"

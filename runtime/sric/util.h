@@ -105,6 +105,7 @@ namespace sric {
 	{
 		typedef R(*Type)(Args...);
 	};
+
 }
 //
 //inline bool isNull(void* p) {

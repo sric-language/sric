@@ -17,18 +17,7 @@ point {
     .x = 2; if (a) { .y = 3; }
 }
 ```
-Alternatively, provide an initialization method (conventionally named init):
-```
-struct Point {
-    var x: Int;
-    var y: Int;
 
-    fun init(a: Int) {
-        this { .y = a; }
-    }
-}
-var p = Point { .init(1); };
-```
 ## Methods
 - Types can have methods (non-static member functions with implicit this pointer)
 - Methods must appear after data members
@@ -40,6 +29,8 @@ struct Point {
     }
 }
 ```
+
+## Static Members
 Structs can contain static functions/fields (no implicit this):
 
 ```
@@ -51,11 +42,11 @@ Point::foo();
 ```
 ## Inheritance
 - No multiple inheritance (Java-like)
-- Base classes must be marked virtual or abstract
+- Base classes must be marked `virtual` or `abstract`
 - Traits (like Java interfaces) can't have data members or method implementations
 - Inheritance list: class first (if any), then traits
-- Overriding requires override marker
-- Use super to call parent methods
+- Overriding requires `override` marker
+- Use `super` to call parent methods
 ```
 virtual struct B {
     virtual fun foo() {}

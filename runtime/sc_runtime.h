@@ -9,5 +9,6 @@
 #include "sric/reflection.h"
 
 #include "sric/Promise.h"
+#include "sric/Optional.h"
 
 #include <functional>
