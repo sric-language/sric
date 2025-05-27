@@ -309,6 +309,9 @@ public class CppGenerator extends BaseGenerator {
                     if (pt.pointerAttr == Type.PointerAttr.own) {
                         print("sric::OwnPtr");
                     }
+                    else if (pt.pointerAttr == Type.PointerAttr.uniq) {
+                        print("sric::UniquePtr");
+                    }
                     else if (pt.pointerAttr == Type.PointerAttr.ref) {
                         print("sric::RefPtr");
                     }
@@ -1195,7 +1198,7 @@ public class CppGenerator extends BaseGenerator {
             }
             else if (v.isPointerConvert) {
                 if (v.resolvedType.detail instanceof Type.PointerInfo p1 && v.implicitTypeConvertTo.detail instanceof Type.PointerInfo p2) {
-                    if (p1.pointerAttr == Type.PointerAttr.own && p2.pointerAttr == Type.PointerAttr.ref) {
+                    if ((p1.pointerAttr == Type.PointerAttr.own || p1.pointerAttr == Type.PointerAttr.uniq) && p2.pointerAttr == Type.PointerAttr.ref) {
                         print("sric::RefPtr<");
 
                         printType(v.implicitTypeConvertTo.genericArgs.get(0));
@@ -1570,6 +1573,11 @@ public class CppGenerator extends BaseGenerator {
             if (e.nullPtrType != null && e.nullPtrType.detail instanceof PointerInfo pinfo) {
                 if (pinfo.pointerAttr == Type.PointerAttr.own) {
                     print("sric::OwnPtr<");
+                    printType(e.nullPtrType.genericArgs.get(0));
+                    print(">()");
+                }
+                else if (pinfo.pointerAttr == Type.PointerAttr.uniq) {
+                    print("sric::UniquePtr<");
                     printType(e.nullPtrType.genericArgs.get(0));
                     print(">()");
                 }

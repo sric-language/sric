@@ -1,13 +1,8 @@
 # Smart Pointers
 
-Sric provides C++-style smart pointers including UniquePtr, SharedPtr, and WeakPtr.
+Sric provides C++-style smart pointers including SharedPtr, and WeakPtr.
 
-## UniquePtr
-While `own*` performance approaches raw pointers, UniquePtr is recommended for performance-critical cases as it has zero overhead. Unlike `own*`, UniquePtr cannot be shared (no equivalent to `share` function). Create using `makeUnique`:
 
-```sric
-var p : UniquePtr<Int> = makeUnique$<Int>();
-```
 ## SharedPtr
 Reference-counted with some overhead. Can be created from existing own*:
 

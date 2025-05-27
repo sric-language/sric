@@ -1,15 +1,7 @@
 # 智能指针
 
-Sric提高了类似与C++的一组智能指针。包括UniquePtr、SharedPtr、WeakPtr等。
+Sric提高了类似与C++的一组智能指针。包括SharedPtr、WeakPtr等。
 
-## UniquePtr
-
-尽管own*性能已经接近裸指针，但有些性能敏感的情况下推荐使用UniquePtr。相比于own*，UniquePtr是零开销的。UniquePtr的限制是同时只能有一个所有者，没有类似与own*的share功能。
-UniquePtr使用makeUnique函数来创建。
-
-```
-var p : UniquePtr<Int> = makeUnique$<Int>();
-```
 
 ## SharedPtr
 

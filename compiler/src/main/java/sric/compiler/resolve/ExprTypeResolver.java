@@ -746,7 +746,7 @@ public class ExprTypeResolver extends TypeResolver {
                         }
                         else if (e.operand instanceof AccessExpr aexpr) {
                             //own pointer
-                            if (aexpr.target.resolvedType.isOwnOrRefPointerType()) {
+                            if (aexpr.target.resolvedType.isNonRawPointerType()) {
                                 e._addressOfField = true;
                                 aexpr._addressOf = true;
                                 e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
@@ -1180,7 +1180,7 @@ public class ExprTypeResolver extends TypeResolver {
 //                                e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
 //                                e.lhs.isPointerConvert = true;
 //                            }
-                            else if (p1.pointerAttr == Type.PointerAttr.own && p2.pointerAttr == Type.PointerAttr.ref) {
+                            else if ((p1.pointerAttr == Type.PointerAttr.own || p1.pointerAttr == Type.PointerAttr.uniq) && p2.pointerAttr == Type.PointerAttr.ref) {
                                 e.lhs.implicitTypeConvertTo = Type.pointerType(e.lhs.loc, from.genericArgs.get(0), p2.pointerAttr, p2.isNullable);
                                 e.lhs.isPointerConvert = true;
                             }

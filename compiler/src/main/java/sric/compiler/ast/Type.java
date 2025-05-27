@@ -21,7 +21,7 @@ public class Type extends AstNode {
     public TypeAlias resolvedAliasDef = null;
     
     public static enum PointerAttr {
-        own, ref, raw
+        own, ref, raw, uniq
     };
     
 //    public boolean explicitImmutable = false;
@@ -222,12 +222,12 @@ public class Type extends AstNode {
 //        return false;
 //    }
     
-    public boolean isOwnOrRefPointerType() {
+    public boolean isNonRawPointerType() {
         if (!isPointerType()) {
             return false;
         }
         if (this.detail instanceof PointerInfo pinfo) {
-            return pinfo.pointerAttr == PointerAttr.own || pinfo.pointerAttr == PointerAttr.ref;
+            return pinfo.pointerAttr != PointerAttr.raw;
         }
         return false;
     }
@@ -312,10 +312,11 @@ public class Type extends AstNode {
 //            }
 
             if ((e.pointerAttr != a.pointerAttr)) {
-                if (e.pointerAttr == PointerAttr.own) {
+                if ((e.pointerAttr == PointerAttr.own || e.pointerAttr == PointerAttr.uniq) &&
+                        (a.pointerAttr == PointerAttr.ref || a.pointerAttr == PointerAttr.raw)) {
                     //ok
                 }
-                else if (e.pointerAttr == PointerAttr.ref && (a.pointerAttr != PointerAttr.own)) {
+                else if (e.pointerAttr == PointerAttr.ref && (a.pointerAttr == PointerAttr.ref || a.pointerAttr == PointerAttr.raw)) {
                     //ok
                 }
                 else if (a.pointerAttr == PointerAttr.raw) {

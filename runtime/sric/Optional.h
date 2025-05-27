@@ -2,6 +2,12 @@
 #ifndef SRIC_OPTINAL_H_
 #define SRIC_OPTINAL_H_
 
+#if defined(__cpp_concepts) || __cplusplus >= 202002L || _MSVC_LANG >= 202002L
+#define HAS_REQUIRES 1
+#endif
+
+#if HAS_REQUIRES
+
 #include "sric/common.h"
 
 namespace sric {
@@ -144,5 +150,6 @@ namespace sric {
 	};
 }
 
+#endif //HAS_REQUIRES
 
-#endif
+#endif //SRIC_OPTINAL_H_

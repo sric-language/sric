@@ -179,6 +179,12 @@ public abstract class TypeResolver  extends CompilePass {
             if (!genericOk) {
                 err("Generic args mismatch", type.loc);
             }
+            
+            if (type.detail instanceof Type.PointerInfo pinfo && pinfo.pointerAttr == Type.PointerAttr.uniq) {
+                if (type.genericArgs.get(0).isVoid()) {
+                    err("Unsupport uniq* Void", type.loc);
+                }
+            }
         }
         else if (type.id.resolvedDef instanceof TypeDef sd) {
             if (sd.generiParamDefs != null) {

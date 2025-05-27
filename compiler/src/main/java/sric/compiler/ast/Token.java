@@ -158,6 +158,7 @@ public class Token {
         refableKeyword("refable", true),
         deleteKeyword("delete", true),
         //selfKeyword("self", true),
+        uniqKeyword("uniq", true),
         
         // misc
         eof("eof", false);

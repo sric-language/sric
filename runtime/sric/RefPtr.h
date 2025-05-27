@@ -11,6 +11,7 @@
 #define _SRIC_REFPTR_H_
 
 #include "sric/OwnPtr.h"
+#include "sric/UniqPtr.h"
 #include "sric/Refable.h"
 
 namespace sric
@@ -110,6 +111,35 @@ namespace sric
             sc_assert(p.get(), "try access null pointer");
             type = (RefType::HeapRef);
             CheckCodeType* checkCopePtr = &(sc_getRefable(p.get())->_checkCode);
+            checkCode = *checkCopePtr;
+            offset = ((char*)checkCopePtr - (char*)pointer);
+#endif
+        }
+
+        template <class U>
+        inline RefPtr(const UniquePtr<U>& p) : pointer(p.get())
+        {
+#ifndef SC_NO_CHECK
+            if (p.isNull()) {
+                type = RefType::UnsafeRef;
+                checkCode = 0;
+                offset = 0;
+            }
+            else {
+                type = RefType::UniqueRef;
+                CheckCodeType* checkCopePtr = &(sc_getUniqRefable(pointer)->_checkCode);
+                checkCode = *checkCopePtr;
+                offset = ((char*)checkCopePtr - (char*)pointer);
+            }
+#endif
+        }
+
+        template <class U>
+        inline RefPtr(const UniquePtr<U>& p, T* ptr) : pointer(ptr) {
+#ifndef SC_NO_CHECK
+            sc_assert(p.get(), "try access null pointer");
+            type = (RefType::UniqueRef);
+            CheckCodeType* checkCopePtr = &(sc_getUniqRefable(p.get())->_checkCode);
             checkCode = *checkCopePtr;
             offset = ((char*)checkCopePtr - (char*)pointer);
 #endif
@@ -271,6 +301,35 @@ namespace sric
             sc_assert(p.get(), "try access null pointer");
             type = (RefType::HeapRef);
             CheckCodeType* checkCopePtr = &(sc_getRefable(p.get())->_checkCode);
+            checkCode = *checkCopePtr;
+            offset = ((char*)checkCopePtr - (char*)pointer);
+#endif
+        }
+
+        template <class U>
+        inline RefPtr(const UniquePtr<U>& p) : pointer(p.get())
+        {
+#ifndef SC_NO_CHECK
+            if (p.isNull()) {
+                type = RefType::UnsafeRef;
+                checkCode = 0;
+                offset = 0;
+            }
+            else {
+                type = RefType::UniqueRef;
+                CheckCodeType* checkCopePtr = &(sc_getUniqRefable(pointer)->_checkCode);
+                checkCode = *checkCopePtr;
+                offset = ((char*)checkCopePtr - (char*)pointer);
+            }
+#endif
+        }
+
+        template <class U>
+        inline RefPtr(const UniquePtr<U>& p, void* ptr) : pointer(ptr) {
+#ifndef SC_NO_CHECK
+            sc_assert(p.get(), "try access null pointer");
+            type = (RefType::UniqueRef);
+            CheckCodeType* checkCopePtr = &(sc_getUniqRefable(p.get())->_checkCode);
             checkCode = *checkCopePtr;
             offset = ((char*)checkCopePtr - (char*)pointer);
 #endif

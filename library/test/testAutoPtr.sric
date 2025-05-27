@@ -6,11 +6,6 @@ fun testSharedPtr() {
     var sp2 = sp;
 }
 
-fun testUniquePtr() {
-    var p = makeUnique$<Int>();
-    var p2 = move p;
-}
-
 fun testWeakPtr() {
     var p = new Int;
     var sp : WeakPtr$<Int> = toWeak(p);
@@ -32,7 +27,6 @@ fun testWeakPtr2() {
 
 fun testAutoPtr() {
     testSharedPtr();
-    testUniquePtr();
     testWeakPtr();
     testWeakPtr2();
 }

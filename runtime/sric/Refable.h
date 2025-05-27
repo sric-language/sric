@@ -6,6 +6,7 @@
 #include "sric/RefCount.h"
 
 #define SC_HEAP_MAGIC_CODE 0xF178
+#define SC_UNIQ_MAGIC_CODE 0xF82a
 #define SC_STACK_MAGIC_CODE 0xE672
 #define SC_INTRUSIVE_MAGIC_CODE 0xB392
 
@@ -109,11 +110,11 @@ struct StackRefable {
     RefPtr<T> getPtr() { return RefPtr<T>(*this); }
 };
 
-class HeapRefable {
-public:
+struct HeapRefable {
+
     RefCount* _refCount = nullptr;
     void (*destructor)(void*) = nullptr;
-public:
+
 #ifndef SC_NO_CHECK
     MagicCodeType _magicCode = SC_HEAP_MAGIC_CODE;
     CheckCodeType _checkCode = generateCheckCode();
@@ -129,6 +130,19 @@ public:
     }
 #ifndef SC_NO_CHECK
     inline ~HeapRefable() {
+        _checkCode = 0;
+    }
+#endif
+};
+
+struct UniqRefable {
+#ifndef SC_NO_CHECK
+    MagicCodeType _magicCode = SC_UNIQ_MAGIC_CODE;
+    CheckCodeType _checkCode = generateCheckCode();
+#endif
+
+#ifndef SC_NO_CHECK
+    inline ~UniqRefable() {
         _checkCode = 0;
     }
 #endif

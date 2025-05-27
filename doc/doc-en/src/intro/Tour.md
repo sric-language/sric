@@ -7,6 +7,7 @@ var p: own* Int;       //ownership pointer
 var p: * Int;          //non-owning pointer
 var p: & Int;          //reference
 var p: raw* Int;       //unsafe raw pointer
+var p: uniq* Int;      //unique pointer
 ```
 
 

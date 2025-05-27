@@ -15,9 +15,10 @@ var p: own* Int;       //所有权指针
 var p: * Int;          //非所有权指针
 var p: & Int;          //引用
 var p: raw* Int;       //裸指针
+var p: uniq* Int;      //唯一所有权指针
 ```
 
-Sric也有和C++类似的一系列智能指针，以库的形式提供。包括UniquePtr、SharedPtr、WeakPtr等，见标准库相关章节的描述。
+Sric也有和C++类似的一系列智能指针，以库的形式提供。包括SharedPtr、WeakPtr等，见标准库相关章节的描述。
 
 
 #### 内存分配
@@ -37,6 +38,13 @@ var p2 = move p1;
 var p3 = share(p1);
 ```
 使用share函数，从一个所有权指针分裂出新的所有权指针，多个指针指向同一个内存地址。
+
+#### 唯一所有权指针
+uniq*是零开销的。和own*类似，但没有share()方法。
+```
+var p1: uniq* Int = makeUniq$<T>();
+var p2 = move p1;
+```
 
 #### 非所有权指针
 

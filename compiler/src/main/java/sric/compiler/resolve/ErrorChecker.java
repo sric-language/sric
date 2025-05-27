@@ -58,7 +58,7 @@ public class ErrorChecker extends CompilePass {
         }
         
         if (type.detail instanceof Type.PointerInfo p2) {
-            if (p2.pointerAttr == Type.PointerAttr.own) {
+            if (p2.pointerAttr == Type.PointerAttr.own || p2.pointerAttr == Type.PointerAttr.uniq) {
                 return false;
             }
         }
@@ -197,7 +197,7 @@ public class ErrorChecker extends CompilePass {
 
         
         if (target instanceof LiteralExpr lit && to.detail instanceof Type.PointerInfo p2) {
-            if (p2.pointerAttr == Type.PointerAttr.own || p2.pointerAttr == Type.PointerAttr.ref) {
+            if (p2.pointerAttr == Type.PointerAttr.own || p2.pointerAttr == Type.PointerAttr.uniq || p2.pointerAttr == Type.PointerAttr.ref) {
                 lit.nullPtrType = to;
             }
         }
@@ -211,7 +211,7 @@ public class ErrorChecker extends CompilePass {
 //                target.implicitTypeConvertTo = to;
 //                target.isPointerConvert = true;
 //            }
-            else if (p1.pointerAttr == Type.PointerAttr.own && p2.pointerAttr == Type.PointerAttr.ref) {
+            else if ((p1.pointerAttr == Type.PointerAttr.own || p1.pointerAttr == Type.PointerAttr.uniq) && p2.pointerAttr == Type.PointerAttr.ref) {
                 target.implicitTypeConvertTo = to;
                 target.isPointerConvert = true;
             }
@@ -256,7 +256,7 @@ public class ErrorChecker extends CompilePass {
             }
             
             if (to.detail instanceof Type.PointerInfo p2) {
-                if (p2.pointerAttr == Type.PointerAttr.own) {
+                if (p2.pointerAttr == Type.PointerAttr.own || p2.pointerAttr == Type.PointerAttr.uniq) {
                     err("Miss move keyword", loc);
                 }
             }
@@ -1322,8 +1322,8 @@ public class ErrorChecker extends CompilePass {
 //                            err("Invalide as", e.loc);
 //                        }
                         
-                        if (asType.detail instanceof Type.PointerInfo pinfo && pinfo.pointerAttr == Type.PointerAttr.own) {
-                            err("Cannot cast to own pointer", e.rhs.loc);
+                        if (asType.detail instanceof Type.PointerInfo pinfo && (pinfo.pointerAttr == Type.PointerAttr.own || pinfo.pointerAttr == Type.PointerAttr.uniq)) {
+                            err("Cannot cast to own/uniq pointer", e.rhs.loc);
                         }
                         
                         if (e.lhs.resolvedType.isPointerType()) {

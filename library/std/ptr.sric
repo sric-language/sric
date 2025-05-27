@@ -30,17 +30,8 @@ extern struct SharedPtr$<T> {
     fun isNull(): Bool;
 }
 
-/**
-* smart pointer with unique object ownership semantics
-*/
-extern noncopyable struct UniquePtr$<T> {
-    fun get(): &T;
-    fun getPtr(): *? T;
-    fun getRaw(): raw*? T;
-    fun isNull(): Bool;
-}
 
-extern fun makeUnique$<T>(): UniquePtr$<T>;
+extern fun makeUniq$<T>(args: ...): uniq* T;
 
 /**
 * Convert own* to SharedPtr
@@ -84,3 +75,5 @@ extern unsafe fun unsafeCast$<T>(p: raw* Void): T;
 
 //@NoDoc
 extern unsafe fun takeOwn$<T>(p: own* T): raw* T;
+//@NoDoc
+extern unsafe fun takeUniq$<T>(p: uniq* T): raw* T;

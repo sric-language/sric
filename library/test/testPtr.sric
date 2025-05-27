@@ -58,6 +58,20 @@ fun testPtr() {
     //printf("%d\n", rp.i);
 }
 
+fun testUniqPtr() {
+    var p: uniq*? A = makeUniq$<A>();
+    testA(p);
+
+    if (p != null) {
+        printf("%d\n", p.i);
+    }
+
+    var rp: * A = p;
+    var p2 = move p;
+    p2 = null;
+    //printf("%d\n", rp.i);
+}
+
 fun testShare() {
     var p: own* A = new A;
     var p2: own* A = share(p);
@@ -128,4 +142,5 @@ fun testPtrAll() {
     testRawCast();
     testShare();
     testRefable();
+    testUniqPtr();
 }

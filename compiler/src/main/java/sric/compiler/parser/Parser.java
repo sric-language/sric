@@ -901,6 +901,9 @@ public class Parser {
             case ownKeyword:
                 consume();
                 return pointerType(Type.PointerAttr.own);
+            case uniqKeyword:
+                consume();
+                return pointerType(Type.PointerAttr.uniq);
             case rawKeyword:
                 consume();
                 return pointerType(Type.PointerAttr.raw);
