@@ -78,4 +78,4 @@ var b = p is own* A;
 
 ## 异常处理
 
-Sric不支持异常处理。
+Sric不支持异常处理，可用Optional来返回错误。

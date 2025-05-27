@@ -25,5 +25,6 @@ fun main(): Int {
     testExtern2();
 
     testAutoPtr();
+    testOptional();
     return 0;
 }

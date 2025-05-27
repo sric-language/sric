@@ -337,6 +337,7 @@ public class ErrorChecker extends CompilePass {
                 }
                 else if (v.initExpr.resolvedType == v.fieldType) {
                     //infered
+                    checkMove(v.initExpr, false, v.fieldType, v.initExpr.loc);
                 }
                 else {
                     verifyTypeFit(v.initExpr, v.fieldType, v.loc);

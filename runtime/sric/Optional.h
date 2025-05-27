@@ -13,7 +13,7 @@ namespace sric {
     public:
         Optional() noexcept : error_(1) {}
 
-        Optional(const T& value) : error_(0) {
+        Optional(const T& value) requires std::copy_constructible<T> : error_(0) {
             new (&storage_) T(value);
         }
 
@@ -21,7 +21,7 @@ namespace sric {
             new (&storage_) T(std::move(value));
         }
 
-        Optional(const Optional& other) : error_(other.error_) {
+        Optional(const Optional& other) requires std::copy_constructible<T> : error_(other.error_) {
             if (!other.error_) {
                 new (&storage_) T(*other);
             }
@@ -38,7 +38,7 @@ namespace sric {
             reset();
         }
 
-        Optional& operator=(const Optional& other) {
+        Optional& operator=(const Optional& other) requires std::copy_constructible<T> {
             if (this != &other) {
                 reset();
                 error_ = other.error_;
@@ -62,14 +62,14 @@ namespace sric {
         }
 
         bool hasValue() const noexcept {
+            return !error_;
+        }
+
+        int error() {
             return error_;
         }
 
-        int getError() {
-            return error_;
-        }
-
-        void setValue(const T& t) {
+        void setValue(const T& t) requires std::copy_constructible<T> {
             reset();
             new (&storage_) T(t);
             error_ = 0;

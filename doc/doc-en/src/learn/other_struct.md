@@ -21,8 +21,6 @@ enum Color : UInt8 {
     Red, Green = 2, Blue
 }
 ```
-## Unions
-Sric doesn't currently support unions. Use inheritance polymorphism instead.
 
 ## Unsafe Structures
 Unsafe structs match their C++ counterparts exactly, without safety check markers. Extern structs are unsafe by default.

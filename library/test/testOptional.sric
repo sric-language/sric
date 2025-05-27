@@ -1,0 +1,26 @@
+
+import sric::*;
+
+fun testOptional1() {
+    var opt : Optional$<Int>;
+    opt.setValue(1);
+
+    var opt2 = move opt;
+    verify(opt2.error() == 0);
+    verify(opt2.hasValue());
+    verify(opt2.value() == 1);
+}
+
+fun testOptional2() {
+    var opt : Optional$<String>;
+    opt.setValue("abc");
+    var opt2 = move opt;
+    
+    verify(!opt.hasValue());
+    verify(opt2.value() == "abc");
+}
+
+fun testOptional() {
+    testOptional1();
+    testOptional2();
+}
