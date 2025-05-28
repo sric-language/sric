@@ -21,7 +21,7 @@ var p2 = move p;
 var p3 = share(p2);
 ```
 
-Move or copy if the struct has ownership pointer:
+Move or copy a struct with ownership pointer:
 ```
 struct A {
     var i: own* Int;
@@ -34,7 +34,7 @@ var c = a.copy();
 ```
 
 ### Unsafe
-Dereference raw pointer in unsafe block
+Dereference a raw pointer in an `unsafe` block/function:
 
 ```
 var p: raw* Int;
@@ -44,7 +44,7 @@ unsafe {
 }
 ```
 
-Unsafe function must call in unsafe block
+Unsafe functions must be called in an `unsafe` block/function:
 ```
 unsafe fun foo() { ... }
 
@@ -57,7 +57,7 @@ fun main() {
 
 ### Inheritance
 
-Single inheritance
+Single inheritance, similar to Java:
 ```
 trait I {
     virtual fun foo();
@@ -76,9 +76,10 @@ struct A : B, I {
 
 ```
 
-### With Block
+### With-Block
 
-The with Block is not C++ designated initialization. It can contain any statement.
+A with-block is not like C++'s named initialization; it can contain any statements:
+
 ```
 struct A {
     var i: Int;
@@ -108,7 +109,7 @@ var b = p is own* A;
 
 ### Array
 
-static size Array
+Statically sized arrays:
 ```
 var a  = []Int { 1,2,3 };
 var a: [15]Int;
@@ -142,7 +143,7 @@ var b: own* B = a;
 
 ### Immutable
 
-Just like C++
+Similar to C++:
 ```
 var p : raw* const Int;
 var p : const raw* Int;
@@ -157,7 +158,7 @@ private
 protected
 readonly
 ```
-`readonly` means public read access, private write access.
+`readonly` means publicly readable but privately writable.
 
 ### Operator Overloading
 
@@ -169,7 +170,7 @@ struct A {
 var c = a * b;
 ```
 
-operator methods:
+Overloadable operators:
 ```
 methods    symbol
 ------     ------
@@ -215,7 +216,7 @@ fun foo(f: fun(a:Int) ) {
 foo(fun(a:Int){ ... });
 ```
 
-### Typealias
+### Type Alias
 
 typealias:
 ```
@@ -232,7 +233,7 @@ enum Color {
 var c = Color::red;
 ```
 
-### Default Param and Named Arg
+### Default Params and Named Args
 
 ```
 fun foo(a: Int, b: Int = 0) {

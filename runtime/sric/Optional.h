@@ -6,7 +6,6 @@
 #define HAS_REQUIRES 1
 #endif
 
-#if HAS_REQUIRES
 
 #include "sric/common.h"
 
@@ -19,19 +18,23 @@ namespace sric {
     public:
         Optional() noexcept : error_(1) {}
 
+#if HAS_REQUIRES
         Optional(const T& value) requires std::copy_constructible<T> : error_(0) {
             new (&storage_) T(value);
         }
+#endif
 
         Optional(T&& value) : error_(0) {
             new (&storage_) T(std::move(value));
         }
 
+#if HAS_REQUIRES
         Optional(const Optional& other) requires std::copy_constructible<T> : error_(other.error_) {
             if (!other.error_) {
                 new (&storage_) T(*other);
             }
         }
+#endif
 
         Optional(Optional&& other) noexcept : error_(other.error_) {
             if (!other.error_) {
@@ -44,6 +47,7 @@ namespace sric {
             reset();
         }
 
+#if HAS_REQUIRES
         Optional& operator=(const Optional& other) requires std::copy_constructible<T> {
             if (this != &other) {
                 reset();
@@ -54,7 +58,7 @@ namespace sric {
             }
             return *this;
         }
-
+#endif
         Optional& operator=(Optional&& other) noexcept {
             if (this != &other) {
                 reset();
@@ -75,11 +79,13 @@ namespace sric {
             return error_;
         }
 
+#if HAS_REQUIRES
         void setValue(const T& t) requires std::copy_constructible<T> {
             reset();
             new (&storage_) T(t);
             error_ = 0;
         }
+#endif
 
         void setValue(T&& t) {
             reset();
@@ -150,6 +156,5 @@ namespace sric {
 	};
 }
 
-#endif //HAS_REQUIRES
 
 #endif //SRIC_OPTINAL_H_

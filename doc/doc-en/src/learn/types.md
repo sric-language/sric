@@ -35,7 +35,7 @@ var p3 = share(p1);        // Shared ownership
 ```
 
 #### Unique Pointers
-uniq* is zero-overhead. Similar to own*, but without a share() method.
+`uniq*` is zero-overhead. Similar to `own*`, but without a share() method.
 
 ```sric
 var p1: uniq* Int = makeUniq$<T>();
@@ -45,7 +45,7 @@ var p2 = move p1;
 #### Non-owning Pointers
 - No borrowing restrictions like Rust
 - Runtime validity checks
-- Implicit conversion from owning pointers:
+- Implicit conversion from `own*`/`uniq*`:
 
 ```sric
 var p1: own* Int = ...;
@@ -89,7 +89,7 @@ fun foo(a: & const Int) {}  // Auto-dereferencing
 ```
 
 ## Arrays
-Fixed-size arrays (for dynamic arrays see DArray):
+Fixed-size arrays (for dynamic arrays see `DArray`):
 
 ```sric
 var a: [5]Int;                // Explicit size

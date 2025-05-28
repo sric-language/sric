@@ -34,7 +34,7 @@
 - [C++交互](advance/cpp.md)
 - [序列化](advance/serial.md)
 
-# 其他
+# 附录
 - [编码约定](others/conventions.md)
 - [常见问题](others/faq.md)
 - [命令行工具](others/cmd.md)

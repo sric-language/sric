@@ -25,16 +25,16 @@
 
 # Library
 - [Std Lib](stdlib/stdlib.md)
-- [Auto Pointer](stdlib/autoptr.md)
+- [Smart Pointer](stdlib/autoptr.md)
 - [GUI](stdlib/gui.md)
 
-# Advance
-- [Reflect](advance/reflect.md)
+# Advanced Features
+- [Reflection](advance/reflect.md)
 - [Coroutine](advance/coroutine.md)
 - [C++ Interaction](advance/cpp.md)
 - [Serialization](advance/serial.md)
 
-# Others
+# Appendix
 - [Conventions](others/conventions.md)
 - [FAQ](others/faq.md)
 - [Command Line](others/cmd.md)

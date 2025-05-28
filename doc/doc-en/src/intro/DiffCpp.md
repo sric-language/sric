@@ -64,7 +64,7 @@ struct Point {
 - No implicit copying of large objects
 - No define multi var per statement
 - No nested class, nested function
-- No class, just struct
+- No class, only struct
 - No namespace
 - No macro
 - No forward declarations
@@ -72,7 +72,7 @@ struct Point {
 - No friend class
 - No multiple inheritance
 - No virtual,private inheritance
-- No i++ just ++i
+- No i++ only ++i
 - No switch auto fallthrough
 - No template specialization
 - No various constructors

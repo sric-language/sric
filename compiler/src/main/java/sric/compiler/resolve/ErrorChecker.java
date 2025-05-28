@@ -1224,7 +1224,7 @@ public class ErrorChecker extends CompilePass {
             }
         }
         else if (f.prototype.paramDefs != null) {
-            if (!f.prototype.paramDefs.get(0).hasParamDefaultValue()) {
+            if (!f.prototype.paramDefs.get(0).hasParamDefaultValue() && !f.prototype.paramDefs.get(0).fieldType.isVarArgType()) {
                 err("Arg number error", e.loc);
             }
         }
