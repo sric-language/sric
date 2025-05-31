@@ -111,6 +111,8 @@ namespace sric
         T* t = new(p) T(std::forward<Args>(args)...);
         return UniquePtr<T>(t);
 #else
+        static_assert(sizeof(UniqRefable) % sizeof(void*) == 0, "UniqRefable must be 8-byte aligned");
+        
         UniqRefable* p = (UniqRefable*)malloc(sizeof(UniqRefable) + sizeof(T));
         if (!p) {
             fprintf(stderr, "ERROR: alloc memory fail\n");

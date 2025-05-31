@@ -440,9 +440,9 @@ namespace sric
         }
 
         void* p = toVoid(ptr);
-        CheckCodeType* code = ((CheckCodeType*)p) - 2;
+        MagicCodeType* code = ((MagicCodeType*)p) - 4;
         if (*code == SC_STACK_MAGIC_CODE) {
-            return RefPtr<T>(ptr, (code - 1), RefType::StackRef);
+            return RefPtr<T>(ptr, (code + 1), RefType::StackRef);
         }
 
         sc_assert(false, "Can't cast raw pointer to ref pointer");

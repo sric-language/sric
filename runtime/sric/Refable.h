@@ -73,6 +73,7 @@ template<typename T>
 struct StackRefable {
     MagicCodeType _magicCode;
     CheckCodeType _checkCode;
+    int32_t _padding;
     T value;
 
     StackRefable() : _checkCode(generateCheckCode()), _magicCode(SC_STACK_MAGIC_CODE) {}
@@ -139,6 +140,7 @@ struct UniqRefable {
 #ifndef SC_NO_CHECK
     MagicCodeType _magicCode = SC_UNIQ_MAGIC_CODE;
     CheckCodeType _checkCode = generateCheckCode();
+    int32_t _padding;
 #endif
 
 #ifndef SC_NO_CHECK

@@ -233,7 +233,7 @@ public:
 
 template<typename T, typename... Args>
 OwnPtr<T> new_(Args&&... args) {
-    //static_assert(sizeof(HeapRefable) % 8 == 0, "HeapRefable must be 8-byte aligned");
+    static_assert(sizeof(HeapRefable) % sizeof(void*) == 0, "HeapRefable must be 8-byte aligned");
 
     HeapRefable* p = (HeapRefable*)malloc(sizeof(HeapRefable) + sizeof(T));
     if (!p) {
