@@ -16,11 +16,7 @@ In contrast, Sric takes a different approach—developers don’t need to do any
 Object-oriented programming (OOP) is a key measure of a language’s abstraction power. Although misuse of inheritance has given OOP a bad reputation, I believe it remains useful in certain scenarios. Sric supports OOP but imposes language-level restrictions on inheritance.
 
 #### Simplicity and Ease
-Both C++ and Rust have gone to the opposite extreme, attempting to cover every use case with complex features. Sric, on the other hand, strives to minimize features and avoid complexity. For example:
-
-No multiple constructors, function overloading, or template metaprogramming (unlike C++).
-
-No macros, intricate module systems, or lifetime annotations (unlike Rust).
+Both C++ and Rust have gone to the opposite extreme, attempting to cover every use case with complex features. Sric, on the other hand, strives to minimize features and avoid complexity. For example: No various versions of constructors/assignment functions, function overloading, or template metaprogramming (unlike C++). No borrow checking, macros, intricate module systems, or lifetime annotations (unlike Rust).
 
 Sric avoids excessive syntactic sugar. While syntactic sugar can reduce verbosity, too much of it increases learning costs and may harm readability. The goal is to strike a balance between ease of use and cognitive overhead.
 
