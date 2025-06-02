@@ -1,0 +1,23 @@
+
+import concurrent::*;
+import cstd::*;
+import sric::*;
+
+fun main(): Int {
+    var channel = new Channel$<Int>;
+    var thd = Thread::make$<Int>(fun(args: own* Channel$<Int>)static{
+        var i = args.read();
+        printf("%d\n", i);
+        i = args.read();
+        printf("%d\n", i);
+    }, share(channel));
+    
+    channel.write(1);
+
+    sleep(1000);
+
+    channel.write(2);
+
+    thd.join();
+    return 0;
+}

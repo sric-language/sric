@@ -1,0 +1,7 @@
+
+//@#include "ScChannel.h"
+extern noncopyable struct Channel$<T> {
+    fun read(): T;
+    fun write(t: T);
+    fun clear();
+}

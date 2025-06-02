@@ -1,0 +1,27 @@
+
+//@#include "ScThread.h"
+
+extern noncopyable struct Mutex {
+    fun lock();
+    fun tryLock(): Bool;
+    fun unlock();
+}
+
+extern noncopyable struct LockGuard$<T> {
+
+}
+
+extern noncopyable struct CondVar {
+    fun notifyOne();
+    fun notifyAll();
+    fun wait(mutex: &Mutex);
+    fun waitFor(mutex: &Mutex, time: Int64);
+}
+
+
+extern noncopyable struct Thread {
+    fun join();
+    fun detach();
+
+    static fun make$<T>(func: fun(args: own* Channel$<T>)static, args: own* Channel$<T>) : Thread;
+}
