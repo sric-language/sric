@@ -1,5 +1,5 @@
 ## Why Sric
-Sric is a high-performance programming language with memory safety.
+
 The design of Sric draws heavily from C++, but it makes two key improvements:
   1. Reducing features and complexity.
   2. Adding memory safety.
