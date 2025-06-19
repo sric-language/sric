@@ -2,8 +2,8 @@
 
 Memory safety, performance, and simplicity form an impossible triangle - choosing any two necessitates sacrificing the third. Sric innovatively adopts runtime memory safety checks, eliminating overhead while significantly reducing memory vulnerabilities.
 
-## Comparison with Rust
-Both Sric and Rust are memory-safe languages without garbage collection, but they differ fundamentally. Rust enforces safety at compile-time, whereas Sric implements runtime memory checks. Rust's safety mechanisms impose coding constraints that often force developers to write complex, inefficient code. Sric's safety layer is transparent, requiring no extra effort to achieve memory safety.
+## Why Not Rust
+Both Sric and Rust are memory-safe languages without garbage collection, but they differ fundamentally. Rust enforces safety at compile-time, whereas Sric implements runtime memory checks. Rust's safety mechanisms impose numerous coding restrictions, forcing developers to write complex code. Such complexity not only harms readability but often fails to achieve zero-cost abstraction. Sric's safety layer is transparent, requiring no extra effort to achieve memory safety.
 
 ## Optional Memory Safety
 Although Sric's memory checks have minimal overhead, they are disabled by default in Release mode to achieve zero-cost abstractions and maximize performance. So the standard workflow is to debug the code in Debug mode, ensure there are no memory issues, and then compile it in Release for deployment.

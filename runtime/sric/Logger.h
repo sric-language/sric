@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <vector>
 #include <mutex>
+#include <stdio.h>
 
 namespace sric {
 enum struct LogLevel {
