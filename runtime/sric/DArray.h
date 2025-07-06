@@ -82,7 +82,8 @@ public:
         return _data[i];
     }
 
-    T& getUnchecked(int i) {
+    T& at(int i) {
+        sric::verify(i >= 0 && i < size(), "index out of array");
         return _data[i];
     }
 
