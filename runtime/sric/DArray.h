@@ -5,6 +5,7 @@
 #include <vector>
 #include "sric/RefPtr.h"
 #include "sric/util.h"
+#include <type_traits>
 
 namespace sric
 {
@@ -160,16 +161,41 @@ private:
         HeapRefable* p;
         if (_data == nullptr) {
             p = (HeapRefable*)malloc(sizeof(HeapRefable) + bsize);
-            //printf("malloc: %p\n", p);
+            if (!p) {
+                fprintf(stderr, "ERROR: malloc fail\n");
+                abort();
+            }
             new (p) HeapRefable();
         }
         else {
-            p = getHeader();
-            p = (HeapRefable*)realloc(p, sizeof(HeapRefable) + bsize);
-            //printf("realloc: %p\n", p);
+            if constexpr (std::is_trivially_copyable<T>::value) {
+                p = getHeader();
+                p = (HeapRefable*)realloc(p, sizeof(HeapRefable) + bsize);
+                if (!p) {
+                    fprintf(stderr, "ERROR: realloc fail\n");
+                    abort();
+                }
+    #ifndef SC_NO_CHECK
+                p->_checkCode = generateCheckCode();
+    #endif
+            }
+            else {
+                p = getHeader();
+                HeapRefable* np = (HeapRefable*)malloc(sizeof(HeapRefable) + bsize);
+                T* ndata = (T*)(np+1);
+                //printf("realloc: %p\n", p);
+
+                for (int i = 0; i < _size; ++i) {
+                    new (ndata+i) T(std::move(_data[i])); // 2. 移动构造
+                    _data[i].~T(); // 3. 销毁旧对象
+                }
+                *np = *p;
 #ifndef SC_NO_CHECK
-            p->_checkCode = generateCheckCode();
+                np->_checkCode = generateCheckCode();
 #endif
+                free(p);
+                p = np;
+            }
         }
         //p->_capacity = bsize;
         _data = (T*)(p + 1);
