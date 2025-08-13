@@ -28,7 +28,7 @@ private:
     //void (*freeMemory)(void*);
     
 public:
-    inline RefCount() : _refCount(1), _pointer(nullptr) {}
+    inline RefCount() : _weakRefCount(0), _refCount(1), _pointer(nullptr) {}
     inline ~RefCount() {
         _refCount = SC_REFCOUNT_INVALID;
     }
