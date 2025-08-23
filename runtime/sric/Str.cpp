@@ -93,6 +93,9 @@ String String::plus(const String& other) const {
 void String::add(const char* cstr) {
     str += cstr;
 }
+void String::addData(const char* data, int size) {
+    str.append(data, size);
+}
 void String::addStr(const String& other) {
     str += other.str;
 }

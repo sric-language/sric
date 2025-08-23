@@ -11,18 +11,20 @@
     #define HAS_COROUTINES 1
 #endif
 
+#include <functional>
+namespace sric
+{
+typedef std::function<void()> Resume;
+extern std::function<void(Resume)> call_later;
+}
+
 #if HAS_COROUTINES
 
 #include <coroutine>
-#include <functional>
 #include <memory>
 
 namespace sric
 {
-
-typedef std::function<void()> Resume;
-extern std::function<void(Resume)> call_later;
-
 template<typename T>
 struct Promise {
     struct ResultData  : public std::enable_shared_from_this<ResultData> {

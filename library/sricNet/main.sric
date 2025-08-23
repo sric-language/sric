@@ -1,0 +1,112 @@
+import cstd::*;
+import sric::*;
+
+extern struct HttpResponse {
+    /**
+    * request headers
+    */
+    var headers: HashMap$<String, String>;
+
+    /**
+    * request URL
+    */
+    var url: String;
+
+    /**
+    * local file path if enable cache
+    */
+    var cacheFile: String;
+
+    /**
+    * HttpClient id
+    */
+    var id: UInt64;
+
+    /**
+    * Http status code: 200
+    */
+    var statusCode: Int;
+
+    /**
+    * Response content
+    */
+    var result: String;
+}
+
+extern struct HttpClientX {
+    /**
+    * HTTP request method: GET or POST
+    */
+    var method : String = "GET";
+
+    /**
+    * request headers
+    */
+    var headers: HashMap$<String, String>;
+
+    /**
+    * POST content
+    */
+    var content: String;
+
+    /**
+    * request URL
+    */
+    var url: String;
+
+    /**
+    * lambda callback in main thread
+    */
+    var onReceive: fun(res: &HttpResponse);
+
+    /**
+    * user id for this task
+    */
+    var id: UInt64;
+
+    /**
+    * local file path if enable cache
+    */
+    var cacheFile: String;
+
+    /**
+    * enable local file cache
+    */
+    var useCache: Bool = true;
+
+    /**
+    * get download progress
+    * @return 0..1
+    */
+    fun getProgress(): Float32;
+
+    /**
+    * send async request
+    */
+    fun send(): Bool;
+}
+
+
+extern struct WebSocket {
+    var url: String;
+
+    var onReceived : fun(data: raw* const Int8, size: Int);
+
+    var onConnected : fun();
+    var onDisconnected : fun();
+
+
+    fun close();
+    fun open(url: raw* const Int8);
+
+    fun send(data: raw* const Int8, size: Int);
+    fun isValid() : Bool;
+}
+
+
+
+// fun main(): Int {
+
+//     printf("Hello World\n");
+//     return 0;
+// }

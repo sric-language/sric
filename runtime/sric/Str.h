@@ -28,6 +28,10 @@ public:
         return String(this->str);
     }
 
+    bool operator==(const String& other) const {
+        return str == other.str;
+    }
+
     operator const std::string&() const { return str; }
     operator std::string&() { return str; }
 
@@ -72,6 +76,7 @@ public:
     }
     String plus(const String& other) const;
     void add(const char* cstr);
+    void addData(const char* data, int size);
     void addStr(const String& other);
     void addChar(char ch) {
         str += ch;
