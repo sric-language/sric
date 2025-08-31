@@ -8,8 +8,8 @@
  *   2012-12-23  Jed Young  Creation
  */
 
-#ifndef TimeUtil_hpp
-#define TimeUtil_hpp
+#ifndef _SRIC_SYSTEM_H_
+#define _SRIC_SYSTEM_H_
 
 #include <stdint.h>
 

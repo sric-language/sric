@@ -5,8 +5,8 @@
  * all rights reserved
  *
  */
-#ifndef httpclientx_hpp_
-#define httpclientx_hpp_
+#ifndef SRIC_httpclientx_hpp_
+#define SRIC_httpclientx_hpp_
 
 #include "HttpClient.hpp"
 

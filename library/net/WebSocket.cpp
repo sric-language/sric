@@ -2,6 +2,8 @@
 #include <assert.h>
 #include "WebSocket.h"
 
+using namespace sricNet;
+
 //static void reconnect(void* args) {
 //    WebSocket* ws = (WebSocket*)args;
 //    ws->_connect();
@@ -338,6 +340,7 @@ void WebSocket::_destory() {
     if (_thrd.joinable()) {
         _thrd.join();
     }
+    _runing = false;
 }
 
 #endif
@@ -381,6 +384,7 @@ void WebSocket::_destory() {
         delete socket;
         socket = nullptr;
     }
+    _runing = false;
 }
 
 #endif

@@ -1,6 +1,8 @@
 import cstd::*;
 import sric::*;
 
+//@#include "WebSocket.h"
+//@#include "HttpClientX.h"
 extern struct HttpResponse {
     /**
     * request headers

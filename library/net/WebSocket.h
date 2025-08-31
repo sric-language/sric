@@ -1,5 +1,5 @@
-#ifndef WEBSOCKET_H_
-#define WEBSOCKET_H_
+#ifndef SRIC_WEBSOCKET_H_
+#define SRIC_WEBSOCKET_H_
 
 #include "sric.h"
 #include <functional>
@@ -12,6 +12,8 @@
 #include <thread>
 #include "concurrent.h"
 #endif
+
+namespace sricNet {
 
 class WebSocket {
 private:
@@ -61,4 +63,5 @@ private:
     void _destory();
 };
 
+}
 #endif //WEBSOCKET_H_

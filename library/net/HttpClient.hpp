@@ -5,8 +5,8 @@
  * all rights reserved
  *
  */
-#ifndef httpclient_hpp_
-#define httpclient_hpp_
+#ifndef SRIC_httpclient_hpp_
+#define SRIC_httpclient_hpp_
 
 #include <string>
 #include <map>
