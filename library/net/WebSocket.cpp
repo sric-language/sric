@@ -80,7 +80,8 @@ void WebSocket::doReceived(char* data, int size) {
     if (onReceived) onReceived(data, size);
 #else
     if (sric::call_later) {
-        sric::call_later([=] { if (onReceived) onReceived(data, size); });
+        std::string msg(data, size);
+        sric::call_later([=]() { if (onReceived) onReceived((char*)msg.data(), msg.size()); });
     }
     else {
         if (onReceived) onReceived(data, size);
@@ -96,9 +97,11 @@ void WebSocket::doReceived(char* data, int size) {
 #include "curl/curl.h"
 
 void WebSocket::close() {
-    Msg msg;
-    msg.type = 1;
-    _channel.write(msg);
+    if (_runing) {
+        Msg msg;
+        msg.type = 1;
+        _channel.write(msg);
+    }
     _valid = false;
 }
 
@@ -326,7 +329,7 @@ end:
 void WebSocket::_connect() {
     /*sric::OwnPtr<WebSocket> selfOwn = sric::rawToOwn(this);
     WebSocket* self = selfOwn.take();*/
-
+    _channel.clear();
     _thrd = std::thread(run_curl, this);
 }
 
@@ -340,6 +343,7 @@ void WebSocket::_destory() {
     if (_thrd.joinable()) {
         _thrd.join();
     }
+    _channel.clear();
     _runing = false;
 }
 
@@ -351,7 +355,9 @@ void WebSocket::_destory() {
 #include "WebSocketClient.h"
 
 void WebSocket::close() {
-    socket->close();
+    if (socket) {
+        socket->close();
+    }
     valid = false;
 }
 
