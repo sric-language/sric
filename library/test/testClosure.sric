@@ -1,6 +1,5 @@
 
 import sric::*;
-import cstd::*;
 
 fun testClosure() {
     var i = new Int;

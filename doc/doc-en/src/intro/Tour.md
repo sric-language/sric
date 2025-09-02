@@ -196,7 +196,7 @@ name = hello
 summary = hello
 outType = exe
 version = 1.0
-depends = sric 1.0, cstd 1.0
+depends = sric 1.0
 srcDirs = ./
 ```
 

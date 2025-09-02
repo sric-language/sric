@@ -9,7 +9,7 @@ name = hello
 summary = hello
 outType = exe
 version = 1.0
-depends = sric 1.0, cstd 1.0
+depends = sric 1.0
 srcDirs = ./
 ```
 The source directory srcDirs must end with `/.` The compiler will automatically search all .sric files in the directory.

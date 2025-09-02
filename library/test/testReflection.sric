@@ -1,5 +1,4 @@
 import sric::*;
-import cstd::*;
 
 reflect struct ReflectionTest {
     var a: Int;

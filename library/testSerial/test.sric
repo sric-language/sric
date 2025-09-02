@@ -1,5 +1,4 @@
 import sric::*;
-import cstd::*;
 import serial::*;
 
 reflect struct Point {

@@ -4,11 +4,10 @@ cd compiler
 sh build.sh
 cd ..
 
-bin/sric ./library/std/module.scm -fmake -debug
-bin/sric ./library/cstd/module.scm -fmake -debug
+bin/sric ./library/sric/module.scm -fmake -debug
 bin/sric ./library/test/module.scm -fmake -debug
+bin/sric ./library/testConcurrent/module.scm -fmake -debug
 
-bin/sric ./library/concurrent/module.scm -fmake -debug
 bin/sric ./library/jsonc/module.scm
 bin/sric library/serial/module.scm -fmake -debug
 bin/sric library/testSerial/module.scm -fmake -debug

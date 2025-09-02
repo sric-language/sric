@@ -2,7 +2,6 @@
 ## 猜数字游戏
 
 ```
-import cstd::*;
 import sric::*;
 
 fun main(): Int {

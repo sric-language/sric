@@ -4,13 +4,16 @@
 
 #include "sc_runtime.h"
 
-#include <thread>
+#if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
+	#include <thread>
+#endif
+
 #include <mutex>
 #include <condition_variable>
 
 #include "ScChannel.h"
 
-namespace concurrent {
+namespace sric {
 
 	struct Mutex {
 		std::recursive_mutex _mutex;
@@ -36,6 +39,7 @@ namespace concurrent {
 		}
 	};
 
+#if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
 	struct Thread {
 		std::thread _thread;
 
@@ -62,5 +66,6 @@ namespace concurrent {
 			return std::move(thd);
 		}
 	};
+#endif
 }
 #endif //_CONCURRENT_THREAD_H_

@@ -8,7 +8,7 @@ name = hello
 summary = hello
 outType = exe
 version = 1.0
-depends = sric 1.0, cstd 1.0
+depends = sric 1.0
 srcDirs = ./
 ```
 源码目录srcDirs需要以`/`结尾，编译器会自动搜索目录下的所有.sric文件。

@@ -1,6 +1,5 @@
 import sric::*;
 import jsonc::*;
-import cstd::*;
 
 unsafe fun sizeOfType(typeName: raw* const Int8): Int {
     switch (typeName[0]) {

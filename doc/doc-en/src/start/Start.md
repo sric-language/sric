@@ -18,7 +18,7 @@ After configuring, restart VSCode. If features such as Go to Definition, Auto Co
 
 2. Create a file named main.sric with the following content:
 ```
-import cstd::*;
+import sric::*;
 
 fun main(): Int {
     printf("Hello World\n");
@@ -31,7 +31,7 @@ name = hello
 summary = hello  
 outType = exe  
 version = 1.0  
-depends = sric 1.0, cstd 1.0  
+depends = sric 1.0
 srcDirs = ./
 ```
 4. Build

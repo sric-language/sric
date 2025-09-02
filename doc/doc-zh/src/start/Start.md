@@ -15,7 +15,7 @@
 1. 创建一个空文件夹作为工作空间
 2. 创建文件main.sric，内容如下:
 ```
-import cstd::*;
+import sric::*;
 
 fun main(): Int {
     printf("Hello World\n");
@@ -30,7 +30,7 @@ name = hello
 summary = hello
 outType = exe
 version = 1.0
-depends = sric 1.0, cstd 1.0
+depends = sric 1.0
 srcDirs = ./
 ```
 

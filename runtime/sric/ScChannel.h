@@ -6,7 +6,7 @@
 #include <condition_variable>
 #include <list>
 
-namespace concurrent {
+namespace sric {
 
 	template<typename T>
 	struct Channel {
@@ -55,6 +55,7 @@ namespace concurrent {
 		}
 	};
 
+#if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
 	template<typename T>
 	class ThreadPool {
 		Channel<T> _channel;
@@ -100,5 +101,6 @@ namespace concurrent {
 			threadList.clear();
 		}
 	};
+#endif
 }
 #endif //_CONCURRENT_CHANNEL_H_

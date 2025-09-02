@@ -2,7 +2,6 @@
 ## Guess Number Game
 
 ```
-import cstd::*;
 import sric::*;
 
 fun main(): Int {

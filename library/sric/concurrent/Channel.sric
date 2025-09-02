@@ -1,5 +1,5 @@
 
-//@#include "ScChannel.h"
+//@#include "sric/ScChannel.h"
 extern noncopyable struct Channel$<T> {
     fun read(): T;
     fun write(t: T);

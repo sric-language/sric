@@ -1,5 +1,5 @@
 
-//@#include "ScThread.h"
+//@#include "sric/ScThread.h"
 
 extern noncopyable struct Mutex {
     fun lock();

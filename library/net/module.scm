@@ -2,7 +2,7 @@ name = sricNet
 summary = network
 outType = lib
 version = 1.0
-depends = sric 1.0, cstd 1.0
+depends = sric 1.0
 srcDirs = ./
 
 fmake.incDirs = ./

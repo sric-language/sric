@@ -41,7 +41,7 @@ public:
 ```
 Sric:
 ```
-import cstd::*;
+import sric::*;
 
 struct Point {
     var x: Int;

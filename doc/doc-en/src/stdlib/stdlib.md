@@ -2,14 +2,13 @@
 
 ### Overview
 - `sric`: Built-in standard library  
-- `cstd`: C standard library wrappers  
 - `jsonc`: JSON parsing/compression  
 - `serial`: Serialization using dynamic reflection  
 
 [API Documentation](/apidoc.html)  
 
 ### Using C Libraries  
-The `cstd` module only exports common C functions - contributions welcome.  
+The `sric` module only exports common C functions.  
 
 To use unexported C functions:  
 ```sric

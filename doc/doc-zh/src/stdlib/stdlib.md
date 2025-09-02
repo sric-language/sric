@@ -4,7 +4,6 @@
 
 ### 概述
 - sric: 自带标准库
-- cstd： C语言库
 - jsonc: JSON解析和压缩库
 - serial： 序列化库，基于动态反射功能。
 

@@ -1,5 +1,4 @@
 import sric::*;
-import cstd::*;
 
 //@#include "testCo.h"
 extern async fun testCallback() : Int;
