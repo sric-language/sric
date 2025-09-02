@@ -146,7 +146,7 @@ public class CppGenerator extends BaseGenerator {
             //types decleartion
             for (FileUnit funit : module.fileUnits) {
                 for (TypeDef type : funit.typeDefs) {
-                    if ((type.flags & FConst.ExternC) != 0 || this.getExternSymbol(type) != null) {
+                    if (type.isExtern() || this.getExternSymbol(type) != null) {
                         continue;
                     }
                     
@@ -481,7 +481,7 @@ public class CppGenerator extends BaseGenerator {
     @Override
     public void visitField(AstNode.FieldDef v) {
 
-        if ((v.flags & FConst.ExternC) != 0) {
+        if (v.isExtern()) {
             return;
         }
         
@@ -792,8 +792,13 @@ public class CppGenerator extends BaseGenerator {
     public void visitFunc(AstNode.FuncDef v) {
 
         if (v.isExtern()) {
-            return;
+            if (v.parent instanceof TypeDef sd && headMode) {
+            }
+            else {
+                return;
+            }
         }
+        
         if (isEntryPoint(v) && headMode) {
             return;
         }
@@ -1179,7 +1184,7 @@ public class CppGenerator extends BaseGenerator {
     @Override
     public void visitExpr(Expr v) {
         int parentheses = 0;
-        if (v.isStmt || v instanceof IdExpr || v instanceof LiteralExpr || v instanceof CallExpr || v instanceof GenericInstance 
+        if (v.isStmt || v.isTopExpr || v instanceof IdExpr || v instanceof LiteralExpr || v instanceof CallExpr || v instanceof GenericInstance 
                 || v instanceof AccessExpr || v instanceof WithBlockExpr || v instanceof ArrayBlockExpr || v instanceof TypeExpr) {
             
         }

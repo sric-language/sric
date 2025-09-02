@@ -37,7 +37,7 @@ OwnPtr<Buffer> Buffer::make(size_t size) {
     return stream;
 }
 
-long Buffer::write(const void* ptr, size_t size) {
+uint32_t Buffer::write(const void* ptr, size_t size) {
   size_t len = size;
   if (len > _size - _pos) {
     if (owner) {
@@ -55,7 +55,7 @@ long Buffer::write(const void* ptr, size_t size) {
   return size;
 }
 
-long Buffer::read(void* ptr, size_t size) {
+uint32_t Buffer::read(void* ptr, size_t size) {
   if (size > remaining()) {
     size = remaining();
   }
@@ -95,7 +95,7 @@ void Buffer::readSlice(Buffer &out, bool copy) {
     }
 }
 
-bool Buffer::seek(long int pos) {
+bool Buffer::seek(uint32_t pos) {
     if (pos <= _size) {
         this->_pos = pos;
         return true;

@@ -296,6 +296,10 @@ public class ErrorChecker extends CompilePass {
         if ((v.flags & FConst.Virtual) != 0 || (v.flags & FConst.Abstract) != 0) {
             err("Invalide flags", v.loc);
         }
+
+        if (v.parent instanceof TypeDef sd && v.isExtern()) {
+            err("Invalide extern", v.loc);
+        }
         
         if (v.fieldType != null && v.fieldType.isReference) {
 //            if (pinfo.pointerAttr == Type.PointerAttr.inst) {

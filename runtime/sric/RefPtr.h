@@ -54,35 +54,35 @@ namespace sric
 
         inline RefPtr() : pointer(nullptr)
 #ifndef SC_NO_CHECK
-            , checkCode(0), offset(0), type(RefType::UnsafeRef)
+            , checkCode(0), type(RefType::UnsafeRef), offset(0)
 #endif
         {
         }
 
         inline RefPtr(T* p, const CheckCodeType* checkCodePtr, RefType type) : pointer(p)
 #ifndef SC_NO_CHECK
-            , checkCode(*checkCodePtr), offset((char*)checkCodePtr - (char*)pointer), type(type)
+            , checkCode(*checkCodePtr), type(type), offset((char*)checkCodePtr - (char*)pointer)
 #endif
         {
         }
 
         inline RefPtr(T* p, CheckCodeType checkCode, RefType type, int offset) : pointer(p)
 #ifndef SC_NO_CHECK
-            , checkCode(checkCode), offset(offset), type(type)
+            , checkCode(checkCode), type(type), offset(offset)
 #endif
         {
         }
 
         inline RefPtr(StackRefable<T>& p) : pointer(&p.value)
 #ifndef SC_NO_CHECK
-            , checkCode(p._checkCode), offset((char*)&(p._checkCode) - (char*)pointer), type(RefType::StackRef)
+            , checkCode(p._checkCode), type(RefType::StackRef), offset((char*)&(p._checkCode) - (char*)pointer)
 #endif
         {
         }
 
         inline RefPtr(HeapRefable* r) : pointer((T*)(r + 1))
 #ifndef SC_NO_CHECK
-            , checkCode(r->_checkCode), offset((char*)&(r->_checkCode) - (char*)pointer), type(RefType::HeapRef)
+            , checkCode(r->_checkCode), type(RefType::HeapRef), offset((char*)&(r->_checkCode) - (char*)pointer)
 #endif
         {
         }
@@ -147,7 +147,7 @@ namespace sric
 
         inline RefPtr(const RefPtr& p) : pointer(p.pointer)
 #ifndef SC_NO_CHECK
-            , checkCode(p.checkCode), offset(p.offset), type(p.type)
+            , checkCode(p.checkCode), type(p.type), offset(p.offset)
 #endif
         {
         }
@@ -155,7 +155,7 @@ namespace sric
         template <class U>
         inline RefPtr(const RefPtr<U>& p) : pointer(p.pointer)
 #ifndef SC_NO_CHECK
-            , checkCode(p.checkCode), offset(p.offset - ((char*)pointer - (char*)p.pointer)), type(p.type)
+            , checkCode(p.checkCode), type(p.type), offset(p.offset - ((char*)pointer - (char*)p.pointer))
 #endif
         {
         }
@@ -251,28 +251,28 @@ namespace sric
 
         inline RefPtr() : pointer(nullptr)
 #ifndef SC_NO_CHECK
-            , checkCode(0), offset(0), type(RefType::UnsafeRef)
+            , checkCode(0), type(RefType::UnsafeRef), offset(0)
 #endif
         {
         }
 
         inline RefPtr(void* p, const CheckCodeType* checkCodePtr, RefType type) : pointer(p)
 #ifndef SC_NO_CHECK
-            , checkCode(*checkCodePtr), offset((char*)checkCodePtr - (char*)pointer), type(type)
+            , checkCode(*checkCodePtr), type(type), offset((char*)checkCodePtr - (char*)pointer)
 #endif
         {
         }
 
         inline RefPtr(void* p, CheckCodeType checkCode, RefType type, int offset) : pointer(p)
 #ifndef SC_NO_CHECK
-            , checkCode(checkCode), offset(offset), type(type)
+            , checkCode(checkCode), type(type), offset(offset)
 #endif
         {
         }
 
         inline RefPtr(HeapRefable* r) : pointer((void*)(r + 1))
 #ifndef SC_NO_CHECK
-            , checkCode(r->_checkCode), offset((char*)&(r->_checkCode) - (char*)pointer), type(RefType::HeapRef)
+            , checkCode(r->_checkCode), type(RefType::HeapRef), offset((char*)&(r->_checkCode) - (char*)pointer)
 #endif
         {
         }
@@ -338,7 +338,7 @@ namespace sric
         template <class U>
         inline RefPtr(const RefPtr<U>& p) : pointer(p.pointer)
 #ifndef SC_NO_CHECK
-            , checkCode(p.checkCode), offset(p.offset), type(p.type)
+            , checkCode(p.checkCode), type(p.type), offset(p.offset)
 #endif
         {
         }

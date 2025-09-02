@@ -115,7 +115,7 @@ public class ReflectionGen {
             print("v.pointer = nullptr;").newLine();
         }
         else {
-            print("v.offset = offsetof("); print(moduleName);print("::").print(this.getSymbolName((AstNode.TopLevelDef)f.parent));
+            print("v.offset = SC_OFFSETOF("); print(moduleName);print("::").print(this.getSymbolName((AstNode.TopLevelDef)f.parent));
                 print(",").print(this.getSymbolName(f)).print(");").newLine();
             print("v.pointer = nullptr;").newLine();
         }

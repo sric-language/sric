@@ -38,11 +38,11 @@ public:
     unsigned char * readDirect(int len);
     unsigned char *getData() { return data; }
 
-    virtual long read(void* ptr, size_t size);
-    virtual long write(const void* ptr, size_t size);
-    virtual long length() { return _size; }
-    virtual long position() { return _pos; }
-    virtual bool seek(long int offset);
+    virtual uint32_t read(void* ptr, size_t size);
+    virtual uint32_t write(const void* ptr, size_t size);
+    virtual uint32_t length() { return _size; }
+    virtual uint32_t position() { return _pos; }
+    virtual bool seek(uint32_t offset);
 };
 
 

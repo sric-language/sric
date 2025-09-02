@@ -21,21 +21,21 @@ public:
     
     virtual char* readLine(char* buf, int bufSize);
     
-    virtual long read(void* ptr, size_t size) = 0;
+    virtual uint32_t read(void* ptr, size_t size) = 0;
 
-    virtual long write(const void* ptr, size_t size) = 0;
+    virtual uint32_t write(const void* ptr, size_t size) = 0;
 
     virtual bool eof();
 
-    virtual long length() = 0;
+    virtual uint32_t length() = 0;
 
-    virtual long position() = 0;
+    virtual uint32_t position() = 0;
 
-    virtual bool seek(long int offset) = 0;
+    virtual bool seek(uint32_t offset) = 0;
 
     virtual bool rewind();
 
-    long remaining() { return length() - position(); }
+    uint32_t remaining() { return length() - position(); }
 
 protected:
     IOStream();
@@ -52,18 +52,18 @@ public:
 
     virtual void close() {}
 
-    virtual long pipeTo(IOStream* out);
+    virtual uint32_t pipeTo(IOStream* out);
 
-    long writeInt8(int8_t out);
-    long writeInt16(int16_t out);
-    long writeInt32(int32_t out);
-    long writeInt64(int64_t out);
-    long writeUInt8(uint8_t out);
-    long writeUInt16(uint16_t out);
-    long writeUInt32(uint32_t out);
-    long writeUInt64(uint64_t out);
-    long writeFloat(float out);
-    long writeDouble(double out);
+    uint32_t writeInt8(int8_t out);
+    uint32_t writeInt16(int16_t out);
+    uint32_t writeInt32(int32_t out);
+    uint32_t writeInt64(int64_t out);
+    uint32_t writeUInt8(uint8_t out);
+    uint32_t writeUInt16(uint16_t out);
+    uint32_t writeUInt32(uint32_t out);
+    uint32_t writeUInt64(uint64_t out);
+    uint32_t writeFloat(float out);
+    uint32_t writeDouble(double out);
 
     uint8_t readUInt8();
     uint16_t readUInt16();

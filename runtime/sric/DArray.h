@@ -170,7 +170,7 @@ private:
         else {
             if constexpr (std::is_trivially_copyable<T>::value) {
                 p = getHeader();
-                p = (HeapRefable*)realloc(p, sizeof(HeapRefable) + bsize);
+                p = (HeapRefable*)realloc((char*)p, sizeof(HeapRefable) + bsize);
                 if (!p) {
                     fprintf(stderr, "ERROR: realloc fail\n");
                     abort();
@@ -186,8 +186,8 @@ private:
                 //printf("realloc: %p\n", p);
 
                 for (int i = 0; i < _size; ++i) {
-                    new (ndata+i) T(std::move(_data[i])); // 2. 移动构造
-                    _data[i].~T(); // 3. 销毁旧对象
+                    new (ndata+i) T(std::move(_data[i]));
+                    _data[i].~T();
                 }
                 *np = *p;
 #ifndef SC_NO_CHECK
@@ -265,13 +265,35 @@ public:
         return _size;
     }
 
+private:
+    void moveForword(int dst, int src, int n) {
+        int offset = src - dst;
+        if constexpr (std::is_trivially_copyable<T>::value) {
+            for (int i = 0; i<offset; ++i) {
+                (_data + (dst + i))->~T();
+            }
+            memmove(_data + dst, _data + src, n * sizeof(T));
+        }
+        else {
+            for (int i = 0; i<n; ++i) {
+                int to = dst + i;
+                int from = src + i;
+                _data[to] = std::move(_data[from]);
+            }
+            for (int i = 0; i<offset; ++i) {
+                (_data + (dst + n + i))->~T();
+            }
+        }
+    }
+public:
     void removeAt(int i) {
         sc_assert(i >= 0 && i < size(), "index out of array");
-
-        (_data + i)->~T();
         int s = size()-i-1;
         if (s > 0) {
-            memmove(_data + i, _data + i + 1, s * sizeof(T));
+            moveForword(i, i + 1, s);
+        }
+        else {
+            (_data + i)->~T();
         }
         --_size;
 #ifndef SC_NO_CHECK
@@ -283,9 +305,15 @@ public:
         if (begin >= end) return;
         sc_assert(begin >= 0 && begin < size(), "index out of array");
         sc_assert(end-1 >= 0 && end-1 < size(), "index out of array");
+
         int s = size()-end;
         if (s > 0) {
-            memmove(_data + begin, _data + end, s * sizeof(T));
+            moveForword(begin, end, s);
+        }
+        else {
+            for (int i = begin; i<end; ++i) {
+                (_data + i)->~T();
+            }
         }
         int n = end - begin;
         _size -= n;
@@ -316,6 +344,31 @@ public:
         return _size == 0;
     }
 
+private:
+    void moveBackword(int dst, int src, int n) {
+        int offset = dst - src;
+        if constexpr (std::is_trivially_copyable<T>::value) {
+
+            memmove(_data + dst, _data + src, n * sizeof(T));
+
+            for (int i = 0; i < offset; ++i) {
+                T* m = _data + (src + i);
+                new(m) T();
+            }
+        }
+        else {
+            for (int i = 0; i < offset; ++i) {
+                T* m = _data + (src + n + i);
+                new(m) T();
+            }
+            for (int i = n-1; i>=0; --i) {
+                int to = dst + i;
+                int from = src + i;
+                _data[to] = std::move(_data[from]);
+            }
+        }
+    }
+public:
     void insert(int i, T d) {
         sc_assert(i >= 0 && i <= size(), "index out of array");
 
@@ -328,9 +381,9 @@ public:
         tryGrow(n + 1);
         T* m = (_data + i);
 
-        memmove(m + 1, m, (n - i) * sizeof(T));
+        moveBackword(i + 1, i, (n - i));
+        //new(m) T();
 
-        new(m) T();
         *m = std::move(d);
         ++_size;
 #ifndef SC_NO_CHECK
@@ -344,15 +397,21 @@ public:
         int msize = o.size();
         int n = size();
         tryGrow(n + msize);
-        T* m = (_data + i);
-        if (n-i > 0) {
-            memmove(m + msize, m, (n - i) * sizeof(T));
+        
+        if (n > i) {
+            moveBackword(i + msize, i, (n - i));
+            for (int j = 0; j < msize; ++j) {
+                T* m = (_data + i + j);
+                *m = std::move(o._data[j]);
+            }
         }
-        for (int i = 0; i < o.size(); ++i) {
-            new(m) T();
-            *m = std::move(o._data[i]);
-            ++m;
+        else {
+            for (int j = 0; j < msize; ++j) {
+                T* m = (_data + i + j);
+                new(m) T(std::move(o._data[j]));
+            }
         }
+
         o._size = 0;
         _size += msize;
 #ifndef SC_NO_CHECK

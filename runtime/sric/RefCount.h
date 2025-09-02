@@ -9,14 +9,14 @@
 
 namespace sric
 {
-class HeapRefable;
+struct HeapRefable;
 
 class RefCount
 {
 private:
     template<typename T> friend class RefPtr;
     template <typename T> friend class DArray;
-    friend class HeapRefable;
+    friend struct HeapRefable;
     template<typename T> friend class OwnPtr;
     template<typename T> friend class WeakPtr;
 

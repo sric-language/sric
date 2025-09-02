@@ -92,7 +92,7 @@ void FileStream::close()
     _file = NULL;
 }
 
-long FileStream::read(void* ptr, size_t size)
+uint32_t FileStream::read(void* ptr, size_t size)
 {
     if (!_file)
         return 0;
@@ -106,7 +106,7 @@ long FileStream::read(void* ptr, size_t size)
 //    return fgets(str, num, _file);
 //}
 
-long FileStream::write(const void* ptr, size_t size)
+uint32_t FileStream::write(const void* ptr, size_t size)
 {
     if (!_file)
         return 0;
@@ -120,7 +120,7 @@ bool FileStream::eof()
     return ((size_t)position()) >= length();
 }
 
-long FileStream::length()
+uint32_t FileStream::length()
 {
     size_t len = 0;
     if (canSeek())
@@ -133,14 +133,14 @@ long FileStream::length()
     return len;
 }
 
-long int FileStream::position()
+uint32_t FileStream::position()
 {
     if (!_file)
         return -1;
     return ftell(_file);
 }
 
-bool FileStream::seek(long int offset)
+bool FileStream::seek(uint32_t offset)
 {
     if (!_file)
         return false;

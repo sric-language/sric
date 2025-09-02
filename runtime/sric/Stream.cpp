@@ -16,7 +16,7 @@ bool IOStream::eof() {
     return position() >= length();
 }
 
-long IOStream::pipeTo(IOStream* out) {
+uint32_t IOStream::pipeTo(IOStream* out) {
     long size = 0;
     long succSize = 0;
     char buffer[1024];
@@ -37,15 +37,15 @@ long IOStream::pipeTo(IOStream* out) {
     return succSize;
 }
 
-long IOStream::writeUInt8(uint8_t out) {
+uint32_t IOStream::writeUInt8(uint8_t out) {
     static const int size = 1;
     uint8_t data[size];
     data[0] = out;
-    long s = this->write((char*)data, size);
+    uint32_t s = this->write((char*)data, size);
     return s;
 }
 
-long IOStream::writeUInt16(uint16_t out) {
+uint32_t IOStream::writeUInt16(uint16_t out) {
     static const int size = 2;
     unsigned char data[size];
 
@@ -58,11 +58,11 @@ long IOStream::writeUInt16(uint16_t out) {
         data[0] = (out) & 0xff;
     }
 
-    long s = this->write((char*)data, size);
+    uint32_t s = this->write((char*)data, size);
     return s;
 }
 
-long IOStream::writeUInt32(uint32_t out) {
+uint32_t IOStream::writeUInt32(uint32_t out) {
     static const int size = 4;
     unsigned char data[size];
     if (!littleEndian) {
@@ -77,11 +77,11 @@ long IOStream::writeUInt32(uint32_t out) {
         data[1] = (out >> 8) & 0xff;
         data[0] = (out) & 0xff;
     }
-    long s = this->write((char*)data, size);
+    uint32_t s = this->write((char*)data, size);
     return s;
 }
 
-long IOStream::writeUInt64(uint64_t out) {
+uint32_t IOStream::writeUInt64(uint64_t out) {
     static const int size = 8;
     unsigned char data[size];
     if (!littleEndian) {
@@ -104,7 +104,7 @@ long IOStream::writeUInt64(uint64_t out) {
         data[1] = (out >> 8) & 0xff;
         data[0] = (out) & 0xff;
     }
-    long s = this->write((char*)data, size);
+    uint32_t s = this->write((char*)data, size);
     return s;
 }
 
@@ -176,28 +176,28 @@ uint64_t IOStream::readUInt64() {
     }
 }
 
-long IOStream::writeInt8(int8_t out) {
+uint32_t IOStream::writeInt8(int8_t out) {
     uint8_t intVal = *((uint8_t*)&out);
     return writeUInt8(intVal);
 }
 
-long IOStream::writeInt16(int16_t out) {
+uint32_t IOStream::writeInt16(int16_t out) {
     uint16_t intVal = *((uint16_t*)&out);
     return writeUInt16(intVal);
 }
-long IOStream::writeInt32(int32_t out) {
+uint32_t IOStream::writeInt32(int32_t out) {
     uint32_t intVal = *((uint32_t*)&out);
     return writeUInt32(intVal);
 }
-long IOStream::writeInt64(int64_t out) {
+uint32_t IOStream::writeInt64(int64_t out) {
     uint64_t intVal = *((uint64_t*)&out);
     return writeUInt64(intVal);
 }
-long IOStream::writeFloat(float out) {
+uint32_t IOStream::writeFloat(float out) {
     uint32_t intVal = *((uint32_t*)&out);
     return writeUInt32(intVal);
 }
-long IOStream::writeDouble(double out) {
+uint32_t IOStream::writeDouble(double out) {
     uint64_t intVal = *((uint64_t*)&out);
     return writeUInt64(intVal);
 }

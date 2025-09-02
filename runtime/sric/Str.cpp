@@ -27,10 +27,10 @@ int String::find(const String& s, int start) const {
 }
 
 bool String::iequals(const String& other) const {
-    size_t sz = this->size();
+    int sz = this->size();
     if (other.size() != sz)
         return false;
-    for (unsigned int i = 0; i < sz; ++i)
+    for (int i = 0; i < sz; ++i)
         if (tolower((*this)[i]) != tolower((other)[i]))
             return false;
     return true;
@@ -43,7 +43,7 @@ bool String::startsWith(const String& s) const {
     return strstr(this->c_str(), s.c_str()) == this->c_str();
 }
 bool String::endsWith(const String& s) const {
-    return (this->cpp_str()).rfind(s.cpp_str()) == (this->size() - s.size());
+    return (int)(this->cpp_str()).rfind(s.cpp_str()) == (this->size() - s.size());
 }
 
 void String::replace(const String& src, const String& dst) {
@@ -112,12 +112,12 @@ void String::trimEnd() {
         }
     }
 
-    if (i < str.size() - 1) {
+    if (i < (int)str.size() - 1) {
         str.erase(str.begin() + i + 1, str.end());
     }
 }
 void String::trimStart() {
-    int i = 0;
+    size_t i = 0;
     for (; i < str.size(); ++i) {
         if (!isSpace(str[i])) {
             break;
@@ -317,7 +317,7 @@ int String::charByteIndex(int index) const {
     if (index == 0) return 0;
     //if (index < 0 || index < size) throw IndexErr("$index not in [0..$size]")
     int charCount = 0;
-    for (int i  = 0; i < str.size(); ++i) {
+    for (size_t i  = 0; i < str.size(); ++i) {
         char ch = str[i];
         if ((ch & 0xC0) != 0x80) {
             ++charCount;
@@ -334,7 +334,7 @@ uint32_t String::getChar(int i) const {
 }
 int String::charCount()const {
     int _charCount = 0;
-    for (int i = 0; i < str.size(); ++i) {
+    for (size_t i = 0; i < str.size(); ++i) {
         char ch = str[i];
         if ((ch & 0xC0) != 0x80) {
             ++_charCount;

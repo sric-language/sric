@@ -21,13 +21,13 @@ public:
     virtual bool canWrite();
     virtual bool canSeek();
     virtual void close();
-    virtual long read(void* ptr, size_t size);
+    virtual uint32_t read(void* ptr, size_t size);
     //virtual char* readLine(char* str, int num);
-    virtual long write(const void* ptr, size_t size);
+    virtual uint32_t write(const void* ptr, size_t size);
     virtual bool eof();
-    virtual long length();
-    virtual long position();
-    virtual bool seek(long int offset);
+    virtual uint32_t length();
+    virtual uint32_t position();
+    virtual bool seek(uint32_t offset);
     virtual bool rewind();
 
     static OwnPtr<FileStream> open(const char* filePath, const char* mode);

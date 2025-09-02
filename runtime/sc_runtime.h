@@ -1,3 +1,6 @@
+#ifndef _SRIC_RUNTIME_H_
+#define _SRIC_RUNTIME_H_
+
 #define _USE_MATH_DEFINES
 
 #include <stdint.h>
@@ -12,3 +15,5 @@
 #include "sric/Optional.h"
 
 #include <functional>
+
+#endif

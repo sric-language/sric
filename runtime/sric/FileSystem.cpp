@@ -45,7 +45,7 @@ bool FileSystem::mkdirs(const char* cpath) {
 
 bool FileSystem::listFiles(const char* dirPath, DArray<String>& files)
 {
-    fs::path dir = fs::u8path(dirPath);
+    fs::path dir = fs::path(dirPath);
     for (auto& p : fs::directory_iterator(dir)) {
         String pathstr = p.path().string();
         files.add(std::move(pathstr));
@@ -55,20 +55,20 @@ bool FileSystem::listFiles(const char* dirPath, DArray<String>& files)
 
 bool FileSystem::isDir(const char* filePath)
 {
-    return fs::is_directory(fs::u8path(filePath));
+    return fs::is_directory(fs::path(filePath));
 }
 
 bool FileSystem::exists(const char* filePath)
 {
-    return fs::exists(fs::u8path(filePath));
+    return fs::exists(fs::path(filePath));
 }
 
 int64_t FileSystem::fileSize(const char* filePath) {
-    return fs::file_size(fs::u8path(filePath));
+    return fs::file_size(fs::path(filePath));
 }
 
 uint64_t FileSystem::modifiedTime(const char* filePath) {
-    auto ftime = fs::last_write_time(fs::u8path(filePath));
+    auto ftime = fs::last_write_time(fs::path(filePath));
     uint64_t mills = std::chrono::time_point_cast<std::chrono::milliseconds>(ftime).time_since_epoch().count();
     return mills;
 }
@@ -89,7 +89,7 @@ bool FileSystem::copyTo(const char* fromFile, const char* toFile) {
 
 bool FileSystem::remove(const char* filePath) {
     std::error_code ec;
-    fs::remove_all(fs::u8path(filePath), ec);
+    fs::remove_all(fs::path(filePath), ec);
     return ec.value() == 0;
 }
 

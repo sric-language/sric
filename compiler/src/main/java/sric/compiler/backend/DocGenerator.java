@@ -49,6 +49,19 @@ public class DocGenerator extends BaseGenerator {
             print("</p>");
         print("</div>");
         print("<div class=\"index\">");
+            print("<div class=\"index-struct\">");
+            for (AstNode.FileUnit v : module.fileUnits) {
+                for (AstNode.TypeDef f : v.typeDefs) {
+                    if (!f.isPublic() || f.isNoDoc()) {
+                        continue;
+                    }
+                    print("<a href=\"#"+f.name+"\">");
+                        print(f.name);
+                    print("</a>");
+                }
+            }
+            print("</div>");
+            print("<div class=\"index-global\">");
             for (AstNode.FileUnit v : module.fileUnits) {
                 for (AstNode.FieldDef f : v.fieldDefs) {
                     if (!f.isPublic() || f.isNoDoc()) {
@@ -66,14 +79,6 @@ public class DocGenerator extends BaseGenerator {
                         print(f.name);
                     print("</a>");
                 }
-                for (AstNode.TypeDef f : v.typeDefs) {
-                    if (!f.isPublic() || f.isNoDoc()) {
-                        continue;
-                    }
-                    print("<a href=\"#"+f.name+"\">");
-                        print(f.name);
-                    print("</a>");
-                }
                 for (AstNode.TypeAlias f : v.typeAlias) {
                     if (!f.isPublic() || f.isNoDoc()) {
                         continue;
@@ -83,6 +88,7 @@ public class DocGenerator extends BaseGenerator {
                     print("</a>");
                 }
             }
+            print("</div>");
             
         print("</div>");
         newLine();

@@ -19,6 +19,16 @@
 #define SC_NOTHROW noexcept
 //#define SC_NOTHROW 
 
+#define SC_OFFSETOF(type, member) ((size_t)&(((type*)0)->member))
+
+#if __cplusplus >= 201703L
+    #define SC_UNUSED [[maybe_unused]]
+#elif defined(__GNUC__)
+    #define SC_UNUSED __attribute__((unused))
+#else
+    #define SC_UNUSED
+#endif
+
 namespace sric
 {
 

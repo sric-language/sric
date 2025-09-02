@@ -252,6 +252,7 @@ public class DeepParser extends Parser {
         consume(TokenKind.ifKeyword);
         consume(TokenKind.lparen);
         Expr cond = expr();
+        cond.isTopExpr = true;
         consume(TokenKind.rparen);
         Block trueBlock = stmtAsBlock();
         IfStmt stmt = new IfStmt();
@@ -308,6 +309,7 @@ public class DeepParser extends Parser {
         consume(TokenKind.whileKeyword);
         consume(TokenKind.lparen);
         Expr cond = expr();
+        cond.isTopExpr = true;
         consume(TokenKind.rparen);
         WhileStmt stmt = new WhileStmt();
         stmt.loc = loc;
