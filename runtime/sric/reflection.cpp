@@ -63,4 +63,10 @@ bool callInstanceStringToBool(void* func, void *instance, String s) {
 	return f(instance, std::move(s));
 }
 
+bool callInstanceToBool(void* func, void *instance) {
+	if (!func) return false;
+	auto f = (bool (*)(void *ins))func;
+	return f(instance);
+}
+
 }//ns

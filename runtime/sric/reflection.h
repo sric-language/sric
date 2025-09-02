@@ -23,6 +23,7 @@ namespace sric {
 
 	bool callInstanceStringToBool(void* func, void *instance, String s);
 
+	bool callInstanceToBool(void* func, void *instance);
 }
 
 #define SC_AUTO_REGIST_MODULE(name) \

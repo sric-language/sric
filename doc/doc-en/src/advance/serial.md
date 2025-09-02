@@ -36,6 +36,18 @@ reflect struct Point {
     var y: Float;
 }
 ```
+
+Dynamically decide using the _isTransient method.
+```
+reflect struct Point {
+    var x: Int;
+
+    fun _isTransient(): Bool {
+        return false;
+    }
+}
+```
+
 ### Post-Deserialization Handling
 The _onDeserialize method is automatically called after deserialization:
 

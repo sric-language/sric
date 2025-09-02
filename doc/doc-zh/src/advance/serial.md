@@ -41,6 +41,17 @@ reflect struct Point {
 }
 ```
 
+如果本身不想序列化，可以通过_isTransient方法来动态决定
+```
+reflect struct Point {
+    var x: Int;
+
+    fun _isTransient(): Bool {
+        return false;
+    }
+}
+```
+
 ### 反序列化后处理
 有时候希望反序列化后，调用指定函数来恢复状态。名称为_onDeserialize的函数将被自动调用。
 ```

@@ -114,3 +114,4 @@ unsafe extern fun callPtrToVoid(func: raw* Void, arg: raw* Void);
 unsafe extern fun callVoidToPtr(func: raw* Void): raw* Void;
 unsafe extern fun callInstanceToString(func: raw* Void, instance: raw* Void): String;
 unsafe extern fun callInstanceStringToBool(func: raw* Void, instance: raw* Void, s: String): Bool;
+unsafe extern fun callInstanceToBool(func: raw* Void, instance: raw* Void): Bool;

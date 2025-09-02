@@ -14,6 +14,10 @@ reflect struct Elem {
     var size: Int;
     var point: own*? Point;
     static var s : const Int = 0;
+
+    fun _isTransient(): Bool {
+        return false;
+    }
 }
 
 reflect enum Color {

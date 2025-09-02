@@ -151,6 +151,21 @@ struct Encoder {
             return null;
         }
 
+        var isTransientFunc = findInstanceMethod(rtype, "_isTransient");
+        if (isTransientFunc != null) {
+            if (isTransientFunc.params.size() == 0 && 
+                    (isTransientFunc.returnBaseType != null && strcmp(isTransientFunc.returnBaseType, "Bool") == 0) && 
+                    isTransientFunc.pointer != null) {
+                var isTrans = callInstanceToBool(isTransientFunc.pointer, obj);
+                if (isTrans) {
+                    return null;
+                }
+            }
+            else {
+                scError("serial", "Bad toString function: %s", typeName);
+            }
+        }
+
         if (isSimpleSerial(*rtype)) {
             var toStringFunc = findInstanceMethod(rtype, "toString");
             if (toStringFunc != null) {
