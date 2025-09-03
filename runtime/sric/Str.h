@@ -114,8 +114,9 @@ public:
     uint32_t getCharAt(int bytePos, int32_t* byteSize = nullptr) const;
     uint32_t getChar(int i) const;
     int charCount()const;
-private:
-    int charByteIndex(int i) const;
+    int nextCharPos(int bytePos) const;
+    int preCharPos(int bytePos) const;
+    int charBytePos(int i) const;
 public:
 };
 

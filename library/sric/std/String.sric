@@ -80,6 +80,10 @@ extern noncopyable struct String {
     * return unicode char number
     */
     fun charCount()const: Int;
+
+    fun nextCharPos(bytePos: Int) const: Int;
+    fun preCharPos(bytePos: Int) const: Int;
+    fun charBytePos(i: Int) const: Int;
 }
 
 /**

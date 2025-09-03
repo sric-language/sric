@@ -313,7 +313,7 @@ uint32_t String::getCharAt(int i, int32_t* byteSize) const {
     }
     return ch;
 }
-int String::charByteIndex(int index) const {
+int String::charBytePos(int index) const {
     if (index == 0) return 0;
     //if (index < 0 || index < size) throw IndexErr("$index not in [0..$size]")
     int charCount = 0;
@@ -329,7 +329,7 @@ int String::charByteIndex(int index) const {
     return -1;
 }
 uint32_t String::getChar(int i) const {
-    int pos = charByteIndex(i);
+    int pos = charBytePos(i);
     return getCharAt(pos);
 }
 int String::charCount()const {
@@ -341,4 +341,26 @@ int String::charCount()const {
         }
     }
     return _charCount;
+}
+
+int String::nextCharPos(int bytePos) const {
+    for (size_t i = bytePos+1; i < str.size(); ++i) {
+        char ch = str[i];
+        if ((ch & 0xC0) != 0x80) {
+            return i;
+        }
+    }
+    return str.size();
+}
+int String::preCharPos(int bytePos) const {
+    if (bytePos > str.size()) {
+        return str.size();
+    }
+    for (size_t i = bytePos-1; i >= 0; --i) {
+        char ch = str[i];
+        if ((ch & 0xC0) != 0x80) {
+            return i;
+        }
+    }
+    return -1;
 }
