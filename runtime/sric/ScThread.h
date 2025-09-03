@@ -1,6 +1,6 @@
 
-#ifndef _CONCURRENT_THREAD_H_
-#define _CONCURRENT_THREAD_H_
+#ifndef _SRIC_CONCURRENT_THREAD_H_
+#define _SRIC_CONCURRENT_THREAD_H_
 
 #include "sc_runtime.h"
 

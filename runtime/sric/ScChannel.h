@@ -1,6 +1,10 @@
 
-#ifndef _CONCURRENT_CHANNEL_H_
-#define _CONCURRENT_CHANNEL_H_
+#ifndef _SRIC_CONCURRENT_CHANNEL_H_
+#define _SRIC_CONCURRENT_CHANNEL_H_
+
+#if !defined(__EMSCRIPTEN__) || defined(__EMSCRIPTEN_PTHREADS__)
+	#include <thread>
+#endif
 
 #include <mutex>
 #include <condition_variable>
