@@ -5,8 +5,8 @@
  * all rights reserved
  *
  */
-#ifndef SRIC_httpclient_hpp_
-#define SRIC_httpclient_hpp_
+#ifndef SRIC_rawhttpclient_hpp_
+#define SRIC_rawhttpclient_hpp_
 
 #include <string>
 #include <map>
@@ -15,7 +15,6 @@
 #ifndef __EMSCRIPTEN__
     typedef void CURL;
     #include <thread>
-    #include "concurrent.h"
 #endif
 
 namespace sricNet {
@@ -37,7 +36,7 @@ struct HttpResponse {
     sric::String cacheFile;
 
     /**
-    * HttpClient id
+    * RawHttpClient id
     */
     uint64_t id = 0;
 
@@ -55,7 +54,7 @@ struct HttpResponse {
 /**
 * HTTP request client
 */
-class HttpClient {
+class RawHttpClient {
 public:
 
 #ifndef __EMSCRIPTEN__
@@ -109,8 +108,8 @@ public:
     HttpResponse _response;
 
 public:
-    HttpClient();
-    ~HttpClient();
+    RawHttpClient();
+    ~RawHttpClient();
 
 public:
     

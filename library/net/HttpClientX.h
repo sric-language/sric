@@ -8,11 +8,11 @@
 #ifndef SRIC_httpclientx_hpp_
 #define SRIC_httpclientx_hpp_
 
-#include "HttpClient.hpp"
+#include "RawHttpClient.hpp"
 
 namespace sricNet {
 
-class HttpClientX : public HttpClient {
+class HttpClient : public RawHttpClient {
     bool _localFile = false;
 public:
     bool _fromCache = false;

@@ -10,7 +10,6 @@
 
 #ifdef SRIC_CURL
 #include <thread>
-#include "concurrent.h"
 #endif
 
 namespace sricNet {
@@ -26,7 +25,7 @@ private:
     std::thread _thrd;
 public:
     void* _easy = nullptr;
-    concurrent::Channel<Msg> _channel;
+    sric::Channel<Msg> _channel;
 private:
     //Msg sendingMsg;
 #elif __EMSCRIPTEN__

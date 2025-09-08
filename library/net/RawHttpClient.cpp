@@ -5,7 +5,7 @@
  * all rights reserved
  *
  */
-#include "HttpClient.hpp"
+#include "RawHttpClient.hpp"
 
 #include <assert.h>
 #if __EMSCRIPTEN__
@@ -18,17 +18,17 @@
 
 using namespace sricNet;
 
-HttpClient::HttpClient() {
+RawHttpClient::RawHttpClient() {
 }
 
-HttpClient::~HttpClient() {
+RawHttpClient::~RawHttpClient() {
 }
 
-float HttpClient::getProgress() {
+float RawHttpClient::getProgress() {
     return _progress.load();
 }
 
-void HttpClient::doReceive() {
+void RawHttpClient::doReceive() {
     if (!_error && !_cancel) {
         _progress = 1;
     }
@@ -48,16 +48,16 @@ void HttpClient::doReceive() {
 
 #ifndef __EMSCRIPTEN__
 
-concurrent::ThreadPool<sric::SharedPtr<HttpClient> >* g_httpThreadPool;
+sric::ThreadPool<sric::SharedPtr<RawHttpClient> >* g_httpThreadPool;
 
-void HttpClient::cancel() {
+void RawHttpClient::cancel() {
     _cancel = true;
 }
 
-bool HttpClient::send() {
-    sric::OwnPtr<HttpClient> self = sric::rawToOwn(this);
+bool RawHttpClient::send() {
+    sric::OwnPtr<RawHttpClient> self = sric::rawToOwn(this);
     if (!g_httpThreadPool) {
-        g_httpThreadPool = new concurrent::ThreadPool<sric::SharedPtr<HttpClient> >(4);
+        g_httpThreadPool = new sric::ThreadPool<sric::SharedPtr<RawHttpClient> >(4);
         g_httpThreadPool->start();
     }
     g_httpThreadPool->addTask(sric::toShared(self));
@@ -69,7 +69,7 @@ static int progress_callback(void* clientp,
     double dlnow,
     double ultotal,
     double ulnow) {
-    HttpClient* me = (HttpClient*)clientp;
+    RawHttpClient* me = (RawHttpClient*)clientp;
     if (dltotal == 0) {
         me->_progress = 1;
     }
@@ -83,13 +83,13 @@ static int progress_callback(void* clientp,
 }
 
 static size_t OnWriteData(char* ptr, size_t size, size_t nmemb, void* userdata) {
-    HttpClient* me = (HttpClient*)userdata;
+    RawHttpClient* me = (RawHttpClient*)userdata;
     unsigned long asize = size * nmemb;
     me->_response.result.addData(ptr, asize);
     return asize;
 }
 
-void HttpClient::run() {
+void RawHttpClient::run() {
     _response.url = url.copy();
     _response.id = id;
 
@@ -155,7 +155,7 @@ void HttpClient::run() {
 // Fetch API
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void HttpClient::cancel() {
+void RawHttpClient::cancel() {
     _cancel = true;
     if (_handle) {
         // _isClosed = true;
@@ -182,7 +182,7 @@ static void downloadSucceeded(emscripten_fetch_t *fetch) {
     // The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
     //printf("downloadSucceeded:%p, %p\n", fetch, fetch->userData);
 
-    HttpClient* self = (HttpClient*)fetch->userData;
+    RawHttpClient* self = (RawHttpClient*)fetch->userData;
     if (self->_cancel) {
         fetch->userData = NULL;
         emscripten_fetch_close(fetch);
@@ -213,7 +213,7 @@ static void downloadFailed(emscripten_fetch_t *fetch) {
     //printf("downloadFailed:%p, %p\n", fetch, fetch->userData);
     //printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
 
-    HttpClient* self = (HttpClient*)fetch->userData;
+    RawHttpClient* self = (RawHttpClient*)fetch->userData;
     if (self->_cancel) {
         fetch->userData = NULL;
         emscripten_fetch_close(fetch);
@@ -240,7 +240,7 @@ static void downloadProgress(emscripten_fetch_t *fetch) {
     if (!fetch->userData) {
         return;
     }
-    HttpClient* me = (HttpClient*)fetch->userData;
+    RawHttpClient* me = (RawHttpClient*)fetch->userData;
     if (fetch->totalBytes == 0) {
         //me->_progress = 1;
     }
@@ -254,7 +254,7 @@ static void downloadProgress(emscripten_fetch_t *fetch) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void async_wget2_onload_func(unsigned int handle, void* arg, void* buf, unsigned int size) {
-    HttpClient* self = (HttpClient*)arg;
+    RawHttpClient* self = (RawHttpClient*)arg;
     self->_response.statusCode = 200;
     sric::String data((const char*)buf, size);
     self->_response.result = std::move(data);
@@ -264,7 +264,7 @@ static void async_wget2_onload_func(unsigned int handle, void* arg, void* buf, u
 }
 
 static void async_wget2_onerror_func(unsigned int handle, void* arg, int statusCode, const char* msg) {
-    HttpClient* self = (HttpClient*)arg;
+    RawHttpClient* self = (RawHttpClient*)arg;
     self->_response.statusCode = statusCode;
     self->_error = true;
 
@@ -273,7 +273,7 @@ static void async_wget2_onerror_func(unsigned int handle, void* arg, int statusC
 }
 
 static void async_wget2_onprogress_func(unsigned int handle, void* arg, int bytes, int total) {
-    HttpClient* me = (HttpClient*)arg;
+    RawHttpClient* me = (RawHttpClient*)arg;
     if (total == 0) {
         //me->_progress = 1;
     }
@@ -286,7 +286,7 @@ static void async_wget2_onprogress_func(unsigned int handle, void* arg, int byte
 // Entry point
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool HttpClient::send() {
+bool RawHttpClient::send() {
 
     //fetch api not support cancel and async_wget api not support headers
     if (headers.size() > 0) {
@@ -296,8 +296,8 @@ bool HttpClient::send() {
     _response.url = url.copy();
     _response.id = id;
 
-    sric::OwnPtr<HttpClient> selfOwn = sric::rawToOwn(this);
-    HttpClient* self = selfOwn.take();
+    sric::OwnPtr<RawHttpClient> selfOwn = sric::rawToOwn(this);
+    RawHttpClient* self = selfOwn.take();
     
     sric::String eurl = url.copy();
     eurl.replace(" ", "%20");

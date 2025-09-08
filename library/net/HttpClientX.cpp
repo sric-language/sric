@@ -42,7 +42,7 @@ static std::string nameEncode(const std::string& data) {
     return encode_out;
 }
 
-void HttpClientX::initCachePath(const char* dir) {
+void HttpClient::initCachePath(const char* dir) {
     g_cacheFilePath = dir;
     assert(g_cacheFilePath[g_cacheFilePath.size() - 1] == '/');
     if (!sric::FileSystem::exists(g_cacheFilePath.c_str())) {
@@ -50,7 +50,7 @@ void HttpClientX::initCachePath(const char* dir) {
     }
 }
 
-bool HttpClientX::isNetUrl(const char* url) {
+bool HttpClient::isNetUrl(const char* url) {
 #if __EMSCRIPTEN__
     bool fromNet = true;
 #else
@@ -72,7 +72,7 @@ bool HttpClientX::isNetUrl(const char* url) {
 
 #ifndef __EMSCRIPTEN__
 
-bool HttpClientX::send() {
+bool HttpClient::send() {
     if (strcmp(method.c_str(), "GET") != 0) {
         useCache = false;
     }
@@ -102,11 +102,11 @@ bool HttpClientX::send() {
             return true;
         }
     }
-    HttpClient::send();
+    RawHttpClient::send();
     return true;
 }
 
-void HttpClientX::doReceive() {
+void HttpClient::doReceive() {
     if (!_fromCache && !_error && useCache) {
         std::string cacheFile = _localFile ? this->cacheFile.cpp_str() : g_cacheFilePath + this->cacheFile.cpp_str();
         std::string dir = sric::FileSystem::getParentPath(cacheFile.c_str());
@@ -119,7 +119,7 @@ void HttpClientX::doReceive() {
         //delete stream;
         _response.cacheFile = cacheFile;
     }
-    HttpClient::doReceive();
+    RawHttpClient::doReceive();
 }
 
 #else
@@ -134,7 +134,7 @@ static void idb_on_store_error_callback_func(void*) {
 }
 
 static void idb_async_wget_onload_func(void* arg, void* buf, int size) {
-    HttpClientX* self = (HttpClientX*)arg;
+    HttpClient* self = (HttpClient*)arg;
 
     //printf("load idb success %s %d\n", self->cacheFile.c_str(), size);
 
@@ -151,10 +151,10 @@ static void idb_load_error_callback_func(void* arg) {
 
     //printf("load idb error %s\n", self->cacheFile.c_str());
 
-    self->HttpClient::send();
+    self->RawHttpClient::send();
 }
 
-bool HttpClientX::send() {
+bool HttpClient::send() {
     if (method != "GET") {
         useCache = false;
     }
@@ -168,12 +168,12 @@ bool HttpClientX::send() {
     return true;
 }
 
-void HttpClientX::doReceive() {
+void HttpClient::doReceive() {
     if (!_fromCache && !_error && useCache) {
         //responseDataCopy = _response.result;
         emscripten_idb_async_store(g_cacheFilePath.c_str(), cacheFile.c_str(), _response.result.data(), _response.result.size(), this, idb_on_store_callback_func, idb_on_store_error_callback_func);
     }
-    HttpClient::doReceive();
+    RawHttpClient::doReceive();
 }
 #endif
 
@@ -181,7 +181,7 @@ void HttpClientX::doReceive() {
 //
 //int main() {
 //    {
-//        sric::OwnPtr<HttpClientX> client = sric::makePtr<HttpClientX>();
+//        sric::OwnPtr<HttpClient> client = sric::makePtr<HttpClient>();
 //        client->url = "http://www.baidu.com";
 //        client->send();
 //    }

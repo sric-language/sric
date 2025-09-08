@@ -12,4 +12,4 @@ cd ..
 cp ../output/sric.html ../../sric-language.github.io/apidoc/
 cp ../output/jsonc.html ../../sric-language.github.io/apidoc/
 cp ../output/serial.html ../../sric-language.github.io/apidoc/
-
+cp ../output/sricNet.html ../../sric-language.github.io/apidoc/
