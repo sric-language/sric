@@ -34,7 +34,7 @@ extern struct HttpResponse {
     var result: String;
 }
 
-extern struct HttpClientX {
+extern struct HttpClient {
     /**
     * HTTP request method: GET or POST
     */
