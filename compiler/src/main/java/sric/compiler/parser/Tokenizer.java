@@ -102,7 +102,7 @@ public class Tokenizer {
             curLine = this.line;
             int col = this.col;
             int offset = this.pos;
-
+            
             // find next token
             Token tok;
             try {

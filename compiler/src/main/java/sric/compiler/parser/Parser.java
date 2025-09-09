@@ -577,7 +577,7 @@ public class Parser {
             FieldDef enumDef = enumSlotDef(ordinal++);
             def.addSlot(enumDef);
         }
-        //endOfStmt();
+        endOfStmt();
     }
 
     /**
@@ -1242,14 +1242,19 @@ public class Parser {
      ** Statements can be terminated with a semicolon
      */
     protected void endOfStmt() {
-        //if (cur.newline) return true;
-        if (curt == TokenKind.semicolon) {
-            consume();
-            return;
-        }
-        
-        String errMsg = "Expected end of statement with ';' not '" + cur + "'";
-        err(errMsg);
+        String errMsg = "Expected end of statement with : semicolon, newline, or end of block; not '" + cur + "'";
+        endOfStmt(errMsg);
+    }
+    
+    protected boolean endOfStmt(String errMsg)
+    {
+      if (cur.newline) return true;
+      if (curt == TokenKind.semicolon) { consume(); return true; }
+      if (curt == TokenKind.rbrace) return true;
+      if (curt == TokenKind.eof) return true;
+      if (errMsg == null) return false;
+      err(errMsg);
+      return false;
     }
 
     /**

@@ -10,19 +10,19 @@ Int is 32-bit by default, Float is 64-bit by default.
 Strings can span multiple lines:
 ```
 var s = "ab
-            cd";
+            cd"
 ```
 Triple-quoted strings don't require escaping double quotes:
 ```
 var s = """ab"
-            cd""";
+            cd"""
 ```
 String literals are of type raw*const Int8 and can be automatically converted to sric::String.
 
 ### Characters
 A character represents a single letter and is of type Int8:
 ```
-var c : Int8 = 'A';
+var c : Int8 = 'A'
 ```
 
 ### Comments
@@ -57,22 +57,22 @@ Annotations can be dynamically accessed through reflection interfaces.
 - Only one variable can be declared per statement.
 
 ```
-var i: Int = 0;
+var i: Int = 0
 ```
 
 Type inference is only supported for local variables within functions:
 ```
-var i = 0;
+var i = 0
 ```
 
 Variables are automatically initialized to default values. Use `uninit` keyword to keep random values:
 ```
-var i = uninit;
+var i = uninit
 ```
 
 Global variables must be immutable unless marked with `unsafe`:
 ```
-var i: const Int = 0;
+var i: const Int = 0
 ```
 
 ### Function Definition
@@ -81,14 +81,14 @@ var i: const Int = 0;
 - Function names must be unique (no parameter-based overloading)
 
 ```
-fun foo(a: Int): Int { return 0; }
+fun foo(a: Int): Int { return 0 }
 fun foo2() {}
 ```
 
 Default parameters and named parameters:
 ```
 fun foo(a: Int, b: Int = 0) {}
-foo(a: 1);
+foo(a: 1)
 ```
 Named parameters improve readability by explicitly showing parameter names.
 
@@ -106,7 +106,7 @@ readonly
 Examples:
 ```
 private fun foo() {}
-readonly var i: Int = 0;
+readonly var i: Int = 0
 ```
 - Visibility scope for global variables and functions is the current file. `private` makes them invisible to other files.
 - Default visibility is `public` (no need to explicitly specify).

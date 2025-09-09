@@ -1071,7 +1071,10 @@ public class CppGenerator extends BaseGenerator {
             bs.walkChildren(this);
             if (bs._printBrace) {
                 unindent();
-                print("}").newLine();
+                print("}");
+                if (!bs.isWithBlockExpr) {
+                    newLine();
+                }
             }
         }
         else if (v instanceof IfStmt ifs) {

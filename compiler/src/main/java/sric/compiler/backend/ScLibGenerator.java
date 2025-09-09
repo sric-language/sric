@@ -481,7 +481,10 @@ public class ScLibGenerator extends BaseGenerator {
             indent();
             bs.walkChildren(this);
             unindent();
-            print("}").newLine();
+            print("}");
+            if (!bs.isWithBlockExpr) {
+                newLine();
+            }
         }
         else if (v instanceof Stmt.IfStmt ifs) {
             print("if (");

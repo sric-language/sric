@@ -1,23 +1,23 @@
 ## Statements
-- All statements end with semicolons
+- The semicolon at the end of a statement can be omitted.
 - No `do while` or `goto` (otherwise same as C++)
 - `switch` doesn't fall through by default (use `fallthrough` explicitly)
 ```sric
 switch (i) {
     case 1:
-        fallthrough;
+        fallthrough
     case 2:
-        printf("%d\n", i);
+        printf("%d\n", i)
 }
 ```
 ### Unsafe
 Dereference raw pointers in unsafe blocks:
 
 ```sric
-var p: *Int;
+var p: *Int
 ...
 unsafe {
-    var i = *p;
+    var i = *p
 }
 ```
 Unsafe functions require unsafe blocks:
@@ -27,7 +27,7 @@ unsafe fun foo() { ... }
 
 fun main() {
     unsafe {
-        foo();
+        foo()
     }
 }
 ```
@@ -46,28 +46,28 @@ With blocks (unlike C++ designated initializers) can contain any statements:
 
 ```sric
 struct A {
-    var i: Int;
+    var i: Int
     fun init() { ... }
 }
 
-var a = A { .init(); .i = 0; };
-var a: own* A = new A { .i = 0; };
+var a = A { .init(); .i = 0 }
+var a: own* A = new A { .i = 0 }
 ```
 ## Pointer Access
 Use . for both direct and pointer access (no ->):
 
 ```sric
-var a: A;
-var b: own* A;
-a.foo();
-b.foo();
+var a: A
+var b: own* A
+a.foo()
+b.foo()
 ```
 ## Type Conversion/Checking
 as for dynamic/numeric conversion, is for type checking:
 
 ```sric
-var a = p as own* A;
-var b = p is own* A;
+var a = p as own* A
+var b = p is own* A
 ```
 Other conversions use unsafeCast.
 

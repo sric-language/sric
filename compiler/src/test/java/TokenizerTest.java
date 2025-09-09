@@ -43,7 +43,7 @@ public class TokenizerTest {
 
     @Test
     public void test() throws IOException {
-        Path path = Path.of("res/code/testExpr.sric");
+        Path path = Path.of("res/code/testStmt.sric");
         String src = Files.readString(path);
         
         CompilerLog log = new CompilerLog();

@@ -9,10 +9,10 @@ To call C++ code, simply declare the function prototypes. Use:
 
 ### C-style/No Namespace
 ```sric
-externc fun printf(format: raw* const Int8, args: ...);
+externc fun printf(format: raw* const Int8, args: ...)
 
 fun main() {
-    printf("Hello World\n");
+    printf("Hello World\n")
 }
 ```
 ### Matching Namespaces
@@ -30,7 +30,7 @@ Sric:
 ```sric
 //xx module
 extern struct P {
-    fun foo();
+    fun foo()
 }
 ```
 Module name must match C++ namespace.
@@ -69,17 +69,17 @@ import sric::*;
 //@#include <vector>
 //@extern symbol: std::vector
 extern struct vector$<T> {
-    fun size(): Int;
+    fun size(): Int
 }
 
 fun testExtern() {
-    var v = makePtr$<vector$<Int>>(3);
-    verify(v.size() == 3);
+    var v = makePtr$<vector$<Int>>(3)
+    verify(v.size() == 3)
 }
 
 fun testExtern2() {
-    var v2 = makeValue$<vector$<Int>>(3);
-    verify(v2.size() == 3);
+    var v2 = makeValue$<vector$<Int>>(3)
+    verify(v2.size() == 3)
 }
 ```
 ### Generating Sric Interfaces from C++ Headers

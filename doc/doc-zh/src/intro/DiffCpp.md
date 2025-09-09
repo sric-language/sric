@@ -33,8 +33,8 @@ C++
 
 class Point {
 public:
-    int x;
-    int y;
+    int x
+    int y
     double dis(const Point &t) const {
         int dx = t.x - x;
         int dy = t.y - y;
@@ -47,12 +47,12 @@ Sric:
 import sric::*;
 
 struct Point {
-    var x: Int;
-    var y: Int;
+    var x: Int
+    var y: Int
     fun dis(t: & const Point) const: Float {
-        var dx = t.x - x;
-        var dy = t.y - y;
-        return sqrt(dx*dx + dy*dy);
+        var dx = t.x - x
+        var dy = t.y - y
+        return sqrt(dx*dx + dy*dy)
     }
 }
 ```

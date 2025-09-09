@@ -5,23 +5,23 @@ Sric supports serialization through built-in dynamic reflection, using the [HiML
 Classes to be serialized require the `reflect` marker:
 ```sric
 reflect struct Point {
-    var x: Int;
-    var y: Float;
+    var x: Int
+    var y: Float
 }
 
 unsafe fun testSimple() {
-    var encoder: Encoder;
-    var obj = new Point { .x = 1; .y = 2; };
+    var encoder: Encoder
+    var obj = new Point { .x = 1; .y = 2; }
     var t = obj as *Void;
-    var res = encoder.encode(t, "testSerial::Point");
-    printf("%s\n", res.c_str());
+    var res = encoder.encode(t, "testSerial::Point")
+    printf("%s\n", res.c_str())
 
-    var decoder: Decoder;
-    var p = decoder.decode(res);
-    var obj2: raw* Point = unsafeCast$<raw*Point>(p);
+    var decoder: Decoder
+    var p = decoder.decode(res)
+    var obj2: raw* Point = unsafeCast$<raw*Point>(p)
     
-    verify(obj2.x == obj.x);
-    verify(obj2.y == obj.y);
+    verify(obj2.x == obj.x)
+    verify(obj2.y == obj.y)
 }
 ```
 For non-polymorphic objects like Point, the type name "testSerial::Point" must be explicitly provided.
@@ -31,19 +31,19 @@ Use Transient annotation to exclude fields:
 
 ```sric
 reflect struct Point {
-    var x: Int;
+    var x: Int
     //@Transient
-    var y: Float;
+    var y: Float
 }
 ```
 
 Dynamically decide using the _isTransient method.
 ```
 reflect struct Point {
-    var x: Int;
+    var x: Int
 
     fun _isTransient(): Bool {
-        return false;
+        return false
     }
 }
 ```
@@ -53,7 +53,7 @@ The _onDeserialize method is automatically called after deserialization:
 
 ```sric
 reflect struct Point {
-    var x: Int;
+    var x: Int
     fun _onDeserialize() {
     }
 }
@@ -64,25 +64,25 @@ Normally custom classes serialize as HiML objects. The `SimpleSerial` annotation
 ```sric
 //@SimpleSerial
 reflect struct Insets {
-    var top: Int = 0;
-    var right: Int = 0;
-    var bottom: Int = 0;
-    var left: Int = 0;
+    var top: Int = 0
+    var right: Int = 0
+    var bottom: Int = 0
+    var left: Int = 0
 
     fun toString() : String {
-        return String::format("%d %d %d %d", top, right, bottom, left);
+        return String::format("%d %d %d %d", top, right, bottom, left)
     }
 
     fun fromString(str: String): Bool {
-        var fs = str.split(" ");
+        var fs = str.split(" ")
         if (fs.size() == 4) {
-            top = fs[0].toInt32();
-            right = fs[1].toInt32();
-            bottom = fs[2].toInt32();
-            left = fs[3].toInt32();
-            return true;
+            top = fs[0].toInt32()
+            right = fs[1].toInt32()
+            bottom = fs[2].toInt32()
+            left = fs[3].toInt32()
+            return true
         }
-        return false;
+        return false
     }
 }
 ```

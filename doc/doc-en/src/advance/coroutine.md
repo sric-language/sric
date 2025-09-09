@@ -4,10 +4,10 @@ Sric's coroutines are almost identical to JavaScript's. Here's an example:
 
 ```sric
 async fun test2() : Int {
-    var i = 0;
-    i = await testCallback();
-    printf("await result:%d\n", i);
-    return i + 1;
+    var i = 0
+    i = await testCallback()
+    printf("await result:%d\n", i)
+    return i + 1
 }
 ```
 - Coroutine functions are marked with `async`

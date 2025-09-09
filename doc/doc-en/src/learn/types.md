@@ -7,12 +7,12 @@ By default, variables in Sric are value types that get automatically copied duri
 - Asterisk placement differs from C/C++ (before type)
 
 ```sric
-var p: Int             // Value type
-var p: own* Int;       // Owning pointer
-var p: * Int;          // Non-owning pointer
-var p: & Int;          // Reference
-var p: raw* Int;       // Raw pointer
-var p: uniq* Int;      // Unique pointer
+var p: Int            // Value type
+var p: own* Int       // Owning pointer
+var p: * Int          // Non-owning pointer
+var p: & Int          // Reference
+var p: raw* Int       // Raw pointer
+var p: uniq* Int      // Unique pointer
 ```
 
 Sric also provides C++-style smart pointers (SharedPtr, WeakPtr) via standard library.
@@ -21,7 +21,7 @@ Sric also provides C++-style smart pointers (SharedPtr, WeakPtr) via standard li
 Get pointers via address-of operator or `new`:
 
 ```sric
-var i: own* Int = new Int;  // Parentheses omitted (no constructors)
+var i: own* Int = new Int  // Parentheses omitted (no constructors)
 ```
 
 #### Owning Pointers
@@ -29,17 +29,17 @@ var i: own* Int = new Int;  // Parentheses omitted (no constructors)
 - Require explicit move/copy during transfer:
 
 ```sric
-var p1: own* Int = ...;
-var p2 = move p1;          // Transfer ownership
-var p3 = share(p1);        // Shared ownership
+var p1: own* Int = ...
+var p2 = move p1          // Transfer ownership
+var p3 = share(p1)        // Shared ownership
 ```
 
 #### Unique Pointers
 `uniq*` is zero-overhead. Similar to `own*`, but without a share() method.
 
 ```sric
-var p1: uniq* Int = makeUniq$<T>();
-var p2 = move p1;
+var p1: uniq* Int = makeUniq$<T>()
+var p2 = move p1
 ```
 
 #### Non-owning Pointers
@@ -48,17 +48,17 @@ var p2 = move p1;
 - Implicit conversion from `own*`/`uniq*`:
 
 ```sric
-var p1: own* Int = ...;
-var p4: * Int = p1;       // Non-owning
-var p5: raw* Int = p1;    // Raw
+var p1: own* Int = ...
+var p4: * Int = p1       // Non-owning
+var p5: raw* Int = p1    // Raw
 ```
 
 #### Raw Pointers
 - C/C++-style pointers (require `unsafe`):
 ```sric
-var p: raw* Int = ...;
+var p: raw* Int = ...
 unsafe {
-    var i = *p;
+    var i = *p
 }
 ```
 
@@ -66,18 +66,18 @@ unsafe {
 Get pointers from values (non-owning by default):
 
 ```sric
-var i: Int = 0;
-var p: *Int = &i;
+var i: Int = 0
+var p: *Int = &i
 ```
 
 ## Pointer Arithmetic
 Only allowed for raw pointers in `unsafe` contexts:
 
 ```sric
-var p : raw* Int = ...;
+var p : raw* Int = ...
 unsafe {
-    ++p;
-    p = p + 2;
+    ++p
+    p = p + 2
 }
 ```
 
@@ -92,25 +92,25 @@ fun foo(a: & const Int) {}  // Auto-dereferencing
 Fixed-size arrays (for dynamic arrays see `DArray`):
 
 ```sric
-var a: [5]Int;                // Explicit size
-var a = []Int { 1,3,4 };      // Size inference
-constexpr var size = 15;
-var a: [size]Int;             // Constexpr size
+var a: [5]Int                // Explicit size
+var a = []Int { 1,3,4 }      // Size inference
+constexpr var size = 15
+var a: [size]Int             // Constexpr size
 ```
 
 ## Null Safety
 Pointers are non-nullable by default (use `?` for nullable):
 
 ```sric
-var a: own*? B = null;     // Valid
-var a: own* B = null;      // Compile error
+var a: own*? B = null     // Valid
+var a: own* B = null      // Compile error
 ```
 
 ## Immutability
 `const` can modify either pointer or pointee:
 
 ```sric
-var p : raw* const Int;     // Immutable value
-var p : const raw* Int;     // Immutable pointer
-var p : const raw* const Int;  // Both
+var p : raw* const Int     // Immutable value
+var p : const raw* Int     // Immutable pointer
+var p : const raw* const Int  // Both
 ```

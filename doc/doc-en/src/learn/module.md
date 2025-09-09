@@ -18,7 +18,7 @@ The source directory srcDirs must end with `/.` The compiler will automatically 
 Import external modules in code:
 
 ```
-import sric::*;
-import sric::DArray;
+import sric::*
+import sric::DArray
 ```
 Where `*` imports all symbols under the module. Imported modules must be declared in the depends field of the build script.

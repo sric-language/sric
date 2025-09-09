@@ -180,13 +180,11 @@ public class DeepParser extends Parser {
       while (curt != TokenKind.eof)
       {
         consume(TokenKind.comma);
-        if (curt == TokenKind.semicolon) break;
+        if (curt == TokenKind.rbrace || curt == TokenKind.semicolon) break;
         
         e = makeItAdd(e, expr());
         
-        if (curt != TokenKind.comma) {
-            break;
-        }
+        if (curt == TokenKind.rbrace || curt == TokenKind.semicolon) break;
       }
       endLoc(e, loc);
       return e;
@@ -277,10 +275,10 @@ public class DeepParser extends Parser {
         Loc loc = cur.loc;
         consume(TokenKind.returnKeyword);
 
-        if (curt != TokenKind.semicolon) {
+        if (!endOfStmt(null)) {
             stmt.expr = expr();
+            endOfStmt();
         }
-        endOfStmt();
         endLoc(stmt, loc);
         return stmt;
     }
@@ -438,7 +436,7 @@ public class DeepParser extends Parser {
                 if (curt == TokenKind.fallthroughKeyword) {
                     c.fallthrough = true;
                     consume();
-                    consume(TokenKind.semicolon);
+                    this.endOfStmt();
                 }
                 endLoc(c, loc2);
                 stmt.cases.add(c);
@@ -776,7 +774,7 @@ public class DeepParser extends Parser {
 //            target = new NonNullableExpr(target);
 //            endLoc(target, loc);
 //        }
-        while (curt != TokenKind.semicolon && curt != TokenKind.eof) {
+        while (curt != TokenKind.eof) {
             Expr chained = termChainExpr(target);
             if (chained == null) {
                 break;
@@ -1126,6 +1124,7 @@ public class DeepParser extends Parser {
         WithBlockExpr expr = new WithBlockExpr();
         expr.target = target;
         expr.block = block();
+        expr.block.isWithBlockExpr = true;
 
         //consume(TokenKind.rbrace);
 

@@ -227,9 +227,12 @@ public class Token {
             sb.append(":");
             sb.append(val);
         }
-        if (this.whitespace) {
-            sb.append("[space]");
-        }
+//        if (this.whitespace) {
+//            sb.append("[space]");
+//        }
+//        if (this.newline) {
+//            sb.append("[newline]");
+//        }
         return sb.toString();
     }
 }

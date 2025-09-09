@@ -15,11 +15,11 @@
 1. 创建一个空文件夹作为工作空间
 2. 创建文件main.sric，内容如下:
 ```
-import sric::*;
+import sric::*
 
 fun main(): Int {
-    printf("Hello World\n");
-    return 0;
+    printf("Hello World\n")
+    return 0
 }
 
 ```

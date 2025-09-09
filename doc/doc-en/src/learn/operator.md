@@ -26,7 +26,7 @@ add        a,b,c;
 The comma operator only works within with blocks:
 
 ```sric
-x { a, b, c; };
+x { a, b, c }
 ```
 This is equivalent to:
 ```sric

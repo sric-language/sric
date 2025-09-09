@@ -1,0 +1,10 @@
+struct A {
+    var i : Int
+    var j : Int
+}
+
+fun test() {
+    var i = 0;
+    var s = ""
+    var a = A { .i =0; .j=1 }
+}

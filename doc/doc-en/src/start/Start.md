@@ -18,11 +18,11 @@ After configuring, restart VSCode. If features such as Go to Definition, Auto Co
 
 2. Create a file named main.sric with the following content:
 ```
-import sric::*;
+import sric::*
 
 fun main(): Int {
-    printf("Hello World\n");
-    return 0;
+    printf("Hello World\n")
+    return 0
 }
 ```
 3. Create a module.scm file with the following content:

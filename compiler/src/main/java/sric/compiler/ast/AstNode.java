@@ -666,6 +666,7 @@ public class AstNode {
     public static class Block extends Stmt {
         //print '{' for code generator
         public boolean _printBrace = true;
+        public boolean isWithBlockExpr = false;
         
         public ArrayList<Stmt> stmts = new ArrayList<Stmt>();
         @Override public void walkChildren(Visitor visitor) {

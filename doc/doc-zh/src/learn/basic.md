@@ -10,12 +10,12 @@ Int默认32位，Float默认64位。
 字符串可以多行
 ```
 var s = "ab
-         cd";
+         cd"
 ```
 三引号字符串，密码的双引号不需要转义。
 ```
 var s = """ab"
-           cd""";
+           cd"""
 ```
 字符串字面量的类型是raw*const Int8, 可以自动转为sric::String
 
@@ -23,7 +23,7 @@ var s = """ab"
 
 字符是指单个字母，类型是Int8
 ```
-var c : Int8 = 'A';
+var c : Int8 = 'A'
 ```
 
 ### 注释
@@ -56,22 +56,22 @@ var c : Int8 = 'A';
 - 变量类型写变量后。
 - 每个语句只能定义一个变量。
 ```
-var i: Int = 0;
+var i: Int = 0
 ```
 
 只有函数内的局部变量才支持类型推断
 ```
-var i = 0;
+var i = 0
 ```
 
 变量自动初始化为默认值，如果想保持随机值，则使用uninit关键字。
 ```
-var i = uninit;
+var i = uninit
 ```
 
 全局变量必须是不可变的，除非加unsafe修饰
 ```
-var i: const Int = 0;
+var i: const Int = 0
 ```
 
 
@@ -81,13 +81,13 @@ var i: const Int = 0;
 - 返回值是Void时，可省略返回值
 - 函数的名称必须是唯一值的，不支持通过参数重载
 ```
-fun foo(a: Int): Int { return 0; }
+fun foo(a: Int): Int { return 0 }
 fun foo2() {}
 ```
 默认参数和命名参数
 ```
 fun foo(a: Int, b: Int = 0) {}
-foo(a: 1);
+foo(a: 1)
 ```
 命名参数让你能显式写出参数名称，增加可读性。
 
@@ -106,7 +106,7 @@ readonly
 例如
 ```
 private fun foo() {}
-readonly var i: Int = 0;
+readonly var i: Int = 0
 ```
 - 全局变量和函数的可见性保护区域是当前文件，如果声明为private则外部文件不可见。
 - 默认的可见性都是public，所有不用写任何public。

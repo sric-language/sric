@@ -17,7 +17,7 @@ srcDirs = ./
 ### 模块导入
 在代码里面导入外部模块:
 ```
-import sric::*;
-import sric::DArray;
+import sric::*
+import sric::DArray
 ```
 其中`*`表示导入模块下的所有符号。导入的模块必须在构建脚本的depends字段声明。

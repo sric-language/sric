@@ -1,7 +1,7 @@
 ## Type Aliases
 Type aliases are equivalent to C's typedef:
 ```sric
-typealias size_t = Int32;
+typealias size_t = Int32
 ```
 ## Enums
 Enums are similar to C++ but always scoped:
@@ -13,7 +13,7 @@ enum Color {
 
 fun foo(c: Color) {}
 
-foo(Color::Red);
+foo(Color::Red)
 ```
 Explicit size specification:
 ```sric
@@ -30,7 +30,7 @@ Within unsafe structs, this is a raw pointer (not safe pointer). Objects allocat
 ```sric
 unsafe struct A {
     fun foo() {
-        var self = rawToRef(this);
+        var self = rawToRef(this)
     }
 }
 ```

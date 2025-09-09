@@ -3,18 +3,18 @@
 Classes don't have parameterized constructors - callers must initialize them manually:
 ```
 struct Point {
-    var x: Int = 0;
-    var y: Int = uninit;
-    var z: Int;
+    var x: Int = 0
+    var y: Int = uninit
+    var z: Int
 }
-var p = Point { .y = 1; };
+var p = Point { .y = 1 }
 ```
 Initialization uses with blocks (different from C's named initialization). These blocks can contain any statements and work in non-initialization contexts:
 
 ```
-var point = Point { .y = 1; };
+var point = Point { .y = 1 }
 point {
-    .x = 2; if (a) { .y = 3; }
+    .x = 2; if (a) { .y = 3 }
 }
 ```
 
@@ -38,7 +38,7 @@ struct Point {
     static fun foo() {
     }
 }
-Point::foo();
+Point::foo()
 ```
 ## Inheritance
 - No multiple inheritance (Java-like)
@@ -52,7 +52,7 @@ virtual struct B {
     virtual fun foo() {}
 }
 trait I {
-    abstract fun foo2();
+    abstract fun foo2()
 }
 struct A : B , I {
     override fun foo2() {}
@@ -71,9 +71,9 @@ struct A {
 Destructors are rarely needed due to automatic memory management via ownership. Constructors exist mainly to handle complex initialization logic:
 ```
 struct A {
-    var p : own* Int = ...;
+    var p : own* Int = ...
     fun new() {
-        p = new Int;
+        p = new Int
     }
 }
 ```

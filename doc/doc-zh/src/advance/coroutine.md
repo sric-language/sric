@@ -4,10 +4,10 @@
 Sric的协程和Javascript的几乎完全一致，下面是协程的例子：
 ```
 async fun test2() : Int {
-    var i = 0;
-    i = await testCallback();
-    printf("await result:%d\n", i);
-    return i + 1;
+    var i = 0
+    i = await testCallback()
+    printf("await result:%d\n", i)
+    return i + 1
 }
 ```
 

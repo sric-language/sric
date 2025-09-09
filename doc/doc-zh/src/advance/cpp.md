@@ -6,10 +6,10 @@ sric可以很容易的和C++交互。sric编译为人类可读的C++代码，可
 
 ### C语言/无命名空间
 ```
-externc fun printf(format: raw* const Int8, args: ...);
+externc fun printf(format: raw* const Int8, args: ...)
 
 fun main() {
-    printf("Hello World\n");
+    printf("Hello World\n")
 }
 ```
 
@@ -27,7 +27,7 @@ Sric:
 ```
 //xx module
 extern struct P {
-    fun foo();
+    fun foo()
 }
 ```
 这种情况下Sric代码的模块名称必须和C++的命名空间一致。
@@ -45,7 +45,7 @@ namespace test {
 Sric:
 ```
 //@extern symbol: test::hi
-extern fun hello();
+extern fun hello()
 ```
 
 此时在Sric中调用hello将调用C++的hi方法。
@@ -70,17 +70,17 @@ import sric::*;
 //@#include <vector>
 //@extern symbol: std::vector
 extern struct vector$<T> {
-    fun size(): Int;
+    fun size(): Int
 }
 
 fun testExtern() {
-    var v = makePtr$<vector$<Int>>(3);
-    verify(v.size() == 3);
+    var v = makePtr$<vector$<Int>>(3)
+    verify(v.size() == 3)
 }
 
 fun testExtern2() {
-    var v2 = makeValue$<vector$<Int>>(3);
-    verify(v2.size() == 3);
+    var v2 = makeValue$<vector$<Int>>(3)
+    verify(v2.size() == 3)
 }
 ```
 

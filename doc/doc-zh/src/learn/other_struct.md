@@ -3,7 +3,7 @@
 ## 类型别名
 类型别名相当于C的typedef
 ```
-typealias size_t = Int32;
+typealias size_t = Int32
 ```
 
 
@@ -16,7 +16,7 @@ enum Color {
 
 fun foo(c: Color) {}
 
-foo(Color::Red);
+foo(Color::Red)
 ```
 可以设置大小:
 ```
@@ -34,7 +34,7 @@ unsafe里的this的类型是裸指针，而不是安全指针。如果对象是�
 ```
 unsafe struct A {
     fun foo() {
-        var self = rawToRef(this);
+        var self = rawToRef(this)
     }
 }
 ```

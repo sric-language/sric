@@ -8,23 +8,23 @@ sric通过内建的动态反射来支持序列化，序列化格式为文本格�
 
 ```
 reflect struct Point {
-    var x: Int;
-    var y: Float;
+    var x: Int
+    var y: Float
 }
 
 unsafe fun testSimple() {
     var encoder: Encoder;
-    var obj = new Point { .x = 1; .y = 2; };
+    var obj = new Point { .x = 1; .y = 2 }
     var t = obj as *Void;
-    var res = encoder.encode(t, "testSerial::Point");
-    printf("%s\n", res.c_str());
+    var res = encoder.encode(t, "testSerial::Point")
+    printf("%s\n", res.c_str())
 
-    var decoder: Decoder;
-    var p = decoder.decode(res);
-    var obj2: raw* Point = unsafeCast$<raw*Point>(p);
+    var decoder: Decoder
+    var p = decoder.decode(res)
+    var obj2: raw* Point = unsafeCast$<raw*Point>(p)
     
-    verify(obj2.x == obj.x);
-    verify(obj2.y == obj.y);
+    verify(obj2.x == obj.x)
+    verify(obj2.y == obj.y)
 }
 ```
 上面的例子中由于Point是非多态对象，所以要显式传入名称"testSerial::Point"。
@@ -34,20 +34,20 @@ unsafe fun testSimple() {
 
 ```
 reflect struct Point {
-    var x: Int;
+    var x: Int
 
     //@Transient
-    var y: Float;
+    var y: Float
 }
 ```
 
 如果本身不想序列化，可以通过_isTransient方法来动态决定
 ```
 reflect struct Point {
-    var x: Int;
+    var x: Int
 
     fun _isTransient(): Bool {
-        return false;
+        return false
     }
 }
 ```
@@ -56,7 +56,7 @@ reflect struct Point {
 有时候希望反序列化后，调用指定函数来恢复状态。名称为_onDeserialize的函数将被自动调用。
 ```
 reflect struct Point {
-    var x: Int;
+    var x: Int
 
     fun _onDeserialize() {
     }
@@ -69,25 +69,25 @@ reflect struct Point {
 ```
 //@SimpleSerial
 reflect struct Insets {
-    var top: Int = 0;
-    var right: Int = 0;
-    var bottom: Int = 0;
-    var left: Int = 0;
+    var top: Int = 0
+    var right: Int = 0
+    var bottom: Int = 0
+    var left: Int = 0
 
     fun toString() : String {
-        return String::format("%d %d %d %d", top, right, bottom, left);
+        return String::format("%d %d %d %d", top, right, bottom, left)
     }
 
     fun fromString(str: String): Bool {
-        var fs = str.split(" ");
+        var fs = str.split(" ")
         if (fs.size() == 4) {
-            top = fs[0].toInt32();
-            right = fs[1].toInt32();
-            bottom = fs[2].toInt32();
-            left = fs[3].toInt32();
-            return true;
+            top = fs[0].toInt32()
+            right = fs[1].toInt32()
+            bottom = fs[2].toInt32()
+            left = fs[3].toInt32()
+            return true
         }
-        return false;
+        return false
     }
 }
 ```

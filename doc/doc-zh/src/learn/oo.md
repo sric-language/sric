@@ -2,17 +2,17 @@
 类没有有参构造函数，需要调用者自己初始化。
 ```
 struct Point {
-    var x: Int = 0;
-    var y: Int = uninit;
-    var z: Int;
+    var x: Int = 0
+    var y: Int = uninit
+    var z: Int
 }
-var p = Point { .y = 1; };
+var p = Point { .y = 1 }
 ```
 初始化的语法叫做with块，不同于C的命名初始化。with块可以包含任何语句，并且可以用在非初始化场景。例如
 ```
-var point = Point { .y = 1; };
+var point = Point { .y = 1 }
 point {
-    .x = 2; if (a) { .y = 3; }
+    .x = 2; if (a) { .y = 3 }
 }
 ```
 
@@ -37,7 +37,7 @@ strcut Point {
     }
 }
 
-Point::foo();
+Point::foo()
 ```
 
 
@@ -77,7 +77,7 @@ Sric绝大部分情况是不需要写析构函数的，因为所有权机制会�
 struct A {
     var p : own* Int = ...;
     fun new() {
-        p = new Int;
+        p = new Int
     }
 }
 ```

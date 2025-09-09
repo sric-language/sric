@@ -10,8 +10,8 @@ Type parameters can have example types for compile-time type checking:
 
 ```
 abstract struct Linkable$<T> {
-    var next: own*? T;
-    var previous: *? T;
+    var next: own*? T
+    var previous: *? T
 }
 
 struct LinkedList$<T: Linkable$<T>> {
@@ -21,5 +21,5 @@ struct LinkedList$<T: Linkable$<T>> {
 When instantiating generic templates, any type satisfying the example type constraints can be used:
 
 ```
-var tree = Tree$<Int> {};
+var tree = Tree$<Int> {}
 ```

@@ -1,6 +1,6 @@
 # Sric Language
 
-A memory-safe low-level systems programming language. It is based on ownership semantics, provides runtime memory safety checks, and generates human-readable C++ code.
+A memory-safe systems programming language designed to replace C++.
 
 ## Features
 - Blazing fast: low-level memeory access without GC.
