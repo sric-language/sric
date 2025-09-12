@@ -803,11 +803,15 @@ public class DeepParser extends Parser {
     private Expr termChainExpr(Expr target) {
 
         // handle various call operators: . -> ~>
-        switch (curt) {
-            case dot:
+        if (curt == TokenKind.dot) {
 //            case arrow:
 //            case tildeArrow:
+            if (!cur.newline) {
                 return accessExpr(target);
+            }
+            else if (target instanceof IdExpr idExpr && idExpr.name.equals(TokenKind.dot.symbol)) {
+                return accessExpr(target);
+            }
         }
         
         // target$<...>
