@@ -4,7 +4,7 @@
 - Bool
 - Void
 
-Int默认32位，Float默认64位。
+Int默认32位，Float默认32位。
 
 ### 字符串
 字符串可以多行

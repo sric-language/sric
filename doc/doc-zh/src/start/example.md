@@ -15,7 +15,6 @@ fun main(): Int {
     printf("Please input your guess\n")
     while (true) {
         //get input
-        var guess = 0
         scanf("%d", (&guess as raw*Int))
 
         if (guess > expected) {

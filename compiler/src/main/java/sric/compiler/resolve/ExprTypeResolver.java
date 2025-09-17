@@ -674,6 +674,11 @@ public class ExprTypeResolver extends TypeResolver {
             else if (e.value instanceof Double) {
                 v.resolvedType = Type.floatType(e.loc);
             }
+            else if (e.value instanceof Float) {
+                Type ntype = Type.floatType(e.loc);
+                ((Type.NumInfo)ntype.detail).size = 32;
+                v.resolvedType = ntype;
+            }
             else if (e.value instanceof Boolean) {
                 v.resolvedType = Type.boolType(e.loc);
             }

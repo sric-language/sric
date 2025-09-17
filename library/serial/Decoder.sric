@@ -96,7 +96,12 @@ struct Decoder {
                 return true;
             }
         case 'F':
-            if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
+            if (strcmp(typeName, "Float") == 0) {
+                var v = (obj+offset) as raw* Float32;
+                *v = node.as_float();
+                return true;
+            }
+            else if (strcmp(typeName, "Float64") == 0) {
                 var v = (obj+offset) as raw* Float64;
                 *v = node.as_float();
                 return true;

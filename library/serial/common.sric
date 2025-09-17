@@ -30,7 +30,10 @@ unsafe fun sizeOfType(typeName: raw* const Int8): Int {
                 return sizeof(UInt8);
             }
         case 'F':
-            if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
+            if (strcmp(typeName, "Float") == 0) {
+                return sizeof(Int32);
+            }
+            else if (strcmp(typeName, "Float64") == 0) {
                 return sizeof(Int64);
             }
             else if (strcmp(typeName, "Float32") == 0) {

@@ -22,7 +22,7 @@ externc fun ceil(x: Float64): Float64;
 externc fun fabs(x: Float64): Float64;
 externc fun floor(x: Float64): Float64;
 externc fun fmod(x: Float64, y: Float64): Float64;
-externc fun round(x: Float): Float;
+externc fun round(x: Float64): Float64;
 
 externc var M_PI: const Float64;
 externc var M_E: const Float64;

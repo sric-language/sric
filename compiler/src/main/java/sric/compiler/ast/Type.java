@@ -598,7 +598,7 @@ public class Type extends AstNode {
     public static Type floatType(Loc loc) {
         Type type = new Type(loc, "Float");
         NumInfo info = new NumInfo();
-        info.size = 64;
+        info.size = 32;
         type.detail = info;
         type.id.resolvedDef = Buildin.getBuildinScope().get(type.id.name, loc, null);
         return type;

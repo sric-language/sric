@@ -53,7 +53,11 @@ struct Encoder {
                 return allocator.alloc_int(*v);
             }
         case 'F':
-            if (strcmp(typeName, "Float") == 0 || strcmp(typeName, "Float64") == 0) {
+            if (strcmp(typeName, "Float") == 0) {
+                var v = (obj+offset) as raw* Float32;
+                return allocator.alloc_float(*v);
+            }
+            else if (strcmp(typeName, "Float64") == 0) {
                 var v = (obj+offset) as raw* Float64;
                 return allocator.alloc_float(*v);
             }

@@ -288,7 +288,11 @@ public class Tokenizer {
         }
         try {
             // float literal
-            if (floatSuffix || dot || exp) {
+            if (floatSuffix) {
+                float num = Float.parseFloat(str);
+                return new Token(TokenKind.floatLiteral, num);
+            }
+            else if (dot || exp) {
                 double num = Double.parseDouble(str);
                 return new Token(TokenKind.floatLiteral, num);
             }

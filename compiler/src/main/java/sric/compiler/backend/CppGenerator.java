@@ -1605,6 +1605,10 @@ public class CppGenerator extends BaseGenerator {
         else if (e.value instanceof Double li) {
             print(li.toString());
         }
+        else if (e.value instanceof Float li) {
+            print(li.toString());
+            print("F");
+        }
         else if (e.value instanceof Boolean li) {
             print(li.toString());
         }

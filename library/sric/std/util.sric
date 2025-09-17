@@ -27,7 +27,7 @@ fun min$<T:Float>(a:  T, b:  T): T {
 /**
 * Clamp between the min and max. If it's less than min then return min, if it's greater than max return max, otherwise return itself.
 */
-fun clamp(v: Float, min: Float, max: Float) : Float {
+fun clamp$<T:Float>(v: T, min: T, max: T) : T {
     if (v < min) v = min;
     if (v > max) v = max;
     return v;

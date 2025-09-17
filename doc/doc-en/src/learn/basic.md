@@ -4,7 +4,7 @@
 - Bool
 - Void
 
-Int is 32-bit by default, Float is 64-bit by default.
+Int is 32-bit by default, Float is 32-bit by default.
 
 ### Strings
 Strings can span multiple lines:

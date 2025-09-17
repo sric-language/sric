@@ -11,8 +11,8 @@
 | unsigned int | UInt32 |
 | int64_t | Int64 |
 | uint64_t | UInt64 |
-| float | Float32 |
-| double | Float/Float64 |
+| float | Float/Float32 |
+| double | Float64 |
 | void | Void |
 | char | Int8 |
 
@@ -88,4 +88,3 @@ struct Point {
 - 不可空指针
 - 动态反射
 - 命名参数
-
