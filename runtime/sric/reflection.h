@@ -33,6 +33,9 @@ namespace sric {
 			registReflection_ ## name();\
 		}\
 	};\
-	ScAutoRegistModule ## name _scAutoRegistModuleInstance_ ## name;
+	ScAutoRegistModule ## name _scAutoRegistModuleInstance_ ## name;\
+	void ScReflect_ ## name() {\
+		&_scAutoRegistModuleInstance_ ## name;\
+	}
 
 #endif

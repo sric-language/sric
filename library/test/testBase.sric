@@ -47,13 +47,12 @@ fun testArray() {
 
     verify(b[0] == 1);
 
-    // passArray(a);
+    passArray(a);
 }
 
-//TODO
-// fun passArray(a: [5]Int) {
-//     verify(a[0] == 1);
-// }
+fun passArray(a: [4]Int) {
+    verify(a[0] == 1);
+}
 
 fun testString() {
     var cstr = "Hello";

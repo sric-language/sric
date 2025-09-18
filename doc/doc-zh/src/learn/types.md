@@ -42,7 +42,7 @@ var p3 = share(p1)
 #### 唯一所有权指针
 `uniq*`是零开销的。和`own*`类似，但没有share()方法。
 ```
-var p1: uniq* Int = makeUniq$<T>()
+var p1: uniq* Int = makeUniq$<Int>()
 var p2 = move p1
 ```
 

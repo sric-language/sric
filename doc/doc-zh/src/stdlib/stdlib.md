@@ -6,6 +6,7 @@
 - sric: 自带标准库
 - jsonc: JSON解析和压缩库
 - serial： 序列化库，基于动态反射功能。
+- sricNet: 网络库，支持native和webassembly
 
 [标准库文档](/apidoc.html)
 

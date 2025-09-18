@@ -38,7 +38,7 @@ var p3 = share(p1)        // Shared ownership
 `uniq*` is zero-overhead. Similar to `own*`, but without a share() method.
 
 ```sric
-var p1: uniq* Int = makeUniq$<T>()
+var p1: uniq* Int = makeUniq$<Int>()
 var p2 = move p1
 ```
 

@@ -4,6 +4,7 @@
 - `sric`: Built-in standard library  
 - `jsonc`: JSON parsing/compression  
 - `serial`: Serialization using dynamic reflection  
+- `sricNet`: Network library for native and webassembly
 
 [API Documentation](/apidoc.html)  
 
