@@ -50,7 +50,11 @@ namespace sric
 
         T& operator*() { return val; }
 
-        T& get() const {
+        const T& get() const {
+            return val;
+        }
+
+        T& get() {
             return val;
         }
 

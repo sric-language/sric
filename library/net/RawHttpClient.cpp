@@ -32,9 +32,26 @@ void RawHttpClient::doReceive() {
     if (!_error && !_cancel) {
         _progress = 1;
     }
+
+    if (onDecode && onReceive) {
+        if (!_error && !_cancel && (_response.statusCode < 300 || _response.statusCode == -1)) {
+            _response.decodeResult = onDecode(_response);
+        }
+        else {
+            printf("net error:%s, %d, %d\n", url.c_str(), _response.statusCode, _error);
+        }
+    }
+
     if (onReceive) {
         if (sric::call_later) {
-            sric::call_later([=] { if (onReceive) onReceive(_response); });
+            sric::OwnPtr<RawHttpClient> self = sric::rawToOwn(this);
+            sric::AutoMove<sric::OwnPtr<RawHttpClient> > autoMove(self);
+            sric::call_later([=] {    
+                if (autoMove.get()->onReceive) {
+                    autoMove.get()->onReceive(autoMove.get()->_response);
+                    //printf("call onReceive\n");
+                } 
+            });
         }
         else {
             onReceive(_response);

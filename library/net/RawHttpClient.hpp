@@ -49,6 +49,11 @@ struct HttpResponse {
     * Response content
     */
     sric::String result;
+
+    /**
+    * pointer return by decode() function
+    */
+    void* decodeResult = 0;
 };
 
 /**
@@ -95,6 +100,11 @@ public:
     * lambda callback in main thread
     */
     std::function<void(HttpResponse& res)> onReceive;
+
+    /**
+    * callback in net thread
+    */
+    std::function<void*(HttpResponse& res)> onDecode;
 
     /**
     * user id for this task

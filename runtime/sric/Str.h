@@ -74,6 +74,9 @@ public:
     String operator+(const String& other) {
         return plus(other);
     }
+    void operator+=(const String& other) {
+        addStr(other);
+    }
     String plus(const String& other) const;
     void add(const char* cstr);
     void addData(const char* data, int size);

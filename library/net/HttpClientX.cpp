@@ -142,8 +142,14 @@ static void idb_async_wget_onload_func(void* arg, void* buf, int size) {
     sric::String data((const char*)buf, size);
     self->_response.result = std::move(data);
 
+    
+    self->_response.url = self->url.copy();
+    self->_response.id = self->id;
+
     self->_fromCache = true;
     self->doReceive();
+
+    sric::dealloc(self);
 }
 
 static void idb_load_error_callback_func(void* arg) {
@@ -152,6 +158,8 @@ static void idb_load_error_callback_func(void* arg) {
     //printf("load idb error %s\n", self->cacheFile.c_str());
 
     self->RawHttpClient::send();
+
+    sric::dealloc(self);
 }
 
 bool HttpClient::send() {
@@ -163,7 +171,12 @@ bool HttpClient::send() {
             cacheFile = "net/" + nameEncode(url);
         }
 
-        emscripten_idb_async_load(g_cacheFilePath.c_str(), cacheFile.c_str(), this, idb_async_wget_onload_func, idb_load_error_callback_func);
+        sric::OwnPtr<RawHttpClient> selfOwn = sric::rawToOwn(this);
+        RawHttpClient* self = selfOwn.take();
+        emscripten_idb_async_load(g_cacheFilePath.c_str(), cacheFile.c_str(), self, idb_async_wget_onload_func, idb_load_error_callback_func);
+    }
+    else {
+        RawHttpClient::send();
     }
     return true;
 }
