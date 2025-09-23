@@ -10,63 +10,63 @@ extern abstract struct IOStream {
     fun canWrite(): Bool;
     fun canSeek(): Bool;
 
-    abstract fun read(ptr: raw*Void, size: UInt32, count: UInt32): UInt32;
-    abstract fun write(ptr: raw*Void, size: UInt32, count: UInt32): UInt32;
+    abstract fun read(ptr: raw* mut Void, size: UInt32, count: UInt32) mut : UInt32;
+    abstract fun write(ptr: raw* mut Void, size: UInt32, count: UInt32) mut : UInt32;
 
-    virtual fun readLine(buf: raw* Int8, bufSize: Int): raw*? Int8;
+    virtual fun readLine(buf: raw* mut Int8, bufSize: Int) mut : raw*? Int8;
     virtual fun eof(): Bool;
-    virtual fun rewind(): Bool;
+    virtual fun rewind() mut : Bool;
 
     abstract fun length(): UInt32;
     abstract fun position(): UInt32;
-    abstract fun seek(offset: UInt32): Bool;
+    abstract fun seek(offset: UInt32) mut : Bool;
 
     fun remaining() : UInt32;
 
-    fun setByteOrder(littleEndian: Bool);
+    fun setByteOrder(littleEndian: Bool) mut ;
     /**
     * true if littleEndian
     */
     fun getByteOrder(): Bool;
 
-    virtual fun flush();
+    virtual fun flush() mut ;
 
-    virtual fun close();
+    virtual fun close() mut ;
 
-    virtual fun pipeTo(out: & IOStream): Int32;
+    virtual fun pipeTo(out: & mut IOStream) mut : Int32;
 
-    fun writeInt8(out: Int8): Int32;
-    fun writeInt16(out: Int16): Int32;
-    fun writeInt32(out: Int32): Int32;
-    fun writeInt64(out: Int64): Int32;
-    fun writeUInt8(out: UInt8): Int32;
-    fun writeUInt16(out: UInt16): Int32;
-    fun writeUInt32(out: UInt32): Int32;
-    fun writeUInt64(out: UInt64): Int32;
-    fun writeFloat32(out: Float32): Int32;
-    fun writeFloat64(out: Float64): Int32;
+    fun writeInt8(out: Int8) mut : Int32;
+    fun writeInt16(out: Int16) mut : Int32;
+    fun writeInt32(out: Int32) mut : Int32;
+    fun writeInt64(out: Int64) mut : Int32;
+    fun writeUInt8(out: UInt8) mut : Int32;
+    fun writeUInt16(out: UInt16) mut : Int32;
+    fun writeUInt32(out: UInt32) mut : Int32;
+    fun writeUInt64(out: UInt64) mut : Int32;
+    fun writeFloat32(out: Float32) mut : Int32;
+    fun writeFloat64(out: Float64) mut : Int32;
 
-    fun readUInt8(): UInt8;
-    fun readUInt16(): UInt16;
-    fun readUInt32(): UInt32;
-    fun readUInt64(): UInt64;
-    fun readInt8(): Int8;
-    fun readInt16(): Int16;
-    fun readInt32(): Int32;
-    fun readInt64(): Int64;
-    fun readFloat32(): Float32;
-    fun readFloat64(): Float64;
+    fun readUInt8() mut : UInt8;
+    fun readUInt16() mut : UInt16;
+    fun readUInt32() mut : UInt32;
+    fun readUInt64() mut : UInt64;
+    fun readInt8() mut : Int8;
+    fun readInt16() mut : Int16;
+    fun readInt32() mut : Int32;
+    fun readInt64() mut : Int64;
+    fun readFloat32() mut : Float32;
+    fun readFloat64() mut : Float64;
 
-    fun writeSizedStr(buf: & String);
-    fun readSizedStr(): String;
-    fun writeStr(buf: & String);
-    fun readAllStr(): String;
+    fun writeSizedStr(buf: & String) mut ;
+    fun readSizedStr() mut : String;
+    fun writeStr(buf: & String) mut ;
+    fun readAllStr() mut : String;
 
 }
 
 extern struct Buffer : IOStream {
-    fun readDirect(): raw* UInt8;
-    fun getData(): raw* UInt8;
+    fun readDirect() mut : raw* UInt8;
+    fun getData() mut : raw* UInt8;
     static fun make(size: UInt32): own*? Buffer;
 }
 

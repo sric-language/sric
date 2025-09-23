@@ -2,7 +2,7 @@ import sric::*;
 import jsonc::*;
 
 struct Decoder {
-    unsafe fun decode(str: &String): own*? Void {
+    unsafe fun decode(str: & mut String): own*? mut Void {
         var allocator: JsonAllocator;
         var parser = HimlParser { .init(&allocator); };
 
@@ -19,7 +19,7 @@ struct Decoder {
         return decodeObj(value0, null, null);
     }
 
-    unsafe fun decodeMap(str: &String): HashMap$<String, own* Void> {
+    unsafe fun decodeMap(str: & mut String): HashMap$<String, own* Void> {
         var allocator: JsonAllocator;
         var parser = HimlParser { .init(&allocator); };
         parser.insertTopLevelObject = true;
@@ -50,7 +50,7 @@ struct Decoder {
         return result;
     }
 
-    private unsafe fun decodeAny(node: raw*Value, obj: raw*? Int8, typeNameS: &TypeName, offset: Int = 0): Bool {
+    private unsafe fun decodeAny(node: raw* mut Value, obj: raw*? mut Int8, typeNameS: &TypeName, offset: Int = 0): Bool {
         var typeName = typeNameS.name.c_str();
         switch (typeName[0]) {
         case 'I':
@@ -153,7 +153,7 @@ struct Decoder {
         return false;
     }
 
-    private unsafe fun decodeDArray(node: raw*Value, arr: raw* List, elemType: &TypeName) {
+    private unsafe fun decodeDArray(node: raw* mut Value, arr: raw* mut List, elemType: &TypeName) {
         if (node.type() != Type::Array) {
             scError("serial", "expect array: %s");
             return;
@@ -173,7 +173,7 @@ struct Decoder {
         }
     }
 
-    private unsafe fun decodeObj(node: raw*Value, dst: raw*? Void, typeName: raw*? const Int8): own*? Void {
+    private unsafe fun decodeObj(node: raw* mut Value, dst: raw*? mut Void, typeName: raw*? const Int8): own*? Void {
         var name: raw*? const Int8;
         if (node.type() == Type::Object) {
             var objType = node.objectType();
@@ -282,7 +282,7 @@ struct Decoder {
         return obj;
     }
 
-    private unsafe fun decodeFields(obj: raw* Void, rtype: raw*? RType, node: raw* Value) {
+    private unsafe fun decodeFields(obj: raw* mut Void, rtype: raw*? mut RType, node: raw* mut Value) {
         if (rtype == null) {
             return;
         }

@@ -4,7 +4,7 @@ import jsonc::*;
 struct Encoder {
     var allocator: JsonAllocator;
 
-    unsafe fun encode(obj: *Void, typeName: raw*? const Int8 = null, isHiml: Bool = true): String {
+    unsafe fun encode(obj: * mut Void, typeName: raw*? const Int8 = null, isHiml: Bool = true) mut: String {
         var node = encodeObj(obj, typeName);
         var json : String;
         if (node != null) {
@@ -13,56 +13,56 @@ struct Encoder {
         return json;
     }
 
-    private unsafe fun encodeAny(obj: raw*? Int8, typeNameS: &TypeName, offset: Int = 0): raw*? JsonNode {
+    private unsafe fun encodeAny(obj: raw*? mut Int8, typeNameS: &TypeName, offset: Int = 0) mut: raw*? mut JsonNode {
         if (obj == null) return null;
         var typeName = typeNameS.name.c_str();
 
         switch (typeName[0]) {
         case 'I':
             if (strcmp(typeName, "Int") == 0 || strcmp(typeName, "Int32") == 0) {
-                var v = (obj+offset) as raw*Int32;
+                var v = (obj+offset) as raw*mut Int32;
                 return allocator.alloc_int(*v);
             }
             else if (strcmp(typeName, "Int64") == 0) {
-                var v = (obj+offset) as raw*Int64;
+                var v = (obj+offset) as raw*mut Int64;
                 return allocator.alloc_int(*v);
             }
             else if (strcmp(typeName, "Int16") == 0) {
-                var v = (obj+offset) as raw*Int16;
+                var v = (obj+offset) as raw*mut Int16;
                 return allocator.alloc_int(*v);
             }
             else if (strcmp(typeName, "Int8") == 0) {
-                var v = (obj+offset) as raw*Int8;
+                var v = (obj+offset) as raw*mut Int8;
                 return allocator.alloc_int(*v);
             }
         case 'U':
             if (strcmp(typeName, "UInt32") == 0) {
-                var v = (obj+offset) as raw*UInt32;
+                var v = (obj+offset) as raw*mut UInt32;
                 return allocator.alloc_int(*v);
             }
             else if (strcmp(typeName, "UInt64") == 0) {
-                var v = (obj+offset) as raw*UInt64;
+                var v = (obj+offset) as raw*mut UInt64;
                 return allocator.alloc_int(*v);
             }
             else if (strcmp(typeName, "UInt16") == 0) {
-                var v = (obj+offset) as raw*UInt16;
+                var v = (obj+offset) as raw*mut UInt16;
                 return allocator.alloc_int(*v);
             }
             else if (strcmp(typeName, "UInt8") == 0) {
-                var v = (obj+offset) as raw*UInt8;
+                var v = (obj+offset) as raw*mut UInt8;
                 return allocator.alloc_int(*v);
             }
         case 'F':
             if (strcmp(typeName, "Float") == 0) {
-                var v = (obj+offset) as raw* Float32;
+                var v = (obj+offset) as raw*mut Float32;
                 return allocator.alloc_float(*v);
             }
             else if (strcmp(typeName, "Float64") == 0) {
-                var v = (obj+offset) as raw* Float64;
+                var v = (obj+offset) as raw*mut Float64;
                 return allocator.alloc_float(*v);
             }
             else if (strcmp(typeName, "Float32") == 0) {
-                var v = (obj+offset) as raw* Float32;
+                var v = (obj+offset) as raw*mut Float32;
                 return allocator.alloc_float(*v);
             }
         case 's':
@@ -76,7 +76,7 @@ struct Encoder {
             // }
             else if (strcmp(typeName, "sric::DArray") == 0) {
                 if (typeNameS.genericArgs.size() == 0) return null;
-                var v = unsafeCast$<raw*List>(obj+offset);
+                var v = unsafeCast$<raw* mut List>(obj+offset);
                 return encodeDArray(v, typeNameS.genericArgs[0]);
             }
         case 'o':
@@ -96,7 +96,7 @@ struct Encoder {
         return null;
     }
 
-    private unsafe fun encodeDArray(arr: raw*List, elemType: &TypeName): raw*? JsonNode {
+    private unsafe fun encodeDArray(arr: raw* mut List, elemType: &TypeName) mut : raw*? mut JsonNode {
         var node = allocator.allocNode(Type::Array);
         var elemSize = sizeOfType(elemType.name.c_str());
         for (var i=0; i<arr.size(); ++i) {
@@ -111,7 +111,7 @@ struct Encoder {
         return node;
     }
 
-    private unsafe fun encodeObj(obj: raw*? Void, typeName: raw*? const Int8 = null): raw*? JsonNode {
+    private unsafe fun encodeObj(obj: raw*? mut Void, typeName: raw*? const Int8 = null) mut : raw*? mut JsonNode {
         if (obj == null) return null;
 
         if (typeName == null) {
@@ -196,7 +196,7 @@ struct Encoder {
         return node;
     }
 
-    private unsafe fun encodeFields(obj: raw* Void, rtype: raw*? RType, node: raw* JsonNode) {
+    private unsafe fun encodeFields(obj: raw* Void, rtype: raw*? RType, node: raw* mut JsonNode) mut {
         if (rtype == null) {
             return;
         }
@@ -208,7 +208,7 @@ struct Encoder {
             encodeFields(obj, superType, node);
         }
         for (var i = 0; i<rtype.fields.size(); ++i) {
-            var f = rtype.fields[i];
+            var f = rtype.fields.constGet(i);
 
             if (!isSerializable(f)) {
                 continue;

@@ -5,7 +5,7 @@ private abstract struct NT$<T> {
 
 struct A$<T : NT$<T>> {
     var i: T ;
-    fun foo() : raw* T {
+    fun foo() : raw* const T {
        return &i;
     }
 
@@ -22,7 +22,7 @@ fun main()
 {
     var a = A$<Int>{};
     a.i = 2;
-    var b : raw* Int = a.foo();
+    var b : raw* const Int = a.foo();
 
     var i: Int = gf$<Int>(1);
 }

@@ -12,7 +12,7 @@ struct LinkedList$<T: Linkable$<T>> {
     private var tail: *? T = null;
     private var length: Int = 0;
 
-    fun clear() {
+    fun clear() mut {
         head = null;
         tail = null;
         length = 0;
@@ -22,7 +22,7 @@ struct LinkedList$<T: Linkable$<T>> {
         return length;
     }
 
-    fun add(elem: own* T) {
+    fun add(elem: own* mut T) mut {
         if (tail == null) {
             insert(move elem);
             return;
@@ -35,7 +35,7 @@ struct LinkedList$<T: Linkable$<T>> {
         ++length;
     }
 
-    fun insert(elem: own* T) {
+    fun insert(elem: own* mut T) mut {
         elem.next = move head;
         elem.previous = null;
 
@@ -49,7 +49,7 @@ struct LinkedList$<T: Linkable$<T>> {
         ++length;
     }
 
-    fun insertBefore(elem: own* T, pos: * T) {
+    fun insertBefore(elem: own* mut T, pos: * mut T) mut {
         if (pos.previous == null) {
             insert(move elem);
             return;
@@ -61,7 +61,7 @@ struct LinkedList$<T: Linkable$<T>> {
         ++length;
     }
 
-    fun remove(elem: *? T) : Bool {
+    fun remove(elem: *? mut T) mut : Bool {
         if (elem == null) return false;
         var next = move elem.next;
         var previous = elem.previous;
@@ -94,15 +94,15 @@ struct LinkedList$<T: Linkable$<T>> {
         return head;
     }
 
-    fun first(): *?T {
+    fun first() mut : *?T {
         return head;
     }
 
-    fun last(): *?T {
+    fun last() mut : *?T {
         return tail;
     }
 
-    fun end(): *?T {
+    fun end() mut : *?T {
         return null;
     }
 }

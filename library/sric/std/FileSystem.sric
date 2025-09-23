@@ -4,7 +4,7 @@
 */
 extern trait FileSystem {
     extern static fun mkdirs(path: const raw* const Int8): Bool;
-    extern static fun listFiles(path: const raw* const Int8, files: &DArray$<String>): Bool;
+    extern static fun listFiles(path: const raw* const Int8, files: & mut DArray$<String>): Bool;
     extern static fun exists(path: const raw* const Int8): Bool;
     extern static fun isDir(path: const raw* const Int8): Bool;
     extern static fun fileSize(path: const raw* const Int8): Int64;

@@ -3,7 +3,7 @@ import sric::*;
 
 fun main(): Int {
     var channel = new Channel$<Int>;
-    var thd = Thread::make$<Int>(fun(args: own* Channel$<Int>)static{
+    var thd = Thread::make$<Int>(fun(args: own* mut Channel$<Int>)static{
         var i = args.read();
         printf("%d\n", i);
         i = args.read();

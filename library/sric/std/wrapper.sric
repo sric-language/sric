@@ -27,17 +27,17 @@ extern noncopyable struct Optional$<T> {
     fun value(): &T;
     fun hasValue() const : Bool;
     fun error(): Int;
-    fun setValue(t: T);
-    fun setError(e: Int);
+    fun setValue(t: T) mut ;
+    fun setError(e: Int) mut ;
 }
 
 
 extern struct ArrayRef$<T> {    
-    fun init(d: raw*T, s:Int);
+    fun init(d: raw* mut T, s:Int) mut ;
 
-    fun data(): raw*? T;
+    fun data() mut : raw*? T;
     fun size(): Int;
 
     unsafe operator fun get(i: Int): & T;
-    unsafe operator fun set(i: Int, d: T);
+    unsafe operator fun set(i: Int, d: T) mut ;
 }

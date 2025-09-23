@@ -123,7 +123,7 @@ private struct TypeNameParser {
     private var pos: Int = 0;
     private var len: Int = 0;
 
-    fun parse(name: raw* const Int8) : TypeName {
+    fun parse(name: raw* const Int8) mut : TypeName {
         buf = name;
         len = strlen(name);
         unsafe {
@@ -131,7 +131,7 @@ private struct TypeNameParser {
         }
     }
 
-    private unsafe fun parseType(): TypeName {
+    private unsafe fun parseType() mut: TypeName {
         var type: TypeName;
         while (pos < len) {
             var ch = buf[pos];
@@ -163,7 +163,7 @@ private struct TypeNameParser {
     }
 }
 
-unsafe fun findInstanceMethod(rtype: raw*? RType, name: raw* const Int8): raw*? RFunc {
+unsafe fun findInstanceMethod(rtype: raw*? RType, name: raw* const Int8): raw*? const RFunc {
     if (rtype == null) {
         return null;
     }
@@ -172,7 +172,7 @@ unsafe fun findInstanceMethod(rtype: raw*? RType, name: raw* const Int8): raw*? 
     }
 
     for (var i = 0; i<rtype.funcs.size(); ++i) {
-        var f = rtype.funcs[i];
+        var f = rtype.funcs.constGet(i);
         if (strcmp(f.name, name) == 0) {
             return &f;
         }

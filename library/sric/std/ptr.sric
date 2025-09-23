@@ -6,16 +6,16 @@
 * WeakPtr is a smart pointer that holds a non-owning ("weak") reference to an object that is managed by own*. It must be converted to own* in order to access the referenced object.
 */
 extern struct WeakPtr$<T> {
-    fun set(p: own*? T);
-    fun lock(): own*? T;
+    fun set(p: own*? mut T) mut ;
+    fun lock() mut : own*? T;
 }
 
 /**
 * Auto move the ownership
 */
 extern struct AutoMove$<T> {
-    fun set(p: &T);
-    fun take(): T;
+    fun set(p: & mut T) mut ;
+    fun take() mut : T;
     fun get(): &T;
 }
 
@@ -23,8 +23,8 @@ extern struct AutoMove$<T> {
 * SharedPtr is a smart pointer with pointerreference counters
 */
 extern struct SharedPtr$<T> {
-    fun set(p: own*? T);
-    fun getOwn(): own*? T;
+    fun set(p: own*? mut T) mut ;
+    fun getOwn() mut : own*? T;
     fun getPtr(): *? T;
     fun get(): &T;
     fun isNull(): Bool;
@@ -36,7 +36,7 @@ extern fun makeUniq$<T>(args: ...): uniq* T;
 /**
 * Convert own* to SharedPtr
 */
-extern fun toShared$<T>(p: & own* T): SharedPtr$<T>;
+extern fun toShared$<T>(p: & own* mut T): SharedPtr$<T>;
 
 /**
 * Convert own* to AutoMove
@@ -46,27 +46,27 @@ extern fun autoMove$<T>(p: T): AutoMove$<T>;
 /**
 * Convert own* to WeakPtr
 */
-extern fun toWeak$<T>(p: & own* T): WeakPtr$<T>;
+extern fun toWeak$<T>(p: & own* mut T): WeakPtr$<T>;
 
 /**
 * Fork own* to share
 */
-extern fun share$<T>(p: & own* T): own* T;
+extern fun share$<T>(p: & own* mut T): own* T;
 
 /**
 * Convert raw pointer to own pointer
 */
-extern fun rawToOwn$<T>(p: raw* T): own* T;
+extern fun rawToOwn$<T>(p: raw* mut T): own* T;
 
 /**
 * Convert ref pointer to own pointer
 */
-extern fun refToOwn$<T>(p: * T): own* T;
+extern fun refToOwn$<T>(p: * mut T): own* T;
 
 /**
 * Convert raw pointer to own pointer
 */
-extern fun rawToRef$<T>(p: raw* T): * T;
+extern fun rawToRef$<T>(p: raw* mut T): * T;
 
 /**
 * Convert pointer type unsafely
@@ -74,6 +74,6 @@ extern fun rawToRef$<T>(p: raw* T): * T;
 extern unsafe fun unsafeCast$<T>(p: raw* Void): T;
 
 //@NoDoc
-extern unsafe fun takeOwn$<T>(p: own* T): raw* T;
+extern unsafe fun takeOwn$<T>(p: own* mut T): raw* T;
 //@NoDoc
-extern unsafe fun takeUniq$<T>(p: uniq* T): raw* T;
+extern unsafe fun takeUniq$<T>(p: uniq* mut T): raw* T;

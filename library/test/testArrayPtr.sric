@@ -11,7 +11,7 @@ struct DerivativeTest {
     var s: UnsafeStruct;
 }
 
-fun testArrayPtrCall(x: * DerivativeTest) {
+fun testArrayPtrCall(x: * mut DerivativeTest) {
   var i = &x.s;
   i.x = 2;
 }

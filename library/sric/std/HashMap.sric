@@ -24,7 +24,7 @@ struct HashMap$<K, V> {
         return table.constGetPtr(h);
     }
 
-    private fun getEntryList(k: & const K) : * MapEntryList$<K,V> {
+    private fun getEntryList(k: & const K) mut : * MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
         return table.getPtr(h);
@@ -40,7 +40,7 @@ struct HashMap$<K, V> {
         return null;
     }
 
-    fun getPtr(k: &const K): *? V {
+    fun getPtr(k: &const K) mut : *? V {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
@@ -50,7 +50,7 @@ struct HashMap$<K, V> {
         return null;
     }
 
-    operator fun get(k: K): & V {
+    operator fun get(k: K) mut : & V {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
@@ -66,7 +66,7 @@ struct HashMap$<K, V> {
         }
     }
     
-    operator fun set(k: K, v: V) : Bool {
+    operator fun set(k: K, v: V) mut : Bool {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
@@ -85,14 +85,14 @@ struct HashMap$<K, V> {
         return length;
     }
 
-    fun clear() {
+    fun clear() mut {
         for (var i=0; i<table.size(); ++i) {
             table[i].list.clear();
         }
         length = 0;
     }
     
-    fun remove(k: &const K) : Bool {
+    fun remove(k: &const K) mut : Bool {
         var list = getEntryList(k);
         for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
@@ -128,7 +128,7 @@ struct HashMap$<K, V> {
         }
     }
 
-    private fun rehash() {
+    private fun rehash() mut {
         if (length < table.size()) {
             return;
         }

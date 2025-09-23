@@ -169,14 +169,16 @@ public class Parser {
                 String sname = consumeId();
                 return methodDef(loc, doc, flags, null, sname);
             }
+            case constKeyword:
             case varKeyword:
             {
-//                if (curt == TokenKind.constKeyword) {
-//                    flags |= AstNode.Const;
-//                }
+                boolean isConst = false;
+                if (curt == TokenKind.constKeyword) {
+                    isConst = true;
+                }
                 consume();
                 String sname = consumeId();
-                return fieldDef(loc, doc, flags, null, sname);
+                return fieldDef(loc, doc, flags, null, sname, isConst);
             }
             case typealiasKeyword:
                 return parseTypeAlias(doc, flags);
@@ -203,14 +205,16 @@ public class Parser {
                 String sname = consumeId();
                 return methodDef(loc, doc, flags, null, sname);
             }
+            case constKeyword:
             case varKeyword:
             {
-//                if (curt == TokenKind.constKeyword) {
-//                    flags |= AstNode.Const;
-//                }
+                boolean isConst = false;
+                if (curt == TokenKind.constKeyword) {
+                    isConst = true;
+                }
                 consume();
                 String sname = consumeId();
-                return fieldDef(loc, doc, flags, null, sname);
+                return fieldDef(loc, doc, flags, null, sname, isConst);
             }
         }
         err("Expected var,const,fun keyword");
@@ -530,19 +534,23 @@ public class Parser {
         return flags;
     }
     
-    private int funcPostFlags() {
-        int flags = 0;
+    private void funcPostFlags(FuncPrototype prototype) {
+
         for (boolean done = false; !done;) {
-            int oldFlags = flags;
+            if (cur.newline) {
+                break;
+            }
             switch (curt) {
                 case constKeyword:
-                    flags = flags | (FConst.Const);
+                    prototype._isImmutable = true;
+                    prototype._explicitImmutability = true;
                     break;
-//                case mutKeyword:
-//                    flags = flags | (FConst.Mutable);
-//                    break;
+                case mutableKeyword:
+                    prototype._isImmutable = false;
+                    prototype._explicitImmutability = true;
+                    break;
                 case staticKeyword:
-                    flags = flags | (FConst.Static);
+                    prototype._isStaticClosure = true;
                     break;
                 default:
                     done = true;
@@ -550,14 +558,8 @@ public class Parser {
             if (done) {
                 break;
             }
-            if (oldFlags == flags) {
-                err("Repeated modifier");
-            }
-            oldFlags = flags;
             consume();
         }
-
-        return flags;
     }
 
 //////////////////////////////////////////////////////////////////////////
@@ -755,7 +757,7 @@ public class Parser {
      **   <fieldDef> :=  <facets> <fieldFlags> <id> ":" [<type>] ["=" <expr>] eos
      **   <fieldFlags> := [<protection>] ["readonly"] ["static"]
      */
-    private FieldDef fieldDef(Loc loc, Comments doc, int flags, Type type, String name) {
+    private FieldDef fieldDef(Loc loc, Comments doc, int flags, Type type, String name, boolean isConst) {
         // define field itself
         FieldDef field = new FieldDef(doc, name);
         field.flags = flags;
@@ -764,6 +766,7 @@ public class Parser {
         if (curt == TokenKind.colon) {
             consume();
             field.fieldType = typeRef();
+            field.fieldType.initDefaultImmutability(isConst, false);
         }
 
         // field initializer
@@ -814,6 +817,10 @@ public class Parser {
         method.generiParamDefs = tryGenericParamDef();
         
         funcPrototype(method.prototype);
+        method.prototype.funcDef = method;
+        if ((flags & FConst.Ctor) != 0) {
+            method.prototype._isImmutable = false;
+        }
 
         // if This is returned, then we configure inheritedRet
         // right off the bat (this is actual signature we will use)
@@ -845,11 +852,12 @@ public class Parser {
         }
         consume(TokenKind.rparen);
         
-        prototype.postFlags = funcPostFlags();
+        funcPostFlags(prototype);
         
         if (curt == TokenKind.colon) {
             consume();
             prototype.returnType = typeRef();
+            //prototype.returnType.initDefaultImmutability(false, false);
         }
         else {
             prototype.returnType = Type.voidType(cur.loc);
@@ -870,6 +878,7 @@ public class Parser {
         }
         else {
             param.fieldType = typeRef();
+            param.fieldType.initDefaultImmutability(false, true);
         }
         
         //param type default to const
@@ -924,8 +933,8 @@ public class Parser {
                 return pointerType(Type.PointerAttr.ref);
             case constKeyword:
                 return imutableType();
-//            case mutKeyword:
-//                return imutableType();
+            case mutableKeyword:
+                return imutableType();
             case lbracket:
                 return arrayType();
             default:
@@ -967,20 +976,20 @@ public class Parser {
     
     private Type imutableType() {
         boolean imutable = false;
-//        boolean explicitImutable = false;
+        boolean explicitImutable = false;
         if (curt == TokenKind.constKeyword) {
             consume();
             imutable = true;
-//            explicitImutable = true;
+            explicitImutable = true;
         }
-//        else if (curt == TokenKind.mutKeyword) {
-//            consume();
-//            imutable = false;
-//            explicitImutable = true;
-//        }
+        else if (curt == TokenKind.mutableKeyword) {
+            consume();
+            imutable = false;
+            explicitImutable = true;
+        }
         
         Type type = typeRef();
-//        type.explicitImmutable = explicitImutable;
+        type.explicitImmutability = explicitImutable;
         type.isImmutable = imutable;
         return type;
     }

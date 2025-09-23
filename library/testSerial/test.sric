@@ -46,7 +46,7 @@ reflect struct Insets {
         return String::format("%d %d %d %d", top, right, bottom, left);
     }
 
-    fun fromString(str: String): Bool {
+    fun fromString(str: String) mut: Bool {
         var fs = str.split(" ");
         if (fs.size() == 4) {
             top = fs[0].toInt32();

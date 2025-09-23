@@ -9,7 +9,7 @@ extern noncopyable struct String {
     * Get C style string
     */
     fun c_str() const: raw* const Int8;
-    fun data() : raw* Int8;
+    fun data() mut : raw* Int8;
     fun size() const: Int;
 
     fun copy() const : String;
@@ -23,19 +23,19 @@ extern noncopyable struct String {
 
     fun find(other: &const String, start: Int = 0) const: Int;
 
-    fun replace(src: &const String, dst: &const String);
+    fun replace(src: &const String, dst: &const String) mut ;
     fun split(sep: &const String) const: DArray$<String>;
     fun substr(pos:Int, len:Int = -1) const: String;
 
     operator fun plus(other: &const String) const: String;
-    fun addStr(str: &const String);
-    fun add(cstr: raw*const Int8);
-    fun addChar(ch: Int8);
+    fun addStr(str: &const String) mut ;
+    fun add(cstr: raw*const Int8) mut ;
+    fun addChar(ch: Int8) mut ;
 
-    fun trimEnd();
-    fun trimStart();
-    fun trim() { trimStart(); trimEnd(); }
-    fun removeLastChar();
+    fun trimEnd() mut ;
+    fun trimStart() mut ;
+    fun trim() mut { trimStart(); trimEnd(); }
+    fun removeLastChar() mut ;
 
     fun toLower() const: String;
     fun toUpper() const: String;
@@ -69,7 +69,7 @@ extern noncopyable struct String {
     /**
     * read unicode char from byte position
     */
-    fun getCharAt(bytePos: Int, byteSize: raw*? Int = null) const: Int;
+    fun getCharAt(bytePos: Int, byteSize: raw*? mut Int = null) const: Int;
 
     /**
     * get unicode char at char index

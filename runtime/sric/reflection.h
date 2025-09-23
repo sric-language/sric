@@ -11,9 +11,9 @@ namespace sric {
 
 	void registModule(RModule* m);
 	RefPtr<RModule> findModule(const char* name);
-	OwnPtr<void> newInstance(RType& type);
+	OwnPtr<void> newInstance(const RType& type);
 
-	const char* typeOf(void *obj);
+	const char* typeOf(const void *obj);
 
 	bool callPtrToVoid(void* func, void *arg);
 
@@ -34,8 +34,8 @@ namespace sric {
 		}\
 	};\
 	ScAutoRegistModule ## name _scAutoRegistModuleInstance_ ## name;\
-	void ScReflect_ ## name() {\
-		&_scAutoRegistModuleInstance_ ## name;\
+	void* ScReflect_ ## name() {\
+		return &_scAutoRegistModuleInstance_ ## name;\
 	}
 
 #endif

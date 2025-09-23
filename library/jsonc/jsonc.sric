@@ -12,7 +12,7 @@ extern enum Type : UInt8 {
 }
 
 extern struct JsonIterator {
-    fun next();
+    fun next() mut;
     fun noteq(x: &const JsonIterator) const : Bool;
     fun get() const: raw* Value;
     fun get_name() const: raw*? const Int8;
@@ -20,13 +20,13 @@ extern struct JsonIterator {
 
 extern virtual struct Value {
 
-    fun set_int(other: Int64);
-    fun set_float(other: Float64);
-    fun set_bool(other: Bool);
-    fun set_str(str: raw* const Int8);
+    fun set_int(other: Int64) mut;
+    fun set_float(other: Float64) mut;
+    fun set_bool(other: Bool) mut;
+    fun set_str(str: raw* const Int8) mut;
     
     fun type() : Type;
-    fun set_type(t: Type);
+    fun set_type(t: Type) mut;
     
     fun as_str(defVal : raw* const Int8 = ""): raw* const Int8;
     fun as_int(): Int64;
@@ -52,36 +52,36 @@ extern virtual struct Value {
     /**
     dump to json
     */
-    fun to_json(json: &sric::String, isHiml: Bool = false, level: Int = 0);
+    fun to_json(json: & mut sric::String, isHiml: Bool = false, level: Int = 0);
 }
 
 extern struct JsonNode: Value {
     /** insert and overwrite by key */
-    fun set(key: raw* const Int8, val: raw* JsonNode): Bool;
-    fun insert_pair(key: raw* const Int8, val: raw* JsonNode);
+    fun set(key: raw* const Int8, val: raw* mut JsonNode) mut: Bool;
+    fun insert_pair(key: raw* const Int8, val: raw* mut JsonNode) mut;
 
-    fun insert(val: raw* JsonNode);
-    fun reverse();
+    fun insert(val: raw* mut JsonNode) mut;
+    fun reverse() mut;
 
     /** slow than insert */
-    fun _append(val: raw* JsonNode);
+    fun _append(val: raw* mut JsonNode) mut;
 }
 
 extern struct JsonAllocator {
-    fun swap(other: &JsonAllocator);
-    fun allocate(size: Int32): raw* Void;
-    fun allocNode(type: Type): raw* JsonNode;
-    fun strdup(s: raw* const Int8): raw* Int8;
-    fun alloc_str(s: raw* const Int8): raw* JsonNode;
-    fun alloc_float(s: Float64): raw* JsonNode;
-    fun alloc_int(s: Int64) : raw* JsonNode;
-    fun alloc_bool(s: Bool) : raw* JsonNode;
+    fun swap(other: & mut JsonAllocator) mut;
+    fun allocate(size: Int32) mut: raw* mut Void;
+    fun allocNode(type: Type) mut: raw* mut JsonNode;
+    fun strdup(s: raw* const Int8) mut: raw* Int8;
+    fun alloc_str(s: raw* const Int8) mut: raw* mut JsonNode;
+    fun alloc_float(s: Float64) mut: raw* mut JsonNode;
+    fun alloc_int(s: Int64) mut: raw* mut JsonNode;
+    fun alloc_bool(s: Bool) mut: raw* mut JsonNode;
 }
 
 //@#include "jparser.hpp"
 extern struct JsonParser {
-    fun init( allocator: raw* JsonAllocator);
-    fun parse(src: raw* Int8): raw*? Value;
+    fun init( allocator: raw* mut JsonAllocator) mut;
+    fun parse(src: raw* mut Int8) mut: raw*? mut Value;
     fun get_error(): raw* Int;
     fun get_end(): raw* Int8;
     fun has_error(): Bool;
@@ -90,8 +90,8 @@ extern struct JsonParser {
 //@#include "HimlParser.hpp"
 extern struct HimlParser {
     var insertTopLevelObject: Bool = false;
-    fun init( allocator: raw* JsonAllocator);
-    fun parse(src: raw* Int8): raw*? Value;
+    fun init( allocator: raw* mut JsonAllocator) mut;
+    fun parse(src: raw* mut Int8) mut: raw*? mut Value;
     fun get_error(): raw* Int;
     fun get_end(): raw* Int8;
     fun has_error(): Bool;

@@ -1,0 +1,29 @@
+
+const g : Int = 1;
+
+struct A {
+    var i: Int = 0;
+    const j : Int = 0;
+
+    fun foo() mut {
+        i = 1;
+    }
+
+    fun foo2(a: raw* Int) {
+        //i = 1;
+    }
+
+    fun foo3(a: raw* mut Int) {
+    }
+
+    fun foo4(): raw* const Int {
+        return &j;
+    }
+}
+
+fun main() {
+    var a : A = A{ .i = 1; .j = 2 };
+    a.foo();
+
+    var p = a.foo4();
+}

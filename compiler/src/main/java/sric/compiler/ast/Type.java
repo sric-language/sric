@@ -24,7 +24,7 @@ public class Type extends AstNode {
         own, ref, raw, uniq
     };
     
-//    public boolean explicitImmutable = false;
+    public boolean explicitImmutability = false;
     public boolean isImmutable = false;
     
     public boolean isReference = false;
@@ -777,7 +777,7 @@ public class Type extends AstNode {
 //        if (this.isRefable) {
 //            sb.append("refable ");
 //        }
-        
+
         if (this.isImmutable) {
             sb.append("const ");
         }
@@ -878,6 +878,7 @@ public class Type extends AstNode {
             }
         }
         nt.isImmutable = this.isImmutable;
+        nt.explicitImmutability = this.explicitImmutability;
         nt.isReference = this.isReference;
         nt.detail = this.detail;
         if (this.id.resolvedDef instanceof GenericParamDef g) {
@@ -887,8 +888,8 @@ public class Type extends AstNode {
                     nt.id = at.id;
                     nt.detail = at.detail;
                     nt.genericArgs = at.genericArgs;
-                    if (at.isImmutable) {
-                        nt.isImmutable = true;
+                    if (at.explicitImmutability) {
+                        nt.isImmutable = at.isImmutable;
                     }
                 }
             }
@@ -925,7 +926,7 @@ public class Type extends AstNode {
         type.id.resolvedType = that.id.resolvedType;
         
         type.resolvedAliasDef = that.resolvedAliasDef;
-        //type.explicitImmutable = this.explicitImmutable;
+        type.explicitImmutability = this.explicitImmutability;
         if (merge) {
             type.isImmutable |= that.isImmutable;
             type.isReference |= that.isReference;
@@ -1013,5 +1014,31 @@ public class Type extends AstNode {
         type.copyFrom(this, true);
         ((PointerInfo)type.detail).pointerAttr = PointerAttr.raw;
         return type;
+    }
+    
+    public void initDefaultImmutability(boolean isConst, boolean isParam) {
+        initDefaultImmutability(isConst, isParam, false);
+    }
+    
+    private void initDefaultImmutability(boolean isConst, boolean isParam, boolean isPointerContent) {
+        if (this.explicitImmutability) {
+            return;
+        }
+        if (!isConst && !isParam) {
+            return;
+        }
+        
+        if (isConst) {
+            this.isImmutable = true;
+        }
+        else if (isParam && (isPointerContent || this.isReference)) {
+            this.isImmutable = true;
+        }
+        
+        if (this.genericArgs != null && this.isPointerType()) {
+            for (Type t : this.genericArgs) {
+                t.initDefaultImmutability(isConst, isParam, true);
+            }
+        }
     }
 }

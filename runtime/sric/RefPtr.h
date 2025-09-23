@@ -47,7 +47,7 @@ namespace sric
 #endif // !SC_NO_CHECK
 
         template <class U> friend class RefPtr;
-        template <class U> friend RefPtr<U> rawToRef(U* ptr);
+        template <class U> friend RefPtr<U> rawToRef(const U* ptr);
         template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
     public:
@@ -244,7 +244,7 @@ namespace sric
         int32_t offset;
 #endif
         template <class U> friend class RefPtr;
-        template <class U> friend RefPtr<U> rawToRef(U* ptr);
+        template <class U> friend RefPtr<U> rawToRef(const U* ptr);
         template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
     public:

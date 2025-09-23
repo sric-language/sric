@@ -84,7 +84,7 @@ extern struct HttpClient {
     /**
     * send async request
     */
-    fun send(): Bool;
+    fun send() mut : Bool;
 }
 
 
@@ -97,10 +97,10 @@ extern struct WebSocket {
     var onDisconnected : fun();
 
 
-    fun close();
-    fun open(url: raw* const Int8);
+    fun close() mut;
+    fun open(url: raw* const Int8) mut;
 
-    fun send(data: raw* const Int8, size: Int);
+    fun send(data: raw* const Int8, size: Int) mut;
     fun isValid() : Bool;
 }
 

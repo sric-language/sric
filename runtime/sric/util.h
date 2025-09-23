@@ -94,7 +94,7 @@ namespace sric {
 	}
 
 	template<typename T>
-	inline T unsafeCast(void* b) {
+	inline T unsafeCast(const void* b) {
 		return (T)b;
 	}
 

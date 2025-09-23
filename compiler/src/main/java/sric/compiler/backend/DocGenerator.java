@@ -106,6 +106,9 @@ public class DocGenerator extends BaseGenerator {
         if ((flags & FConst.Const) != 0) {
             print("const ");
         }
+        if ((flags & FConst.Mutable) != 0) {
+            print("mut ");
+        }
         if ((flags & FConst.Readonly) != 0) {
             print("readonly ");
         }
@@ -298,7 +301,15 @@ public class DocGenerator extends BaseGenerator {
         print(")</span>");
         
         print("<span class=\"flags\">");
-            printFlags(prototype.postFlags);
+            if (prototype.isStaticClosure()) {
+                print("static ");
+            }
+            if (prototype.isExplicitImmutability() && prototype.isThisImmutable()) {
+                print("const ");
+            }
+            else if (prototype.isExplicitImmutability() && !prototype.isThisImmutable()) {
+                print("mut ");
+            }
         print("</span>");
         
         print("<span class=\"returnType\">");

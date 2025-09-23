@@ -114,7 +114,7 @@ public class DeepParser extends Parser {
         // see if this statement begins with a type literal
         Loc loc = curLoc();
 
-        if (curt == TokenKind.varKeyword) {
+        if (curt == TokenKind.varKeyword || curt == TokenKind.constKeyword) {
             return localDefStmt(loc, null);
         }
 //        if (curt == TokenKind.refableKeyword) {
@@ -195,8 +195,8 @@ public class DeepParser extends Parser {
      * identifier of the local variable.
      */
     private LocalDefStmt localDefStmt(Loc loc, Type localType) {
-//        boolean isConst = false;
-        consume(TokenKind.varKeyword);
+        boolean isConst = curt == TokenKind.constKeyword;
+        consume();
         
         // verify name doesn't conflict with an import type
         String name = consumeId();
@@ -208,6 +208,7 @@ public class DeepParser extends Parser {
             consume();
             localType = typeRef();
             stmt.fieldType = localType;
+            stmt.fieldType.initDefaultImmutability(isConst, false);
         }
         
         if (curt == TokenKind.assign) {
@@ -1194,6 +1195,9 @@ public class DeepParser extends Parser {
         consume(TokenKind.funKeyword);
         
         funcPrototype(closure.prototype);
+        if (!closure.prototype._explicitImmutability) {
+            closure.prototype._isImmutable = false;
+        }
 
         closure.code = block();
         

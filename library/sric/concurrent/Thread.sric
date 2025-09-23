@@ -2,9 +2,9 @@
 //@#include "sric/ScThread.h"
 
 extern noncopyable struct Mutex {
-    fun lock();
-    fun tryLock(): Bool;
-    fun unlock();
+    fun lock() mut ;
+    fun tryLock() mut : Bool;
+    fun unlock() mut ;
 }
 
 extern noncopyable struct LockGuard$<T> {
@@ -12,16 +12,16 @@ extern noncopyable struct LockGuard$<T> {
 }
 
 extern noncopyable struct CondVar {
-    fun notifyOne();
-    fun notifyAll();
-    fun wait(mutex: &Mutex);
-    fun waitFor(mutex: &Mutex, time: Int64);
+    fun notifyOne() mut ;
+    fun notifyAll() mut ;
+    fun wait(mutex: & mut Mutex) mut ;
+    fun waitFor(mutex: & mut Mutex, time: Int64) mut ;
 }
 
 
 extern noncopyable struct Thread {
-    fun join();
-    fun detach();
+    fun join() mut ;
+    fun detach() mut ;
 
-    static fun make$<T>(func: fun(args: own* Channel$<T>)static, args: own* Channel$<T>) : Thread;
+    static fun make$<T>(func: fun(args: own* mut Channel$<T>)static, args: own* mut Channel$<T>) : Thread;
 }

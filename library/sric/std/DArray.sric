@@ -4,46 +4,46 @@
 * A Inteface for DArray for dynamic reflection
 */
 extern trait List {
-    abstract fun data(): raw* Void;
+    abstract fun data() mut : raw* Void;
     abstract fun size() const : Int;
-    abstract fun clear();
-    abstract fun resize(size: Int);
+    abstract fun clear() mut ;
+    abstract fun resize(size: Int) mut ;
 }
 
 /**
 * Dynamic Array. DArray is a sequence container that encapsulates dynamic size arrays.
 */
 extern noncopyable struct DArray$<T> : List {
-    fun data(): raw* Void;
+    fun data() mut : raw* Void;
 
     fun size() const : Int;
 
-    fun add(d: T);
-    fun pop(): T;
+    fun add(d: T) mut ;
+    fun pop() mut : T;
 
-    operator fun get(i: Int): & T;
+    operator fun get(i: Int) mut : & T;
 
     fun constGet(i: Int) const: & const T;
     fun at(i: Int): & T;
 
-    fun getPtr(i: Int): * T;
+    fun getPtr(i: Int) mut : * T;
     fun constGetPtr(i: Int) const: * const T;
     
     operator fun set(i: Int, d: T);
 
-    fun clear();
-    fun resize(size: Int);
-    fun reserve(capacity: Int);
+    fun clear() mut ;
+    fun resize(size: Int) mut ;
+    fun reserve(capacity: Int) mut ;
 
-    fun removeAt(i: Int);
-    fun removeRange(begin: Int, end: Int);
+    fun removeAt(i: Int) mut ;
+    fun removeRange(begin: Int, end: Int) mut ;
 
-    fun swap(t: &DArray$<T>);
+    fun swap(t: & mut DArray$<T>) mut ;
 
     fun isEmpty() const: Bool;
 
-    fun insert(i: Int, d: T);
-    fun insertAll(i: Int, t: DArray$<T>);
+    fun insert(i: Int, d: T) mut ;
+    fun insertAll(i: Int, t: DArray$<T>) mut ;
 
     fun copy() const : DArray$<T>;
 }
