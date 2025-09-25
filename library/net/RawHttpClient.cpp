@@ -217,9 +217,9 @@ static void downloadSucceeded(emscripten_fetch_t *fetch) {
 
     self->_handle = NULL;
     // self->_isClosed = true;
+    fetch->userData = NULL;
     emscripten_fetch_close(fetch); // Free data associated with the fetch.
 
-    fetch->userData = NULL;
     sric::dealloc(self);
 }
 
@@ -246,10 +246,10 @@ static void downloadFailed(emscripten_fetch_t *fetch) {
     self->doReceive();
 
     self->_handle = NULL;
+    fetch->userData = NULL;
     // self->_isClosed = true;
     emscripten_fetch_close(fetch); // Free data associated with the fetch.
 
-    fetch->userData = NULL;
     sric::dealloc(self);
 }
 
