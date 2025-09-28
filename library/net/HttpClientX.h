@@ -25,7 +25,7 @@ public:
     /**
     * enable local file cache
     */
-    bool useCache = true;
+    bool useCache = false;
 public:
     static void initCachePath(const char* dir);
     static bool isNetUrl(const char* uri);
