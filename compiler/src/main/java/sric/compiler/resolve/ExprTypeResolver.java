@@ -117,9 +117,6 @@ public class ExprTypeResolver extends TypeResolver {
                         if (closure.captures == null) {
                             closure.captures = new ArrayList<>();
                         }
-                        if (closure.prototype.isThisImmutable() && idExpr.resolvedType != null) {
-                            idExpr.resolvedType = idExpr.resolvedType.toImmutable();
-                        }
                         closure.captures.add(idExpr);
                     }
                 }
@@ -171,7 +168,7 @@ public class ExprTypeResolver extends TypeResolver {
                         if (closure.captures == null) {
                             closure.captures = new ArrayList<>();
                         }
-                        if (closure.prototype.isThisImmutable() && f.fieldType != null) {
+                        if ((f.isLocalVar || f.isParamDef) && closure.prototype.isThisImmutable() && f.fieldType != null) {
                             idExpr.resolvedType = f.fieldType.toImmutable();
                         }
 
