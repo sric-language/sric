@@ -369,6 +369,11 @@ public class ErrorChecker extends CompilePass {
                 }
             }
             
+            //check const
+            if (v.isConstDef() && !v.fieldType.isImmutable) {
+                err("Invalid mut", v.loc);
+            }
+            
             if (v.fieldType.isMetaType()) {
                 err("Unsupport MetaType", v.loc);
             }
@@ -504,6 +509,12 @@ public class ErrorChecker extends CompilePass {
         
         if ((v.flags & FConst.Readonly) != 0) {
             err("Invalid flags", v.loc);
+        }
+        
+        if ((v.flags & FConst.Static) != 0 || (v.flags & FConst.Ctor) != 0 || !(v.parent instanceof TypeDef)) {
+            if (v.prototype._explicitImmutability) {
+                err("Invalid post flags", v.loc);
+            }
         }
         
         if ((v.flags & FConst.ConstExpr) != 0) {
@@ -1129,7 +1140,7 @@ public class ErrorChecker extends CompilePass {
                         }
 
                         if (!found) {
-                            err("Field not init:"+f.name, e.loc);
+                            err("Field not init: "+f.name, e.loc);
                         }
                     }
                 }
@@ -1439,6 +1450,7 @@ public class ErrorChecker extends CompilePass {
                 case assignSlash:
                 case assignPercent:
                     boolean assignable = false;
+                    boolean isItExpr = false;
                     if (e.lhs instanceof Expr.IdExpr idExpr) {
                         if (idExpr.name.equals(TokenKind.thisKeyword.symbol) || idExpr.name.equals(TokenKind.superKeyword.symbol)) {
                             //assignable = false;
@@ -1450,6 +1462,11 @@ public class ErrorChecker extends CompilePass {
                     else if (e.lhs instanceof Expr.AccessExpr accessExpr) {
                         if (accessExpr.resolvedDef instanceof AstNode.FieldDef f) {
                             assignable = true;
+                        }
+                        if (accessExpr.target instanceof  Expr.IdExpr idExpr) {
+                            if (idExpr.name.equals(TokenKind.dot.symbol)) {
+                                isItExpr = true;
+                            }
                         }
                     }
                     else if (e.lhs instanceof Expr.IndexExpr indexExpr) {
@@ -1468,12 +1485,20 @@ public class ErrorChecker extends CompilePass {
                     }
                     
                     if (assignable) {
-                        if (e.resolvedType != null && e.resolvedType.isImmutable) {
+                        Type targetType = e.lhs.resolvedType;
+                        if (isItExpr && targetType.isImmutable && curItBlock != null) {
+                            if (curItBlock._isConstruction) {
+                                e.lhs.forcedMutable = true;
+                                targetType = targetType.toMutable();
+                            }
+                        }
+                        
+                        if (e.lhs.forcedMutable == false && e.resolvedType != null && e.resolvedType.isImmutable) {
                             err("Const error", e.loc);
                         }
                         
                         if (curt == Token.TokenKind.assign) {
-                            verifyTypeFit(e.rhs, e.lhs.resolvedType, e.loc);
+                            verifyTypeFit(e.rhs, targetType, e.loc);
                             if (e.lhs instanceof IdExpr lr && e.rhs instanceof IdExpr ri) {
                                 if (lr.namespace == ri.namespace) {
                                     if (lr.name.equals(ri.name)) {

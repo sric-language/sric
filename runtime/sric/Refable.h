@@ -48,6 +48,11 @@ inline typename std::enable_if<std::is_polymorphic<U>::value, void*>::type toVoi
 }
 
 template<typename U>
+inline typename std::enable_if<std::is_polymorphic<U>::value, void*>::type toVoid(const U* pointer) {
+    return dynamic_cast<void*>(const_cast<U*>(pointer));
+}
+
+template<typename U>
 inline typename std::enable_if<!std::is_polymorphic<U>::value, void*>::type toVoid(U* pointer) {
     return (void*)pointer;
 }

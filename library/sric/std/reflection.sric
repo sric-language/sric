@@ -102,12 +102,12 @@ extern fun findModule(name : raw*const Int8) : *? RModule;
 /**
 * Alloc new Object from RType
 */
-extern fun newInstance(type: &RType) : own*? Void;
+extern fun newInstance(type: &const RType) : own*? Void;
 
 /**
 * Get type name by object. The object type must be virtual or abstruct.
 */
-unsafe extern fun typeOf(t: raw* Void): raw* const Int8;
+unsafe extern fun typeOf(t: raw* const Void): raw* const Int8;
 
 
 unsafe extern fun callPtrToVoid(func: raw* Void, arg: raw* Void);

@@ -71,7 +71,7 @@ extern fun rawToRef$<T>(p: raw* T): * T;
 /**
 * Convert pointer type unsafely
 */
-extern unsafe fun unsafeCast$<T>(p: raw* Void): T;
+extern unsafe fun unsafeCast$<T>(p: raw* const Void): T;
 
 //@NoDoc
 extern unsafe fun takeOwn$<T>(p: own* T): raw* T;

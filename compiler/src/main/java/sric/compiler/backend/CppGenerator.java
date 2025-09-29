@@ -747,7 +747,7 @@ public class CppGenerator extends BaseGenerator {
             print(getSymbolName(v));
         }
         
-        printFuncPrototype(v.prototype, false, v.isStatic(), implMode() || inlined, v.isAsync());
+        printFuncPrototype(v.prototype, false, implMode() || inlined);
         
         if (v.code == null) {
             if ((v.flags & FConst.Abstract) != 0) {
@@ -809,7 +809,7 @@ public class CppGenerator extends BaseGenerator {
         }
     }
     
-    private void printFuncPrototype(FuncPrototype prototype, boolean isLambda, boolean isStatic, boolean isImple, boolean isAsync) {
+    private void printFuncPrototype(FuncPrototype prototype, boolean isLambda, boolean isImple) {
         print("(");
         if (prototype != null && prototype.paramDefs != null) {
             int i = 0;
@@ -834,7 +834,7 @@ public class CppGenerator extends BaseGenerator {
         }
         print(")");
         
-        if (!isLambda && !isStatic && prototype.isThisImmutable()) {
+        if (prototype.funcDef != null && !prototype.funcDef.isCtor() && !prototype.funcDef.isStatic() && prototype.isThisImmutable()) {
             print(" const");
         }
         else if (isLambda && !prototype.isThisImmutable()) {
@@ -1529,6 +1529,17 @@ public class CppGenerator extends BaseGenerator {
                 this.visit(e.rhs);
             }
         }
+        else if (e.opToken == TokenKind.assign && e.lhs.forcedMutable) {
+            print("const_cast<");
+            printType(e.lhs.resolvedType.toMutable());
+            if (!e.lhs.resolvedType.isReference) {
+                print("&");
+            }
+            print(">(");
+            this.visit(e.lhs);
+            print(") = ");
+            this.visit(e.rhs);
+        }
         else {
             if (e.resolvedOperator !=  null) {
                 if (e.opToken == TokenKind.minus || e.opToken == TokenKind.plus || e.opToken == TokenKind.star || e.opToken == TokenKind.slash) {
@@ -1793,7 +1804,7 @@ public class CppGenerator extends BaseGenerator {
             print("[]");
         }
         
-        this.printFuncPrototype(expr.prototype, true, false, false, false);
+        this.printFuncPrototype(expr.prototype, true, false);
         
         print(" ");
         this.visit(expr.code);

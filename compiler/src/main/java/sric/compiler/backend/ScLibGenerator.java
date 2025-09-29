@@ -56,9 +56,9 @@ public class ScLibGenerator extends BaseGenerator {
         if ((flags & FConst.Abstract) != 0) {
             print("abstract ");
         }
-        if ((flags & FConst.Const) != 0) {
-            print("const ");
-        }
+//        if ((flags & FConst.Const) != 0) {
+//            print("const ");
+//        }
         if ((flags & FConst.Readonly) != 0) {
             print("readonly ");
         }
@@ -160,9 +160,9 @@ public class ScLibGenerator extends BaseGenerator {
         if (type.isImmutable) {
             print("const ");
         }
-//        else if (type.explicitImmutable) {
-//            print("mut ");
-//        }
+        else if (type.explicitImmutability) {
+            print("mut ");
+        }
         
         if (type.isReference) {
             print("&");
@@ -209,7 +209,7 @@ public class ScLibGenerator extends BaseGenerator {
         }
         else if (type.isFuncType()) {
             print("fun");
-            printFuncPrototype(((Type.FuncInfo)type.detail).prototype, false, true);
+            printFuncPrototype(((Type.FuncInfo)type.detail).prototype);
             return;
         }
         else if (type.isMetaType()) {
@@ -344,7 +344,7 @@ public class ScLibGenerator extends BaseGenerator {
         
         printGenericParamDefs(v.generiParamDefs);
 
-        printFuncPrototype(v.prototype, false, v.isStatic());
+        printFuncPrototype(v.prototype);
 
         
         if (inlined && v.code != null) {
@@ -355,7 +355,7 @@ public class ScLibGenerator extends BaseGenerator {
         }
     }
     
-    private void printFuncPrototype(AstNode.FuncPrototype prototype, boolean isLambda, boolean isStatic) {
+    private void printFuncPrototype(AstNode.FuncPrototype prototype) {
         print("(");
         if (prototype != null && prototype.paramDefs != null) {
             int i = 0;
@@ -378,9 +378,14 @@ public class ScLibGenerator extends BaseGenerator {
         }
         print(")");
         
-        if (!isLambda && !isStatic && prototype.isThisImmutable()) {
+        if (prototype.isStaticClosure()) {
+            print("static ");
+        }
+        
+        if (prototype.isThisImmutable()) {
             print(" const ");
         }
+
         
         if (prototype != null) {
             if (prototype.returnType != null && !prototype.returnType.isVoid()) {
@@ -775,7 +780,7 @@ public class ScLibGenerator extends BaseGenerator {
 //        }
 //        print("]");
         
-        this.printFuncPrototype(expr.prototype, true, false);
+        this.printFuncPrototype(expr.prototype);
         
         this.visit(expr.code);
     }

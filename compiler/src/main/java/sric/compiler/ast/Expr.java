@@ -22,6 +22,7 @@ public abstract class Expr extends AstNode {
     public boolean implicitStringConvert = false;
     public boolean checkNonnullable = false;
     public boolean implicitMove = false;
+    public boolean forcedMutable = false;
 //    public boolean implicitDereference = false;
 //    public boolean implicitGetAddress = false;
 //    public boolean isAwaitTarget = false;
@@ -187,6 +188,7 @@ public abstract class Expr extends AstNode {
         public FieldDef _storeVar;
         public TypeDef _structDef;
         public boolean _isType = false;
+        public boolean _isConstruction = false;
     }
     
     public static class LiteralExpr extends Expr {

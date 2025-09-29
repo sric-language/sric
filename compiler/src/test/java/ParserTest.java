@@ -28,7 +28,7 @@ import sric.compiler.parser.Tokenizer;
 public class ParserTest {
     @Test
     public void test() throws IOException {
-        String file = "res/code/testEndStmt.sric";
+        String file = "res/code/testStruct.sric";
         String src = Files.readString(Path.of(file));
         
         CompilerLog log = new CompilerLog();

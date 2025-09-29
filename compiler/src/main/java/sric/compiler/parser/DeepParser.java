@@ -195,19 +195,20 @@ public class DeepParser extends Parser {
      * identifier of the local variable.
      */
     private LocalDefStmt localDefStmt(Loc loc, Type localType) {
-//        boolean isConst = false;
-        consume(TokenKind.varKeyword);
+        boolean isConst = curt == TokenKind.constKeyword;
+        consume();
         
         // verify name doesn't conflict with an import type
         String name = consumeId();
         FieldDef stmt = new FieldDef(null, name);
-//        if (isConst) {
-//            stmt.flags = AstNode.Const;
-//        }
+        if (isConst) {
+            stmt.flags |= FConst.Const;
+        }
         if (curt == TokenKind.colon) {
             consume();
             localType = typeRef();
             stmt.fieldType = localType;
+            stmt.fieldType.initDefaultImmutability(isConst ? Type.FieldType.Const : Type.FieldType.Var);
         }
         
         if (curt == TokenKind.assign) {

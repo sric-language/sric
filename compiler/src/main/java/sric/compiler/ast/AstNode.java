@@ -114,6 +114,10 @@ public class AstNode {
         
         public int _enumValue = -1;
         
+        public boolean isConstDef() {
+            return (this.flags & FConst.Const) != 0;
+        }
+        
         public boolean isLocalOrParam() {
             return isLocalVar || isParamDef;
         }
@@ -481,21 +485,28 @@ public class AstNode {
     public static class FuncPrototype {
         public Type returnType;       // return type
         public ArrayList<FieldDef> paramDefs = null;   // parameter definitions
-        public int postFlags = 0;
+        
+        public boolean _explicitImmutability = false;
+        public boolean _isImmutable = false;
+        public boolean _isStaticClosure = false;
+        public FuncDef funcDef = null;
         
         public boolean isThisImmutable() {
-            return (postFlags & FConst.Const) != 0;
+            return _isImmutable;
         }
         
         public boolean isStaticClosure() {
-            return (postFlags & FConst.Static) != 0;
+            return _isStaticClosure;
         }
         
         public boolean match(FuncPrototype p) {
             if (!this.returnType.strictEquals(p.returnType)) {
                 return false;
             }
-            if (this.postFlags != p.postFlags) {
+            if (this._isImmutable != p._isImmutable) {
+                return false;
+            }
+            if (this._isStaticClosure != p._isStaticClosure) {
                 return false;
             }
             if (this.paramDefs == null && p.paramDefs != null) {
@@ -536,10 +547,10 @@ public class AstNode {
             }
             sb.append(")");
             
-            if ((postFlags & FConst.Const) != 0) {
-                sb.append(" const ");
+            if (!_isImmutable) {
+                sb.append(" mut ");
             }
-            if ((postFlags & FConst.Static) != 0) {
+            if (_isStaticClosure) {
                 sb.append(" static ");
             }
 
@@ -573,7 +584,8 @@ public class AstNode {
             nf.parent = this.parent;
             nf.prototype = new FuncPrototype();
             nf.prototype.returnType = this.prototype.returnType.templateInstantiate(typeGenericArgs);
-            nf.prototype.postFlags = this.prototype.postFlags;
+            nf.prototype._isImmutable = this.prototype._isImmutable;
+            nf.prototype._isStaticClosure = this.prototype._isStaticClosure;
             
             if (this.prototype.paramDefs != null) {
                 nf.prototype.paramDefs = new ArrayList<FieldDef>();
@@ -598,6 +610,10 @@ public class AstNode {
                 return true;
             }
             return false;
+        }
+        
+        public boolean isCtor() {
+            return (this.flags & FConst.Ctor) != 0;
         }
         
         public boolean isAsync() {

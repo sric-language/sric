@@ -26,12 +26,12 @@ sric::RefPtr<sric::RModule> findModule(const char* name) {
 	return sric::RefPtr<sric::RModule>(m);
 }
 
-sric::OwnPtr<void> newInstance(sric::RType& type) {
+sric::OwnPtr<void> newInstance(const sric::RType& type) {
 	sric::OwnPtr<void> (*func)() = (sric::OwnPtr<void> (*)())type.ctor;
 	return func();
 }
 
-const char* typeOf(void *obj) {
+const char* typeOf(const void *obj) {
 	if (!obj) return "";
 	Reflectable* r = (Reflectable*)obj;
 	return r->_typeof();

@@ -24,7 +24,7 @@ public class Type extends AstNode {
         own, ref, raw, uniq
     };
     
-//    public boolean explicitImmutable = false;
+    public boolean explicitImmutability = false;
     public boolean isImmutable = false;
     
     public boolean isReference = false;
@@ -777,9 +777,12 @@ public class Type extends AstNode {
 //        if (this.isRefable) {
 //            sb.append("refable ");
 //        }
-        
+
         if (this.isImmutable) {
             sb.append("const ");
+        }
+        else if (this.explicitImmutability) {
+            sb.append("mut ");
         }
 
         if (this.isReference) {
@@ -878,6 +881,7 @@ public class Type extends AstNode {
             }
         }
         nt.isImmutable = this.isImmutable;
+        nt.explicitImmutability = this.explicitImmutability;
         nt.isReference = this.isReference;
         nt.detail = this.detail;
         if (this.id.resolvedDef instanceof GenericParamDef g) {
@@ -888,7 +892,7 @@ public class Type extends AstNode {
                     nt.detail = at.detail;
                     nt.genericArgs = at.genericArgs;
                     if (at.isImmutable) {
-                        nt.isImmutable = true;
+                        nt.isImmutable = at.isImmutable;
                     }
                 }
             }
@@ -925,7 +929,7 @@ public class Type extends AstNode {
         type.id.resolvedType = that.id.resolvedType;
         
         type.resolvedAliasDef = that.resolvedAliasDef;
-        //type.explicitImmutable = this.explicitImmutable;
+        type.explicitImmutability = this.explicitImmutability;
         if (merge) {
             type.isImmutable |= that.isImmutable;
             type.isReference |= that.isReference;
@@ -1013,5 +1017,33 @@ public class Type extends AstNode {
         type.copyFrom(this, true);
         ((PointerInfo)type.detail).pointerAttr = PointerAttr.raw;
         return type;
+    }
+    
+    public static enum FieldType {
+        Var, Const, Param, ReturnType
+    }
+    
+    public void initDefaultImmutability(FieldType fieldType) {
+        initDefaultImmutability(fieldType, false);
+    }
+    
+    private void initDefaultImmutability(FieldType fieldType, boolean isPointerContent) {
+//        if (this.explicitImmutability) {
+//            return;
+//        }
+//        if (fieldType == FieldType.Var) {
+//            return;
+//        }
+//        else if (fieldType == FieldType.Const) {
+//            this.isImmutable = true;
+//        }
+//        else if ((fieldType == FieldType.Param) && (isPointerContent || this.isReference)) {
+//            this.isImmutable = true;
+//        }
+//        
+//        if (this.genericArgs != null && this.isPointerType()) {
+//            Type t = this.genericArgs.get(0);
+//            t.initDefaultImmutability(fieldType, true);
+//        }
     }
 }

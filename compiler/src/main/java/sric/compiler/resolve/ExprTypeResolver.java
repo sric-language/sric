@@ -880,8 +880,8 @@ public class ExprTypeResolver extends TypeResolver {
             this.funcs.pop();
             
             if (e.captures == null) {
-                e.prototype.postFlags |= FConst.Const;
-                e.prototype.postFlags |= FConst.Static;
+                e.prototype._isImmutable = true;
+                e.prototype._isStaticClosure = true;
             }
             
             e.resolvedType = Type.funcType(e);
@@ -976,6 +976,15 @@ public class ExprTypeResolver extends TypeResolver {
         
         e._structDef = sd;
         e._isType = e.target.resolvedType.isMetaType();
+        
+        if (e._isType) {
+            e._isConstruction = true;
+        }
+        else if (e.target instanceof UnaryExpr uexpr) {
+            if (uexpr.opToken == TokenKind.newKeyword) {
+                e._isConstruction = true;
+            }
+        }
 
         if (sd != null) {
             if (e.target.resolvedType.detail instanceof MetaTypeInfo mt) {
