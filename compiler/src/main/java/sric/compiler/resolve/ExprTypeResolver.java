@@ -565,10 +565,12 @@ public class ExprTypeResolver extends TypeResolver {
         return null;
     }
     
-    private AstNode resoveOnTarget(Expr target, String name, Loc loc, boolean autoDeref) {
+    private AstNode resoveOnTarget(Expr target, String name, Loc loc, boolean autoDeref, boolean checkImmutable) {
         if (!target.isResolved()) {
             return null;
         }
+        
+        boolean targetImmutable = target.resolvedType.isImmutable;
         AstNode resolvedDef = target.resolvedType.id.resolvedDef;
         
         if (target.resolvedType.isPointerType() && autoDeref) {
@@ -578,6 +580,7 @@ public class ExprTypeResolver extends TypeResolver {
 //                    type = type.genericArgs.get(0);
 //                }
                 resolvedDef = type.id.resolvedDef;
+                targetImmutable = type.isImmutable;
             }
             else {
                 resolvedDef = null;
@@ -618,6 +621,11 @@ public class ExprTypeResolver extends TypeResolver {
             if (def == null) {
                 err("Unkown name:"+name, loc);
             }
+            if (checkImmutable && !isStatic && def instanceof FuncDef funcDef) {
+                if (targetImmutable && !funcDef.prototype.isThisImmutable()) {
+                    err("Mutable function: "+name, loc);
+                }
+            }
             return def;
         }
 
@@ -647,7 +655,7 @@ public class ExprTypeResolver extends TypeResolver {
             }
             this.visit(e.target);
             
-            e.resolvedDef = resoveOnTarget(e.target, e.name, e.loc, true);
+            e.resolvedDef = resoveOnTarget(e.target, e.name, e.loc, true, false);
             if (e.resolvedDef != null) {
                 boolean targetImmutable = e.target.resolvedType.isImmutable;
                 if (e.target.resolvedType.isPointerType() && e.target.resolvedType.genericArgs != null) {
@@ -831,7 +839,7 @@ public class ExprTypeResolver extends TypeResolver {
                 }
                 else {
                     String operatorName = e.inLeftSide ? Buildin.setOperator : Buildin.getOperator;
-                    AstNode rdef = resoveOnTarget(e.target, operatorName, e.loc, false);
+                    AstNode rdef = resoveOnTarget(e.target, operatorName, e.loc, false, true);
                     if (rdef == null) {
                         err("Unknow operator []", e.loc);
                     }
@@ -1348,7 +1356,7 @@ public class ExprTypeResolver extends TypeResolver {
             return;
         }
         
-        AstNode rdef = resoveOnTarget(e.lhs, operatorName, e.loc, false);
+        AstNode rdef = resoveOnTarget(e.lhs, operatorName, e.loc, false, true);
         if (rdef == null) {
             err("Unknow operator:"+curt, e.loc);
         }

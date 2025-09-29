@@ -146,7 +146,7 @@ struct Encoder {
         if (rtype.kind == RTypeKind::Enum) {
             var value:raw* Int = unsafeCast$<raw*Int>(obj);
             for (var i = 0; i<rtype.fields.size(); ++i) {
-                var f = rtype.fields[i];
+                var f = rtype.fields.constGetPtr(i);
                 if (f.enumValue == *value) {
                     return allocator.alloc_str(f.name);
                 }
@@ -154,7 +154,7 @@ struct Encoder {
             return null;
         }
 
-        var isTransientFunc = findInstanceMethod(rtype, "_isTransient");
+        var isTransientFunc = findRMethod(rtype, "_isTransient");
         if (isTransientFunc != null) {
             if (isTransientFunc.params.size() == 0 && 
                     (isTransientFunc.returnBaseType != null && strcmp(isTransientFunc.returnBaseType, "Bool") == 0) && 
@@ -170,7 +170,7 @@ struct Encoder {
         }
 
         if (isSimpleSerial(*rtype)) {
-            var toStringFunc = findInstanceMethod(rtype, "toString");
+            var toStringFunc = findRMethod(rtype, "toString");
             if (toStringFunc != null) {
                 if (toStringFunc.params.size() == 0 && 
                         (toStringFunc.returnBaseType != null && strcmp(toStringFunc.returnBaseType, "sric::String") == 0) && 
@@ -196,7 +196,7 @@ struct Encoder {
         return node;
     }
 
-    private unsafe fun encodeFields(obj: raw* Void, rtype: raw*? RType, node: raw* JsonNode) {
+    private unsafe fun encodeFields(obj: raw* Void, rtype: raw*? const RType, node: raw* JsonNode) {
         if (rtype == null) {
             return;
         }
@@ -208,9 +208,9 @@ struct Encoder {
             encodeFields(obj, superType, node);
         }
         for (var i = 0; i<rtype.fields.size(); ++i) {
-            var f = rtype.fields[i];
+            var f = rtype.fields.constGetPtr(i);
 
-            if (!isSerializable(f)) {
+            if (!isSerializable(*f)) {
                 continue;
             }
 

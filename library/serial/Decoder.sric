@@ -218,7 +218,7 @@ struct Decoder {
         if (rtype.kind == RTypeKind::Enum) {
             var str = node.as_str();
             for (var i = 0; i<rtype.fields.size(); ++i) {
-                var f = rtype.fields[i];
+                var f = rtype.fields.constGetPtr(i);
                 if (strcmp(f.name, str) == 0) {
                     var value:raw* Int = unsafeCast$<raw*Int>(dst);
                     *value = f.enumValue;
@@ -229,7 +229,7 @@ struct Decoder {
         }
 
         if (isSimpleSerial(*rtype)) {
-            var fromStringFunc = findInstanceMethod(rtype, "fromString");
+            var fromStringFunc = findRMethod(rtype, "fromString");
             if (fromStringFunc != null) {
                 if (fromStringFunc.params.size() == 1 && strcmp(fromStringFunc.params[0].baseType, "sric::String") == 0 &&
                         (fromStringFunc.returnBaseType != null && strcmp(fromStringFunc.returnBaseType, "Bool") == 0) && 
@@ -267,7 +267,7 @@ struct Decoder {
         }
         decodeFields(dst, rtype, node);
 
-        var onDeserialize = findInstanceMethod(rtype, "_onDeserialize");
+        var onDeserialize = findRMethod(rtype, "_onDeserialize");
         if (onDeserialize != null) {
             if (onDeserialize.params.size() == 0 && 
                     (onDeserialize.returnBaseType == null || strcmp(onDeserialize.returnBaseType, "Void") == 0) && 
@@ -282,7 +282,7 @@ struct Decoder {
         return obj;
     }
 
-    private unsafe fun decodeFields(obj: raw* Void, rtype: raw*? RType, node: raw* Value) {
+    private unsafe fun decodeFields(obj: raw* Void, rtype: raw*? const RType, node: raw* Value) {
         if (rtype == null) {
             return;
         }
@@ -295,9 +295,9 @@ struct Decoder {
         }
 
         for (var i = 0; i<rtype.fields.size(); ++i) {
-            var f = rtype.fields[i];
+            var f = rtype.fields.constGetPtr(i);
             
-            if (!isSerializable(f)) {
+            if (!isSerializable(*f)) {
                 continue;
             }
 

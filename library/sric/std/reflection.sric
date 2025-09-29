@@ -97,7 +97,7 @@ struct RModule {
 /**
 * Find RModule by name
 */
-extern fun findModule(name : raw*const Int8) : *? RModule;
+extern fun findModule(name : raw*const Int8) : *? const RModule;
 
 /**
 * Alloc new Object from RType

@@ -58,7 +58,7 @@ unsafe fun sizeOfType(typeName: raw* const Int8): Int {
     return -1;
 }
 
-unsafe fun findRType(typeQname:raw* const Int8): raw*? RType {
+unsafe fun findRType(typeQname:raw* const Int8): raw*? const RType {
     var name: String = typeQname;
     var fs = name.split("::");
     if (fs.size() != 2) {
@@ -72,17 +72,17 @@ unsafe fun findRType(typeQname:raw* const Int8): raw*? RType {
         //scError("serial", "unknow module: %s", ns.c_str());
         return null;
     }
-    var rtype: *? RType;
+    var rtype: *? const RType;
     for (var i=0; i<module.types.size(); ++i) {
         if (strcmp(module.types[i].name, typeName.c_str()) == 0) {
-            rtype = module.types.getPtr(i);
+            rtype = module.types.constGetPtr(i);
             break;
         }
     }
     return rtype;
 }
 
-fun isSimpleSerial(f: &RType): Bool {
+fun isSimpleSerial(f: &const RType): Bool {
     if (f.comments.size() > 0) {
         for (var j = 0; j<f.comments.size(); ++j) {
             if (strcmp(f.comments[j].content, "SimpleSerial") == 0) {
@@ -93,7 +93,7 @@ fun isSimpleSerial(f: &RType): Bool {
     return false;
 }
 
-fun isSerializable(f: &RField): Bool {
+fun isSerializable(f: &const RField): Bool {
     if ((f.flags & RFlags::Static) != 0) {
         return false;
     }
@@ -163,7 +163,7 @@ private struct TypeNameParser {
     }
 }
 
-unsafe fun findInstanceMethod(rtype: raw*? RType, name: raw* const Int8): raw*? RFunc {
+unsafe fun findRMethod(rtype: raw*? const RType, name: raw* const Int8): raw*? const RFunc {
     if (rtype == null) {
         return null;
     }
@@ -172,15 +172,37 @@ unsafe fun findInstanceMethod(rtype: raw*? RType, name: raw* const Int8): raw*? 
     }
 
     for (var i = 0; i<rtype.funcs.size(); ++i) {
-        var f = rtype.funcs[i];
+        var f = rtype.funcs.constGetPtr(i);
         if (strcmp(f.name, name) == 0) {
-            return &f;
+            return f;
         }
     }
 
     if (rtype.superType != null) {
         var superType = findRType(rtype.superType);
-        return findInstanceMethod(superType, name);
+        return findRMethod(superType, name);
+    }
+    return null;
+}
+
+unsafe fun findRField(rtype: raw*? const RType, name: raw* const Int8): raw*? const RField {
+    if (rtype == null) {
+        return null;
+    }
+    if (rtype.flags & RFlags::Reflect == 0) {
+        return null;
+    }
+
+    for (var i = 0; i<rtype.fields.size(); ++i) {
+        var f = rtype.fields.constGetPtr(i);
+        if (strcmp(f.name, name) == 0) {
+            return f;
+        }
+    }
+
+    if (rtype.superType != null) {
+        var superType = findRType(rtype.superType);
+        return findRField(superType, name);
     }
     return null;
 }

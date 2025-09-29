@@ -1,0 +1,9 @@
+extern struct DArray$<T> {
+    operator fun get(i: Int): & T;
+}
+
+
+fun foo() {
+    var a: const DArray$<Int> = DArray$<Int> {};
+    var b: const Int = a[0];
+}
