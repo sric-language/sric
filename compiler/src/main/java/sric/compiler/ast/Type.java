@@ -983,6 +983,18 @@ public class Type extends AstNode {
         return type;
     }
     
+    public Type toShallowImmutable() {
+        if (this.isImmutable) {
+            return this;
+        }
+        
+        //shadow copy
+        Type type = new Type(this.id);
+        type.copyFrom(this, false);
+        type.isImmutable = true;
+        return type;
+    }
+    
     public Type toDereference() {
         if (!this.isReference) {
             return this;

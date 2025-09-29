@@ -169,7 +169,7 @@ public class ExprTypeResolver extends TypeResolver {
                             closure.captures = new ArrayList<>();
                         }
                         if ((f.isLocalVar || f.isParamDef) && closure.prototype.isThisImmutable() && f.fieldType != null) {
-                            idExpr.resolvedType = f.fieldType.toImmutable();
+                            idExpr.resolvedType = f.fieldType.toShallowImmutable();
                         }
 
                         closure.captures.add(idExpr);

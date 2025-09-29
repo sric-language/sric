@@ -303,7 +303,7 @@ namespace sric
             return *this;
         }
 
-        OwnPtr<T> lock() {
+        OwnPtr<T> lock() const {
             if (!pointer) {
                 return OwnPtr<T>();
             }

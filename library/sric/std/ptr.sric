@@ -7,7 +7,7 @@
 */
 extern struct WeakPtr$<T> {
     fun set(p: own*? T);
-    fun lock(): own*? T;
+    fun lock() const : own*? T;
 }
 
 /**
