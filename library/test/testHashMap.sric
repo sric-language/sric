@@ -37,7 +37,7 @@ fun testHashMap3() {
 
     var s = 0;
     var p = &s;
-    map.eachWhile(fun(v:& const Int, k:& const String): Bool {
+    map.eachWhile(fun(v:& const Int, k:& const String) mut: Bool {
         //printf("%d:%s\n", v, k.c_str());
         verify( v == k.toInt32());
         

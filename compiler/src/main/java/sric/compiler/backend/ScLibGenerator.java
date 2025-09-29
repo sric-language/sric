@@ -382,7 +382,12 @@ public class ScLibGenerator extends BaseGenerator {
             print("static ");
         }
         
-        if (prototype.isThisImmutable()) {
+        if (prototype.funcDef == null) {
+            if (!prototype.isThisImmutable()) {
+                print(" mut ");
+            }
+        }
+        else if (prototype.isThisImmutable()) {
             print(" const ");
         }
 

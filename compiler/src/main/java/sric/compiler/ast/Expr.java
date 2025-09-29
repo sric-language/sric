@@ -27,6 +27,23 @@ public abstract class Expr extends AstNode {
 //    public boolean implicitGetAddress = false;
 //    public boolean isAwaitTarget = false;
     public boolean isTopExpr = false;
+    
+    @Override
+    public boolean copyTo(AstNode node) {
+        super.copyTo(node);
+        Expr nexpr = (Expr)(node);
+        nexpr.resolvedType = this.resolvedType;
+        nexpr.inLeftSide = this.inLeftSide;
+        nexpr.isStmt = this.isStmt;
+        nexpr.isPointerConvert = this.isPointerConvert;
+        nexpr.implicitTypeConvertTo = this.implicitTypeConvertTo;
+        nexpr.implicitStringConvert = this.implicitStringConvert;
+        nexpr.checkNonnullable = this.checkNonnullable;
+        nexpr.implicitMove = this.implicitMove;
+        nexpr.forcedMutable = this.forcedMutable;
+        nexpr.isTopExpr = this.isTopExpr;
+        return true;
+    }
         
     public boolean isResolved() {
         return resolvedType != null;
@@ -127,6 +144,25 @@ public abstract class Expr extends AstNode {
         
         public IdExpr(String name) {
             this.name = name;
+        }
+        
+        @Override
+        public boolean copyTo(AstNode node) {
+            super.copyTo(node);
+            Expr.IdExpr nexpr = (Expr.IdExpr)(node);
+            nexpr.name = this.name;
+            nexpr.namespace = this.namespace;
+            nexpr.resolvedDef = this.resolvedDef;
+            nexpr._autoDerefRefableVar = this._autoDerefRefableVar;
+            nexpr.implicitThis = this.implicitThis;
+            nexpr._isAccessExprTarget = this._isAccessExprTarget;
+            return true;
+        }
+        
+        public AstNode clone() {
+            Expr.IdExpr nexpr = new Expr.IdExpr(name);
+            this.copyTo(nexpr);
+            return nexpr;
         }
         
         public void setNamespace(IdExpr ns) {

@@ -1195,6 +1195,10 @@ public class DeepParser extends Parser {
         consume(TokenKind.funKeyword);
         
         funcPrototype(closure.prototype);
+        
+        if (!closure.prototype._explicitImmutability) {
+            closure.prototype._isImmutable = true;
+        }
 
         closure.code = block();
         

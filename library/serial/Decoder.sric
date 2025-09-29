@@ -231,7 +231,7 @@ struct Decoder {
         if (isSimpleSerial(*rtype)) {
             var fromStringFunc = findRMethod(rtype, "fromString");
             if (fromStringFunc != null) {
-                if (fromStringFunc.params.size() == 1 && strcmp(fromStringFunc.params[0].baseType, "sric::String") == 0 &&
+                if (fromStringFunc.params.size() == 1 && strcmp(fromStringFunc.params.constGet(0).baseType, "sric::String") == 0 &&
                         (fromStringFunc.returnBaseType != null && strcmp(fromStringFunc.returnBaseType, "Bool") == 0) && 
                         fromStringFunc.pointer != null) {
                     var str: String = node.as_str();

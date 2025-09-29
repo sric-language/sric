@@ -19,6 +19,12 @@ public class AstNode {
 
     public Loc loc;
     public int len = 0;
+    
+    public boolean copyTo(AstNode node) {
+        node.len = this.len;
+        node.loc = this.loc;
+        return true;
+    }
         
     public interface Visitor {
         public void visit(AstNode node);

@@ -1,0 +1,18 @@
+extern struct DArray$<T> {
+    var i: Int = 0;
+    fun get(i: Int): T;
+
+    fun test() {
+        var b = fun() {
+            i = 1;
+        }
+    }
+}
+
+
+fun foo() {
+    var a = DArray$<Int> {};
+    var b = fun() {
+        var i = a.get(0);
+    }
+}
