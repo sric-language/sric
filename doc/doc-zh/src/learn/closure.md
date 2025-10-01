@@ -9,7 +9,7 @@ fun foo(f: fun(a:Int):Int) {
 foo(fun(a:Int):Int{
     printf("%d\n", a)
     return a + 1
-});
+})
 ```
 暂不支持闭包的返回类型推断，需要显式指定返回类型。
 
@@ -19,7 +19,16 @@ foo(fun(a:Int):Int{
 var i = 0
 var f = fun(a:Int):Int{
     return a + i
-};
+}
+```
+
+## 可变闭包
+默认捕获的变量是不可变的
+```
+var i = 0
+var f = fun(a:Int) mut {
+    i = 1
+}
 ```
 
 ## 静态闭包

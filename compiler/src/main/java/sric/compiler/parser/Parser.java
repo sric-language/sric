@@ -951,7 +951,7 @@ public class Parser {
         Loc loc = curLoc();
         consume(TokenKind.star);
         boolean isNullable = false;
-        if (curt == TokenKind.question) {
+        if (curt == TokenKind.question && !cur.whitespace) {
             consume(TokenKind.question);
             isNullable = true;
         }

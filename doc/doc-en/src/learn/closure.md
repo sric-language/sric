@@ -8,7 +8,7 @@ fun foo(f: fun(a:Int):Int) {
 foo(fun(a:Int):Int{
     printf("%d\n", a)
     return a + 1
-});
+})
 ```
 Return type inference is not yet supported for closures - the return type must be explicitly specified.
 
@@ -18,7 +18,16 @@ By default, external variables are captured by value:
 var i = 0
 var f = fun(a:Int):Int{
     return a + i
-};
+}
+```
+
+## Mutable
+Variables captured by default are immutable.
+```
+var i = 0
+var f = fun(a:Int) mut {
+    i = 1
+}
 ```
 
 ## Static Closures
