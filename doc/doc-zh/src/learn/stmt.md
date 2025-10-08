@@ -76,6 +76,3 @@ var b = p is own* A
 其他类型转换使用unsafeCast函数来完成。
 
 
-## 异常处理
-
-Sric不支持异常处理，可用Optional来返回错误。

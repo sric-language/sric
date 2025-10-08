@@ -71,5 +71,3 @@ var b = p is own* A
 ```
 Other conversions use unsafeCast.
 
-### Error Handling
-Since Sric does not support exception handling, Optional can serve as an alternative for error return.

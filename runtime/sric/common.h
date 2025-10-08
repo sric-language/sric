@@ -29,8 +29,24 @@
     #define SC_UNUSED
 #endif
 
-namespace sric
-{
+#if defined(_MSC_VER)
+    #define DEBUG_BREAK() __debugbreak()
+#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+    #define DEBUG_BREAK() __asm__ volatile("int $0x03")
+#elif defined(__GNUC__) && defined(__arm__)
+    #define DEBUG_BREAK() __asm__ volatile(".inst 0xe7f001f0")
+#elif defined(__GNUC__) && defined(__aarch64__)
+    #define DEBUG_BREAK() __asm__ volatile(".inst 0xd4200000")
+#elif defined(__GNUC__) || defined(__clang__)
+    #define DEBUG_BREAK() __builtin_trap()
+#else
+    #include <signal.h>
+    #if defined(SIGTRAP)
+        #define DEBUG_BREAK() raise(SIGTRAP)
+    #else
+        #define DEBUG_BREAK() raise(SIGABRT)
+    #endif
+#endif
 
 #ifndef SC_CHECK
     #define sc_assert(c, m) 
@@ -38,10 +54,13 @@ namespace sric
     #define sc_assert(c, msg) \
         if (!(c)) {\
             fprintf(stderr, "ERROR: %s\n", msg);\
+            DEBUG_BREAK();\
             abort();\
         }
 #endif // SC_CHECK
 
+namespace sric
+{
     inline void verify(bool c, const char* msg = nullptr) {
         if (!(c)) {
             if (msg) fprintf(stderr, "verify fail: %s\n", msg);
