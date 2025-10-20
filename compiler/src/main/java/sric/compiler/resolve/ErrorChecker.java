@@ -525,12 +525,36 @@ public class ErrorChecker extends CompilePass {
             verifyOperatorDef(v);
         }
         
+        if (v.isDConst()) {
+            if (v.prototype.isThisImmutable()) {
+                err("Invalid post const flags", v.loc);
+            }
+            if (v.prototype.returnType == null || (!v.prototype.returnType.isPointerType() && !v.prototype.returnType.isReference) ) {
+                err("Invalid dconst flags", v.loc);
+            }
+            else if (v.prototype.returnType.genericArgs != null && v.prototype.returnType.genericArgs.get(0).isImmutable) {
+                err("Invalid returning const type", v.loc);
+            }
+        }
+        
         if (v.code != null) {
             if ((v.flags & FConst.Unsafe) != 0) {
                 ++inUnsafe;
             }
 
+            if (v.isDConst()) {
+                v.prototype._isImmutable = true;
+                if (v.prototype.returnType != null) {
+                    v.prototype.returnType.setPointerContentImmutable(true);
+                }
+            }
             this.visit(v.code);
+            if (v.isDConst()) {
+                v.prototype._isImmutable = false;
+                if (v.prototype.returnType != null) {
+                    v.prototype.returnType.setPointerContentImmutable(false);
+                }
+            }
             
             if (v.prototype.returnType != null && !v.prototype.returnType.isVoid()) {
                 if (!v.code.isLastReturnValue()) {

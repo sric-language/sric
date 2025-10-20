@@ -447,8 +447,8 @@ public class Parser {
                 case abstractKeyword:
                     flags = flags | (FConst.Abstract);
                     break;
-//                case constKeyword:
-//                    flags = flags | (FConst.Const);
+//                case dconstKeyword:
+//                    flags = flags | (FConst.DConst);
 //                    break;
                 case readonlyKeyword:
                     flags = flags | (FConst.Readonly);
@@ -544,6 +544,11 @@ public class Parser {
                 case constKeyword:
                     prototype._isImmutable = true;
                     prototype._explicitImmutability = true;
+                    break;
+                case dconstKeyword:
+//                    prototype._isImmutable = true;
+//                    prototype._explicitImmutability = true;
+                    prototype._isDConst = true;
                     break;
                 case mutableKeyword:
                     prototype._isImmutable = false;

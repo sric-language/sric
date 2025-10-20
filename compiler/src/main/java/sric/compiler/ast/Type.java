@@ -37,6 +37,7 @@ public class Type extends AstNode {
     public static class FuncInfo extends TypeInfo {
         public FuncPrototype prototype;
         public FuncDef funcDef = null;
+        public boolean _isConstVersion = false;
         
         public boolean isInstanceMethod() {
             return funcDef != null && !funcDef.isStatic();
@@ -557,9 +558,12 @@ public class Type extends AstNode {
         return type;
     }
     
-    public static Type funcType(FuncDef f) {
+    public static Type funcType(FuncDef f, boolean isConstVersion) {
         Type type = funcType(f.loc, f.prototype);
         ((FuncInfo)type.detail).funcDef = f;
+        if (f.isDConst()) {
+            ((FuncInfo)type.detail)._isConstVersion = isConstVersion;
+        }
         return type;
     }
     
@@ -981,6 +985,18 @@ public class Type extends AstNode {
         }
         type.isImmutable = true;
         return type;
+    }
+    
+    public boolean setPointerContentImmutable(boolean immutable) {
+        if (this.isPointerType() && this.genericArgs != null) {
+            this.genericArgs.get(0).isImmutable = immutable;
+            return true;
+        }
+        if (this.isReference) {
+            this.isImmutable = immutable;
+            return true;
+        }
+        return false;
     }
     
     public Type toShallowImmutable() {

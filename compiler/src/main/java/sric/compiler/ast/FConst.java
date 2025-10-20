@@ -34,7 +34,7 @@ public class FConst {
     public static final int Readonly   = 0x00400000;
     public static final int Async      = 0x00800000;
     public static final int Overload   = 0x01000000;
-//    public static final int Closure    = 0x02000000;
+//    public static final int DConst     = 0x02000000;
     public static final int Throws     = 0x04000000;
     public static final int Reflect    = 0x08000000;
     public static final int Inline     = 0x10000000;

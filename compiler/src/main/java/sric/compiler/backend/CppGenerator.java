@@ -444,6 +444,13 @@ public class CppGenerator extends BaseGenerator {
             print("(*");
         }
         
+        if (id._customAddressOf && curStruct != null) {
+            print("sric::RefPtr<");
+            this.printType(id.resolvedType);
+            print(">(sc_thisref, ");
+            print("&");
+        }
+        
         if (id.implicitThis && curStruct != null && curStruct.isSafe()) {
             print("sc_this->");
         }
@@ -453,6 +460,10 @@ public class CppGenerator extends BaseGenerator {
         }
         else {
             print(filterSymbolName(id.name));
+        }
+        
+        if (id._customAddressOf && curStruct != null) {
+            print(")");
         }
         
         if (id._autoDerefRefableVar && id.resolvedDef instanceof FieldDef df && df.isRefable) {
@@ -801,6 +812,23 @@ public class CppGenerator extends BaseGenerator {
         
         if (isEntryPoint(v) && headMode) {
             return;
+        }
+        
+        if (v.isDConst()) {
+            v.prototype._isImmutable = true;
+            if (v.prototype.returnType != null) {
+                v.prototype.returnType.setPointerContentImmutable(true);
+            }
+            
+            printFunc(v, false);
+            if ((v.flags & FConst.Operator) != 0 && !v.name.equals("set") && !v.name.equals("compare")) {
+                printFunc(v, true);
+            }
+            
+            v.prototype._isImmutable = false;
+            if (v.prototype.returnType != null) {
+                v.prototype.returnType.setPointerContentImmutable(false);
+            }
         }
         
         printFunc(v, false);
@@ -1247,7 +1275,7 @@ public class CppGenerator extends BaseGenerator {
             this.printIdExpr(e);
         }
         else if (v instanceof AccessExpr e) {
-            if (e._addressOf && e.target.resolvedType != null) {
+            if (e._customAddressOf && e.target.resolvedType != null) {
                 if (e.target.resolvedType.detail instanceof Type.PointerInfo pinfo) {
                     print("sric::RefPtr<");
                     this.printType(e.resolvedType);
@@ -1339,7 +1367,7 @@ public class CppGenerator extends BaseGenerator {
                         this.visit(e.operand);
                         print(")");
                     }
-                    else if (e._addressOfField) {
+                    else if (e._ignoreAddressOfForCustom) {
                         this.visit(e.operand);
                     }
                     else {

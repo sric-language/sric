@@ -218,7 +218,7 @@ struct Decoder {
         if (rtype.kind == RTypeKind::Enum) {
             var str = node.as_str();
             for (var i = 0; i<rtype.fields.size(); ++i) {
-                var f = rtype.fields.constGetPtr(i);
+                var f = rtype.fields.getPtr(i);
                 if (strcmp(f.name, str) == 0) {
                     var value:raw* Int = unsafeCast$<raw*Int>(dst);
                     *value = f.enumValue;
@@ -231,7 +231,7 @@ struct Decoder {
         if (isSimpleSerial(*rtype)) {
             var fromStringFunc = findRMethod(rtype, "fromString");
             if (fromStringFunc != null) {
-                if (fromStringFunc.params.size() == 1 && strcmp(fromStringFunc.params.constGet(0).baseType, "sric::String") == 0 &&
+                if (fromStringFunc.params.size() == 1 && strcmp(fromStringFunc.params.get(0).baseType, "sric::String") == 0 &&
                         (fromStringFunc.returnBaseType != null && strcmp(fromStringFunc.returnBaseType, "Bool") == 0) && 
                         fromStringFunc.pointer != null) {
                     var str: String = node.as_str();
@@ -295,7 +295,7 @@ struct Decoder {
         }
 
         for (var i = 0; i<rtype.fields.size(); ++i) {
-            var f = rtype.fields.constGetPtr(i);
+            var f = rtype.fields.getPtr(i);
             
             if (!isSerializable(*f)) {
                 continue;

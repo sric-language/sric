@@ -88,7 +88,12 @@ public:
         return _data[i];
     }
 
-    const T& constGet(int i) const {
+    const T& at(int i) const {
+        sric::verify(i >= 0 && i < size(), "index out of array");
+        return _data[i];
+    }
+
+    const T& get(int i) const {
         sc_assert(i >= 0 && i < size(), "index out of array");
         return _data[i];
     }
@@ -103,7 +108,7 @@ public:
 #endif
     }
 
-    RefPtr<const T> constGetPtr(int i) const {
+    RefPtr<const T> getPtr(int i) const {
         DArray* self = const_cast<DArray*>(this);
         T* t = &self->get(i);
 #ifndef SC_NO_CHECK

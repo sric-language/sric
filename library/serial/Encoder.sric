@@ -146,7 +146,7 @@ struct Encoder {
         if (rtype.kind == RTypeKind::Enum) {
             var value:raw* Int = unsafeCast$<raw*Int>(obj);
             for (var i = 0; i<rtype.fields.size(); ++i) {
-                var f = rtype.fields.constGetPtr(i);
+                var f = rtype.fields.getPtr(i);
                 if (f.enumValue == *value) {
                     return allocator.alloc_str(f.name);
                 }
@@ -208,7 +208,7 @@ struct Encoder {
             encodeFields(obj, superType, node);
         }
         for (var i = 0; i<rtype.fields.size(); ++i) {
-            var f = rtype.fields.constGetPtr(i);
+            var f = rtype.fields.getPtr(i);
 
             if (!isSerializable(*f)) {
                 continue;

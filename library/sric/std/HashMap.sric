@@ -18,21 +18,21 @@ struct HashMap$<K, V> {
     //static var defValue: const refable V;
     private var length: Int = 0;
     
-    private fun constGetEntryList(k: & const K) const : * const MapEntryList$<K,V> {
-        var h = hashCode$<K>(k);
-        h %= table.size();
-        return table.constGetPtr(h);
-    }
+    // private fun constGetEntryList(k: & const K) const : * const MapEntryList$<K,V> {
+    //     var h = hashCode$<K>(k);
+    //     h %= table.size();
+    //     return table.constGetPtr(h);
+    // }
 
-    private fun getEntryList(k: & const K) : * MapEntryList$<K,V> {
+    private fun getEntryList(k: & const K) dconst: * MapEntryList$<K,V> {
         var h = hashCode$<K>(k);
         h %= table.size();
         return table.getPtr(h);
     }
 
     fun constGet(k: &const K): *? const V {
-        var list = constGetEntryList(k);
-        for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
+        var list = getEntryList(k);
+        for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
                 return &itr.v;
             }
@@ -105,8 +105,8 @@ struct HashMap$<K, V> {
     }
     
     fun contains(k: &const K) const : Bool {
-        var list = constGetEntryList(k);
-        for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
+        var list = getEntryList(k);
+        for (var itr = list.list.first(); itr != null; itr = itr.next) {
             if (compare$<K>(itr.k, k) == 0) {
                 return true;
             }
@@ -119,8 +119,8 @@ struct HashMap$<K, V> {
     */
     fun eachWhile(f: fun(v:& const V, k:& const K):Bool) const {
         for (var i = 0; i<table.size(); ++i) {
-            var list = table.constGetPtr(i);
-            for (var itr = list.list.constFirst(); itr != null; itr = itr.next) {
+            var list = table.getPtr(i);
+            for (var itr = list.list.first(); itr != null; itr = itr.next) {
                 if (!f(itr.v, itr.k)) {
                     return;
                 }

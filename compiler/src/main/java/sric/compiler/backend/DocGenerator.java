@@ -103,6 +103,9 @@ public class DocGenerator extends BaseGenerator {
         if ((flags & FConst.Abstract) != 0) {
             print("abstract ");
         }
+//        if ((flags & FConst.DConst) != 0) {
+//            print("dconst ");
+//        }
         if ((flags & FConst.Const) != 0) {
             print("const ");
         }
@@ -304,8 +307,17 @@ public class DocGenerator extends BaseGenerator {
             if (prototype.isStaticClosure()) {
                 print("static ");
             }
-            if (!prototype.isThisImmutable()) {
-                print("mut ");
+            
+            if (prototype._isDConst) {
+                print(" dconst ");
+            }
+            else if (prototype.funcDef == null) {
+                if (!prototype.isThisImmutable()) {
+                    print(" mut ");
+                }
+            }
+            else if (prototype.isThisImmutable()) {
+                print(" const ");
             }
         print("</span>");
         

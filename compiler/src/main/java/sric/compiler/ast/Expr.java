@@ -53,7 +53,7 @@ public abstract class Expr extends AstNode {
         public Token.TokenKind opToken;   // operator token type (Token.bang, etc)
         public Expr operand;    // operand expression
         
-        public boolean _addressOfField = false;
+        public boolean _ignoreAddressOfForCustom = false;
         public boolean _addressOfSafeStruct = false;
         
         public UnaryExpr(TokenKind tok, Expr operand) {
@@ -141,6 +141,7 @@ public abstract class Expr extends AstNode {
         
         public boolean _autoDerefRefableVar = true;
         public boolean _isAccessExprTarget = false;
+        public boolean _customAddressOf = false;
         
         public IdExpr(String name) {
             this.name = name;
@@ -156,6 +157,7 @@ public abstract class Expr extends AstNode {
             nexpr._autoDerefRefableVar = this._autoDerefRefableVar;
             nexpr.implicitThis = this.implicitThis;
             nexpr._isAccessExprTarget = this._isAccessExprTarget;
+            nexpr._customAddressOf = this._customAddressOf;
             return true;
         }
         
@@ -202,7 +204,7 @@ public abstract class Expr extends AstNode {
         public AstNode resolvedDef;
         public Token.TokenKind opToken;
         
-        public boolean _addressOf = false;
+        public boolean _customAddressOf = false;
     }
     
     public static class IfExpr extends Expr {

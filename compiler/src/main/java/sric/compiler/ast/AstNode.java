@@ -495,6 +495,7 @@ public class AstNode {
         public boolean _explicitImmutability = false;
         public boolean _isImmutable = false;
         public boolean _isStaticClosure = false;
+        public boolean _isDConst = false;
         public FuncDef funcDef = null;
         
         public boolean isThisImmutable() {
@@ -553,7 +554,10 @@ public class AstNode {
             }
             sb.append(")");
             
-            if (!_isImmutable) {
+            if (_isDConst) {
+                sb.append(" dconst ");
+            }
+            else if (!_isImmutable) {
                 sb.append(" mut ");
             }
             if (_isStaticClosure) {
@@ -592,6 +596,7 @@ public class AstNode {
             nf.prototype.returnType = this.prototype.returnType.templateInstantiate(typeGenericArgs);
             nf.prototype._isImmutable = this.prototype._isImmutable;
             nf.prototype._isStaticClosure = this.prototype._isStaticClosure;
+            nf.prototype._isDConst = this.prototype._isDConst;
             
             if (this.prototype.paramDefs != null) {
                 nf.prototype.paramDefs = new ArrayList<FieldDef>();
@@ -624,6 +629,10 @@ public class AstNode {
         
         public boolean isAsync() {
             return (this.flags & FConst.Async) != 0;
+        }
+        
+        public boolean isDConst() {
+            return this.prototype._isDConst;
         }
     }
 

@@ -93,6 +93,7 @@ public class Token {
         structKeyword("struct", true),
         enumKeyword("enum", true),
         constKeyword("const", true),
+        dconstKeyword("dconst", true),
         continueKeyword("continue", true),
         defaultKeyword("default", true),
         doKeyword("do", true),

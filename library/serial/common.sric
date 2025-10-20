@@ -74,8 +74,8 @@ unsafe fun findRType(typeQname:raw* const Int8): raw*? const RType {
     }
     var rtype: *? const RType;
     for (var i=0; i<module.types.size(); ++i) {
-        if (strcmp(module.types.constGet(i).name, typeName.c_str()) == 0) {
-            rtype = module.types.constGetPtr(i);
+        if (strcmp(module.types.get(i).name, typeName.c_str()) == 0) {
+            rtype = module.types.getPtr(i);
             break;
         }
     }
@@ -85,7 +85,7 @@ unsafe fun findRType(typeQname:raw* const Int8): raw*? const RType {
 fun isSimpleSerial(f: &const RType): Bool {
     if (f.comments.size() > 0) {
         for (var j = 0; j<f.comments.size(); ++j) {
-            if (strcmp(f.comments.constGet(j).content, "SimpleSerial") == 0) {
+            if (strcmp(f.comments.get(j).content, "SimpleSerial") == 0) {
                 return true;
             }
         }
@@ -100,7 +100,7 @@ fun isSerializable(f: &const RField): Bool {
 
     if (f.comments.size() > 0) {
         for (var j = 0; j<f.comments.size(); ++j) {
-            if (strcmp(f.comments.constGet(j).content, "Transient") == 0) {
+            if (strcmp(f.comments.get(j).content, "Transient") == 0) {
                 return false;
             }
         }
@@ -172,7 +172,7 @@ unsafe fun findRMethod(rtype: raw*? const RType, name: raw* const Int8): raw*? c
     }
 
     for (var i = 0; i<rtype.funcs.size(); ++i) {
-        var f = rtype.funcs.constGetPtr(i);
+        var f = rtype.funcs.getPtr(i);
         if (strcmp(f.name, name) == 0) {
             return f;
         }
@@ -194,7 +194,7 @@ unsafe fun findRField(rtype: raw*? const RType, name: raw* const Int8): raw*? co
     }
 
     for (var i = 0; i<rtype.fields.size(); ++i) {
-        var f = rtype.fields.constGetPtr(i);
+        var f = rtype.fields.getPtr(i);
         if (strcmp(f.name, name) == 0) {
             return f;
         }

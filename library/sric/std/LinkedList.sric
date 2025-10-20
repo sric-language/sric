@@ -90,19 +90,19 @@ struct LinkedList$<T: Linkable$<T>> {
         return length == 0;
     }
 
-    fun constFirst() const : *? const T {
+    // fun constFirst() const : *? const T {
+    //     return head;
+    // }
+
+    fun first() dconst: *?T {
         return head;
     }
 
-    fun first(): *?T {
-        return head;
-    }
-
-    fun last(): *?T {
+    fun last() dconst: *?T {
         return tail;
     }
 
-    fun end(): *?T {
+    fun end() dconst: *?T {
         return null;
     }
 }

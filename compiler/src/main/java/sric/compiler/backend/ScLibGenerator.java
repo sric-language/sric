@@ -56,8 +56,8 @@ public class ScLibGenerator extends BaseGenerator {
         if ((flags & FConst.Abstract) != 0) {
             print("abstract ");
         }
-//        if ((flags & FConst.Const) != 0) {
-//            print("const ");
+//        if ((flags & FConst.DConst) != 0) {
+//            print("dconst ");
 //        }
         if ((flags & FConst.Readonly) != 0) {
             print("readonly ");
@@ -382,7 +382,10 @@ public class ScLibGenerator extends BaseGenerator {
             print("static ");
         }
         
-        if (prototype.funcDef == null) {
+        if (prototype._isDConst) {
+            print(" dconst");
+        }
+        else if (prototype.funcDef == null) {
             if (!prototype.isThisImmutable()) {
                 print(" mut ");
             }

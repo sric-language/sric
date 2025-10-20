@@ -1,0 +1,17 @@
+struct A {
+    var i : Int;
+
+    fun get() dconst : *Int {
+        return &i;
+    }
+}
+
+fun main()
+{
+    var a = A {};
+    var ai = a.get();
+    *ai = 1;
+
+    var b: const A = A {};
+    var bi = b.get();
+}

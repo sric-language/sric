@@ -271,6 +271,13 @@ public class ExprTypeResolver extends TypeResolver {
         this.curFunc = v;
         this.funcs.push(v);
         
+        if (v.isDConst()) {
+            v.prototype._isImmutable = true;
+            if (v.prototype.returnType != null) {
+                v.prototype.returnType.setPointerContentImmutable(true);
+            }
+        }
+        
         if ((v.flags & FConst.Ctor) != 0) {
             if (v.parent instanceof TypeDef td) {
                 if (v.name.equals(newKeyword.symbol)) {
@@ -299,6 +306,13 @@ public class ExprTypeResolver extends TypeResolver {
             this.visit(v.code);
         }
         preScope = null;
+        
+        if (v.isDConst()) {
+            v.prototype._isImmutable = false;
+            if (v.prototype.returnType != null) {
+                v.prototype.returnType.setPointerContentImmutable(false);
+            }
+        }
         
         if (v.generiParamDefs != null) {
             this.popScope();
@@ -544,11 +558,11 @@ public class ExprTypeResolver extends TypeResolver {
         }
         else if (resolvedDef instanceof FuncDef f) {
             if (targetImmutable) {
-                if (!f.prototype.isThisImmutable()) {
+                if (!f.prototype.isThisImmutable() && !f.isDConst()) {
                     err("Mutable function: " + f.name, loc);
                 }
             }
-            return Type.funcType(f);
+            return Type.funcType(f, targetImmutable);
         }
         else if (resolvedDef instanceof TypeAlias f) {
             return Type.metaType(f.loc, f.type);
@@ -626,7 +640,7 @@ public class ExprTypeResolver extends TypeResolver {
                 err("Unkown name:"+name, loc);
             }
             if (checkImmutable && !isStatic && def instanceof FuncDef funcDef) {
-                if (targetImmutable && !funcDef.prototype.isThisImmutable()) {
+                if (targetImmutable && !funcDef.prototype.isThisImmutable() && !funcDef.isDConst()) {
                     err("Mutable function: "+name, loc);
                 }
             }
@@ -750,29 +764,39 @@ public class ExprTypeResolver extends TypeResolver {
                         if (e.operand.resolvedType.isArray()) {
                             elmentType = e.operand.resolvedType.genericArgs.get(0);
                         }
-                        //safe struct
+                        //field type is safe struct
                         else if (e.operand.resolvedType.id.resolvedDef instanceof TypeDef td && td.isSafe()) {
                             e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
                             e._addressOfSafeStruct = true;
                         }
-                        //address of local field
-                        else if (e.operand instanceof IdExpr idExpr && idExpr.resolvedDef instanceof FieldDef f && f.isLocalVar) {
-                            e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
-                            f.isRefable = true;
-                            idExpr._autoDerefRefableVar = false;
+                        else if (e.operand instanceof IdExpr idExpr) {
+                            //address of local field
+                            if (idExpr.resolvedDef instanceof FieldDef f && f.isLocalVar) {
+                                e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                                f.isRefable = true;
+                                idExpr._autoDerefRefableVar = false;
+                            }
+                            //address of this field
+                            else if (idExpr.implicitThis && curStruct!= null && curStruct.isSafe()) {
+                                e._ignoreAddressOfForCustom = true;
+                                idExpr._customAddressOf = true;
+                                idExpr._autoDerefRefableVar = false;
+                                curFunc._useThisAsRefPtr = true;
+                                e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
+                            }
                         }
                         else if (e.operand instanceof AccessExpr aexpr) {
                             //own pointer
                             if (aexpr.target.resolvedType.isNonRawPointerType()) {
-                                e._addressOfField = true;
-                                aexpr._addressOf = true;
+                                e._ignoreAddressOfForCustom = true;
+                                aexpr._customAddressOf = true;
                                 e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
                             }
                             else {
                                 //local field access: a.b;
                                 if (aexpr.target instanceof IdExpr idExpr && idExpr.resolvedDef instanceof FieldDef f && f.isLocalVar) {
-                                    e._addressOfField = true;
-                                    aexpr._addressOf = true;
+                                    e._ignoreAddressOfForCustom = true;
+                                    aexpr._customAddressOf = true;
                                     e.resolvedType = Type.pointerType(e.loc, elmentType, Type.PointerAttr.ref, false);
                                     f.isRefable = true;
                                     idExpr._autoDerefRefableVar = false;
@@ -853,6 +877,11 @@ public class ExprTypeResolver extends TypeResolver {
                         }
                         e.resolvedOperator = f;
                         e.resolvedType = f.prototype.returnType;
+                        if (f.isDConst()) {
+                            if (e.target.resolvedType.isImmutable) {
+                                e.resolvedType = f.prototype.returnType.toImmutable();
+                            }
+                        }
                     }
                     else {
                         err("Invalid operator []", e.loc);
@@ -1156,6 +1185,9 @@ public class ExprTypeResolver extends TypeResolver {
                 
                 if (e.resolvedType == null) {
                     e.resolvedType = f.prototype.returnType;
+                    if (f._isConstVersion) {
+                        e.resolvedType = f.prototype.returnType.toImmutable();
+                    }
                 }
                 
                 if (e.resolvedType != null && f.funcDef != null) {
@@ -1369,6 +1401,11 @@ public class ExprTypeResolver extends TypeResolver {
                 err("Expected operator", e.loc);
             }
             e.resolvedType = f.prototype.returnType;
+            if (f.isDConst()) {
+                if (e.lhs.resolvedType.isImmutable) {
+                    e.resolvedType = f.prototype.returnType.toImmutable();
+                }
+            }
             e.resolvedOperator = f;
         }
         else {
