@@ -34,3 +34,36 @@ unsafe struct A {
     }
 }
 ```
+
+
+## dconst Method
+
+To reduce code duplication and complex features like function overloading, Sric provides the dconst method.
+
+```
+struct A {
+    var i: String
+    fun foo() dconst : * String {
+        ...
+        return &i
+    }
+}
+```
+
+The dconst method automatically generates both const and non-const versions internally in the compiler. This is equivalent to the following C++ code:
+
+```
+class A {
+    string i;
+public:
+    string* foo() {
+        ...
+        return &i;
+    }
+
+    const string* foo() const {
+        ...
+        return &i;
+    }
+};
+```

@@ -38,3 +38,35 @@ unsafe struct A {
     }
 }
 ```
+
+## dconst方法
+
+为了减少代码重复，以及函数重载这种复杂特性，Sric提供了dconst方法。
+
+```
+struct A {
+    var i: String
+    fun foo() dconst : * String {
+        ...
+        return &i
+    }
+}
+```
+
+dconst方法在编译器内部会自动生成cosnt和非const两个版本的。等价于下面的C++代码:
+
+```
+class A {
+    string i;
+public:
+    string* foo() {
+        ...
+        return &i;
+    }
+
+    const string* foo() const {
+        ...
+        return &i;
+    }
+};
+```
