@@ -225,6 +225,7 @@ struct Decoder {
                     return null;
                 }
             }
+            scWarn("serial", "unknow enum: %s", str);
             return null;
         }
 
