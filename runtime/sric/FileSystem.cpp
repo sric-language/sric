@@ -67,9 +67,9 @@ int64_t FileSystem::fileSize(const char* filePath) {
     return fs::file_size(fs::path(filePath));
 }
 
-uint64_t FileSystem::modifiedTime(const char* filePath) {
+int64_t FileSystem::modifiedTime(const char* filePath) {
     auto ftime = fs::last_write_time(fs::path(filePath));
-    uint64_t mills = std::chrono::time_point_cast<std::chrono::milliseconds>(ftime).time_since_epoch().count();
+    int64_t mills = std::chrono::time_point_cast<std::chrono::milliseconds>(ftime).time_since_epoch().count();
     return mills;
 }
 

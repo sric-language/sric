@@ -17,7 +17,7 @@ struct FileSystem
     static bool exists(const char* filePath);
     static bool isDir(const char* filePath);
     static int64_t fileSize(const char* filePath);
-    static uint64_t modifiedTime(const char* filePath);
+    static int64_t modifiedTime(const char* filePath);
     static bool moveTo(const char* from, const char* to);
 
     static bool copyTo(const char* from, const char* to);

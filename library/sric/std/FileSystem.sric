@@ -8,7 +8,7 @@ extern trait FileSystem {
     extern static fun exists(path: const raw* const Int8): Bool;
     extern static fun isDir(path: const raw* const Int8): Bool;
     extern static fun fileSize(path: const raw* const Int8): Int64;
-    extern static fun modifiedTime(path: const raw* const Int8): UInt64;
+    extern static fun modifiedTime(path: const raw* const Int8): Int64;
     extern static fun moveTo(src: const raw* const Int8, dst: const raw* const Int8): Bool;
     extern static fun copyTo(src: const raw* const Int8, dst: const raw* const Int8): Bool;
     extern static fun remove(path: const raw* const Int8): Bool;
