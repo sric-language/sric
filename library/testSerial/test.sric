@@ -12,6 +12,7 @@ reflect struct Elem {
     //@Transient
     var size: Int;
     var point: own*? Point;
+    var checked : Bool;
     static var s : const Int = 0;
 
     fun _isTransient(): Bool {
@@ -91,7 +92,7 @@ unsafe fun testSimple() {
 
 unsafe fun testStruct() {
     var encoder: Encoder;
-    var obj = new Elem { .name = "abc"; .position = Point {.x =1; .y=2; }; .size = 3; .point = new Point { .x = 4; .y = 5; }; };
+    var obj = new Elem { .name = "abc"; .position = Point {.x =1; .y=2; }; .size = 3; .point = new Point { .x = 4; .y = 5; }; .checked = true; };
     var t = obj as *Void;
     var res = encoder.encode(t, "testSerial::Elem");
     printf("%s\n", res.c_str());
@@ -102,6 +103,7 @@ unsafe fun testStruct() {
     
     verify(obj2.position.x == obj.position.x);
     verify(obj2.point.y == obj.point.y);
+    verify(obj2.checked == obj.checked);
 }
 
 unsafe fun testArray() {

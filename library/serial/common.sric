@@ -39,6 +39,10 @@ unsafe fun sizeOfType(typeName: raw* const Int8): Int {
             else if (strcmp(typeName, "Float32") == 0) {
                 return sizeof(Int32);
             }
+        case 'B':
+            if (strcmp(typeName, "Bool") == 0) {
+                return sizeof(Int8);
+            }
         case 's':
             if (strcmp(typeName, "sric::String") == 0) {
                 return sizeof(String);

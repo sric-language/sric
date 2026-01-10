@@ -111,6 +111,12 @@ struct Decoder {
                 *v = node.as_float();
                 return true;
             }
+        case 'B':
+            if (strcmp(typeName, "Bool") == 0) {
+                var v = unsafeCast$<raw*Bool>(obj+offset);
+                *v = node.as_bool();
+                return true;
+            } 
         case 's':
             if (strcmp(typeName, "sric::String") == 0) {
                 var v = unsafeCast$<raw*String>(obj+offset);

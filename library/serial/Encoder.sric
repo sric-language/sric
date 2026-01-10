@@ -65,6 +65,11 @@ struct Encoder {
                 var v = (obj+offset) as raw* Float32;
                 return allocator.alloc_float(*v);
             }
+        case 'B':
+            if (strcmp(typeName, "Bool") == 0) {
+                var v = unsafeCast$<raw*Bool>(obj+offset);
+                return allocator.alloc_bool(*v);
+            }
         case 's':
             if (strcmp(typeName, "sric::String") == 0) {
                 var v = unsafeCast$<raw*String>(obj+offset);
