@@ -7,7 +7,8 @@ if [ "$1" = "mvn" ]; then
 else
     mkdir temp
 
-    find src/main/java -name '*.java' | xargs javac -g -d temp -cp ../bin/gson-2.8.6.jar
+    javac -g -d temp -sourcepath src/main/java -cp ../bin/gson-2.8.6.jar \
+            src/main/java/sric/compiler/Main.java
     jar cvf ../bin/sric-1.0.jar -C temp .
 
     rm -r temp
