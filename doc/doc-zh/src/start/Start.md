@@ -35,12 +35,20 @@ srcDirs = ./
 ```
 
 4. 编译和运行
+
 ```
 sric module.scm -fmake
 ```
 构建debug版本:
 ```
 sric module.scm -fmake -debug
+```
+
+注意: 如果在Windows系统上使用微软C++编译器工具集，每次打开命令终端都需要先运行:
+```
+cd fmake
+source vsvars.sh
+cd -
 ```
 
 1. 运行

@@ -43,6 +43,13 @@ build debug mode:
 sric module.scm -fmake -debug
 ```
 
+Note: If you are using the Microsoft C++ compiler toolset on Windows, you need to run the following command every time you open a command terminal:
+```
+cd fmake
+source vsvars.sh
+cd -
+```
+
 5. Run
 
 After compilation, the console will print the output file path. Run it with quotes. For example:
