@@ -70,14 +70,14 @@ int64_t FileSystem::fileSize(const char* filePath) {
 int64_t FileSystem::modifiedTime(const char* filePath) {
     auto ftime = fs::last_write_time(fs::path(filePath));
     
-    #if __cpp_lib_chrono >= 201907L && __cpp_lib_filesystem >= 201703L
-        auto sys_time = std::chrono::clock_cast<std::chrono::system_clock>(ftime);
-        int64_t mills = std::chrono::duration_cast<std::chrono::milliseconds>(sys_time.time_since_epoch()).count();
-        return mills;
-    #else
-        int64_t mills = std::chrono::duration_cast<std::chrono::milliseconds>(ftime.time_since_epoch()).count();
-        return mills;
-    #endif
+    auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+        ftime - fs::file_time_type::clock::now() + std::chrono::system_clock::now()
+    );
+    
+    int64_t mills = std::chrono::duration_cast<std::chrono::milliseconds>(
+        sctp.time_since_epoch()
+    ).count();
+    return mills;
 }
 
 bool FileSystem::moveTo(const char* fromFile, const char* toFile) {
