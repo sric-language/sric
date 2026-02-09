@@ -159,6 +159,14 @@ public class ErrorChecker extends CompilePass {
             }
         }
         
+        if (to.isReference && !isInUnsafe()) {
+            if (target instanceof Expr.UnaryExpr e) {
+                if (e.opToken == TokenKind.star) {
+                    err("Cannot pass reference in safe mode", loc);
+                }
+            }
+        }
+        
 //        if (from.isPointerType() && !to.isPointerType()) {
 //            if (!from.isRawPointerType() && from.genericArgs != null) {
 //                target.implicitDereference = true;
