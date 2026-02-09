@@ -4,19 +4,19 @@
 ### 1.安装需要的软件
 - [JDK 17+](https://www.oracle.com/java/technologies/downloads/)
 - 支持C++20的C++ 编译器: gcc 11+、 clang 17+、 Xcode 16+、 Visual Studio 2022+
-- [Fanx](https://github.com/fanx-dev/fanx/releases)
 - [CMake](https://cmake.org/download/)
 - [git](https://git-scm.com/downloads)
 - [VSCode](https://code.visualstudio.com/)
 
-安装以上软件，并配置环境变量，确保java、jar、fan、cmake等命令在git bash中可用。
+安装以上软件，并配置环境变量，确保java、jar、cmake等命令在git bash中可用。
 
 ### 2.构建fmake
 ```
 git clone https://github.com/chunquedong/fmake.git
 cd fmake
-fanb pod.props
+sh build.sh
 ```
+并将fmake/bin目录加入到环境变量PATH中
 
 在Windows系统上使用微软C++编译器工具集:
 ```

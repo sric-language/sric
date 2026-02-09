@@ -12,6 +12,6 @@ bin/sric ./library/jsonc/module.scm
 bin/sric library/serial/module.scm -fmake -debug
 bin/sric library/testSerial/module.scm -fmake -debug
 
-fan fmake output/sric.fmake -debug -G
-fan fmake output/test.fmake -debug -G
-fan fmake output/testSerial.fmake -debug -G
+fmake output/sric.fmake -debug -G
+fmake output/test.fmake -debug -G
+fmake output/testSerial.fmake -debug -G

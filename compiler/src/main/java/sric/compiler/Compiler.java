@@ -51,6 +51,7 @@ public class Compiler {
     private HashMap<String, String> fmakeArgs = null;
     
     String cppVersion = null;
+    int fmakeVersion = 1;
     
     public Compiler(SModule module, File sourceDir, String libPath, String outputDir) {
         this.module = module;
@@ -303,7 +304,7 @@ public class Compiler {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 if (key.endsWith("Dirs")) {
-                    value = Util.convertRelativePaths(srcDir, outputDir, value);
+                    value = Util.convertRelativePaths(srcDir, outputDir, value, fmakeVersion);
                 }
                 if (fmakes.containsKey(key) && value.length() > 0) {
                     

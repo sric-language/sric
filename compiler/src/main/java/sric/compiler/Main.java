@@ -25,7 +25,7 @@ public class Main {
     boolean lsp = false;
     boolean verbose = false;
     boolean scriptMode = false;
-    boolean compileNative = false;
+    int compileNative = 0;
     boolean debug = false;
     //boolean execute = false;
     String cppVersion = "c++20";
@@ -84,7 +84,10 @@ public class Main {
                 scriptMode = true;
             }
             else if (args[i].equals("-fmake")) {
-                compileNative = true;
+                compileNative = 3;
+            }
+            else if (args[i].equals("-fmake1")) {
+                compileNative = 1;
             }
             else if (args[i].equals("-debug")) {
                 debug = true;
@@ -129,6 +132,7 @@ public class Main {
         }
         
         compiler.cppVersion = this.cppVersion;
+        compiler.fmakeVersion = compileNative;
         
         if (recursion) {
             for (SModule.Depend dep: compiler.module.depends) {
@@ -150,20 +154,22 @@ public class Main {
         }
         
         boolean rc = compiler.run();
-        if (rc && compileNative) {
+        if (rc && compileNative != 0) {
             StringBuilder sb = new StringBuilder();
-            if (Util.isWindows()) {
-                sb.append("fan.bat ");
-            }
-            else {
-                sb.append("fan ");
+            if (compileNative == 1) {
+                if (Util.isWindows()) {
+                    sb.append("fan.bat ");
+                }
+                else {
+                    sb.append("fan ");
+                }
             }
             sb.append("fmake ");
             if (debug) {
                 sb.append("-debug ");
             }
             sb.append("-f ");
-            if (Util.isWindows()) {
+            if (compileNative == 1 && Util.isWindows()) {
                 sb.append("/");
             }
             sb.append(homePath);

@@ -131,7 +131,7 @@ public class Util {
         return rc;
     }
     
-    public static String convertRelativePaths(String oldDir, String newDir, String fileNames) {
+    public static String convertRelativePaths(String oldDir, String newDir, String fileNames, int fmakeVersion) {
         String[] fs = fileNames.split(",");
         StringBuilder sb = new StringBuilder();
         for (int i=0; i<fs.length; ++i) {
@@ -143,7 +143,10 @@ public class Util {
                 srcFile = file.getPath();
             }
             if (File.separatorChar != '/') {
-                srcFile = "/"+srcFile.replace('\\', '/');
+                srcFile = srcFile.replace('\\', '/');
+                if (fmakeVersion == 1) {
+                    srcFile = "/"+srcFile;
+                }
             }
             if (file.isDirectory()) {
                 srcFile += "/";

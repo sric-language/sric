@@ -4,19 +4,19 @@
 ### 1.Required
 - [JDK 17+](https://www.oracle.com/java/technologies/downloads/)
 - C++ compiler (supporting C++20): gcc 11+, clang 17+, Xcode 16+, Visual Studio 2022+
-- [Fanx](https://github.com/fanx-dev/fanx/releases)
 - [CMake](https://cmake.org/download/)
 - [git](https://git-scm.com/downloads)
 - [VSCode](https://code.visualstudio.com/)
 
-Install the above software and configure the environment variables to ensure that commands such as java, jar, fan, and cmake are available in git bash.
+Install the above software and configure the environment variables to ensure that commands such as java, jar, and cmake are available in git bash.
 
 ### 2.Build fmake
 ```
 git clone https://github.com/chunquedong/fmake.git
 cd fmake
-fanb pod.props
+sh build.sh
 ```
+Add fmake/bin to your PATH
 
 Use the Microsoft C++ compiler toolchain on Windows:
 ```

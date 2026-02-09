@@ -67,13 +67,13 @@ sric hello.scm
 
 Then compile it separately by manually running fmake:
 ```
-fan fmake output/hello.fmake -debug
+fmake output/hello.fmake -debug
 ```
 
 ## Debug
 
 Debugging the generated C++ code is supported via IDE project generation.
 ```
-fan fmake output/hello.fmake -debug -G
+fmake output/hello.fmake -debug -G
 ```
 The generated project files are located in the build folder under the parent directory.

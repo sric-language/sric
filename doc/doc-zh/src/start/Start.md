@@ -67,13 +67,13 @@ sric hello.scm
 
 然后再单独手动运行fmake编译:
 ```
-fan fmake output/hello.fmake -debug
+fmake output/hello.fmake -debug
 ```
 
 ## 调试
 可通过生成IDE项目来调试生成的C++代码。
 ```
-fan fmake output/hello.fmake -debug -G
+fmake output/hello.fmake -debug -G
 ```
 生成的项目文件在上层目录的build文件夹下。
 
