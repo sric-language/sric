@@ -103,31 +103,44 @@ public class Util {
     
     
     public static int exec(String cmd) throws IOException {
-        Process pr = Runtime.getRuntime().exec(cmd);
+        Process process = Runtime.getRuntime().exec(cmd);
         
-        InputStreamReader inst2 = new InputStreamReader(pr.getInputStream());
-        BufferedReader br2 = new BufferedReader(inst2);
-        String res2 = null;
-        while ((res2 = br2.readLine()) != null) {
-            System.err.println(res2);
-        }
-        br2.close();
+        Thread outputThread = new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         
-        InputStreamReader inst = new InputStreamReader(pr.getErrorStream());
-        BufferedReader br = new BufferedReader(inst);
-        String res = null;
-        while ((res = br.readLine()) != null) {
-            System.err.println(res);
-        }
-        br.close();
+        Thread errorThread = new Thread(() -> {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getErrorStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.err.println(line);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        
+        outputThread.start();
+        errorThread.start();
 
         int rc = 1;
         try {
-            rc = pr.waitFor();
+            rc = process.waitFor();
+            outputThread.join();
+            errorThread.join();
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        pr.destroy();
+        process.destroy();
         return rc;
     }
     
