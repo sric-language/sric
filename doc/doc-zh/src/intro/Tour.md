@@ -5,9 +5,7 @@
 var p: Int            //值类型
 var p: own* Int       //所有权指针
 var p: * Int          //非所有权指针
-var p: & Int          //引用
 var p: raw* Int       //裸指针
-var p: uniq* Int      //唯一所有权指针
 ```
 
 
