@@ -59,6 +59,13 @@ namespace sric
         {
         }
 
+        inline RefPtr(std::nullptr_t ptr) : pointer(nullptr)
+#ifndef SC_NO_CHECK
+            , checkCode(0), type(RefType::UnsafeRef), offset(0)
+#endif
+        {
+        }
+
         inline RefPtr(T* p, const CheckCodeType* checkCodePtr, RefType type) : pointer(p)
 #ifndef SC_NO_CHECK
             , checkCode(*checkCodePtr), type(type), offset((char*)checkCodePtr - (char*)pointer)
@@ -250,6 +257,13 @@ namespace sric
     public:
 
         inline RefPtr() : pointer(nullptr)
+#ifndef SC_NO_CHECK
+            , checkCode(0), type(RefType::UnsafeRef), offset(0)
+#endif
+        {
+        }
+
+        inline RefPtr(std::nullptr_t ptr) : pointer(nullptr)
 #ifndef SC_NO_CHECK
             , checkCode(0), type(RefType::UnsafeRef), offset(0)
 #endif

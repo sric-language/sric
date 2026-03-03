@@ -61,10 +61,15 @@ class OwnPtr {
     template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
     template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
+    template <typename T, typename U> friend OwnPtr<T> cast(OwnPtr<U>&& ptr) noexcept;
+    template <typename T, typename U> friend OwnPtr<T> dynamicCast(OwnPtr<U>&& ptr) noexcept;
+
     inline explicit OwnPtr(T* p) : pointer(p) {
     }
 public:
     inline OwnPtr() : pointer(nullptr) {
+    }
+    inline OwnPtr(std::nullptr_t ptr) : pointer(nullptr) {
     }
 
     inline ~OwnPtr() {
@@ -144,10 +149,16 @@ class OwnPtr<void> {
     template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
     template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
+    template <typename T, typename U> friend OwnPtr<T> cast(OwnPtr<U>&& ptr) noexcept;
+    template <typename T, typename U> friend OwnPtr<T> dynamicCast(OwnPtr<U>&& ptr) noexcept;
+
     inline explicit OwnPtr(void* p) : pointer(p) {
     }
 public:
     inline OwnPtr() : pointer(nullptr) {
+    }
+
+    inline OwnPtr(std::nullptr_t ptr) : pointer(nullptr) {
     }
 
     inline ~OwnPtr() {
@@ -296,6 +307,27 @@ inline T* takeOwn(OwnPtr<T> p) {
     return p.take();
 }
 
+template <typename T, typename U>
+OwnPtr<T> dynamicCast(OwnPtr<U>&& ptr) noexcept {
+    T* t = dynamic_cast<T*>(ptr.take());
+    return OwnPtr<T>(t);
+}
+
+template <typename T, typename U>
+OwnPtr<T> cast(OwnPtr<U>&& ptr) noexcept {
+    T* t = (T*)(ptr.take());
+    return OwnPtr<T>(t);
+}
 
 }
+
+namespace std {
+    template<typename T>
+    struct hash<sric::OwnPtr<T> > {
+        size_t operator()(const sric::OwnPtr<T>& p) const {
+            return hash<T*>()(p.get());
+        }
+    };
+}
+
 #endif
