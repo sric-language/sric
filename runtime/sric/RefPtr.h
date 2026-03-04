@@ -49,6 +49,8 @@ namespace sric
         template <class U> friend class RefPtr;
         template <class U> friend RefPtr<U> rawToRef(U* ptr);
         template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
+        template <typename Target, typename U> friend RefPtr<Target> dynamicCast(RefPtr<U>&& ptr) noexcept;
+        template <typename Target, typename U> friend RefPtr<Target> cast(RefPtr<U>&& ptr) noexcept;
 
     public:
 
@@ -206,9 +208,14 @@ namespace sric
 
         inline bool isNull() const { return pointer == nullptr; }
 
-        bool operator==(const T* other) { return this->pointer == other; }
-        bool operator==(const RefPtr<T> other) { return this->pointer == other.pointer; }
-        bool operator<(const RefPtr<T> other) { return this->pointer < other.pointer; }
+        bool operator==(const T* other) const { return this->pointer == other; }
+        bool operator==(const RefPtr<T> other) const { return this->pointer == other.pointer; }
+        bool operator!=(const T* other) const { return this->pointer != other; }
+        bool operator!=(const RefPtr<T> other) const { return this->pointer != other.pointer; }
+        bool operator<(const RefPtr<T> other) const { return this->pointer < other.pointer; }
+        
+        bool operator!() const { return pointer == nullptr; }
+        operator bool() const { return pointer != nullptr; }
 
         template <class U> 
         inline RefPtr<U> castTo()
@@ -253,6 +260,8 @@ namespace sric
         template <class U> friend class RefPtr;
         template <class U> friend RefPtr<U> rawToRef(U* ptr);
         template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
+        template <typename Target, typename U> friend RefPtr<Target> dynamicCast(RefPtr<U>&& ptr) noexcept;
+        template <typename Target, typename U> friend RefPtr<Target> cast(RefPtr<U>&& ptr) noexcept;
 
     public:
 
@@ -393,9 +402,14 @@ namespace sric
 
         inline bool isNull() const { return pointer == nullptr; }
 
-        bool operator==(const void* other) { return this->pointer == other; }
-        bool operator==(const RefPtr<void> other) { return this->pointer == other.pointer; }
-        bool operator<(const RefPtr<void> other) { return this->pointer < other.pointer; }
+        bool operator==(const void* other) const { return this->pointer == other; }
+        bool operator==(const RefPtr<void> other) const { return this->pointer == other.pointer; }
+        bool operator!=(const void* other) const { return this->pointer != other; }
+        bool operator!=(const RefPtr<void> other) const { return this->pointer != other.pointer; }
+        bool operator<(const RefPtr<void> other) const { return this->pointer < other.pointer; }
+        
+        bool operator!() const { return pointer == nullptr; }
+        operator bool() const { return pointer != nullptr; }
 
         template <class U> 
         inline RefPtr<U> castTo()
@@ -464,6 +478,35 @@ namespace sric
 #else
         return RefPtr<T>(ptr, 0, RefType::UnsafeRef);
 #endif
+    }
+
+    template <typename Target, typename U>
+    RefPtr<Target> dynamicCast(RefPtr<U>&& ptr) noexcept {
+#ifndef SC_NO_CHECK
+        Target* t = dynamic_cast<Target*>(ptr.pointer);
+        return RefPtr<Target>(t, ptr.checkCode, ptr.type, ptr.offset - ((char*)t - (char*)ptr.pointer));
+#else
+        return RefPtr<Target>(dynamic_cast<Target*>(ptr.pointer), 0, RefType::UnsafeRef, 0);
+#endif
+    }
+
+    template <typename Target, typename U>
+    RefPtr<Target> cast(RefPtr<U>&& ptr) noexcept {
+        if constexpr (std::is_polymorphic<Target>::value) {
+#ifndef SC_NO_CHECK
+            Target* t = dynamic_cast<Target*>(ptr.pointer);
+            return RefPtr<Target>(t, ptr.checkCode, ptr.type, ptr.offset - ((char*)t - (char*)ptr.pointer));
+#else
+            return RefPtr<Target>(dynamic_cast<Target*>(ptr.pointer), 0, RefType::UnsafeRef, 0);
+#endif
+        }
+        else {
+#ifndef SC_NO_CHECK
+            return RefPtr<Target>((Target*)(ptr.pointer), ptr.checkCode, ptr.type, ptr.offset);
+#else
+            return RefPtr<Target>((Target*)(ptr.pointer), 0, RefType::UnsafeRef, 0);
+#endif
+        }
     }
 
 }

@@ -71,8 +71,13 @@ namespace sric
     class SharedPtr {
         T* pointer;
         template <class U> friend class SharedPtr;
+        template <typename Target, typename U> friend SharedPtr<Target> dynamicCast(SharedPtr<U>&& ptr) noexcept;
+        template <typename Target, typename U> friend SharedPtr<Target> cast(SharedPtr<U>&& ptr) noexcept;
     public:
         SharedPtr() : pointer(nullptr) {
+        }
+
+        inline SharedPtr(std::nullptr_t ptr) : pointer(nullptr) {
         }
 
         inline RefCount* getRefCount() {
@@ -178,8 +183,14 @@ namespace sric
 
         T& operator*() { return *pointer; }
 
-        bool operator==(const SharedPtr& other) { return this->pointer == other.pointer; }
-        bool operator!=(const SharedPtr& other) { return this->pointer != other.pointer; }
+        bool operator==(const T* other) const { return pointer == other; }
+        bool operator==(const SharedPtr& other) const { return this->pointer == other.pointer; }
+        bool operator!=(const T* other) const { return pointer != other; }
+        bool operator!=(const SharedPtr& other) const { return this->pointer != other.pointer; }
+        bool operator<(const SharedPtr& other) const { return this->pointer < other.pointer; }
+        
+        bool operator!() const { return pointer == nullptr; }
+        operator bool() const { return pointer != nullptr; }
 
         void _set(T* p) { pointer = p; }
 
@@ -239,6 +250,9 @@ namespace sric
         RefCount* pointer;
     public:
         WeakPtr() : pointer(NULL) {
+        }
+
+        inline WeakPtr(std::nullptr_t ptr) : pointer(nullptr) {
         }
 
         WeakPtr(OwnPtr<T>& p) : pointer(NULL) {
@@ -346,6 +360,22 @@ namespace sric
     template<typename T>
     AutoMove<T> autoMove(T p) {
         return AutoMove<T>(std::move(p));
+    }
+
+    template <typename Target, typename U>
+    SharedPtr<Target> dynamicCast(SharedPtr<U>& ptr) noexcept {
+        Target* pointer = dynamic_cast<Target*>(ptr.pointer);
+        SharedPtr<Target> res;
+        if (pointer) {
+            res.pointer = pointer;
+            res.getRefCount()->addRef();
+        }
+        return res;
+    }
+
+    template <typename Target, typename U>
+    SharedPtr<Target> cast(SharedPtr<U>& ptr) noexcept {
+        return SharedPtr<Target>(ptr);
     }
 
 }

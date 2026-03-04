@@ -61,8 +61,8 @@ class OwnPtr {
     template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
     template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
-    template <typename T, typename U> friend OwnPtr<T> cast(OwnPtr<U>&& ptr) noexcept;
-    template <typename T, typename U> friend OwnPtr<T> dynamicCast(OwnPtr<U>&& ptr) noexcept;
+    template <typename Target, typename U> friend OwnPtr<Target> cast(OwnPtr<U>&& ptr) noexcept;
+    template <typename Target, typename U> friend OwnPtr<Target> dynamicCast(OwnPtr<U>&& ptr) noexcept;
 
     inline explicit OwnPtr(T* p) : pointer(p) {
     }
@@ -117,6 +117,15 @@ public:
         }
     }
 
+    bool operator==(const T* other) const { return pointer == other; }
+    bool operator==(const OwnPtr<T>& other) const { return pointer == other.pointer; }
+    bool operator!=(const T* other) const { return pointer != other; }
+    bool operator!=(const OwnPtr<T>& other) const { return pointer != other.pointer; }
+    bool operator<(const OwnPtr<T>& other) const { return pointer < other.pointer; }
+    
+    bool operator!() const { return pointer == nullptr; }
+    operator bool() const { return pointer != nullptr; }
+
 public:
     T* take() {
         T* p = pointer;
@@ -149,8 +158,8 @@ class OwnPtr<void> {
     template <class U> friend OwnPtr<U> rawToOwn(U* ptr);
     template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
 
-    template <typename T, typename U> friend OwnPtr<T> cast(OwnPtr<U>&& ptr) noexcept;
-    template <typename T, typename U> friend OwnPtr<T> dynamicCast(OwnPtr<U>&& ptr) noexcept;
+    template <typename Target, typename U> friend OwnPtr<Target> cast(OwnPtr<U>&& ptr) noexcept;
+    template <typename Target, typename U> friend OwnPtr<Target> dynamicCast(OwnPtr<U>&& ptr) noexcept;
 
     inline explicit OwnPtr(void* p) : pointer(p) {
     }
@@ -220,6 +229,15 @@ public:
             pointer = nullptr;
         }
     }
+
+    bool operator==(const void* other) const { return pointer == other; }
+    bool operator==(const OwnPtr<void>& other) const { return pointer == other.pointer; }
+    bool operator!=(const void* other) const { return pointer != other; }
+    bool operator!=(const OwnPtr<void>& other) const { return pointer != other.pointer; }
+    bool operator<(const OwnPtr<void>& other) const { return pointer < other.pointer; }
+    
+    bool operator!() const { return pointer == nullptr; }
+    operator bool() const { return pointer != nullptr; }
 
 public:
     void* take() {
@@ -307,16 +325,16 @@ inline T* takeOwn(OwnPtr<T> p) {
     return p.take();
 }
 
-template <typename T, typename U>
-OwnPtr<T> dynamicCast(OwnPtr<U>&& ptr) noexcept {
-    T* t = dynamic_cast<T*>(ptr.take());
-    return OwnPtr<T>(t);
+template <typename Target, typename U>
+OwnPtr<Target> dynamicCast(OwnPtr<U>&& ptr) noexcept {
+    Target* t = dynamic_cast<Target*>(ptr.take());
+    return OwnPtr<Target>(t);
 }
 
-template <typename T, typename U>
-OwnPtr<T> cast(OwnPtr<U>&& ptr) noexcept {
-    T* t = (T*)(ptr.take());
-    return OwnPtr<T>(t);
+template <typename Target, typename U>
+OwnPtr<Target> cast(OwnPtr<U>&& ptr) noexcept {
+    Target* t = (Target*)(ptr.take());
+    return OwnPtr<Target>(t);
 }
 
 }
