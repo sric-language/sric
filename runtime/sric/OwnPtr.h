@@ -96,15 +96,13 @@ public:
     }
 
     inline T* operator->() const { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
-
     inline T* operator->() { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
 
     inline T& operator*() { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
-
     inline const T& operator*() const { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
 
-    inline operator T* () const { return pointer; }
-    inline operator T* () { return pointer; }
+    explicit inline operator T* () const { return pointer; }
+    explicit inline operator T* () { return pointer; }
 
     inline T* get() const { return pointer; }
 
@@ -208,16 +206,13 @@ public:
     }
 
     inline void* operator->() const { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
-
     inline void* operator->() { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
 
     // T& operator*() { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
-
     // const T& operator*() const { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
 
-    operator void* () { return pointer; }
-
-    operator void* () const { return pointer; }
+    explicit operator void* () { return pointer; }
+    explicit operator void* () const { return pointer; }
 
     inline void* get() const { return pointer; }
 

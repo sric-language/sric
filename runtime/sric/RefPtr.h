@@ -49,8 +49,8 @@ namespace sric
         template <class U> friend class RefPtr;
         template <class U> friend RefPtr<U> rawToRef(U* ptr);
         template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
-        template <typename Target, typename U> friend RefPtr<Target> dynamicCast(RefPtr<U>&& ptr) noexcept;
-        template <typename Target, typename U> friend RefPtr<Target> cast(RefPtr<U>&& ptr) noexcept;
+        template <typename Target, typename U> friend RefPtr<Target> dynamicCast(const RefPtr<U>& ptr) noexcept;
+        template <typename Target, typename U> friend RefPtr<Target> cast(const RefPtr<U>& ptr) noexcept;
 
     public:
 
@@ -195,7 +195,7 @@ namespace sric
             return *pointer;
         }
 
-        inline operator T* () { return pointer; }
+        explicit inline operator T* () { return pointer; }
 
         inline T* get() const {
 #ifdef SC_CHECK
@@ -217,36 +217,36 @@ namespace sric
         bool operator!() const { return pointer == nullptr; }
         operator bool() const { return pointer != nullptr; }
 
-        template <class U> 
-        inline RefPtr<U> castTo()
-        {
-            if constexpr (std::is_polymorphic<U>::value) {
-#ifndef SC_NO_CHECK
-                U* np = dynamic_cast<U*>(pointer);
-                return RefPtr<U>(np, checkCode, type, offset - ((char*)np - (char*)pointer));
-#else
-                return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
-#endif
-            }
-            else {
-#ifndef SC_NO_CHECK
-                return RefPtr<U>((U*)(pointer), checkCode, type, offset);
-#else
-                return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
-#endif
-            }
-        }
+//         template <class U> 
+//         inline RefPtr<U> castTo()
+//         {
+//             if constexpr (std::is_polymorphic<U>::value) {
+// #ifndef SC_NO_CHECK
+//                 U* np = dynamic_cast<U*>(pointer);
+//                 return RefPtr<U>(np, checkCode, type, offset - ((char*)np - (char*)pointer));
+// #else
+//                 return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
+// #endif
+//             }
+//             else {
+// #ifndef SC_NO_CHECK
+//                 return RefPtr<U>((U*)(pointer), checkCode, type, offset);
+// #else
+//                 return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
+// #endif
+//             }
+//         }
 
-        template <class U> 
-        inline RefPtr<U> dynamicCastTo()
-        {
-#ifndef SC_NO_CHECK
-            U* np = dynamic_cast<U*>(pointer);
-            return RefPtr<U>(np, checkCode, type, offset - ((char*)np - (char*)pointer));
-#else
-            return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
-#endif
-        }
+//         template <class U> 
+//         inline RefPtr<U> dynamicCastTo()
+//         {
+// #ifndef SC_NO_CHECK
+//             U* np = dynamic_cast<U*>(pointer);
+//             return RefPtr<U>(np, checkCode, type, offset - ((char*)np - (char*)pointer));
+// #else
+//             return RefPtr<U>(dynamic_cast<U*>(pointer), 0, RefType::UnsafeRef, 0);
+// #endif
+//         }
     };
 
     template<>
@@ -260,8 +260,8 @@ namespace sric
         template <class U> friend class RefPtr;
         template <class U> friend RefPtr<U> rawToRef(U* ptr);
         template <class U> friend OwnPtr<U> refToOwn(RefPtr<U> ptr);
-        template <typename Target, typename U> friend RefPtr<Target> dynamicCast(RefPtr<U>&& ptr) noexcept;
-        template <typename Target, typename U> friend RefPtr<Target> cast(RefPtr<U>&& ptr) noexcept;
+        template <typename Target, typename U> friend RefPtr<Target> dynamicCast(const RefPtr<U>& ptr) noexcept;
+        template <typename Target, typename U> friend RefPtr<Target> cast(const RefPtr<U>& ptr) noexcept;
 
     public:
 
@@ -387,7 +387,7 @@ namespace sric
             return pointer;
         }
 
-        inline operator void* () {
+        explicit inline operator void* () {
             return pointer;
         }
 
@@ -411,15 +411,15 @@ namespace sric
         bool operator!() const { return pointer == nullptr; }
         operator bool() const { return pointer != nullptr; }
 
-        template <class U> 
-        inline RefPtr<U> castTo()
-        {
-#ifndef SC_NO_CHECK
-            return RefPtr<U>((U*)(pointer), checkCode, type, offset);
-#else
-            return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
-#endif
-        }
+//         template <class U> 
+//         inline RefPtr<U> castTo()
+//         {
+// #ifndef SC_NO_CHECK
+//             return RefPtr<U>((U*)(pointer), checkCode, type, offset);
+// #else
+//             return RefPtr<U>((U*)(pointer), 0, RefType::UnsafeRef, 0);
+// #endif
+//         }
 
     };
 
@@ -481,7 +481,7 @@ namespace sric
     }
 
     template <typename Target, typename U>
-    RefPtr<Target> dynamicCast(RefPtr<U>&& ptr) noexcept {
+    RefPtr<Target> dynamicCast(const RefPtr<U>& ptr) noexcept {
 #ifndef SC_NO_CHECK
         Target* t = dynamic_cast<Target*>(ptr.pointer);
         return RefPtr<Target>(t, ptr.checkCode, ptr.type, ptr.offset - ((char*)t - (char*)ptr.pointer));
@@ -491,7 +491,7 @@ namespace sric
     }
 
     template <typename Target, typename U>
-    RefPtr<Target> cast(RefPtr<U>&& ptr) noexcept {
+    RefPtr<Target> cast(const RefPtr<U>& ptr) noexcept {
         if constexpr (std::is_polymorphic<Target>::value) {
 #ifndef SC_NO_CHECK
             Target* t = dynamic_cast<Target*>(ptr.pointer);

@@ -25,8 +25,7 @@ extern struct AutoMove$<T> {
 extern struct SharedPtr$<T> {
     fun set(p: own*? T);
     fun getOwn(): own*? T;
-    fun getPtr(): *? T;
-    fun get(): &T;
+    fun get(): *? T;
     fun isNull(): Bool;
 }
 

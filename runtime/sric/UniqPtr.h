@@ -22,10 +22,16 @@ namespace sric
         T* pointer;
         template<typename U, typename... Args> friend UniquePtr<U> makeUniq(Args&&... args);
 
+        template <typename Target, typename U> friend UniquePtr<Target> cast(UniquePtr<U>&& ptr) noexcept;
+        template <typename Target, typename U> friend UniquePtr<Target> dynamicCast(UniquePtr<U>&& ptr) noexcept;
+
         inline explicit UniquePtr(T* p) : pointer(p) {
         }
     public:
         inline UniquePtr() : pointer(nullptr) {
+        }
+
+        inline UniquePtr(std::nullptr_t ptr) : pointer(nullptr) {
         }
 
         inline ~UniquePtr() {
@@ -52,15 +58,22 @@ namespace sric
         }
 
         inline T* operator->() const { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
-
         inline T* operator->() { sc_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
 
         inline T& operator*() { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
-
         inline const T& operator*() const { sc_assert(pointer != nullptr, "try deref null pointer"); return *pointer; }
 
-        inline operator T* () const { return pointer; }
-        inline operator T* () { return pointer; }
+        explicit inline operator T* () const { return pointer; }
+        explicit inline operator T* () { return pointer; }
+
+        bool operator==(const T* other) const { return pointer == other; }
+        bool operator==(const UniquePtr<T>& other) const { return pointer == other.pointer; }
+        bool operator!=(const T* other) const { return pointer != other; }
+        bool operator!=(const UniquePtr<T>& other) const { return pointer != other.pointer; }
+        bool operator<(const UniquePtr<T>& other) const { return pointer < other.pointer; }
+        
+        bool operator!() const { return pointer == nullptr; }
+        operator bool() const { return pointer != nullptr; }
 
         inline T* get() const { return pointer; }
 
@@ -129,5 +142,18 @@ namespace sric
     inline T* takeOwn(UniquePtr<T> p) {
         return p.take();
     }
+
+    template <typename Target, typename U>
+    UniquePtr<Target> dynamicCast(UniquePtr<U>&& ptr) noexcept {
+        Target* t = dynamic_cast<Target*>(ptr.take());
+        return UniquePtr<Target>(t);
+    }
+
+    template <typename Target, typename U>
+    UniquePtr<Target> cast(UniquePtr<U>&& ptr) noexcept {
+        Target* t = (Target*)(ptr.take());
+        return UniquePtr<Target>(t);
+    }
+
 }
 #endif

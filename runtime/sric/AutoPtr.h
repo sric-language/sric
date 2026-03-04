@@ -179,9 +179,14 @@ namespace sric
             return *this;
         }
 
+        inline const T* operator->() const { return pointer; }
         inline T* operator->() { return pointer; }
 
         T& operator*() { return *pointer; }
+        const T& operator*() const { return *pointer; }
+
+        explicit inline operator T* () const { return pointer; }
+        explicit inline operator T* () { return pointer; }
 
         bool operator==(const T* other) const { return pointer == other; }
         bool operator==(const SharedPtr& other) const { return this->pointer == other.pointer; }
@@ -213,7 +218,7 @@ namespace sric
             return OwnPtr<T>((T*)(pointer));
         }
 
-        inline RefPtr<T> getPtr() {
+        inline RefPtr<T> get() {
             if (!pointer) {
                 return RefPtr<T>();
             }
@@ -221,7 +226,7 @@ namespace sric
             return RefPtr<T>(refp);
         }
 
-        inline T& get() {
+        inline T& getRef() {
             sc_assert(pointer, "try deref null pointer");
             return *pointer;
         }

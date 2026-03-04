@@ -1475,15 +1475,16 @@ public class CppGenerator extends BaseGenerator {
                     
                     Type elemType = targetType.genericArgs.get(0);
                     if (!targetType.isRawPointerType() && targetType.genericArgs != null) {
-                        this.visit(e.lhs);
                         if (elemType.id.resolvedDef instanceof TypeDef td && td.isPolymorphic()) {
-                            print(".dynamicCastTo<");
+                            print("sric::dynamicCast<");
                         }
                         else {
-                            print(".castTo<");
+                            print("sric::cast<");
                         }
                         printType(elemType);
-                        print(" >()");
+                        print(" >(");
+                        this.visit(e.lhs);
+                        print(")");
                         processed = true;
                     }
                     else if (elemType.id.resolvedDef instanceof TypeDef td && td.isPolymorphic()) {
@@ -1617,26 +1618,7 @@ public class CppGenerator extends BaseGenerator {
     
     void printLiteral(LiteralExpr e) {
         if (e.value == null) {
-            if (e.nullPtrType != null && e.nullPtrType.detail instanceof PointerInfo pinfo) {
-                if (pinfo.pointerAttr == Type.PointerAttr.own) {
-                    print("sric::OwnPtr<");
-                    printType(e.nullPtrType.genericArgs.get(0));
-                    print(">()");
-                }
-                else if (pinfo.pointerAttr == Type.PointerAttr.uniq) {
-                    print("sric::UniquePtr<");
-                    printType(e.nullPtrType.genericArgs.get(0));
-                    print(">()");
-                }
-                else if (pinfo.pointerAttr == Type.PointerAttr.ref) {
-                    print("sric::RefPtr<");
-                    printType(e.nullPtrType.genericArgs.get(0));
-                    print(">()");
-                }
-            }
-            else {
-                print("nullptr");
-            }
+            print("nullptr");
         }
         else if (e.value instanceof Long li) {
             print(li.toString());
